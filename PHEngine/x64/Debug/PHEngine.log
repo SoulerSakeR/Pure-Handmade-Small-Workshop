@@ -1,0 +1,27 @@
+﻿E:\Tool\vs2022\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(1101,5): warning MSB8027: 名为 test.cpp 的两个或更多文件将生成到同一位置的输出。这会导致错误的生成结果。   调用的文件是 Core\Core\test.cpp, Core\src\Core\test.cpp, Core\src\FileIO\test.cpp, Core\src\GameLogic\test.cpp, Core\src\Render\test.cpp, Core\src\ResourceManagement\test.cpp, Core\src\SystemStatus\test.cpp, Core\src\UI\test.cpp。
+  main.cpp
+E:\GroupProject\github\Pure-Handmade-Small-Workshop\PHEngine\Third\QT_MSVC2019_64\include\QtCore\qtcoreexports.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+E:\GroupProject\github\Pure-Handmade-Small-Workshop\PHEngine\Third\QT_MSVC2019_64\include\QtCore\qglobal.h(104,1): fatal  error C1189: #error:  "Qt requires a C++17 compiler, and a suitable value for __cplusplus. On MSVC, you must pass the /Zc:__cplusplus option to the compiler."
+  test.cpp
+  renderwidget.cpp
+E:\GroupProject\github\Pure-Handmade-Small-Workshop\PHEngine\Third\QT_MSVC2019_64\include\QtCore\qtcoreexports.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+E:\GroupProject\github\Pure-Handmade-Small-Workshop\PHEngine\Third\QT_MSVC2019_64\include\QtCore\qglobal.h(104,1): fatal  error C1189: #error:  "Qt requires a C++17 compiler, and a suitable value for __cplusplus. On MSVC, you must pass the /Zc:__cplusplus option to the compiler."
+  test.cpp
+c1xx : fatal  error C1083: 无法打开源文件: “Core\src\Core\test.cpp”: No such file or directory
+  test.cpp
+c1xx : fatal  error C1083: 无法打开源文件: “Core\src\FileIO\test.cpp”: No such file or directory
+  test.cpp
+c1xx : fatal  error C1083: 无法打开源文件: “Core\src\GameLogic\test.cpp”: No such file or directory
+  test.cpp
+c1xx : fatal  error C1083: 无法打开源文件: “Core\src\Render\test.cpp”: No such file or directory
+  test.cpp
+c1xx : fatal  error C1083: 无法打开源文件: “Core\src\ResourceManagement\test.cpp”: No such file or directory
+  test.cpp
+c1xx : fatal  error C1083: 无法打开源文件: “Core\src\SystemStatus\test.cpp”: No such file or directory
+  test.cpp
+c1xx : fatal  error C1083: 无法打开源文件: “Core\src\UI\test.cpp”: No such file or directory
+  renderwindow.cpp
+E:\GroupProject\github\Pure-Handmade-Small-Workshop\PHEngine\Core\UI\renderwindow.cpp(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+E:\GroupProject\github\Pure-Handmade-Small-Workshop\PHEngine\Third\QT_MSVC2019_64\include\QtCore\qtcoreexports.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+E:\GroupProject\github\Pure-Handmade-Small-Workshop\PHEngine\Third\QT_MSVC2019_64\include\QtCore\qglobal.h(104,1): fatal  error C1189: #error:  "Qt requires a C++17 compiler, and a suitable value for __cplusplus. On MSVC, you must pass the /Zc:__cplusplus option to the compiler."
+  正在生成代码...
