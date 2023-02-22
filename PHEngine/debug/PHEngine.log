@@ -1,0 +1,113 @@
+<<<<<<< HEAD
+﻿  Generate moc_predefs.h
+E:\Tool\vs2022\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(247,5): warning MSB8064: 项“debug\moc_predefs.h.cbt”的自定义生成成功，但指定的依赖项“e:\groupproject\github\pure-handmade-small-workshop\phengine\debug\moc_predefs.h.cbt”不存在。这可能会导致增量生成无法正常工作。
+=======
+﻿E:\Tool\vs2022\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(517,5): warning MSB8028: 中间目录(debug\)包含从另一个项目(Demo1_1.vcxproj)共享的文件。   这会导致错误的清除和重新生成行为。
+  Generate moc_predefs.h
+  main.cpp
+>>>>>>> parent of a1acdf0 (修复了exe无法启动的问题)
+  renderwidget.cpp
+  renderwindow.cpp
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x4ae 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x4af 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x4b0 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x889 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x88a 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x88b 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x88c 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x890 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x891 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x895 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x896 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x89c 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x89d 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x89e 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x89f 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x8ea 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x8eb 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x8f1 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x8f2 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x8f6 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x8f7 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x8f9 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x94c 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x94d 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x950 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x955 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x95c 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x95f 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x960 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x961 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x964 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x965 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x96b 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x96e 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x96f 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x973 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x975 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x976 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x97c 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x97d 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x986 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x988 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x989 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x98e 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x98f 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x990 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x996 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x997 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x998 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x99c 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x99e 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x99f 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x9a0 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x9a2 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x9a3 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x9a5 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x9a6 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x9a8 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x9a9 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x9ab 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x9ac 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x9af 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x9b3 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x9b4 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x9b6 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa16 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa17 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa1a 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa1c 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa1d 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa1e 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa20 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa23 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa26 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa27 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa28 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa29 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa2c 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa2d 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa2f 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa33 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa8f 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa90 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa91 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa96 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa97 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa99 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa9c 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa9d 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xa9f 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xaa0 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xaa1 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xaa5 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xaa7 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xbb6 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xbb7 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+  moc_renderwidget.cpp
+<<<<<<< HEAD
+  PHEngine.vcxproj -> E:\GroupProject\github\Pure-Handmade-Small-Workshop\PHEngine\debug\PHEngine.exe
+=======
+  moc_renderwindow.cpp
+  PHEngine.vcxproj -> E:\GroupProject\beta01\PHEngine\debug\PHEngine.exe
+>>>>>>> parent of a1acdf0 (修复了exe无法启动的问题)
