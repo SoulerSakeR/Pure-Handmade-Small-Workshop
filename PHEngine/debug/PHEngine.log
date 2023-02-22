@@ -1,6 +1,11 @@
+<<<<<<< HEAD
+﻿  Generate moc_predefs.h
+E:\Tool\vs2022\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(247,5): warning MSB8064: 项“debug\moc_predefs.h.cbt”的自定义生成成功，但指定的依赖项“e:\groupproject\github\pure-handmade-small-workshop\phengine\debug\moc_predefs.h.cbt”不存在。这可能会导致增量生成无法正常工作。
+=======
 ﻿E:\Tool\vs2022\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(517,5): warning MSB8028: 中间目录(debug\)包含从另一个项目(Demo1_1.vcxproj)共享的文件。   这会导致错误的清除和重新生成行为。
   Generate moc_predefs.h
   main.cpp
+>>>>>>> parent of a1acdf0 (修复了exe无法启动的问题)
   renderwidget.cpp
   renderwindow.cpp
 renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0x4ae 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
@@ -100,5 +105,9 @@ renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xaa7 处开始的�
 renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xbb6 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
 renderwidget.cpp(1,1): warning C4828: 文件包含在偏移 0xbb7 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
   moc_renderwidget.cpp
+<<<<<<< HEAD
+  PHEngine.vcxproj -> E:\GroupProject\github\Pure-Handmade-Small-Workshop\PHEngine\debug\PHEngine.exe
+=======
   moc_renderwindow.cpp
   PHEngine.vcxproj -> E:\GroupProject\beta01\PHEngine\debug\PHEngine.exe
+>>>>>>> parent of a1acdf0 (修复了exe无法启动的问题)
