@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'renderwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 6.4.1
+** Created by: Qt User Interface Compiler version 5.15.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -10,7 +10,7 @@
 #define UI_RENDERWINDOW_H
 
 #include <QtCore/QVariant>
-#include <QtGui/QAction>
+#include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
@@ -44,46 +44,46 @@ public:
     void setupUi(QMainWindow *RenderWindow)
     {
         if (RenderWindow->objectName().isEmpty())
-            RenderWindow->setObjectName("RenderWindow");
+            RenderWindow->setObjectName(QString::fromUtf8("RenderWindow"));
         RenderWindow->resize(1417, 732);
         actioncreatProject = new QAction(RenderWindow);
-        actioncreatProject->setObjectName("actioncreatProject");
+        actioncreatProject->setObjectName(QString::fromUtf8("actioncreatProject"));
         actionopenProject = new QAction(RenderWindow);
-        actionopenProject->setObjectName("actionopenProject");
+        actionopenProject->setObjectName(QString::fromUtf8("actionopenProject"));
         Render_action = new QAction(RenderWindow);
-        Render_action->setObjectName("Render_action");
+        Render_action->setObjectName(QString::fromUtf8("Render_action"));
         Clear_action = new QAction(RenderWindow);
-        Clear_action->setObjectName("Clear_action");
+        Clear_action->setObjectName(QString::fromUtf8("Clear_action"));
         actionWirefame = new QAction(RenderWindow);
-        actionWirefame->setObjectName("actionWirefame");
+        actionWirefame->setObjectName(QString::fromUtf8("actionWirefame"));
         actionWirefame->setCheckable(true);
         centralwidget = new QWidget(RenderWindow);
-        centralwidget->setObjectName("centralwidget");
+        centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         openGLWidget = new RenderWidget(centralwidget);
-        openGLWidget->setObjectName("openGLWidget");
+        openGLWidget->setObjectName(QString::fromUtf8("openGLWidget"));
         openGLWidget->setGeometry(QRect(-10, 0, 1271, 671));
         RenderWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(RenderWindow);
-        menubar->setObjectName("menubar");
+        menubar->setObjectName(QString::fromUtf8("menubar"));
         menubar->setGeometry(QRect(0, 0, 1417, 31));
         menu = new QMenu(menubar);
-        menu->setObjectName("menu");
+        menu->setObjectName(QString::fromUtf8("menu"));
         menu_2 = new QMenu(menubar);
-        menu_2->setObjectName("menu_2");
+        menu_2->setObjectName(QString::fromUtf8("menu_2"));
         menuLUA = new QMenu(menubar);
-        menuLUA->setObjectName("menuLUA");
+        menuLUA->setObjectName(QString::fromUtf8("menuLUA"));
         RenderWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(RenderWindow);
-        statusbar->setObjectName("statusbar");
+        statusbar->setObjectName(QString::fromUtf8("statusbar"));
         RenderWindow->setStatusBar(statusbar);
         toolBarL = new QToolBar(RenderWindow);
-        toolBarL->setObjectName("toolBarL");
+        toolBarL->setObjectName(QString::fromUtf8("toolBarL"));
         RenderWindow->addToolBar(Qt::LeftToolBarArea, toolBarL);
         toolBar_2 = new QToolBar(RenderWindow);
-        toolBar_2->setObjectName("toolBar_2");
+        toolBar_2->setObjectName(QString::fromUtf8("toolBar_2"));
         RenderWindow->addToolBar(Qt::RightToolBarArea, toolBar_2);
         toolBar = new QToolBar(RenderWindow);
-        toolBar->setObjectName("toolBar");
+        toolBar->setObjectName(QString::fromUtf8("toolBar"));
         RenderWindow->addToolBar(Qt::TopToolBarArea, toolBar);
 
         menubar->addAction(menu->menuAction());
