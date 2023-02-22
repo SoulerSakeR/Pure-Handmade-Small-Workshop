@@ -7,6 +7,8 @@ string Transform::serialize()
 
 Transform::Transform()
 {
+	children = vector<Transform*>();
+	parent = NULL;
 }
 
 Transform::~Transform()

@@ -1,13 +1,22 @@
 #pragma once
+
+
 #include "ISerializable.h"
+#include "Transform.h"
 class GameObject :
     public ISerializable
 {
 public:
-    bool isActive; //µ±Ç°ÓÎÏ·¶ÔÏóµÄ¼¤»î×´Ì¬
-    string name; //Ãû×Ö
-    int id; //Î¨Ò»id
-    Transform transform; //ÓÎÏ·¶ÔÏóµÄtransform×é¼ş
+    bool isActive; //å½“å‰æ¸¸æˆå¯¹è±¡çš„æ¿€æ´»çŠ¶æ€
+    string name; //åå­—
+    int id; //å”¯ä¸€id
+    Transform* transform; //æ¸¸æˆå¯¹è±¡çš„transformç»„ä»¶
+    vector<Component*> Components; //æ¸¸æˆå¯¹è±¡çš„æ‰€æœ‰ç»„ä»¶
     string serialize();
+    GameObject(string name);
+    template <typename T>
+    T addComponent(T A){
+
+    }
 };
 

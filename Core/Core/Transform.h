@@ -5,15 +5,15 @@
 class Transform : public Component
 {
 public:
-    Vector2D localPosition = Vector2D::zero(); //±¾µØ×ø±êÎ»ÖÃ
-    float localRotation = 0.0f; //±¾µØĞı×ª½Ç¶È
-    vector<Transform*> children ; //×Ó½Úµã
-    Transform* parent = NULL; //¸¸½Úµã
+    Vector2D localPosition = Vector2D::zero(); //æœ¬åœ°åæ ‡ä½ç½®
+    float localRotation = 0.0f; //æœ¬åœ°æ—‹è½¬è§’åº¦
+    vector<Transform*> children ; //å­èŠ‚ç‚¹
+    Transform* parent; //çˆ¶èŠ‚ç‚¹
     string serialize();
     Transform();
     ~Transform();
-    Vector2D getWorldPosition(); //»ñÈ¡ÊÀ½ç×ø±êÎ»ÖÃ
-    float getWorldRotation(); //»ñÈ¡ÊÀ½çĞı×ª½Ç¶È
-    Transform* translate(Vector2D value); //³¯¸ø¶¨ÏòÁ¿ÒÆ¶¯
+    Vector2D getWorldPosition(); //è·å–ä¸–ç•Œåæ ‡ä½ç½®
+    float getWorldRotation(); //è·å–ä¸–ç•Œæ—‹è½¬è§’åº¦
+    Transform* translate(Vector2D value); //æœç»™å®šå‘é‡ç§»åŠ¨
 };
 
