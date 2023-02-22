@@ -36,5 +36,49 @@
     <ClCompile Include="Core\src\UI\test.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Core\ResourceManagement\ResourceMgr.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\SystemStatus\GameEngine.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Core\ISerializable.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Core\GameObject.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Core\Component.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Core\Transform.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Core\Vector2D.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Core\ResourceManagement\ResourceMgr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\SystemStatus\GameEngine.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Core\ISerializable.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Core\GameObject.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Core\Component.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Core\Transform.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Core\Vector2D.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

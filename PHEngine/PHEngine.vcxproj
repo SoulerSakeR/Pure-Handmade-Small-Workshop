@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Core\Core\Component.cpp" />
     <ClCompile Include="Core\src\Core\test.cpp" />
     <ClCompile Include="Core\src\FileIO\test.cpp" />
     <ClCompile Include="Core\src\GameLogic\test.cpp" />
@@ -136,6 +137,21 @@
     <ClCompile Include="Core\src\ResourceManagement\test.cpp" />
     <ClCompile Include="Core\src\SystemStatus\test.cpp" />
     <ClCompile Include="Core\src\UI\test.cpp" />
+    <ClCompile Include="Core\SystemStatus\GameEngine.cpp" />
+    <ClCompile Include="Core\ResourceManagement\ResourceMgr.cpp" />
+    <ClCompile Include="Core\Core\ISerializable.cpp" />
+    <ClCompile Include="Core\Core\GameObject.cpp" />
+    <ClCompile Include="Core\Core\Transform.cpp" />
+    <ClCompile Include="Core\Core\Vector2D.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Core\Core\Component.h" />
+    <ClInclude Include="Core\SystemStatus\GameEngine.h" />
+    <ClInclude Include="Core\ResourceManagement\ResourceMgr.h" />
+    <ClInclude Include="Core\Core\ISerializable.h" />
+    <ClInclude Include="Core\Core\GameObject.h" />
+    <ClInclude Include="Core\Core\Transform.h" />
+    <ClInclude Include="Core\Core\Vector2D.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
