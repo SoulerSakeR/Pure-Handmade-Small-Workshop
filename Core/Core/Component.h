@@ -4,7 +4,9 @@
 
 #include "ISerializable.h"
 
-enum ComponentType {TRANSFORM};
+class GameObject;
+
+enum ComponentType {TRANSFORM,IMAGE,CAMERA};
 
 class Component : public ISerializable
 {

@@ -6,6 +6,7 @@
 #include "Component.h"
 #include "Vector2D.h"
 
+class GameObject;
 
 class Transform : public Component
 {
