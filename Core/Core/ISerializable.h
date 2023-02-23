@@ -4,6 +4,6 @@ using namespace std;
 class ISerializable
 {
 public:
-	virtual string serialize() = 0;
+	virtual string& serialize() = 0;
 };
 
