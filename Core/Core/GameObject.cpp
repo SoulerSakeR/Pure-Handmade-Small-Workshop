@@ -10,11 +10,11 @@ string& GameObject::serialize()
     result.append(to_string(isActive));
     result.append("\n");
     result.append("Components:");
-    result.append(to_string(Components.size()));
+    result.append(to_string(components.size()));
     result.append("\n");
-    for(int i=0;i<Components.size();i++)
+    for(int i=0;i<components.size();i++)
     {
-        result.append(Components[i]->serialize());
+        result.append(components[i]->serialize());
     }
     result.append("ComponentsEnd");
     result.append("Children:");
@@ -37,7 +37,7 @@ GameObject::GameObject(string name)
     this->name = name;
     isActive = false;
     // TODO: 随机生成uuid
-    Components = vector<Component*>();
+    components = vector<Component*>();
     addComponent(TRANSFORM);
 }
 
@@ -53,6 +53,15 @@ Component* GameObject::addComponent(ComponentType type)
         break;
     }
     if(result!=nullptr)
-        Components.push_back(result);
+        components.push_back(result);
     return result;
+}
+
+void GameObject::addComponent(Component* component)
+{
+    if(component!=nullptr)
+    {
+        component->gameObject = this;
+        components.push_back(component);
+    }
 }

@@ -12,5 +12,6 @@ public:
     Scene();
     Scene(string name);
     string& serialize();
+    Scene* deserialize(string value);
 };
 

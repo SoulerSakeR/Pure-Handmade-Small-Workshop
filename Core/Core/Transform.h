@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <sstream>
 
 #include "Component.h"
 #include "Vector2D.h"
@@ -15,7 +16,8 @@ public:
     vector<Transform*> children ; //子节点
     Transform* parent; //父节点
     string& serialize();
-    //Transform();
+    Transform* deserialize(stringstream ss);
+    Transform();
     Transform(GameObject* gameObject);
     ~Transform();
     Vector2D getWorldPosition(); //获取世界坐标位置
