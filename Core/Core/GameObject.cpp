@@ -1,5 +1,7 @@
 #include "GameObject.h"
 
+using namespace std;
+
 string& GameObject::serialize()
 {
     string result = "GameObject:";

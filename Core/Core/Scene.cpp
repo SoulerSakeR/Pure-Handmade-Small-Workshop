@@ -1,5 +1,8 @@
 #include "Scene.h"
 
+#include <iostream>
+
+using namespace std;
 Scene::Scene()
 {
 	this->name = "ExampleScene";

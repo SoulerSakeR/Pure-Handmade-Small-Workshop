@@ -1,9 +1,12 @@
 #include "Transform.h"
+#include <Core/Core/GameObject.h>
+
+using namespace std;
 
 string& Transform::serialize()
 {
 	string result = "Transform\n";
-	result.append(localPosition.toString());
+	result.append(localPosition.tostring());
 	result.append("\n");
 	result.append(to_string(localRotation));
 	return result;
@@ -28,9 +31,9 @@ Transform::~Transform()
 
 Vector2D Transform::getWorldPosition()
 {
-	if (parent != nullptr)
-		return parent->localPosition + localPosition;
-	return localPosition;
+	if (this->parent != nullptr)
+		return this->parent->localPosition + this->localPosition;
+	return this->localPosition;
 }
 
 float Transform::getWorldRotation()
