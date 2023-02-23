@@ -1,14 +1,20 @@
 #include "Transform.h"
 
-string Transform::serialize()
+string& Transform::serialize()
 {
-	return string();
+	string result = "Transform\n";
+	result.append(localPosition.toString());
+	result.append("\n");
+	result.append(to_string(localRotation));
+	return result;
 }
 
-Transform::Transform()
+
+Transform::Transform(GameObject* gameObject)
 {
 	children = vector<Transform*>();
-	parent = NULL;
+	parent = nullptr;
+	this->gameObject = gameObject;
 }
 
 Transform::~Transform()
@@ -17,14 +23,14 @@ Transform::~Transform()
 
 Vector2D Transform::getWorldPosition()
 {
-	if (parent != NULL)
+	if (parent != nullptr)
 		return parent->localPosition + localPosition;
 	return localPosition;
 }
 
 float Transform::getWorldRotation()
 {
-	if (parent != NULL)
+	if (parent != nullptr)
 		return parent->localRotation + localRotation;
 	return localRotation;
 }
@@ -34,3 +40,5 @@ Transform* Transform::translate(Vector2D value)
 	localPosition = localPosition + value;
 	return this;
 }
+
+

@@ -3,7 +3,9 @@
 #include <string>
 
 #include "Core/Core/Scene.h"
+
 using namespace std;
+
 class GameProject
 {
 public:

@@ -11,6 +11,6 @@ public:
     vector<GameObject*> rootGameObjs; //当前场景下的根GameObject
     Scene();
     Scene(string name);
-    string serialize();
+    string& serialize();
 };
 

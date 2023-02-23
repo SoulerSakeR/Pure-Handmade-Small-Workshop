@@ -3,6 +3,8 @@
 
 #include "ISerializable.h"
 #include "Transform.h"
+
+using namespace std;
 class GameObject :
     public ISerializable
 {
@@ -12,11 +14,7 @@ public:
     int id; //唯一id
     Transform* transform; //游戏对象的transform组件
     vector<Component*> Components; //游戏对象的所有组件
-    string serialize();
+    string& serialize();
     GameObject(string name);
-    template <typename T>
-    T addComponent(T A){
-
-    }
+    Component* addComponent(ComponentType type);
 };
-

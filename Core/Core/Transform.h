@@ -1,7 +1,12 @@
 #pragma once
-#include "Component.h"
+
 #include <vector>
+
+#include "Component.h"
 #include "Vector2D.h"
+#include "GameObject.h"
+
+
 class Transform : public Component
 {
 public:
@@ -9,8 +14,9 @@ public:
     float localRotation = 0.0f; //本地旋转角度
     vector<Transform*> children ; //子节点
     Transform* parent; //父节点
-    string serialize();
-    Transform();
+    string& serialize();
+    //Transform();
+    Transform(GameObject* gameObject);
     ~Transform();
     Vector2D getWorldPosition(); //获取世界坐标位置
     float getWorldRotation(); //获取世界旋转角度

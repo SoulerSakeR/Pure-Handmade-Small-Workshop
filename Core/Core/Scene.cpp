@@ -14,8 +14,15 @@ Scene::Scene(string name)
 	rootGameObjs = vector<GameObject*>();
 }
 
-string Scene::serialize()
+string& Scene::serialize()
 {
-	//TODO: 序列化
-	return string();
+	string result = "Scene:";
+	result.append(name);
+	result.append("\n");
+	for(int i=0;i<rootGameObjs.size();i++)
+	{
+		result.append(rootGameObjs[i]->serialize());
+	}
+	result.append("SceneEnd");
+	return result;
 }
