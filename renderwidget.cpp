@@ -18,13 +18,36 @@ const char* fragmentShaderSource = "#version 330 core\n"
 " FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n" "}\n\0";
 */
 
+/*
 float vertices[] = {
-    // first triangle
-    0.5f, 0.5f, 0.0f, // top right
-    0.5f, -0.5f, 0.0f, // bottom right
-    -0.5f, -0.5f, 0.0f, // bottom left
-    -0.5f, 0.5f, 0.0f // top left
+    // positions          // colors           // texture coords
+     0.5f ,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+     0.5f , -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+    -0.5f , -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+    -0.5f ,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
 };
+*/
+
+
+float vertices[] = {
+    // positions          // colors           // texture coords
+     0.5f * 9.0 / 16.0,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+     0.5f * 9.0 / 16.0, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+    -0.5f * 9.0 / 16.0, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+    -0.5f * 9.0 / 16.0,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
+};
+
+
+/*
+float vertices[] = {
+    // positions          // colors           // texture coords
+     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
+};
+*/
+
 
 unsigned int indices[] = { // note that we start from 0!
 0, 1, 3, // first triangle
@@ -34,11 +57,14 @@ unsigned int indices[] = { // note that we start from 0!
 
 RenderWidget::RenderWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
-
+    timer.start(100);
+    connect(&timer, SIGNAL(timeout()), this, SLOT(on_timeout()));
+    //connect(&timer, SIGNAL(timeout()), this, SLOT(on_timeout()));
 }
 
 RenderWidget::~RenderWidget()
 {
+    if (!isValid()) return;
     makeCurrent();
     glDeleteBuffers(1, &VBO);
     glDeleteVertexArrays(1, &VAO);
@@ -57,7 +83,7 @@ void RenderWidget::setWirefame(bool wireframe)
     makeCurrent();
     
     if(wireframe)
-        // »­Ïß
+        // ï¿½ï¿½ï¿½ï¿½
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     else
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -75,41 +101,54 @@ void RenderWidget::initializeGL()
     shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "./shaders/shaders.vert");
     shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "./shaders/shaders.frag");
 
-    //shaderProgram.addShaderFromSourceCode(QOpenGLShader::Vertex,vertexShaderSource);
-    //shaderProgram.addShaderFromSourceCode(QOpenGLShader::Fragment,fragmentShaderSource);
+   
     
 
     success = shaderProgram.link();
     if (!success)
         qDebug() << "ERR:" << shaderProgram.log();
 
-    /*
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-    */
+    
 
 
 
-    //´´½¨VBOºÍVAO¶ÔÏó£¬²¢¸³ÓèID
+    //ï¿½ï¿½ï¿½ï¿½VBOï¿½ï¿½VAOï¿½ï¿½ï¿½ó£¬²ï¿½ï¿½ï¿½ï¿½ï¿½ID
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
 
-    //°ó¶¨VBOºÍVAO¶ÔÏó
+    //ï¿½ï¿½VBOï¿½ï¿½VAOï¿½ï¿½ï¿½ï¿½
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-    //Îªµ±Ç°°ó¶¨µ½targetµÄ»º³åÇø¶ÔÏó´´½¨Ò»¸öÐÂµÄÊý¾Ý´æ´¢¡£
-    //Èç¹ûdata²»ÊÇNULL£¬ÔòÊ¹ÓÃÀ´×Ô´ËÖ¸ÕëµÄÊý¾Ý³õÊ¼»¯Êý¾Ý´æ´¢
+    //Îªï¿½ï¿½Ç°ï¿½ó¶¨µï¿½targetï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ó´´½ï¿½Ò»ï¿½ï¿½ï¿½Âµï¿½ï¿½ï¿½ï¿½Ý´æ´¢ï¿½ï¿½
+    //ï¿½ï¿½ï¿½dataï¿½ï¿½ï¿½ï¿½NULLï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý³ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Ý´æ´¢
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    //¸æÖªÏÔ¿¨ÈçºÎ½âÎö»º³åÀïµÄÊôÐÔÖµ
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    //¿ªÆôVAO¹ÜÀíµÄµÚÒ»¸öÊôÐÔÖµ
-    glEnableVertexAttribArray(0);
+    // ï¿½ï¿½shaderï¿½ï¿½ï¿½ï¿½Ê¼Î»ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½Í¬Ê±ï¿½Þ¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½poslocation
+    shaderProgram.bind();
+    GLint posLocation = shaderProgram.attributeLocation("aPos");
+    GLint colorLocation = shaderProgram.attributeLocation("aColor");
+    GLint textureLocation = shaderProgram.attributeLocation("aTexture");
+
+
+
+    //-----------------position--------------------//
+    //ï¿½ï¿½Öªï¿½Ô¿ï¿½ï¿½ï¿½Î½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
+    glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    //ï¿½ï¿½ï¿½ï¿½VAOï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
+    glEnableVertexAttribArray(posLocation);
+
+    //------------------Color-----------------------//
+    //ï¿½ï¿½Öªï¿½Ô¿ï¿½ï¿½ï¿½Î½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
+    glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    //ï¿½ï¿½ï¿½ï¿½VAOï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
+    glEnableVertexAttribArray(colorLocation);
+
+    //------------------Texture-----------------------//
+    //ï¿½ï¿½Öªï¿½Ô¿ï¿½ï¿½ï¿½Î½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
+    glVertexAttribPointer(textureLocation, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    //ï¿½ï¿½ï¿½ï¿½VAOï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
+    glEnableVertexAttribArray(textureLocation);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
@@ -119,16 +158,28 @@ void RenderWidget::initializeGL()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    // ½â°ó
+    
+    
+    
+
+    // Æ«ï¿½ï¿½
+    shaderProgram.bind();
+    shaderProgram.setUniformValue("xOffset", 0.4f);
+
+
+    texture0 = new QOpenGLTexture(QImage("./imageTest/boss_hornet.png").mirrored());
+
+
+    // ï¿½ï¿½ï¿½
     //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-    
 
 }
 
 void RenderWidget::resizeGL(int w, int h)
 {
-    glViewport(0, 0, w, h);
+    Q_UNUSED(w); Q_UNUSED(h);
+    //glViewport(0, 0, w, h);
 }
 
 void RenderWidget::paintGL()
@@ -136,11 +187,16 @@ void RenderWidget::paintGL()
     glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    
+   // Í¸ï¿½ï¿½
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
     shaderProgram.bind();
     glBindVertexArray(VAO);
     switch (m_shape) {
         case Rect:
+            texture0->bind(0);
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
             break;
         default:
@@ -150,4 +206,18 @@ void RenderWidget::paintGL()
     //glDrawArrays(GL_TRIANGLES, 0, 3);
     //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
     //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, &indices );
+}
+
+void RenderWidget::on_timeout()
+{
+    //if (m_shape = None) return;
+
+    makeCurrent();
+
+    int timeValue = QDateTime::currentDateTime().time().second();
+    float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+    shaderProgram.setUniformValue("ourColor", 0.0f, greenValue, 0.0f, 1.0f);
+
+    doneCurrent();
+    update();
 }

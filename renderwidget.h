@@ -4,6 +4,9 @@
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions_3_3_Core>
 #include <QOpenGLShaderProgram>
+#include <QTimer>
+#include <QDateTime>
+#include <QOpenGLTexture>
 
 class RenderWidget : public QOpenGLWidget, QOpenGLFunctions_3_3_Core
 {
@@ -22,9 +25,12 @@ protected:
 signals:
 
 public slots:
+    void on_timeout();
 private:
     Shape m_shape;
     QOpenGLShaderProgram shaderProgram;
+    QTimer timer;
+    QOpenGLTexture* texture0;
 };
 
 #endif // RENDERWIDGET_H
