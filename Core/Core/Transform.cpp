@@ -32,14 +32,14 @@ Transform::~Transform()
 Vector2D Transform::getWorldPosition()
 {
 	if (this->parent != nullptr)
-		return this->parent->localPosition + this->localPosition;
+		return parent->getWorldPosition() + this->localPosition;
 	return this->localPosition;
 }
 
 float Transform::getWorldRotation()
 {
 	if (parent != nullptr)
-		return parent->localRotation + localRotation;
+		return parent->getWorldRotation() + localRotation;
 	return localRotation;
 }
 
