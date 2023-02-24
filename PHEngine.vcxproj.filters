@@ -83,24 +83,6 @@
     <ClCompile Include="Core\Core\Vector2D.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="Core\FileIO\test.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\GameLogic\test.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\Physics\test.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\Render\renderwidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\ResourceManagement\ResourceMgr.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\ResourceManagement\test.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="Core\SystemStatus\GameEngine.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -110,7 +92,10 @@
     <ClCompile Include="Core\SystemStatus\test.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="Core\UI\renderwindow.cpp">
+    <ClCompile Include="Core\ResourceManagement\ResourceMgr.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\ResourceManagement\test.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -168,22 +153,13 @@
     <ClInclude Include="Core\Core\Vector2D.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Render\renderwidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\ResourceManagement\ResourceMgr.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="Core\SystemStatus\GameEngine.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\SystemStatus\GameProject.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="Core\UI\renderwindow.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\UI\ui_renderwindow.h">
+    <ClInclude Include="Core\ResourceManagement\ResourceMgr.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
