@@ -67,7 +67,7 @@ bool GameEngine::saveGameProject()
 /// @param parent the pointer of parent game object or null for scene
 /// @param name name of the new game object
 /// @return the pointer of new game object
-GameObject *GameEngine::addGameObject(GameObject *parent=nullptr,string name = "GameObject")
+GameObject *GameEngine::addGameObject(GameObject *parent,string name)
 {
     if(parent == nullptr)
 	{
