@@ -8,6 +8,7 @@
 
 class GameObject;
 
+/// @brief transform component that controls the position and rotation of game obejct
 class Transform : public Component
 {
 public:

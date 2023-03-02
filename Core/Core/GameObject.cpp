@@ -2,6 +2,8 @@
 
 using namespace std;
 
+/// @brief serialize game object to custom string
+/// @return the reference of the string
 string& GameObject::serialize()
 {
     string result = "GameObject:";
@@ -43,6 +45,9 @@ GameObject::GameObject(string name)
     addComponent(TRANSFORM);
 }
 
+/// @brief add component to game object
+/// @param type component type 
+/// @return the pointer of component
 Component* GameObject::addComponent(ComponentType type)
 {
     Component* result = nullptr;
@@ -50,6 +55,7 @@ Component* GameObject::addComponent(ComponentType type)
     {
     case TRANSFORM:
         result = new Transform(this);
+        transform =(Transform*)result;
         break;
     default:
         break;
@@ -59,6 +65,8 @@ Component* GameObject::addComponent(ComponentType type)
     return result;
 }
 
+/// @brief add component to game object
+/// @param component the pointer of component
 void GameObject::addComponent(Component* component)
 {
     if(component!=nullptr)

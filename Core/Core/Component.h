@@ -14,6 +14,10 @@ public:
 	GameObject* gameObject;  
 	virtual std::string& serialize()=0;
 	virtual Component* deserialize(std::stringstream ss) = 0;
-	Component() {};
-	~Component() {};
+	Component() {
+		gameObject = nullptr;
+	};
+	~Component() {
+		//TODO: 析构函数
+	};
 };

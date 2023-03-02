@@ -15,5 +15,6 @@ public:
 	Scene* currentScene; //当前游戏场景
 	GameProject(string name, string path);
 	bool openScene(int index);
+
 };
 

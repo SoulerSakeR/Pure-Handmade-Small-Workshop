@@ -41,12 +41,13 @@ bool isActive; //当前游戏对象的激活状态
 string name; //名字
 int id; //唯一id
 Transform transform; //游戏对象的transform组件
+vector<Component*> components; //游戏对象的所有组件
 ```
 ## method
 ```
 void setActive(bool value); //设置对象的激活状态
 T getComponent<T>(); //获取当前对象下挂载的指定的组件
-T addComponent<T>(); //给当前游戏对象增添指定的组件
+Component* addComponent<T>(); //给当前游戏对象增添指定的组件
 ```
 
 # Class Component:ISerializable

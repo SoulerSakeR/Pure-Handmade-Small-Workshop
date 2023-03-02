@@ -27,6 +27,7 @@ Transform::Transform(GameObject* gameObject)
 
 Transform::~Transform()
 {
+	// TODO: 析构函数
 }
 
 Vector2D Transform::getWorldPosition()
