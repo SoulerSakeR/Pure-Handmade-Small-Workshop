@@ -25,8 +25,8 @@ public:
     ~Transform();
 
     //method
-    std::string& serialize(); //序列化
-    Transform* deserialize(std::stringstream ss); //反序列化  
+    void serialize(PHString&) override; //序列化
+    void deserialize(std::stringstream& ss) override; //反序列化  
     Vector2D getWorldPosition(); //获取世界坐标位置
     float getWorldRotation(); //获取世界旋转角度
     Transform* translate(Vector2D value); //朝给定向量移动

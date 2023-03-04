@@ -1,8 +1,11 @@
 #include "Scene.h"
-
+#include "Core/Core/Test.h"
 #include <iostream>
 
 using namespace std;
+
+const string rootGameObjectPrefix = "rootGameObject:";
+
 Scene::Scene()
 {
 	this->name = "ExampleScene";
@@ -28,31 +31,76 @@ void Scene::addGameObject(GameObject *newObject)
 	allGameObjs.insert(pair<int,GameObject*>(newObject->id,newObject));
 }
 
-string &Scene::serialize()
+void Scene::serialize(PHString& result)
 {
-	string result = "Scene:";
-	result.append(name);
-	result.append("\n");
+	result.appendLine("Scene:", name);
 	int size = rootGameObjs.size();
-	result.append("rootGameObject:");
-	result.append(to_string(size));
-	result.append("\n");
+	result.appendLine("rootGameObject:", to_string(size));
 	for(int i=0;i<size;i++)
 	{
-		result.append(rootGameObjs[i]->serialize());
+		rootGameObjs[i]->serialize(result);
 	}
-	result.append("SceneEnd");
-	return result;
+	result.appendLine("SceneEnd");
 }
 
-Scene *Scene::deserialize(std::stringstream ss)
+void Scene::deserialize(std::stringstream& ss)
+{
+	string line;
+	do
+	{
+		getline(ss, line);
+		if (line.find("Scene:") != string::npos)
+		{
+			name = line.substr(6, line.size() - 1);
+			getline(ss, line);
+			auto index = line.find(rootGameObjectPrefix);
+			if (index != string::npos)
+			{
+				int size = stoi(line.substr(index +rootGameObjectPrefix.size(), line.size() - 1));
+				for (int i = 0;i < size;i++)
+				{
+					GameObject* root = new GameObject();
+					root->deserialize(ss);
+					addRootGameObject(root);
+				}
+			}
+		}
+	} while (ss.good()&&line!="SceneEnd");
+}
+
+Scene* Scene::loadFromPath(std::string path)
 {
 	Scene* scene = new Scene();
-	string line;
-	getline(ss,line);
-	if(line.find("Scene:")!=string::npos)
-	{
-		scene->name = line.substr(6,line.size()-1);
-	}
-    return nullptr;
+#ifdef TEST
+	stringstream ss(R"(Scene:ExampleScene
+rootGameObject:1
+GameObject:1
+testGameObejct1
+0
+Components:1
+0
+0.000000,0.000000
+0.000000
+ComponentsEnd
+Children:1
+GameObject:2
+testGameObejct2
+0
+Components:1
+0
+0.000000,0.000000
+0.000000
+ComponentsEnd
+Children:0
+ChildrenEnd
+GameObjectEnd
+ChildrenEnd
+GameObjectEnd
+SceneEnd
+)"); //(readText(path))
+#else // TEST
+	stringstream ss(file.readText(path));
+#endif	
+	scene->deserialize(ss);
+	return scene;
 }

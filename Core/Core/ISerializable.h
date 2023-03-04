@@ -1,9 +1,11 @@
 #pragma once
 #include <string>
+#include "PHString.h"
 
 class ISerializable
 {
 public:
-	virtual std::string& serialize() = 0;
+	virtual void serialize(PHString& str) = 0;
+	virtual void deserialize(std::stringstream& ss) = 0;
 };
 

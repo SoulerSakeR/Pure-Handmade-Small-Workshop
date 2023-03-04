@@ -1,4 +1,6 @@
 #include "GameEngine.h"
+#include "Core/Core/Test.h"
+using namespace std;
 
 GameEngine* GameEngine::instance = nullptr;
 
@@ -42,23 +44,25 @@ GameProject* GameEngine::creatGameProject(string name, string path)
 /// @return value that indicates the process was completed or not
 bool GameEngine::openGameProject(string path)
 {
-	
-    return false;
+#ifdef TEST
+	string gameProject = "GameProject:Test\nE:/SourceCodes/Git/GroupProject/Pure-Handmade-Small-Workshop/debug/test\nScene:1\nE:/SourceCodes/Git/GroupProject/Pure-Handmade-Small-Workshop/debug/test/Scene/ExampleScene.scene\n"; // = readText(path);
+	stringstream ss(gameProject);
+#else // TEST
+	string gameProject = file.readText(path);
+	stringstream ss(gameProject);
+#endif
+	GameProject* gp = new GameProject("","",false);
+	gp->deserialize(ss);
+	return true;
 }
 
 /// @brief save game project to hard disk
 /// @return value that indicates the process was completed or not
 bool GameEngine::saveGameProject()
 {
-	if(gameProject!=nullptr&&gameProject->currentScene!=nullptr)
-	{
-		string scene = gameProject->currentScene->serialize();		
-		string path = gameProject->path + "/" + gameProject->currentScene->name + sceneExtensionName;
-		// TODO: 写入场景到文件
-		// bool value = file::write(path,scene);
-		PHString gp = PHString("");
-		gp.appendLine("GameProject:",gameProject->name);
-		return true;
+	if(gameProject!=nullptr)
+	{		
+		return gameProject->save();
 	}
     return false;
 }
@@ -67,7 +71,7 @@ bool GameEngine::saveGameProject()
 /// @param parent the pointer of parent game object or null for scene
 /// @param name name of the new game object
 /// @return the pointer of new game object
-GameObject *GameEngine::addGameObject(GameObject *parent,string name)
+GameObject *GameEngine::addGameObject(string name, GameObject* parent)
 {
     if(parent == nullptr)
 	{

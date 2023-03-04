@@ -15,11 +15,16 @@ public:
     std::vector<Component*> components; //游戏对象的所有组件
 
     //constructor
+    GameObject();
     GameObject(std::string name);
     //TODO: 析构函数
 
     //method
-    std::string& serialize();  
+    void serialize(PHString& str) override;
+    void deserialize(std::stringstream& ss) override;
     Component* addComponent(ComponentType type);
     void addComponent(Component* component);
+
+private:  
+    static int idCount;
 };

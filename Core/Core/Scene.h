@@ -19,8 +19,9 @@ public:
     //method
     void addRootGameObject(GameObject* newObject);
     void addGameObject(GameObject* newObject);
-    std::string& serialize();
-    static Scene* deserialize(std::stringstream ss);
+    void serialize(PHString&) override;
+    void deserialize(std::stringstream& ss) override;
+    static Scene* loadFromPath(std::string path);
 
 private:
     std::unordered_map<int,GameObject*> allGameObjs; //当前场景下所有的GameObject
