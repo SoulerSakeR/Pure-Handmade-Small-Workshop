@@ -14,11 +14,26 @@
    <string>RenderWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <widget class="RenderWidget" name="openGLWidget"/>
-    </item>
-   </layout>
+   <widget class="RenderWidget" name="openGLWidget">
+    <property name="geometry">
+     <rect>
+      <x>211</x>
+      <y>0</y>
+      <width>1191</width>
+      <height>720</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="ListBox" name="listBox">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>211</width>
+      <height>401</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -26,7 +41,7 @@
      <x>0</x>
      <y>0</y>
      <width>1320</width>
-     <height>22</height>
+     <height>17</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -50,6 +65,7 @@
    <addaction name="menu_2"/>
    <addaction name="menuLUA"/>
   </widget>
+  <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
     <string>toolBar</string>
@@ -65,66 +81,9 @@
    <addaction name="Clear_action"/>
    <addaction name="actionWirefame"/>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_left">
-   <property name="minimumSize">
-    <size>
-     <width>80</width>
-     <height>39</height>
-    </size>
-   </property>
-   <property name="features">
-    <set>QDockWidget::DockWidgetMovable</set>
-   </property>
-   <property name="allowedAreas">
-    <set>Qt::LeftDockWidgetArea</set>
-   </property>
-   <property name="windowTitle">
-    <string>场景Hierarchy</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents"/>
-  </widget>
-  <widget class="QDockWidget" name="dockWidget_right">
-   <property name="minimumSize">
-    <size>
-     <width>80</width>
-     <height>39</height>
-    </size>
-   </property>
-   <property name="features">
-    <set>QDockWidget::DockWidgetMovable</set>
-   </property>
-   <property name="allowedAreas">
-    <set>Qt::RightDockWidgetArea</set>
-   </property>
-   <property name="windowTitle">
-    <string>属性Property</string>
-   </property>
+  <widget class="QDockWidget" name="dockWidget_2">
    <attribute name="dockWidgetArea">
     <number>2</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_4"/>
-  </widget>
-  <widget class="QDockWidget" name="dockWidget_bottom">
-   <property name="minimumSize">
-    <size>
-     <width>41</width>
-     <height>80</height>
-    </size>
-   </property>
-   <property name="features">
-    <set>QDockWidget::DockWidgetMovable</set>
-   </property>
-   <property name="allowedAreas">
-    <set>Qt::BottomDockWidgetArea</set>
-   </property>
-   <property name="windowTitle">
-    <string>资源Resources</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>8</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_2"/>
   </widget>
@@ -162,6 +121,11 @@
    <class>RenderWidget</class>
    <extends>QOpenGLWidget</extends>
    <header>renderwidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ListBox</class>
+   <extends>QListWidget</extends>
+   <header>listbox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

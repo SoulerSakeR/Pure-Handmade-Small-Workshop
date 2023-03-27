@@ -1,75 +1,32 @@
 #include "renderwidget.h"
-
-
-
-unsigned int VBO, VAO, EBO;
-
-/*
-const char* vertexShaderSource = "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n" "void main()\n"
-"{\n"
-" gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-"}\0";
-
-const char* fragmentShaderSource = "#version 330 core\n"
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-" FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n" "}\n\0";
-*/
-
-/*
-float vertices[] = {
-    // positions          // colors           // texture coords
-     0.5f ,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-     0.5f , -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-    -0.5f , -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-    -0.5f ,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
-};
-*/
+#include <iostream>
+#define SOURCE_DIR "E:/GroupProject/PHE(3)/"
 
 
 float vertices[] = {
-    // positions          // colors           // texture coords
-     0.5f * 9.0 / 16.0,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-     0.5f * 9.0 / 16.0, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-    -0.5f * 9.0 / 16.0, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-    -0.5f * 9.0 / 16.0,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
+    // positions  // colors           // texture coords
+    1.f ,  1.f,  0,1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+    1.f , -1.f,  0,0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+    -1.f , -1.f, 0, 0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+    -1.f ,  1.f, 0, 1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
 };
 
-
-/*
-float vertices[] = {
-    // positions          // colors           // texture coords
-     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
-};
-*/
-
-
+//counter clockwise
 unsigned int indices[] = { // note that we start from 0!
-0, 1, 3, // first triangle
-1, 2, 3 // second triangle
-};
-
+               0, 3, 2, // first triangle
+               0, 2, 1 // second triangle
+             };
 
 RenderWidget::RenderWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
     timer.start(100);
-    connect(&timer, SIGNAL(timeout()), this, SLOT(on_timeout()));
+    //    connect(&timer, SIGNAL(timeout()), this, SLOT(on_timeout()));
     //connect(&timer, SIGNAL(timeout()), this, SLOT(on_timeout()));
 }
 
 RenderWidget::~RenderWidget()
 {
     if (!isValid()) return;
-    makeCurrent();
-    glDeleteBuffers(1, &VBO);
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &EBO);
-    doneCurrent();
 }
 
 void RenderWidget::drawShape(Shape shape)
@@ -80,10 +37,9 @@ void RenderWidget::drawShape(Shape shape)
 
 void RenderWidget::setWirefame(bool wireframe)
 {
-    makeCurrent();
-    
+
     if(wireframe)
-        // ����
+        //         画线
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     else
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -95,113 +51,60 @@ void RenderWidget::initializeGL()
 {
     initializeOpenGLFunctions();
 
+    logger=std::make_unique<QOpenGLDebugLogger>(this);
+    logger->initialize();
+    connect(logger.get(),&QOpenGLDebugLogger::messageLogged,this,&RenderWidget::messageLogHandler);
+    logger->startLogging();
 
-   
-    bool success;
-    shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "./shaders/shaders.vert");
-    shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "./shaders/shaders.frag");
+    glClearColor(0.2,0.2,0.2,1);
+    glEnable(GL_FRAMEBUFFER_SRGB);
+    glEnable(GL_DEPTH_TEST);
 
-   
-    
+    createProgram();
+    createVBO();
+    createVAO();
+    createIBO();
 
-    success = shaderProgram.link();
-    if (!success)
-        qDebug() << "ERR:" << shaderProgram.log();
+    std::cout << SOURCE_DIR "resources/awesomeface.png" << std::endl;
 
-    
+    textureSmile = std::make_unique<QOpenGLTexture>(QImage(SOURCE_DIR "resources/awesomeface.png").mirrored(), QOpenGLTexture::GenerateMipMaps);
+    textureSmile->create();
 
-
-
-    //����VBO��VAO���󣬲�����ID
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-
-    //��VBO��VAO����
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-    //Ϊ��ǰ�󶨵�target�Ļ��������󴴽�һ���µ����ݴ洢��
-    //���data����NULL����ʹ�����Դ�ָ������ݳ�ʼ�����ݴ洢
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // ��shader����ʼλ�ã�����ͬʱ�޸������е�poslocation
-    shaderProgram.bind();
-    GLint posLocation = shaderProgram.attributeLocation("aPos");
-    GLint colorLocation = shaderProgram.attributeLocation("aColor");
-    GLint textureLocation = shaderProgram.attributeLocation("aTexture");
-
-
-
-    //-----------------position--------------------//
-    //��֪�Կ���ν��������������ֵ
-    glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    //����VAO�����ĵ�һ������ֵ
-    glEnableVertexAttribArray(posLocation);
-
-    //------------------Color-----------------------//
-    //��֪�Կ���ν��������������ֵ
-    glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    //����VAO�����ĵ�һ������ֵ
-    glEnableVertexAttribArray(colorLocation);
-
-    //------------------Texture-----------------------//
-    //��֪�Կ���ν��������������ֵ
-    glVertexAttribPointer(textureLocation, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    //����VAO�����ĵ�һ������ֵ
-    glEnableVertexAttribArray(textureLocation);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    
-
-    // EBO
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    
-    
-    
-
-    // ƫ��
-    shaderProgram.bind();
-    shaderProgram.setUniformValue("xOffset", 0.4f);
-
-
-    texture0 = new QOpenGLTexture(QImage("./imageTest/boss_hornet.png").mirrored());
-
-
-    // ���
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    textureWall = std::make_unique<QOpenGLTexture>(QImage(SOURCE_DIR "resources/container.jpg").mirrored(), QOpenGLTexture::GenerateMipMaps);
+    textureWall->create();
 
 }
 
 void RenderWidget::resizeGL(int w, int h)
 {
     Q_UNUSED(w); Q_UNUSED(h);
-    //glViewport(0, 0, w, h);
+    glViewport(0, 0, w, h);
 }
 
 void RenderWidget::paintGL()
 {
-    glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    makeCurrent();
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-   // ͸��
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    shaderProgram->bind();
 
+    renderTexture(textureWall.get(),{},{0.3,0.3});
+    renderTexture(textureSmile.get(),{0.2,0.2,0.1},{0.3,0.3});
 
-    shaderProgram.bind();
-    glBindVertexArray(VAO);
-    switch (m_shape) {
-        case Rect:
-            texture0->bind(0);
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
-            break;
-        default:
-            break;
-        }
+    //    if(textureSmileBinding>=0)
+    //        textureSmile->bind(textureSmileBinding);
+    //    glBindVertexArray(VAO);
+    //    switch (m_shape){
+    //    case Rect:
+    //        glActiveTexture(GL_TEXTURE0);
+    //        //textureWall->bind(0);
+    //        //glActiveTexture(GL_TEXTURE1);
+    //        textureSmile->bind(1);
+    //        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
+    //        break;
+    //    default:
+    //        break;
+    //    }
     //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     //glDrawArrays(GL_TRIANGLES, 0, 3);
     //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
@@ -212,12 +115,109 @@ void RenderWidget::on_timeout()
 {
     //if (m_shape = None) return;
 
-    makeCurrent();
+    //    makeCurrent();
 
-    int timeValue = QDateTime::currentDateTime().time().second();
-    float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-    shaderProgram.setUniformValue("ourColor", 0.0f, greenValue, 0.0f, 1.0f);
+    //    int timeValue = QDateTime::currentDateTime().time().second();
+    //    float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+    //    shaderProgram.setUniformValue("ourColor", 0.0f, greenValue, 0.0f, 1.0f);
 
-    doneCurrent();
-    update();
+    //    doneCurrent();
+    //    update();
+}
+void RenderWidget::cleanup()
+{
+
+}
+
+void RenderWidget::createProgram()
+{
+    bool success;
+    shaderProgram=std::make_unique<QOpenGLShaderProgram>();
+    shaderProgram->create();
+    shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex,  SOURCE_DIR "shaders/shaders.vert");
+    shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, SOURCE_DIR "shaders/shaders.frag");
+    success = shaderProgram->link(); //
+    if (!success)
+        qDebug() << "ERR:" << shaderProgram->log();
+
+    //        textureSmileBinding=shaderProgram->uniformLocation("textureSmile");
+    //        textureSmileBinding=shaderProgram->uniformLocation("textureSmile");
+
+    shaderOffsetBinding=shaderProgram->uniformLocation("offset");
+    shaderSizeBinding=shaderProgram->uniformLocation("size");
+    //    textureWallBinding=shaderProgram->uniformLocation("textureWall");
+    textureWallBinding=0;
+}
+void RenderWidget::createVAO()
+{
+    // 找shader的起始位置，并且同时修改下两行的poslocation
+    shaderProgram->bind();
+    GLint posLocation = shaderProgram->attributeLocation("aPos");
+    GLint colorLocation = shaderProgram->attributeLocation("aColor");
+    GLint textureLocation = shaderProgram->attributeLocation("aTexCord");
+
+    vao=std::make_unique<QOpenGLVertexArrayObject>();
+
+    vao->create();
+
+    vao->bind();
+    vbo->bind();
+
+    auto stride=8*sizeof(float);
+
+    //-----------------position--------------------//
+    //告知显卡如何解析缓冲里的属性值
+    glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+
+    //开启VAO管理的第一个属性值
+    glEnableVertexAttribArray(posLocation);
+
+    if(colorLocation>=0)
+    {
+        //------------------Color-----------------------//
+        //告知显卡如何解析缓冲里的属性值
+        glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE,stride , (void*)(3 * sizeof(float)));
+        //开启VAO管理的第一个属性值
+        glEnableVertexAttribArray(colorLocation);
+    }
+    if(textureLocation)
+    {
+        //------------------Texture-----------------------//
+        //    告知显卡如何解析缓冲里的属性值
+        glVertexAttribPointer(textureLocation, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
+        //    开启VAO管理的第一个属性值
+        glEnableVertexAttribArray(textureLocation);
+
+    }
+    vbo->release();
+
+    glBindVertexArray(0);
+}
+void RenderWidget::createVBO()
+{
+    vbo=std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
+    vbo->create();
+    vbo->bind();
+    vbo->allocate(vertices,sizeof(vertices));
+}
+void RenderWidget::createIBO()
+{
+    ibo=std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::IndexBuffer);
+    ibo->create();
+    ibo->bind();
+    ibo->allocate(indices,sizeof(indices));
+}
+void RenderWidget::messageLogHandler(const QOpenGLDebugMessage &debugMessage)
+{
+    qDebug()<<debugMessage.message();
+}
+void RenderWidget::renderTexture(QOpenGLTexture* texture,QVector3D offset,QVector2D size)
+{
+    shaderProgram->setUniformValue(shaderOffsetBinding,offset);
+    shaderProgram->setUniformValue(shaderSizeBinding,size);
+    vao->bind();
+    ibo->bind();
+    if(textureWallBinding>=0)
+        texture->bind(textureWallBinding);
+    glDrawElements(GL_TRIANGLES,std::size(indices),GL_UNSIGNED_INT,0);
 }
