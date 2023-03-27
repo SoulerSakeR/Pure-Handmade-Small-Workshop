@@ -1,49 +1,32 @@
 #include "renderwidget.h"
+#include <iostream>
+#define SOURCE_DIR "E:/GroupProject/PHE(3)/"
 
-
-
-unsigned int VBO, VAO, EBO;
-
-/*
-const char* vertexShaderSource = "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n" "void main()\n"
-"{\n"
-" gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-"}\0";
-
-const char* fragmentShaderSource = "#version 330 core\n"
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-" FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n" "}\n\0";
-*/
 
 float vertices[] = {
-    // first triangle
-    0.5f, 0.5f, 0.0f, // top right
-    0.5f, -0.5f, 0.0f, // bottom right
-    -0.5f, -0.5f, 0.0f, // bottom left
-    -0.5f, 0.5f, 0.0f // top left
+    // positions  // colors           // texture coords
+    1.f ,  1.f,  0,1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+    1.f , -1.f,  0,0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+    -1.f , -1.f, 0, 0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+    -1.f ,  1.f, 0, 1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
 };
 
+//counter clockwise
 unsigned int indices[] = { // note that we start from 0!
-0, 1, 3, // first triangle
-1, 2, 3 // second triangle
-};
-
+               0, 3, 2, // first triangle
+               0, 2, 1 // second triangle
+             };
 
 RenderWidget::RenderWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
-
+    timer.start(100);
+    //    connect(&timer, SIGNAL(timeout()), this, SLOT(on_timeout()));
+    //connect(&timer, SIGNAL(timeout()), this, SLOT(on_timeout()));
 }
 
 RenderWidget::~RenderWidget()
 {
-    makeCurrent();
-    glDeleteBuffers(1, &VBO);
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &EBO);
-    doneCurrent();
+    if (!isValid()) return;
 }
 
 void RenderWidget::drawShape(Shape shape)
@@ -54,10 +37,9 @@ void RenderWidget::drawShape(Shape shape)
 
 void RenderWidget::setWirefame(bool wireframe)
 {
-    makeCurrent();
-    
+
     if(wireframe)
-        // »­Ïß
+        //         ç”»çº¿
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     else
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -69,85 +51,173 @@ void RenderWidget::initializeGL()
 {
     initializeOpenGLFunctions();
 
+    logger=std::make_unique<QOpenGLDebugLogger>(this);
+    logger->initialize();
+    connect(logger.get(),&QOpenGLDebugLogger::messageLogged,this,&RenderWidget::messageLogHandler);
+    logger->startLogging();
 
-   
-    bool success;
-    shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "./shaders/shaders.vert");
-    shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "./shaders/shaders.frag");
+    glClearColor(0.2,0.2,0.2,1);
+    glEnable(GL_FRAMEBUFFER_SRGB);
+    glEnable(GL_DEPTH_TEST);
 
-    //shaderProgram.addShaderFromSourceCode(QOpenGLShader::Vertex,vertexShaderSource);
-    //shaderProgram.addShaderFromSourceCode(QOpenGLShader::Fragment,fragmentShaderSource);
-    
+    createProgram();
+    createVBO();
+    createVAO();
+    createIBO();
 
-    success = shaderProgram.link();
-    if (!success)
-        qDebug() << "ERR:" << shaderProgram.log();
+    std::cout << SOURCE_DIR "resources/awesomeface.png" << std::endl;
 
-    /*
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
+    textureSmile = std::make_unique<QOpenGLTexture>(QImage(SOURCE_DIR "resources/awesomeface.png").mirrored(), QOpenGLTexture::GenerateMipMaps);
+    textureSmile->create();
 
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-    */
-
-
-
-    //´´½¨VBOºÍVAO¶ÔÏó£¬²¢¸³ÓèID
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-
-    //°ó¶¨VBOºÍVAO¶ÔÏó
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-    //Îªµ±Ç°°ó¶¨µ½targetµÄ»º³åÇø¶ÔÏó´´½¨Ò»¸öÐÂµÄÊý¾Ý´æ´¢¡£
-    //Èç¹ûdata²»ÊÇNULL£¬ÔòÊ¹ÓÃÀ´×Ô´ËÖ¸ÕëµÄÊý¾Ý³õÊ¼»¯Êý¾Ý´æ´¢
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    //¸æÖªÏÔ¿¨ÈçºÎ½âÎö»º³åÀïµÄÊôÐÔÖµ
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    //¿ªÆôVAO¹ÜÀíµÄµÚÒ»¸öÊôÐÔÖµ
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    
-
-    // EBO
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // ½â°ó
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-    
+    textureWall = std::make_unique<QOpenGLTexture>(QImage(SOURCE_DIR "resources/container.jpg").mirrored(), QOpenGLTexture::GenerateMipMaps);
+    textureWall->create();
 
 }
 
 void RenderWidget::resizeGL(int w, int h)
 {
+    Q_UNUSED(w); Q_UNUSED(h);
     glViewport(0, 0, w, h);
 }
 
 void RenderWidget::paintGL()
 {
-    glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    makeCurrent();
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-    
-    shaderProgram.bind();
-    glBindVertexArray(VAO);
-    switch (m_shape) {
-        case Rect:
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
-            break;
-        default:
-            break;
-        }
+    shaderProgram->bind();
+
+    renderTexture(textureWall.get(),{},{0.3,0.3});
+    renderTexture(textureSmile.get(),{0.2,0.2,0.1},{0.3,0.3});
+
+    //    if(textureSmileBinding>=0)
+    //        textureSmile->bind(textureSmileBinding);
+    //    glBindVertexArray(VAO);
+    //    switch (m_shape){
+    //    case Rect:
+    //        glActiveTexture(GL_TEXTURE0);
+    //        //textureWall->bind(0);
+    //        //glActiveTexture(GL_TEXTURE1);
+    //        textureSmile->bind(1);
+    //        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
+    //        break;
+    //    default:
+    //        break;
+    //    }
     //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     //glDrawArrays(GL_TRIANGLES, 0, 3);
     //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
     //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, &indices );
+}
+
+void RenderWidget::on_timeout()
+{
+    //if (m_shape = None) return;
+
+    //    makeCurrent();
+
+    //    int timeValue = QDateTime::currentDateTime().time().second();
+    //    float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+    //    shaderProgram.setUniformValue("ourColor", 0.0f, greenValue, 0.0f, 1.0f);
+
+    //    doneCurrent();
+    //    update();
+}
+void RenderWidget::cleanup()
+{
+
+}
+
+void RenderWidget::createProgram()
+{
+    bool success;
+    shaderProgram=std::make_unique<QOpenGLShaderProgram>();
+    shaderProgram->create();
+    shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex,  SOURCE_DIR "shaders/shaders.vert");
+    shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, SOURCE_DIR "shaders/shaders.frag");
+    success = shaderProgram->link(); //
+    if (!success)
+        qDebug() << "ERR:" << shaderProgram->log();
+
+    //        textureSmileBinding=shaderProgram->uniformLocation("textureSmile");
+    //        textureSmileBinding=shaderProgram->uniformLocation("textureSmile");
+
+    shaderOffsetBinding=shaderProgram->uniformLocation("offset");
+    shaderSizeBinding=shaderProgram->uniformLocation("size");
+    //    textureWallBinding=shaderProgram->uniformLocation("textureWall");
+    textureWallBinding=0;
+}
+void RenderWidget::createVAO()
+{
+    // æ‰¾shaderçš„èµ·å§‹ä½ç½®ï¼Œå¹¶ä¸”åŒæ—¶ä¿®æ”¹ä¸‹ä¸¤è¡Œçš„poslocation
+    shaderProgram->bind();
+    GLint posLocation = shaderProgram->attributeLocation("aPos");
+    GLint colorLocation = shaderProgram->attributeLocation("aColor");
+    GLint textureLocation = shaderProgram->attributeLocation("aTexCord");
+
+    vao=std::make_unique<QOpenGLVertexArrayObject>();
+
+    vao->create();
+
+    vao->bind();
+    vbo->bind();
+
+    auto stride=8*sizeof(float);
+
+    //-----------------position--------------------//
+    //å‘ŠçŸ¥æ˜¾å¡å¦‚ä½•è§£æžç¼“å†²é‡Œçš„å±žæ€§å€¼
+    glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+
+    //å¼€å¯VAOç®¡ç†çš„ç¬¬ä¸€ä¸ªå±žæ€§å€¼
+    glEnableVertexAttribArray(posLocation);
+
+    if(colorLocation>=0)
+    {
+        //------------------Color-----------------------//
+        //å‘ŠçŸ¥æ˜¾å¡å¦‚ä½•è§£æžç¼“å†²é‡Œçš„å±žæ€§å€¼
+        glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE,stride , (void*)(3 * sizeof(float)));
+        //å¼€å¯VAOç®¡ç†çš„ç¬¬ä¸€ä¸ªå±žæ€§å€¼
+        glEnableVertexAttribArray(colorLocation);
+    }
+    if(textureLocation)
+    {
+        //------------------Texture-----------------------//
+        //    å‘ŠçŸ¥æ˜¾å¡å¦‚ä½•è§£æžç¼“å†²é‡Œçš„å±žæ€§å€¼
+        glVertexAttribPointer(textureLocation, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
+        //    å¼€å¯VAOç®¡ç†çš„ç¬¬ä¸€ä¸ªå±žæ€§å€¼
+        glEnableVertexAttribArray(textureLocation);
+
+    }
+    vbo->release();
+
+    glBindVertexArray(0);
+}
+void RenderWidget::createVBO()
+{
+    vbo=std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
+    vbo->create();
+    vbo->bind();
+    vbo->allocate(vertices,sizeof(vertices));
+}
+void RenderWidget::createIBO()
+{
+    ibo=std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::IndexBuffer);
+    ibo->create();
+    ibo->bind();
+    ibo->allocate(indices,sizeof(indices));
+}
+void RenderWidget::messageLogHandler(const QOpenGLDebugMessage &debugMessage)
+{
+    qDebug()<<debugMessage.message();
+}
+void RenderWidget::renderTexture(QOpenGLTexture* texture,QVector3D offset,QVector2D size)
+{
+    shaderProgram->setUniformValue(shaderOffsetBinding,offset);
+    shaderProgram->setUniformValue(shaderSizeBinding,size);
+    vao->bind();
+    ibo->bind();
+    if(textureWallBinding>=0)
+        texture->bind(textureWallBinding);
+    glDrawElements(GL_TRIANGLES,std::size(indices),GL_UNSIGNED_INT,0);
 }

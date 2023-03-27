@@ -5,8 +5,8 @@
 #include <QFileDialog>
 #include <QFile>
 #include <QListWidgetItem>>
-#include "listbox.h"
-#include "listitem.h"
+#include "Core/UI/listbox.h"
+#include "Core/UI/listitem.h"
 
 RenderWindow::RenderWindow(QWidget *parent)
     : QMainWindow(parent)
