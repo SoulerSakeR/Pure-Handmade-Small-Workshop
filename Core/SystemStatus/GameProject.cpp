@@ -38,6 +38,7 @@ bool GameProject::save()
     return true;
 }
 
+
 void GameProject::deserialize(std::stringstream& ss)
 {
 	string s;

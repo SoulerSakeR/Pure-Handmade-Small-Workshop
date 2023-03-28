@@ -7,6 +7,7 @@
 #include <QListWidgetItem>>
 #include "Core/UI/listbox.h"
 #include "Core/UI/listitem.h"
+#include "Core/SystemStatus/GameEngine.h"
 
 RenderWindow::RenderWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -28,9 +29,11 @@ RenderWindow::RenderWindow(QWidget *parent)
     });
 
     QList<ListItem*> items;
+    auto path = GameEngine::getInstance()->getRootPath() + "\\resources\\0027.png";
+    QString s = QString::fromStdString(path);
     for(int i=0;i<3;++i)
     {
-        auto a=items.emplace_back(new ListItem(SOURCE_DIR "resources/0027.png",QString("item %0").arg(i),ui->listBox));
+        auto a = items.emplace_back(new ListItem(s, QString("item %0").arg(i), ui->listBox));
         ui->listBox->addItem(a);
     }
 }

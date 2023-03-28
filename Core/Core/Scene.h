@@ -19,6 +19,8 @@ public:
     //method
     void addRootGameObject(GameObject* newObject);
     void addGameObject(GameObject* newObject);
+    void removeGameObject(GameObject* gameObject);
+    void removeGameObject(int id);
     void serialize(PHString&) override;
     void deserialize(std::stringstream& ss) override;
     static Scene* loadFromPath(std::string path);

@@ -1,5 +1,7 @@
 #include "GameEngine.h"
-#include "Core/Core/Test.h"
+#include "../Core/Scene.h"
+#include <filesystem>
+
 using namespace std;
 
 GameEngine* GameEngine::instance = nullptr;
@@ -22,7 +24,15 @@ GameEngine *GameEngine::getInstance()
 /// @return value that indicates the process was completed or not.
 bool GameEngine::initialize()
 {
+	std::filesystem::path current_path = std::filesystem::current_path();
+	rootPath = current_path.string();
     return true;
+}
+
+Scene& GameEngine::getCurrentScene()
+{
+	if (gameProject != nullptr && gameProject->currentScene != nullptr)
+		return *(gameProject->currentScene);
 }
 
 /// @brief creat game project with default scene.
@@ -41,7 +51,7 @@ GameProject* GameEngine::creatGameProject(string name, string path)
 
 /// @brief open exist gameProject
 /// @param path the obsolute path of .gameProject file
-/// @return value that indicates the process was completed or not
+/// @return value that indicates whether the process was completed
 bool GameEngine::openGameProject(string path)
 {
 #ifdef TEST
@@ -88,4 +98,18 @@ GameObject *GameEngine::addGameObject(string name, GameObject* parent)
 		GameEngine::getInstance()->gameProject->currentScene->addGameObject(gameObject);
 		return gameObject;
 	}
+}
+
+void GameEngine::deleteGameObject(GameObject* obj)
+{
+	if (obj->isRootGameObject())
+	{
+		getCurrentScene().removeGameObject(obj);
+		delete obj;
+	}
+}
+
+std::string& GameEngine::getRootPath()
+{
+	return rootPath;
 }

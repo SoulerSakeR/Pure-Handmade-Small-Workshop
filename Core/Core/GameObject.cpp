@@ -4,6 +4,11 @@ using namespace std;
 
 int GameObject::idCount = 0;
 
+int GameObject::getID()
+{
+    return id;
+}
+
 /// @brief serialize game object to custom string
 /// @return the reference of the string
 void GameObject::serialize(PHString& result)
@@ -93,7 +98,6 @@ GameObject::GameObject(string name)
     // TODO: 随机生成uuid
     id = idCount + 1;
     idCount++;
-    // 
     components = vector<Component*>();
     addComponent(TRANSFORM);
 }
@@ -127,6 +131,13 @@ void GameObject::addComponent(Component* component)
         component->gameObject = this;
         components.push_back(component);
     }
+}
+
+bool GameObject::isRootGameObject()
+{
+    if (transform->parent != nullptr)
+        return true;
+    return false;
 }
 
 

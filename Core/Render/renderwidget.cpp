@@ -2,6 +2,7 @@
 
 
 #include <iostream>
+#include <Core/SystemStatus/GameEngine.h>
 //#define SOURCE_DIR "E:/GroupProject/PHE(3)/"
 
 
@@ -73,12 +74,12 @@ void RenderWidget::initializeGL()
     //std::string DIR = get_Project_Path();
     //std::cout << DIR "resources/awesomeface.png" << std::endl;
 
-    std::cout << SOURCE_DIR "resources/awesomeface.png" << std::endl;
-
-    textureSmile = std::make_unique<QOpenGLTexture>(QImage(SOURCE_DIR "resources/awesomeface.png").mirrored(), QOpenGLTexture::GenerateMipMaps);
+    auto path = GameEngine::getInstance()->getRootPath() + "\\resources\\awesomeface.png";
+    QString s = QString::fromStdString(path);
+    textureSmile = std::make_unique<QOpenGLTexture>(QImage(s).mirrored(), QOpenGLTexture::GenerateMipMaps);
     textureSmile->create();
 
-    textureWall = std::make_unique<QOpenGLTexture>(QImage(SOURCE_DIR "resources/container.jpg").mirrored(), QOpenGLTexture::GenerateMipMaps);
+    textureWall = std::make_unique<QOpenGLTexture>(QImage(QString::fromStdString(GameEngine::getInstance()->getRootPath()+ "\\resources\\awesomeface.png")).mirrored(), QOpenGLTexture::GenerateMipMaps);
     textureWall->create();
 
 }
@@ -142,8 +143,8 @@ void RenderWidget::createProgram()
     bool success;
     shaderProgram=std::make_unique<QOpenGLShaderProgram>();
     shaderProgram->create();
-    shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex,  SOURCE_DIR "shaders/shaders.vert");
-    shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, SOURCE_DIR "shaders/shaders.frag");
+    shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex,   QString::fromStdString(GameEngine::getInstance()->getRootPath()+ "\\shaders\\shaders.vert"));
+    shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(GameEngine::getInstance()->getRootPath() + "\\shaders\\shaders.frag"));
     success = shaderProgram->link(); //
     if (!success)
         qDebug() << "ERR:" << shaderProgram->log();

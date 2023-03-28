@@ -6,7 +6,7 @@
 
 class GameObject;
 
-enum ComponentType {TRANSFORM,IMAGE,CAMERA};
+enum ComponentType {UNKNOWN,TRANSFORM,IMAGE,CAMERA};
 
 class Component : public ISerializable
 {
@@ -17,6 +17,7 @@ public:
 	virtual void deserialize(std::stringstream& ss) = 0;
 	Component() {
 		gameObject = nullptr;
+		componentType = UNKNOWN;
 	};
 	~Component() {
 		//TODO: 析构函数

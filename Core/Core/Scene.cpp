@@ -23,12 +23,22 @@ Scene::Scene(string name)
 void Scene::addRootGameObject(GameObject* newObject)
 {
 	rootGameObjs.push_back(newObject);
-	allGameObjs.insert(pair<int,GameObject*>(newObject->id,newObject));
+	allGameObjs.insert(pair<int,GameObject*>(newObject->getID(), newObject));
 }
 
 void Scene::addGameObject(GameObject *newObject)
 {
-	allGameObjs.insert(pair<int,GameObject*>(newObject->id,newObject));
+	allGameObjs.insert(pair<int,GameObject*>(newObject->getID(), newObject));
+}
+
+void Scene::removeGameObject(GameObject* gameObject)
+{
+	removeGameObject(gameObject->getID());
+}
+
+void Scene::removeGameObject(int id)
+{
+
 }
 
 void Scene::serialize(PHString& result)
@@ -78,7 +88,7 @@ GameObject:1
 testGameObejct1
 0
 Components:1
-0
+1
 0.000000,0.000000
 0.000000
 ComponentsEnd
@@ -87,7 +97,7 @@ GameObject:2
 testGameObejct2
 0
 Components:1
-0
+1
 0.000000,0.000000
 0.000000
 ComponentsEnd

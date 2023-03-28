@@ -1,6 +1,7 @@
 #pragma once
 #include "GameProject.h"
 #include "Core/Core/PHString.h"
+#include "Core/Core/Test.h"
 
 class ResourceMgr;
 
@@ -23,12 +24,16 @@ public:
 	//method
 	static GameEngine* getInstance();
 	bool initialize();
+	Scene& getCurrentScene();
 	GameProject* creatGameProject(std::string name, std::string path); //创建新项目
 	bool openGameProject(std::string path); //打开已有项目
 	bool saveGameProject(); //保存当前项目
 	GameObject* addGameObject(std::string name = "GameObject", GameObject* parent = nullptr);
+	void deleteGameObject(GameObject* obj);
+	std::string& getRootPath();
 
 private:
 	static GameEngine* instance ; //游戏引擎实例
+	std::string rootPath;
 };
 
