@@ -50,10 +50,10 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="renderwidget.cpp">
+    <ClCompile Include="Core\Render\renderwidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="renderwindow.cpp">
+    <ClCompile Include="Core\UI\renderwindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Core\Core\Camera.cpp">
@@ -101,13 +101,25 @@
     <ClCompile Include="Core\SystemStatus\test.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="Core\UI\listbox.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\UI\listitem.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Render\common.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="renderwidget.h">
+    <QtMoc Include="Core\Render\renderwidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="renderwindow.h">
+    <QtMoc Include="Core\UI\renderwindow.h">
       <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Core\UI\listbox.h">
+      <Filter>Generated Files</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -119,7 +131,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="renderwindow.ui">
+    <QtUic Include="Core\UI\renderwindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
@@ -169,6 +181,12 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\SystemStatus\GameProject.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Render\common.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\UI\listitem.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>

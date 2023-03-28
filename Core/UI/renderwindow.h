@@ -1,7 +1,8 @@
 #ifndef RENDERWINDOW_H
 #define RENDERWINDOW_H
 
-#include <QtWidgets/qmainwindow.h>
+#include <QMainWindow>
+#include "Core/Render/common.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class RenderWindow; }

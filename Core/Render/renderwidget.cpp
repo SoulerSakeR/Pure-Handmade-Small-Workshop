@@ -1,6 +1,11 @@
 #include "renderwidget.h"
+
+
 #include <iostream>
-#define SOURCE_DIR "E:/GroupProject/PHE(3)/"
+//#define SOURCE_DIR "E:/GroupProject/PHE(3)/"
+
+
+
 
 
 float vertices[] = {
@@ -56,7 +61,7 @@ void RenderWidget::initializeGL()
     connect(logger.get(),&QOpenGLDebugLogger::messageLogged,this,&RenderWidget::messageLogHandler);
     logger->startLogging();
 
-    glClearColor(0.2,0.2,0.2,1);
+    glClearColor(0.2f,0.2f,0.2f,1.0f);
     glEnable(GL_FRAMEBUFFER_SRGB);
     glEnable(GL_DEPTH_TEST);
 
@@ -64,6 +69,9 @@ void RenderWidget::initializeGL()
     createVBO();
     createVAO();
     createIBO();
+
+    //std::string DIR = get_Project_Path();
+    //std::cout << DIR "resources/awesomeface.png" << std::endl;
 
     std::cout << SOURCE_DIR "resources/awesomeface.png" << std::endl;
 
@@ -88,8 +96,8 @@ void RenderWidget::paintGL()
 
     shaderProgram->bind();
 
-    renderTexture(textureWall.get(),{},{0.3,0.3});
-    renderTexture(textureSmile.get(),{0.2,0.2,0.1},{0.3,0.3});
+    renderTexture(textureWall.get(),{},{0.3f,0.3f});
+    renderTexture(textureSmile.get(),{0.2f,0.2f,0.1f},{0.3f,0.3f});
 
     //    if(textureSmileBinding>=0)
     //        textureSmile->bind(textureSmileBinding);
@@ -219,5 +227,5 @@ void RenderWidget::renderTexture(QOpenGLTexture* texture,QVector3D offset,QVecto
     ibo->bind();
     if(textureWallBinding>=0)
         texture->bind(textureWallBinding);
-    glDrawElements(GL_TRIANGLES,std::size(indices),GL_UNSIGNED_INT,0);
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(std::size(indices)),GL_UNSIGNED_INT,0);
 }

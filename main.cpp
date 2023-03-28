@@ -1,4 +1,5 @@
-#include "renderwindow.h"
+#include "Core/UI/renderwindow.h"
+#include "Core/Render/common.h"
 
 #include <QApplication>
 #include "Core/SystemStatus/GameEngine.h"
@@ -16,5 +17,8 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     RenderWindow w;
     w.show();
+
+    std::string path = get_Project_Path();
+
     return a.exec();
 }
