@@ -19,7 +19,22 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     RenderWindow w;
     w.show();
+   /* while (true)
+    {
+        if (InputDetection::GetMouseButtonDown(VK_LBUTTON))
+        {
+            std::cout << "Left mouse button down!" << std::endl;
+        }
+        if (InputDetection::GetMouseButton(VK_LBUTTON))
+        {
+            std::cout << "Left mouse button is hold!" << std::endl;
+        }
+        if (InputDetection::GetMouseButtonUp(VK_LBUTTON))
+        {
+            std::cout << "Left mouse button is up!" << std::endl;
+        }
 
+    }*/
     std::string path = get_Project_Path();
 
 #ifndef NDEBUG 
