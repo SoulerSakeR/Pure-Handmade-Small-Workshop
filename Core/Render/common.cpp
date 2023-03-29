@@ -8,4 +8,5 @@ std::string get_Project_Path()
     return current_path.string();
 }
 
-
+// Path: Core\Render\renderwindow.cpp
+// Compare this snippet from main.cpp:

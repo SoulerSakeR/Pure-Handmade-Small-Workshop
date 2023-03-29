@@ -6,7 +6,7 @@
 //#define SOURCE_DIR "E:/GroupProject/PHE(3)/"
 
 
-
+std::string source_path;
 
 
 float vertices[] = {
@@ -56,6 +56,9 @@ void RenderWidget::setWirefame(bool wireframe)
 void RenderWidget::initializeGL()
 {
     initializeOpenGLFunctions();
+    
+    // source_path = SOURCE_DIR;
+    source_path = GameEngine::getInstance()->getRootPath();
 
     logger=std::make_unique<QOpenGLDebugLogger>(this);
     logger->initialize();
@@ -65,23 +68,28 @@ void RenderWidget::initializeGL()
     glClearColor(0.2f,0.2f,0.2f,1.0f);
     glEnable(GL_FRAMEBUFFER_SRGB);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    
 
     createProgram();
     createVBO();
     createVAO();
     createIBO();
 
-    //std::string DIR = get_Project_Path();
-    //std::cout << DIR "resources/awesomeface.png" << std::endl;
+    
+    textureBoss = std::make_unique<QOpenGLTexture>(QImage(QString::fromStdString(source_path + "\\resources\\boss_hornet.png")).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
+    textureWall = std::make_unique<QOpenGLTexture>(QImage(QString::fromStdString(source_path + "\\resources\\0027.png")).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
+   textureSmile = std::make_unique<QOpenGLTexture>(QImage(QString::fromStdString(source_path + "\\resources\\awesomeface.png")).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
 
-    auto path = GameEngine::getInstance()->getRootPath() + "\\resources\\awesomeface.png";
-    QString s = QString::fromStdString(path);
-    textureSmile = std::make_unique<QOpenGLTexture>(QImage(s).mirrored(), QOpenGLTexture::GenerateMipMaps);
+    //textureSmile = std::make_unique<QOpenGLTexture>(QImage(QString::fromStdString(source_path + "\\resources\\awesomeface.png")).mirrored(), QOpenGLTexture::GenerateMipMaps);
+   
     textureSmile->create();
-
-    textureWall = std::make_unique<QOpenGLTexture>(QImage(QString::fromStdString(GameEngine::getInstance()->getRootPath()+ "\\resources\\awesomeface.png")).mirrored(), QOpenGLTexture::GenerateMipMaps);
     textureWall->create();
+    textureBoss->create();
+    //textureWall = std::make_unique<QOpenGLTexture>(QImage(QString::fromStdString(source_path + "\\resources\\boss_hornet.png")).mirrored(), QOpenGLTexture::GenerateMipMaps);
+    
 
+    
 }
 
 void RenderWidget::resizeGL(int w, int h)
@@ -95,11 +103,29 @@ void RenderWidget::paintGL()
     makeCurrent();
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
+    
+
+    
+    textureSmile->setFormat(QOpenGLTexture::RGBAFormat);
+    
+    textureWall->setFormat(QOpenGLTexture::RGBAFormat);
+    textureBoss->setFormat(QOpenGLTexture::RGBAFormat);
     shaderProgram->bind();
 
-    renderTexture(textureWall.get(),{},{0.3f,0.3f});
-    renderTexture(textureSmile.get(),{0.2f,0.2f,0.1f},{0.3f,0.3f});
+    
+    
+    
+    
+    
+   
+    
 
+    renderTexture(textureWall.get(), { -0.4f,0.2f,0.1f }, { 0.3f,0.3f });
+
+    renderTexture(textureSmile.get(), { 0.0f,0.2f,0.2f }, { 0.3f,0.3f });
+    renderTexture(textureBoss.get(), { 0.1f,0.3f,0.1f }, { 0.3f,0.3f });
+    
+    
     //    if(textureSmileBinding>=0)
     //        textureSmile->bind(textureSmileBinding);
     //    glBindVertexArray(VAO);
@@ -143,8 +169,8 @@ void RenderWidget::createProgram()
     bool success;
     shaderProgram=std::make_unique<QOpenGLShaderProgram>();
     shaderProgram->create();
-    shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex,   QString::fromStdString(GameEngine::getInstance()->getRootPath()+ "\\shaders\\shaders.vert"));
-    shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(GameEngine::getInstance()->getRootPath() + "\\shaders\\shaders.frag"));
+    shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex,   QString::fromStdString(source_path + "\\shaders\\shaders.vert"));
+    shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\shaders.frag"));
     success = shaderProgram->link(); //
     if (!success)
         qDebug() << "ERR:" << shaderProgram->log();
@@ -222,10 +248,18 @@ void RenderWidget::messageLogHandler(const QOpenGLDebugMessage &debugMessage)
 }
 void RenderWidget::renderTexture(QOpenGLTexture* texture,QVector3D offset,QVector2D size)
 {
+
+    offset.setZ(0.1f); // 统一深度 不要被挡住了 保证正确混合
+
     shaderProgram->setUniformValue(shaderOffsetBinding,offset);
     shaderProgram->setUniformValue(shaderSizeBinding,size);
     vao->bind();
     ibo->bind();
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDepthFunc(GL_LEQUAL);
+
     if(textureWallBinding>=0)
         texture->bind(textureWallBinding);
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(std::size(indices)),GL_UNSIGNED_INT,0);

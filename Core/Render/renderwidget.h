@@ -49,6 +49,7 @@ private:
 
     QTimer timer;
     std::unique_ptr<QOpenGLTexture> textureSmile;
+    std::unique_ptr<QOpenGLTexture> textureBoss;
     std::unique_ptr<QOpenGLTexture> textureWall;
 
     GLint textureWallBinding;

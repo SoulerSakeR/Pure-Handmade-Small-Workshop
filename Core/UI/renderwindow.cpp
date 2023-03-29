@@ -4,7 +4,7 @@
 #include <QDebug>
 #include <QFileDialog>
 #include <QFile>
-#include <QListWidgetItem>>
+#include <QListWidgetItem>
 #include "Core/UI/listbox.h"
 #include "Core/UI/listitem.h"
 #include "Core/SystemStatus/GameEngine.h"
