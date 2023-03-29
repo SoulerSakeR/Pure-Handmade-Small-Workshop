@@ -4,6 +4,7 @@
 #include <QApplication>
 #include "Core/SystemStatus/GameEngine.h"
 #include "Core/Core/Test.h"
+#include "Core/Input/InputDetection.h"
 #include <Windows.h>
 
 int main(int argc, char *argv[])
