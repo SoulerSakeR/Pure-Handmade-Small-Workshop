@@ -14,20 +14,31 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     RenderWindow w;
     w.show();
-    
     /*while (true)
     {
-        if (InputDetection::GetMouseButtonDown(VK_LBUTTON))
+        if (InputDetection::GetKeyDown('B'))
         {
-            Debug::log("Left mouse button down!\n");
+            std::cout << "B down!" << std::endl;
         }
-        if (InputDetection::GetMouseButton(VK_LBUTTON))
+        if (InputDetection::GetKey('B'))
         {
-            Debug::log("Left mouse button is hold!\n");
+            std::cout << "B hold!" << std::endl;
         }
-        if (InputDetection::GetMouseButtonUp(VK_LBUTTON))
+        if (InputDetection::GetKeyUp('B'))
         {
-            Debug::log("Left mouse button is up!\n");
+            std::cout << "B up!" << std::endl;
+        }
+        if (InputDetection::GetKeyDown('A'))
+        {
+            std::cout << "A down!" << std::endl;
+        }
+        if (InputDetection::GetKey('A'))
+        {
+            std::cout << "A hold!" << std::endl;
+        }
+        if (InputDetection::GetKeyUp('A'))
+        {
+            std::cout << "A up!" << std::endl;
         }
     }*/
 
