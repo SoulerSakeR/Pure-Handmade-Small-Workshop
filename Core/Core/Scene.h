@@ -24,6 +24,7 @@ public:
     void removeGameObject(int id);
     void serialize(PHString&) override;
     void deserialize(std::stringstream& ss) override;
+    const std::unordered_map<int, GameObject*> getAllGameObjs();
 #ifdef TEST
     static Scene* loadFromText(const std::string& text);
 #endif // TEST

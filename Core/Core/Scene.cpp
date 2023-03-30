@@ -77,6 +77,10 @@ void Scene::deserialize(std::stringstream& ss)
 		}
 	} while (ss.good()&&line!="SceneEnd");
 }
+const std::unordered_map<int, GameObject*> Scene::getAllGameObjs()
+{
+	return allGameObjs;
+}
 #ifdef TEST
 Scene* Scene::loadFromText(const std::string& text)
 {
