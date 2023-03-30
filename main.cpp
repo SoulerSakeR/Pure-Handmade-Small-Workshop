@@ -2,10 +2,11 @@
 #include "Core/Render/common.h"
 
 #include <QApplication>
+#include <Windows.h>
 #include "Core/SystemStatus/GameEngine.h"
 #include "Core/Core/Test.h"
 #include "Core/Input/InputDetection.h"
-#include <Windows.h>
+#include "Core/Core/Debug.h"
 
 int main(int argc, char *argv[])
 { 
@@ -13,23 +14,23 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     RenderWindow w;
     w.show();
-   /* while (true)
+    
+    /*while (true)
     {
         if (InputDetection::GetMouseButtonDown(VK_LBUTTON))
         {
-            std::cout << "Left mouse button down!" << std::endl;
+            Debug::log("Left mouse button down!\n");
         }
         if (InputDetection::GetMouseButton(VK_LBUTTON))
         {
-            std::cout << "Left mouse button is hold!" << std::endl;
+            Debug::log("Left mouse button is hold!\n");
         }
         if (InputDetection::GetMouseButtonUp(VK_LBUTTON))
         {
-            std::cout << "Left mouse button is up!" << std::endl;
+            Debug::log("Left mouse button is up!\n");
         }
-
     }*/
-    std::string path = get_Project_Path();
+
 #ifdef TEST
     GameProject* gp = GameEngine::getInstance()->creatGameProject("Test", "E:/SourceCodes/Git/GroupProject/Pure-Handmade-Small-Workshop/debug/test");
     GameObject* gameObject1 = GameEngine::getInstance()->addGameObject("testGameObejct1");

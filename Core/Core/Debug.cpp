@@ -1,10 +1,13 @@
 #include "Debug.h"
+#include <Core/Core/PHString.h>
 
 const std::string& infoPrefix = "[info]";
 
 void Debug::log(const std::string& info)
 {
 	std::string text = infoPrefix + info;
+	if (text.back() != '\n')
+		text.append("\n");
 	auto str = string2Lpwstr(text);
 #ifndef NDEBUG 
 	OutputDebugString(str);
