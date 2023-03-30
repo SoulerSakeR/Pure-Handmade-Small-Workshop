@@ -1,5 +1,5 @@
 #include "GameObject.h"
-
+#include "Core/Core/Image.h"
 using namespace std;
 
 int GameObject::idCount = 0;
@@ -102,6 +102,18 @@ GameObject::GameObject(string name)
     addComponent(TRANSFORM);
 }
 
+GameObject::~GameObject()
+{
+    for (auto child : transform->children)
+    {
+        delete child->gameObject;
+    }
+    for (auto component : components)
+    {
+        delete component;
+    }
+}
+
 /// @brief add component to game object
 /// @param type component type 
 /// @return the pointer of component
@@ -114,12 +126,27 @@ Component* GameObject::addComponent(ComponentType type)
         result = new Transform(this);
         transform =(Transform*)result;
         break;
+    case IMAGE:
+        result = new Image();
     default:
         break;
     }
-    if(result!=nullptr)
+    if (result != nullptr)
+    {
+        result->gameObject = this;
         components.push_back(result);
+    }      
     return result;
+}
+
+Component* GameObject::getComponent(ComponentType type)
+{
+    for (auto component : components)
+    {
+        if (component->componentType == type)
+            return component;
+    }
+    return nullptr;
 }
 
 /// @brief add component to game object
