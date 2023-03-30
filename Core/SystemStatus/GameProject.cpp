@@ -1,4 +1,5 @@
 #include "GameProject.h"
+#include <Core/Core/Debug.h>
 
 using namespace std;
 
@@ -8,11 +9,12 @@ const std::string gameProjectPostfix = "GameProject:";
 const std::string scenePrefix = "Scene:";
 const std::string sceneProjectPostfix = "SceneEnd:";
 
-GameProject::GameProject(string name, string path, bool withDefaultScene)
+GameProject::GameProject(const string& name,const string& path, bool withDefaultScene)
 {
 	this->name = name;
 	this->path = path;
 	this->Scenes = vector<Scene*>();
+	currentScene = nullptr;
 	if(withDefaultScene)
 		this->Scenes.push_back(new Scene());
 	// TODO: creat project directory
@@ -38,6 +40,48 @@ bool GameProject::save()
     return true;
 }
 
+#ifdef TEST
+PHString* GameProject::saveTest()
+{
+	auto scene = new PHString(saveCurrentSceneTest());
+	PHString* projectConfig = new PHString("");
+	serialize(*projectConfig);
+	PHString* result= new PHString[2]{*projectConfig,*scene};
+	// TODO: 写入文件
+	// file.write(gameProject,path+".gameProject");
+	return result;
+}
+void GameProject::deserializeTest(std::stringstream& ss, const std::string** scenes)
+{
+	string s;
+	do
+	{
+		getline(ss, s);
+		auto index = s.find(gameProjectPrefix);
+		if (index != string::npos)
+		{
+			name = s.substr(index + gameProjectPrefix.size(), s.size() - 1);
+			Debug::log("read "+name);
+			getline(ss, s);
+			path = s;
+			do
+			{
+				getline(ss, s);
+				auto index = s.find(scenePrefix);
+				if (index != string::npos)
+				{
+					int size = stoi(s.substr(index + scenePrefix.size(), s.size() - 1));
+					for (int i = 0;i < size;i++)
+					{
+						Scene* scene = Scene::loadFromText(*(scenes[i]));
+						Scenes.push_back(scene);
+					}
+				}
+			} while (ss.good() && s != sceneProjectPostfix);
+		}
+	} while (ss.good() && s != gameProjectPostfix);
+}
+#endif // TEST
 
 void GameProject::deserialize(std::stringstream& ss)
 {
@@ -61,7 +105,7 @@ void GameProject::deserialize(std::stringstream& ss)
 					for (int i = 0;i < size;i++)
 					{
 						getline(ss, s);
-						Scene* scene = Scene::loadFromPath(s);
+						Scene* scene = Scene::loadFromPath(s);				
 						Scenes.push_back(scene);
 					}
 				}
@@ -84,6 +128,18 @@ bool GameProject::saveCurrentScene()
 	// file.write(scene,path);
 	return true;		
 }
+
+#ifdef TEST
+PHString GameProject::saveCurrentSceneTest()
+{
+	PHString scene = PHString("");
+	if (currentScene == nullptr)
+		return scene;
+	currentScene->serialize(scene);
+	return scene;
+}
+#endif // TEST
+
 
 void GameProject::serialize(PHString& result)
 {

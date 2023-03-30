@@ -4,6 +4,7 @@
 
 #include "ISerializable.h"
 #include "GameObject.h"
+#include "Test.h"
 
 class Scene :
     public ISerializable
@@ -23,8 +24,10 @@ public:
     void removeGameObject(int id);
     void serialize(PHString&) override;
     void deserialize(std::stringstream& ss) override;
+#ifdef TEST
+    static Scene* loadFromText(const std::string& text);
+#endif // TEST
     static Scene* loadFromPath(std::string path);
-
 private:
     std::unordered_map<int,GameObject*> allGameObjs; //当前场景下所有的GameObject
     std::vector<GameObject*> rootGameObjs; //当前场景下的根GameObject

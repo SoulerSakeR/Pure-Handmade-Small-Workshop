@@ -1,6 +1,8 @@
+#include <filesystem>
+
 #include "GameEngine.h"
 #include "../Core/Scene.h"
-#include <filesystem>
+#include "../Core/Debug.h"
 
 using namespace std;
 
@@ -13,7 +15,7 @@ GameEngine::GameEngine()
 
 /// @brief get singleton instance, if it is not exists, create one 
 /// @return the pointer of instance
-GameEngine *GameEngine::getInstance()
+GameEngine* GameEngine::getInstance()
 {
 	if(instance==nullptr)
 		instance = new GameEngine();
@@ -24,6 +26,7 @@ GameEngine *GameEngine::getInstance()
 /// @return value that indicates the process was completed or not.
 bool GameEngine::initialize()
 {
+	Debug::log("engine initalizing");
 	std::filesystem::path current_path = std::filesystem::current_path();
 	rootPath = current_path.string();
     return true;
@@ -48,22 +51,30 @@ GameProject* GameEngine::creatGameProject(string name, string path)
 	game->openScene(0);
 	return game;
 }
+#ifdef TEST
+bool GameEngine::openGameProjectTest(const std::string& project, const std::string** scenes)
+{
+	stringstream ss(project);
+	GameProject* gp = new GameProject("", "", false);
+	gp->deserializeTest(ss,scenes);
+	delete gameProject;
+	gameProject = gp;
+	gameProject->openScene(0);
+	return true;
+}
+#endif // TEST
 
 /// @brief open exist gameProject
 /// @param path the obsolute path of .gameProject file
 /// @return value that indicates whether the process was completed
-bool GameEngine::openGameProject(string path)
+bool GameEngine::openGameProject(const string& path)
 {
-#ifdef TEST
-	string gameProject = "GameProject:Test\nE:/SourceCodes/Git/GroupProject/Pure-Handmade-Small-Workshop/debug/test\nScene:1\nE:/SourceCodes/Git/GroupProject/Pure-Handmade-Small-Workshop/debug/test/Scene/ExampleScene.scene\n"; // = readText(path);
+	// TODO: read from disk by path
+	/*string gameProject = file.readText(path);
 	stringstream ss(gameProject);
-#else // TEST
-	string gameProject = file.readText(path);
-	stringstream ss(gameProject);
-#endif
 	GameProject* gp = new GameProject("","",false);
-	gp->deserialize(ss);
-	return true;
+	gp->deserialize(ss);*/
+	return false;
 }
 
 /// @brief save game project to hard disk
@@ -81,7 +92,7 @@ bool GameEngine::saveGameProject()
 /// @param parent the pointer of parent game object or null for scene
 /// @param name name of the new game object
 /// @return the pointer of new game object
-GameObject *GameEngine::addGameObject(string name, GameObject* parent)
+GameObject *GameEngine::addGameObject(const string& name, GameObject* parent)
 {
     if(parent == nullptr)
 	{

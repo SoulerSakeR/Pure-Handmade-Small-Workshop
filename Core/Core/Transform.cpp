@@ -8,6 +8,7 @@ void Transform::serialize(PHString& str)
 	str.appendLine(to_string((int)componentType));
 	str.appendLine(localPosition.tostring());
 	str.appendLine(to_string(localRotation));
+	str.appendLine(localScale.tostring());
 }
 
 
@@ -43,6 +44,13 @@ float Transform::getWorldRotation()
 	return localRotation;
 }
 
+Vector2D Transform::getWorldScale()
+{
+	if (parent != nullptr)
+		return parent->getWorldScale() + localScale;
+	return localScale;
+}
+
 Transform* Transform::translate(Vector2D value)
 {
 	localPosition = localPosition + value;
@@ -61,4 +69,9 @@ void Transform::deserialize(stringstream& ss)
 	localPosition = Vector2D(x,y);
 	getline(ss,s);
 	localRotation = stof(s);
+	getline(ss, s);
+	index = s.find(',');
+	x = stof(s.substr(0, index - 1));
+	y = stof(s.substr(index + 1, s.size() - 1));
+	localScale = Vector2D(x, y);
 }

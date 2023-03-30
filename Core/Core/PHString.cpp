@@ -1,9 +1,15 @@
 #include "PHString.h"
 
+
 PHString::PHString(const std::string& src)
 {
     data = new std::string(src);
  }
+
+PHString::PHString(const PHString& src)
+{
+    data = new std::string(*src.data);
+}
 
 PHString::~PHString()
 {

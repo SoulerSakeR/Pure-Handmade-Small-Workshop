@@ -77,40 +77,21 @@ void Scene::deserialize(std::stringstream& ss)
 		}
 	} while (ss.good()&&line!="SceneEnd");
 }
+#ifdef TEST
+Scene* Scene::loadFromText(const std::string& text)
+{
+	Scene* scene = new Scene();
+	stringstream ss(text);
+	scene->deserialize(ss);
+	return scene;
+}
+#endif // TEST
+
 
 Scene* Scene::loadFromPath(std::string path)
 {
 	Scene* scene = new Scene();
-#ifdef TEST
-	stringstream ss(R"(Scene:ExampleScene
-rootGameObject:1
-GameObject:1
-testGameObejct1
-0
-Components:1
-1
-0.000000,0.000000
-0.000000
-ComponentsEnd
-Children:1
-GameObject:2
-testGameObejct2
-0
-Components:1
-1
-0.000000,0.000000
-0.000000
-ComponentsEnd
-Children:0
-ChildrenEnd
-GameObjectEnd
-ChildrenEnd
-GameObjectEnd
-SceneEnd
-)"); //(readText(path))
-#else // TEST
-	stringstream ss(file.readText(path));
-#endif	
-	scene->deserialize(ss);
+	//TODO: stringstream ss(file.readText(path));
+	//scene->deserialize(ss);
 	return scene;
 }

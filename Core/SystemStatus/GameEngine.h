@@ -26,9 +26,12 @@ public:
 	bool initialize();
 	Scene& getCurrentScene();
 	GameProject* creatGameProject(std::string name, std::string path); //创建新项目
-	bool openGameProject(std::string path); //打开已有项目
+#ifdef TEST
+	bool openGameProjectTest(const std::string& project,const std::string** scenes); //打开已有项目
+#endif // TEST
+	bool openGameProject(const std::string& path); //打开已有项目
 	bool saveGameProject(); //保存当前项目
-	GameObject* addGameObject(std::string name = "GameObject", GameObject* parent = nullptr);
+	GameObject* addGameObject(const std::string& name = "GameObject", GameObject* parent = nullptr);
 	void deleteGameObject(GameObject* obj);
 	std::string& getRootPath();
 

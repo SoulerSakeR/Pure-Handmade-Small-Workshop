@@ -9,13 +9,7 @@
 
 int main(int argc, char *argv[])
 { 
-#ifdef TEST
-    GameProject* gp = GameEngine::getInstance()->creatGameProject("Test", "E:/SourceCodes/Git/GroupProject/Pure-Handmade-Small-Workshop/debug/test");
-    GameObject* gameObject1 = GameEngine::getInstance()->addGameObject("testGameObejct1");
-    GameEngine::getInstance()->addGameObject("testGameObejct2", gameObject1);
-    gp->save();
-    GameEngine::getInstance()->openGameProject("");
-#endif // TEST
+
     QApplication a(argc, argv);
     RenderWindow w;
     w.show();
@@ -36,9 +30,16 @@ int main(int argc, char *argv[])
 
     }*/
     std::string path = get_Project_Path();
+#ifdef TEST
+    GameProject* gp = GameEngine::getInstance()->creatGameProject("Test", "E:/SourceCodes/Git/GroupProject/Pure-Handmade-Small-Workshop/debug/test");
+    GameObject* gameObject1 = GameEngine::getInstance()->addGameObject("testGameObejct1");
+    GameEngine::getInstance()->addGameObject("testGameObejct2", gameObject1);
+    auto save = gp->saveTest();
+    const std::string** scenes = new const std::string*[1];
+    scenes[0] = &((save[1]).str());
+    GameEngine::getInstance()->openGameProjectTest(save->str(),scenes);
+    auto ge = GameEngine::getInstance();
+#endif // TEST
 
-#ifndef NDEBUG 
-    OutputDebugString(L"sadsad");
-#endif
     return a.exec();
 }

@@ -6,7 +6,8 @@ class PHString
 private:
     std::string* data;
 public:
-    PHString(const std::string& src);
+    PHString(const std::string& src="");
+    PHString(const PHString& src);
     ~PHString();
     void appendLine(const std::string& value);
     void appendLine(const std::string& value0, const std::string& value1);
