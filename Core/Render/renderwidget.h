@@ -25,11 +25,14 @@ public:
     void setWirefame(bool wireframe);
 
     void cleanup();
+    
+    
 
 protected:
     virtual void initializeGL();
     virtual void resizeGL(int w, int h);
     virtual void paintGL();
+
 signals:
 
 public slots:
@@ -61,7 +64,7 @@ private:
     void createVAO();
     void createVBO();
     void createIBO();
-    void createTexture();
+    int rederMain(QString*, QVector3D*, QVector2D*);
 
     void renderTexture(QOpenGLTexture* texture,QVector3D offset,QVector2D size);
 };
