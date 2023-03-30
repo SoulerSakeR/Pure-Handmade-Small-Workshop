@@ -1,7 +1,7 @@
 #pragma once
 #include "GameProject.h"
 #include "Core/Core/PHString.h"
-#include "Core/Core/Test.h"
+#include "Core/Utils/Test.h"
 
 class ResourceMgr;
 

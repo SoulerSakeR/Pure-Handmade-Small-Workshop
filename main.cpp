@@ -4,9 +4,10 @@
 #include <QApplication>
 #include <Windows.h>
 #include "Core/SystemStatus/GameEngine.h"
-#include "Core/Core/Test.h"
+#include "Core/Utils/Test.h"
 #include "Core/Input/InputDetection.h"
 #include "Core/Core/Debug.h"
+#include "Core/Core/Image.h"
 
 int main(int argc, char *argv[])
 { 

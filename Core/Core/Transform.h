@@ -4,7 +4,7 @@
 #include <sstream>
 
 #include "Component.h"
-#include "Vector2D.h"
+#include "Core/Utils/Vector2D.h"
 
 class GameObject;
 
