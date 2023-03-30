@@ -116,7 +116,6 @@ void GameEngine::deleteGameObject(GameObject* obj)
 	if (obj->isRootGameObject())
 	{
 		getCurrentScene().removeGameObject(obj);
-		delete obj;
 	}
 }
 
