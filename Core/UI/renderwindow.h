@@ -15,13 +15,17 @@ class RenderWindow : public QMainWindow
 public:
     RenderWindow(QWidget *parent = nullptr);
     ~RenderWindow();
+public slots:
+    void showContextMenu(const QPoint&);
 
 private slots:
+    friend class listbox;
     void on_Render_action_triggered();
 
     void on_Clear_action_triggered();
 
 
+    void createItemsList();
 
     void on_actionWirefame_triggered();
 

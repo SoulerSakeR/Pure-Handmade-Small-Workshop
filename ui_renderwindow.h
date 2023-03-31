@@ -13,6 +13,7 @@
 #include <QtGui/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QDockWidget>
+#include <QtWidgets/QListWidget>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
@@ -27,28 +28,29 @@ QT_BEGIN_NAMESPACE
 class Ui_RenderWindow
 {
 public:
-    QAction* actioncreatProject;
-    QAction* actionopenProject;
-    QAction* Render_action;
-    QAction* Clear_action;
-    QAction* actionWirefame;
-    QWidget* centralwidget;
-    RenderWidget* openGLWidget;
-    ListBox* listBox;
-    QMenuBar* menubar;
-    QMenu* menu;
-    QMenu* menu_2;
-    QMenu* menuLUA;
-    QStatusBar* statusbar;
-    QToolBar* toolBar;
-    QDockWidget* dockWidget_2;
-    QWidget* dockWidgetContents_2;
+    QAction *actioncreatProject;
+    QAction *actionopenProject;
+    QAction *Render_action;
+    QAction *Clear_action;
+    QAction *actionWirefame;
+    QWidget *centralwidget;
+    RenderWidget *openGLWidget;
+    ListBox *listBox;
+    QMenuBar *menubar;
+    QMenu *menu;
+    QMenu *menu_2;
+    QMenu *menuLUA;
+    QStatusBar *statusbar;
+    QToolBar *toolBar;
+    QDockWidget *dockWidget_2;
+    QWidget *dockWidgetContents_2;
+    QListWidget *listWidget;
 
-    void setupUi(QMainWindow* RenderWindow)
+    void setupUi(QMainWindow *RenderWindow)
     {
         if (RenderWindow->objectName().isEmpty())
             RenderWindow->setObjectName("RenderWindow");
-        RenderWindow->resize(1320, 732);
+        RenderWindow->resize(1660, 1080);
         actioncreatProject = new QAction(RenderWindow);
         actioncreatProject->setObjectName("actioncreatProject");
         actionopenProject = new QAction(RenderWindow);
@@ -64,14 +66,14 @@ public:
         centralwidget->setObjectName("centralwidget");
         openGLWidget = new RenderWidget(centralwidget);
         openGLWidget->setObjectName("openGLWidget");
-        openGLWidget->setGeometry(QRect(211, 0, 1191, 720));
+        openGLWidget->setGeometry(QRect(211, 0, 1440, 810));
         listBox = new ListBox(centralwidget);
         listBox->setObjectName("listBox");
-        listBox->setGeometry(QRect(0, 0, 211, 401));
+        listBox->setGeometry(QRect(0, 0, 211, 600));
         RenderWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(RenderWindow);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 1320, 17));
+        menubar->setGeometry(QRect(0, 0, 1660, 22));
         menu = new QMenu(menubar);
         menu->setObjectName("menu");
         menu_2 = new QMenu(menubar);
@@ -89,6 +91,9 @@ public:
         dockWidget_2->setObjectName("dockWidget_2");
         dockWidgetContents_2 = new QWidget();
         dockWidgetContents_2->setObjectName("dockWidgetContents_2");
+        listWidget = new QListWidget(dockWidgetContents_2);
+        listWidget->setObjectName("listWidget");
+        listWidget->setGeometry(QRect(0, 0, 256, 192));
         dockWidget_2->setWidget(dockWidgetContents_2);
         RenderWindow->addDockWidget(Qt::RightDockWidgetArea, dockWidget_2);
 
@@ -107,7 +112,7 @@ public:
         QMetaObject::connectSlotsByName(RenderWindow);
     } // setupUi
 
-    void retranslateUi(QMainWindow* RenderWindow)
+    void retranslateUi(QMainWindow *RenderWindow)
     {
         RenderWindow->setWindowTitle(QCoreApplication::translate("RenderWindow", "RenderWindow", nullptr));
         actioncreatProject->setText(QCoreApplication::translate("RenderWindow", "\345\210\233\345\273\272\351\241\271\347\233\256", nullptr));
@@ -124,7 +129,7 @@ public:
 };
 
 namespace Ui {
-    class RenderWindow : public Ui_RenderWindow {};
+    class RenderWindow: public Ui_RenderWindow {};
 } // namespace Ui
 
 QT_END_NAMESPACE
