@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <Core/SystemStatus/GameEngine.h>
+#include "Core/Core/Image.h"
 //#define SOURCE_DIR "E:/GroupProject/PHE(3)/"
 
 
@@ -83,22 +84,20 @@ QVector2D getSize() // get from others
 
 void getTextureInfo(Image& imgComponent, QString* texturePathQ, QVector3D* offset, QVector2D* size)
 {
-    std::string texturePath = source_path + "\\resources\\boss_hornet.png";
+
+    std::string texturePath = source_path + imgComponent.imgPath;
 
     *texturePathQ = QString(QString::fromStdString(texturePath));
 
-    *offset =  QVector3D(0.0f, 0.0f, 0.0f);
-
-    *size = QVector2D(0.4f, 0.6f);
+    auto position = imgComponent.gameObject->transform->getWorldPosition();
+    *offset =  QVector3D(position.x,position.y,0.0f);
+    auto imgSize = imgComponent.size;
+    *size = QVector2D(imgSize.x, imgSize.y);
 
 }
 
-int RenderWidget::rederMain(QString* texturePathQ, QVector3D* offset, QVector2D* size)
+int RenderWidget::renderMain(QString* texturePathQ, QVector3D* offset, QVector2D* size)
 {
-    
-    getTextureInfo(texturePathQ, offset, size);
-    
-
     std::unique_ptr<QOpenGLTexture> textureSample = std::make_unique<QOpenGLTexture>(QImage(*texturePathQ).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
 
     textureSample->create();
@@ -164,20 +163,32 @@ void RenderWidget::paintGL()
     // textureSmile->setFormat(QOpenGLTexture::RGBAFormat);  
     // textureBoss->setFormat(QOpenGLTexture::RGBAFormat);
  */   
-    count++;
-    std::cout << count << std::endl;
-    QString* texturePathQ = new QString;
-    QVector3D* offset = new QVector3D;
-    QVector2D* size = new QVector2D;
 
-    rederMain(texturePathQ, offset, size);
-    
-    
-    
+
+    //render scene 
+    auto scene = GameEngine::getInstance().getCurrentScene();
+
+    for (auto rootObj : scene->getRootGameObjs())
+    {
+        //if(rootobj.needRender())
+            //renderMain(texturePathQ, offset, size);
+        QString* texturePathQ = new QString;
+        QVector3D* offset = new QVector3D;
+        QVector2D* size = new QVector2D;
+        getTextureInfo(*(rootObj->getComponent<Image>()), texturePathQ, offset, size);
+        renderMain(texturePathQ, offset, size);
+        //while()
+    }
+
     
 }
 
-
+/*dfs(root)
+{
+    render root
+    dfs(child)
+}
+*/
 
 void RenderWidget::on_timeout()
 {

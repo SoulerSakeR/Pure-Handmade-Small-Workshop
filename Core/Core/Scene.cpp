@@ -94,7 +94,8 @@ void Scene::addGameObjectWithChildren(GameObject* newObject)
 
 void Scene::initRootGameObject(GameObject* rootObject)
 {
-
+	rootGameObjs.push_back(rootObject);
+	addGameObjectWithChildren(rootObject);
 }
 
 void Scene::removeGameObject(GameObject* gameObject)
@@ -168,7 +169,7 @@ void Scene::deserialize(std::stringstream& ss)
 				{
 					GameObject* root = new GameObject("",false);
 					root->deserialize(ss);
-					insertGameObject(*root); //TODO: need to fix to add child objs
+					initRootGameObject(root);
 				}
 			}
 		}
@@ -177,6 +178,10 @@ void Scene::deserialize(std::stringstream& ss)
 const std::unordered_map<int, GameObject*> Scene::getAllGameObjs()
 {
 	return allGameObjsByID;
+}
+const std::vector<GameObject*> Scene::getRootGameObjs()
+{
+	return rootGameObjs;
 }
 #ifdef TEST
 Scene* Scene::loadFromText(const std::string& text)
