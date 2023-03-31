@@ -64,7 +64,7 @@ private:
     void createVAO();
     void createVBO();
     void createIBO();
-    int rederMain(QString*, QVector3D*, QVector2D*);
+    int renderMain(QString*, QVector3D*, QVector2D*);
 
 
     void renderTexture(QOpenGLTexture* texture,QVector3D offset,QVector2D size);
