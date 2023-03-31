@@ -13,7 +13,7 @@ class GameEngine
 public:	
 	//method
 	static GameEngine& getInstance();	
-	Scene* const getCurrentScene();
+	Scene*  getCurrentScene();
 	GameProject* const getCurrentGameProject();
 	GameProject& creatGameProject(std::string name, std::string path); //创建新项目
 
