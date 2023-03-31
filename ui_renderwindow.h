@@ -2,6 +2,7 @@
 ** Form generated from reading UI file 'renderwindow.ui'
 **
 ** Created by: Qt User Interface Compiler version 6.4.1
+** Created by: Qt User Interface Compiler version 6.4.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -22,6 +23,8 @@
 #include <QtWidgets/QWidget>
 #include "Core/UI/listbox.h"
 #include "Core/Render/renderwidget.h"
+#include "listbox.h"
+#include "renderwidget.h"
 
 QT_BEGIN_NAMESPACE
 
