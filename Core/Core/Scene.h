@@ -27,7 +27,6 @@ public:
     void serialize(PHString&) override;
     void deserialize(std::stringstream& ss) override;
     const std::unordered_map<int, GameObject*> getAllGameObjs();
-    const std::vector<GameObject*> getRootGameObjs();
 
 #ifdef TEST
     static Scene* loadFromText(const std::string& text);
@@ -42,6 +41,5 @@ private:
     void addGameObjectWithChildren(GameObject* newObject);
     void removeGameObjectWithChildren(GameObject* gameObject);
     void initRootGameObject(GameObject* rootObject);
-
 };
 
