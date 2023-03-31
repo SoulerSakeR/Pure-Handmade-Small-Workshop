@@ -75,6 +75,7 @@ void GameObject::deserialize(std::stringstream& ss)
                     {
                         GameObject* child = new GameObject();
                         child->deserialize(ss);
+                        GameEngine::getInstance().getCurrentScene()->insertGameObject(*child, this, INSIDE);
                     }
                 }
             } while (ss.good() && s != "ChildrenEnd");
