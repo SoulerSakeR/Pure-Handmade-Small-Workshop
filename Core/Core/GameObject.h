@@ -16,7 +16,7 @@ public:
     std::vector<Component*> components; //游戏对象的所有组件
 
     //constructor
-    GameObject(std::string name=""); 
+    GameObject(std::string name="",bool withTransform=true); 
     ~GameObject();
 
     //method

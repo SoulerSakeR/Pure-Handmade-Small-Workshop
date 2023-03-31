@@ -31,7 +31,7 @@ bool GameEngine::initialize()
     return true;
 }
 
-Scene*  GameEngine::getCurrentScene()
+Scene* const GameEngine::getCurrentScene()
 {
 	if (gameProject != nullptr && gameProject->currentScene != nullptr)
 		return gameProject->currentScene;

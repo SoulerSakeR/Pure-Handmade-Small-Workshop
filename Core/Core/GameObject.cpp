@@ -75,6 +75,8 @@ void GameObject::deserialize(std::stringstream& ss)
                     {
                         GameObject* child = new GameObject();
                         child->deserialize(ss);
+                        child->transform->parent = transform;
+                        transform->children.push_back(child->transform);
                     }
                 }
             } while (ss.good() && s != "ChildrenEnd");
@@ -83,7 +85,7 @@ void GameObject::deserialize(std::stringstream& ss)
 }
 
 
-GameObject::GameObject(string name)
+GameObject::GameObject(string name,bool withTransform)
 {
     this->name = name;
     isActive = false;
@@ -91,7 +93,8 @@ GameObject::GameObject(string name)
     id = idCount + 1;
     idCount++;
     components = vector<Component*>();
-    addComponent<Transform>();
+    if(withTransform)
+        addComponent<Transform>();
 }
 
 GameObject::~GameObject()

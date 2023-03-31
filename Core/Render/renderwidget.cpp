@@ -82,7 +82,7 @@ QVector2D getSize() // get from others
 }
 
 
-void getTextureInfo(Image imgComponent, QString* texturePathQ, QVector3D* offset, QVector2D* size)
+void getTextureInfo(Image& imgComponent, QString* texturePathQ, QVector3D* offset, QVector2D* size)
 {
 
     std::string texturePath = source_path + imgComponent.imgPath;

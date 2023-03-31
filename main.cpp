@@ -13,13 +13,20 @@ int main(int argc, char *argv[])
 { 
 #ifdef TEST
     auto& gp = GameEngine::getInstance().creatGameProject("Test", "E:/SourceCodes/Git/GroupProject/Pure-Handmade-Small-Workshop/debug/test");
-    auto& gameObject1 = GameEngine::getInstance().addGameObject("testGameObejct1");
-    gameObject1.addComponent<Image>()->imgPath ="adsadsad";    
-    GameEngine::getInstance().addGameObject("testGameObejct2", &gameObject1).addComponent<Image>()->imgPath = "qwewqe";
+    auto& gameObj1 = GameEngine::getInstance().addGameObject("testGameObejct1");
+    auto img1 = gameObj1.addComponent<Image>();
+    gameObj1.transform->localPosition = Vector2D(-0.5f, .0f);
+    img1->imgPath  ="\\resources\\boss_hornet.png";
+    img1->size = Vector2D(0.2f, 0.2f);
+    auto& gameObj2 = GameEngine::getInstance().addGameObject("testGameObejct2");
+    gameObj2.transform->localPosition = Vector2D(0.5f, .0f);
+    auto img2 = gameObj2.addComponent<Image>();
+    img2 ->imgPath = "\\resources\\0027.png";
+    img2->size = Vector2D(0.1f, 0.2f);
     auto save = gp.saveTest();
     const std::string** scenes = new const std::string * [1];
     scenes[0] = &((save[1]).str());
-    GameEngine::getInstance().openGameProjectTest(save->str(), scenes);
+    //GameEngine::getInstance().openGameProjectTest(save->str(), scenes);
 #endif // TEST
 
     QApplication a(argc, argv);

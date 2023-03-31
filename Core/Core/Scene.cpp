@@ -11,7 +11,7 @@ Scene::Scene(string name)
 {
 	this->name = name;
 	allGameObjsByID = unordered_map<int,GameObject*>();
-	allGameObjsByName = unordered_multimap<string, GameObject*>();
+	allGameObjsByName = unordered_map<std::string, std::vector<GameObject*>>();
 	rootGameObjs = vector<GameObject*>();
 }
 
@@ -65,16 +65,32 @@ void Scene::insertGameObject(GameObject& value,GameObject* target,InsertMode ins
 void Scene::addGameObject(GameObject *newObject)
 {
 	allGameObjsByID.insert(pair<int,GameObject*>(newObject->getID(), newObject));
-	allGameObjsByName.insert(pair<string, GameObject*>(newObject->name, newObject));
+	auto it = allGameObjsByName.find(newObject->name);
+	if (it != allGameObjsByName.end())
+		it->second.push_back(newObject);
+	else
+	{
+		auto it2 =allGameObjsByName.emplace(pair<string, vector<GameObject*>>(newObject->name, vector<GameObject*>()));
+		it2.first->second.push_back(newObject);
+	}
 }
 
 void Scene::addGameObjectWithChildren(GameObject* newObject)
 {
 	allGameObjsByID.insert(pair<int, GameObject*>(newObject->getID(), newObject));
-	allGameObjsByName.insert(pair<string, GameObject*>(newObject->name, newObject));
+	auto it = allGameObjsByName.find(newObject->name);
+	if (it != allGameObjsByName.end())
+		it->second.push_back(newObject);
+	else
+	{
+		auto it2 = allGameObjsByName.emplace(pair<string, vector<GameObject*>>(newObject->name, vector<GameObject*>()));
+		it2.first->second.push_back(newObject);
+	}
 	for (auto t : newObject->transform->children)
 		addGameObjectWithChildren(t->gameObject);
 }
+
+
 
 void Scene::initRootGameObject(GameObject* rootObject)
 {
@@ -85,14 +101,42 @@ void Scene::initRootGameObject(GameObject* rootObject)
 void Scene::removeGameObject(GameObject* gameObject)
 {
 	if (gameObject->isRootGameObject())
-		for (auto obj : rootGameObjs)
-			if (obj == gameObject)
-				return;
+	{
+		for (auto it = rootGameObjs.begin();it < rootGameObjs.end();it++)
+			if (*it == gameObject)
+			{
+				removeGameObjectWithChildren(*it);
+				rootGameObjs.erase(it);
+			}
+	}
+	else
+	{
+		removeGameObjectWithChildren(gameObject);
+	}			
+}
+
+void Scene::removeGameObjectWithChildren(GameObject* gameObject)
+{
+	auto it = allGameObjsByName.find(gameObject->name);
+	if (it != allGameObjsByName.end())
+	{
+		auto& vec = it->second;
+		for (auto i = vec.begin();i < vec.end();i++)
+			if (*i == gameObject)
+				vec.erase(i);
+	}		
+	allGameObjsByID.erase(gameObject->getID());
+	for (auto t : gameObject->transform->children)
+		removeGameObjectWithChildren(t->gameObject);
 }
 
 void Scene::removeGameObject(int id)
 {
-
+	std::unordered_map<int,GameObject*>::iterator it = allGameObjsByID.find(id);
+	if (it != allGameObjsByID.end())
+	{
+		removeGameObject(it->second);
+	}
 }
 
 void Scene::serialize(PHString& result)
@@ -123,7 +167,7 @@ void Scene::deserialize(std::stringstream& ss)
 				int size = stoi(line.substr(index +rootGameObjectPrefix.size(), line.size() - 1));
 				for (int i = 0;i < size;i++)
 				{
-					GameObject* root = new GameObject();
+					GameObject* root = new GameObject("",false);
 					root->deserialize(ss);
 					initRootGameObject(root);
 				}

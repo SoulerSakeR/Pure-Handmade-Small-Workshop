@@ -35,11 +35,12 @@ public:
     static Scene* loadFromPath(std::string path);
 private:
     std::unordered_map<int,GameObject*> allGameObjsByID; //当前场景下所有的GameObject
-    std::unordered_multimap<std::string, GameObject*> allGameObjsByName;
+    std::unordered_map<std::string, std::vector<GameObject*>> allGameObjsByName;
     std::vector<GameObject*> rootGameObjs; //当前场景下的根GameObject
 
     void addGameObject(GameObject* newObject);
     void addGameObjectWithChildren(GameObject* newObject);
+    void removeGameObjectWithChildren(GameObject* gameObject);
     void initRootGameObject(GameObject* rootObject);
 
 };
