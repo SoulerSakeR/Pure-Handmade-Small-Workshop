@@ -70,7 +70,7 @@ bool GameEngine::openGameProjectTest(const std::string& project, const std::stri
 
 /// @brief open exist gameProject
 /// @param path the obsolute path of .gameProject file
-/// @return value that indicates whether the process was completed
+/// @return value that indicates whether the process was completedf
 bool GameEngine::openGameProject(const string& path)
 {
 	// TODO: read from disk by path
