@@ -20,6 +20,9 @@ protected:
     void dragEnterEvent(QDragEnterEvent* event);
     Qt::DropAction supportedDropActions();
 
+private:
+    friend class renderwindow;
+
 signals:
 
    void itemDroped();

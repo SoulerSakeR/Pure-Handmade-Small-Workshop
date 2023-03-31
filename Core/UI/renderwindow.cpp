@@ -31,17 +31,45 @@ RenderWindow::RenderWindow(QWidget *parent)
     QList<ListItem*> items;
     auto path = GameEngine::getInstance().getRootPath() + "\\resources\\0027.png";
     QString s = QString::fromStdString(path);
-    for(int i=0;i<3;++i)
+    for(int i=0;i<9;++i)
     {
         auto a = items.emplace_back(new ListItem(s, QString("item %0").arg(i), ui->listBox));
         ui->listBox->addItem(a);
     }
+    QObject::connect(this, &QListWidget::customContextMenuRequested,this , &RenderWindow::showContextMenu);
 }
 
 RenderWindow::~RenderWindow()
 {
     delete ui;
 }
+
+// 显示右键菜单
+void RenderWindow::showContextMenu(const QPoint& pos)
+{
+    // 创建右键菜单
+    QMenu contextMenu(tr("Context menu"), this);
+    QAction action("Action", this);
+    contextMenu.addAction(&action);
+
+    // 显示右键菜单
+    QPoint globalPos = this->mapToGlobal(pos);
+    contextMenu.exec(globalPos);
+}
+
+// 创建items变量
+void RenderWindow::createItemsList()
+{
+    QList<ListItem*> items;
+    auto path = GameEngine::getInstance().getRootPath() + "\\resources\\0027.png";
+    QString s = QString::fromStdString(path);
+    for(int i=0;i<3;++i)
+  {
+      auto a = items.emplace_back(new ListItem(s, QString("item %0").arg(i), ui->listBox));
+      ui->listBox->addItem(a);
+  }
+}
+
 
 void RenderWindow::on_Render_action_triggered()
 {

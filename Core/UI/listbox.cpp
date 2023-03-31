@@ -1,8 +1,10 @@
 #include "listbox.h"
 #include "listitem.h"
+#include "renderwindow.h"
 
 ListBox::ListBox(QWidget* parent): QListWidget(parent)
 {
+    this->setFixedSize(150,720);
     this->setViewMode(QListView::IconMode);
     this->setIconSize(QSize(55, 55));
     this->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -10,6 +12,10 @@ ListBox::ListBox(QWidget* parent): QListWidget(parent)
     this->setDefaultDropAction(Qt::MoveAction);
     this->setAcceptDrops(true);
     this->setDropIndicatorShown(true);
+    // 添加右键菜单
+    this->setContextMenuPolicy(Qt::CustomContextMenu); 
+  //////////////
+
 }
 ListBox::~ListBox()
 {

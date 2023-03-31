@@ -66,6 +66,7 @@ private:
     void createIBO();
     int rederMain(QString*, QVector3D*, QVector2D*);
 
+
     void renderTexture(QOpenGLTexture* texture,QVector3D offset,QVector2D size);
 };
 

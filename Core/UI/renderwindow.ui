@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1320</width>
-    <height>732</height>
+    <width>1660</width>
+    <height>1080</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,8 +19,8 @@
      <rect>
       <x>211</x>
       <y>0</y>
-      <width>1191</width>
-      <height>720</height>
+      <width>1440</width>
+      <height>810</height>
      </rect>
     </property>
    </widget>
@@ -30,7 +30,7 @@
       <x>0</x>
       <y>0</y>
       <width>211</width>
-      <height>401</height>
+      <height>600</height>
      </rect>
     </property>
    </widget>
@@ -40,8 +40,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1320</width>
-     <height>17</height>
+     <width>1660</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -85,7 +85,18 @@
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_2"/>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <widget class="QListWidget" name="listWidget">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>256</width>
+       <height>192</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
   </widget>
   <action name="actioncreatProject">
    <property name="text">
