@@ -1,7 +1,8 @@
 #include "Debug.h"
 #include <Core/Core/PHString.h>
 
-const std::string& infoPrefix = "[info]";
+const std::string& infoPrefix = "[info] ";
+const std::string& errorPrefix = "[error] ";
 
 void Debug::log(const std::string& info)
 {	
@@ -16,6 +17,11 @@ void Debug::log(const std::string& info)
 
 #endif
 	
+}
+
+void Debug::logError(std::string& errorInfo)
+{
+	log(errorPrefix + errorInfo);
 }
 
 LPWSTR Debug::string2Lpwstr(const std::string& str)
