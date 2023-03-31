@@ -68,6 +68,11 @@ void Scene::addGameObject(GameObject *newObject)
 	allGameObjsByName.insert(pair<string, GameObject*>(newObject->name, newObject));
 }
 
+void Scene::initRootGameObject(GameObject* rootObject)
+{
+
+}
+
 void Scene::removeGameObject(GameObject* gameObject)
 {
 	if (gameObject->isRootGameObject())

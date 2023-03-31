@@ -16,29 +16,31 @@ public:
     std::vector<Component*> components; //游戏对象的所有组件
 
     //constructor
-    GameObject();
-    GameObject(std::string name);
+    GameObject(std::string name=""); 
     ~GameObject();
-    // TODO: 析构函数
 
     //method
-    int getID();
+    int getID(); //需要绑定
     void serialize(PHString& str) override;
     void deserialize(std::stringstream& ss) override;
     Component* addComponent(ComponentType type);
     template <typename T>
-    T* addComponent();
+    T* addComponent(); //需要绑定
     template <typename T>
-    T* getComponent();
+    T* getComponent(); //需要绑定
     Component* getComponent(ComponentType type);
-    void addComponent(Component* component);
-    bool isRootGameObject();
+    bool isRootGameObject(); //需要绑定
 
 private:  
     static int idCount;
     int id; //唯一id
 };
 
+/// <summary>
+/// 需要绑定，添加指定类型的组件
+/// </summary>
+/// <typeparam name="T">Component 子类</typeparam>
+/// <returns>添加的组件指针，类型错误则为 nullptr</returns>
 template<typename T>
 inline T* GameObject::addComponent()
 {
@@ -57,6 +59,11 @@ inline T* GameObject::addComponent()
     return nullptr;
 }
 
+/// <summary>
+/// 需要绑定，获取指定类型的组件
+/// </summary>
+/// <typeparam name="T">Component 子类</typeparam>
+/// <returns>获取的组件指针，未找到则为 nullptr</returns>
 template<typename T>
 inline T* GameObject::getComponent()
 {

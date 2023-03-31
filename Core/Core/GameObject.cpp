@@ -83,13 +83,6 @@ void GameObject::deserialize(std::stringstream& ss)
     } while (ss.good() && s!="GameObjectEnd");
 }
 
-GameObject::GameObject()
-{
-    name = "";
-    isActive = false;
-    id = 0;
-    components = vector<Component*>();
-}
 
 GameObject::GameObject(string name)
 {
@@ -149,16 +142,6 @@ Component* GameObject::getComponent(ComponentType type)
     return nullptr;
 }
 
-/// @brief add component to game object
-/// @param component the pointer of component
-void GameObject::addComponent(Component* component)
-{
-    if(component!=nullptr)
-    {
-        component->gameObject = this;
-        components.push_back(component);
-    }
-}
 
 bool GameObject::isRootGameObject()
 {
