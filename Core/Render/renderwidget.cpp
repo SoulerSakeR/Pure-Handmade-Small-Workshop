@@ -7,7 +7,7 @@
 
 
 std::string source_path;
-
+static int count = 0;
 
 float vertices[] = {
     // positions  // colors           // texture coords
@@ -53,12 +53,71 @@ void RenderWidget::setWirefame(bool wireframe)
     doneCurrent();
 }
 
+
+
+QString getTexturePath() // get from others
+{
+    // TODO: get texture path from config file
+    
+    std::string texturePath = source_path + "\\resources\\boss_hornet.png";
+
+    QString texturePathQ = QString::fromStdString(texturePath);
+
+    return texturePathQ;
+}
+
+QVector3D getOffset() // get from others
+{
+    // TODO: get offset from config file
+    QVector3D offset = QVector3D(0.0f, 0.0f, 0.0f);
+    return offset;
+}
+
+QVector2D getSize() // get from others
+{
+    // TODO: get size from config file
+    QVector2D size = QVector2D(0.4f, 0.6f);
+    return size;
+}
+
+
+void getTextureInfo(QString* texturePathQ, QVector3D* offset, QVector2D* size)
+{
+    std::string texturePath = source_path + "\\resources\\boss_hornet.png";
+
+    *texturePathQ = QString(QString::fromStdString(texturePath));
+
+    *offset =  QVector3D(0.0f, 0.0f, 0.0f);
+
+    *size = QVector2D(0.4f, 0.6f);
+
+}
+
+int RenderWidget::rederMain(QString* texturePathQ, QVector3D* offset, QVector2D* size)
+{
+    
+    getTextureInfo(texturePathQ, offset, size);
+    
+
+    std::unique_ptr<QOpenGLTexture> textureSample = std::make_unique<QOpenGLTexture>(QImage(*texturePathQ).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
+
+    textureSample->create();
+    textureSample->setFormat(QOpenGLTexture::RGBAFormat);
+
+    shaderProgram->bind();
+
+    renderTexture(textureSample.get(), *offset, *size);
+
+    return 1;
+}
+
+
 void RenderWidget::initializeGL()
 {
     initializeOpenGLFunctions();
     
     // source_path = SOURCE_DIR;
-    source_path = GameEngine::getInstance()->getRootPath();
+    source_path = GameEngine::getInstance().getRootPath();
 
     logger=std::make_unique<QOpenGLDebugLogger>(this);
     logger->initialize();
@@ -77,16 +136,6 @@ void RenderWidget::initializeGL()
     createIBO();
 
     
-    textureBoss = std::make_unique<QOpenGLTexture>(QImage(QString::fromStdString(source_path + "\\resources\\boss_hornet.png")).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
-    textureWall = std::make_unique<QOpenGLTexture>(QImage(QString::fromStdString(source_path + "\\resources\\0027.png")).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
-   textureSmile = std::make_unique<QOpenGLTexture>(QImage(QString::fromStdString(source_path + "\\resources\\awesomeface.png")).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
-
-    //textureSmile = std::make_unique<QOpenGLTexture>(QImage(QString::fromStdString(source_path + "\\resources\\awesomeface.png")).mirrored(), QOpenGLTexture::GenerateMipMaps);
-   
-    textureSmile->create();
-    textureWall->create();
-    textureBoss->create();
-    //textureWall = std::make_unique<QOpenGLTexture>(QImage(QString::fromStdString(source_path + "\\resources\\boss_hornet.png")).mirrored(), QOpenGLTexture::GenerateMipMaps);
     
 
     
@@ -103,48 +152,32 @@ void RenderWidget::paintGL()
     makeCurrent();
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
+/*
+    //textureBoss = std::make_unique<QOpenGLTexture>(QImage(QString::fromStdString(source_path + "\\resources\\boss_hornet.png")).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
     
+    //textureSmile = std::make_unique<QOpenGLTexture>(QImage(QString::fromStdString(source_path + "\\resources\\awesomeface.png")).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
 
-    
-    textureSmile->setFormat(QOpenGLTexture::RGBAFormat);
-    
-    textureWall->setFormat(QOpenGLTexture::RGBAFormat);
-    textureBoss->setFormat(QOpenGLTexture::RGBAFormat);
-    shaderProgram->bind();
+    // textureSmile = std::make_unique<QOpenGLTexture>(QImage(QString::fromStdString(source_path + "\\resources\\awesomeface.png")).mirrored(), QOpenGLTexture::GenerateMipMaps);
+    // textureSmile->create();   
+    // textureBoss->create();
+    // textureWall = std::make_unique<QOpenGLTexture>(QImage(QString::fromStdString(source_path + "\\resources\\boss_hornet.png")).mirrored(), QOpenGLTexture::GenerateMipMaps);   
+    // textureSmile->setFormat(QOpenGLTexture::RGBAFormat);  
+    // textureBoss->setFormat(QOpenGLTexture::RGBAFormat);
+ */   
+    count++;
+    std::cout << count << std::endl;
+    QString* texturePathQ = new QString;
+    QVector3D* offset = new QVector3D;
+    QVector2D* size = new QVector2D;
 
+    rederMain(texturePathQ, offset, size);
     
     
     
     
-    
-   
-    
-
-    renderTexture(textureWall.get(), { -0.4f,0.2f,0.1f }, { 0.3f,0.3f });
-
-    renderTexture(textureSmile.get(), { 0.0f,0.2f,0.2f }, { 0.3f,0.3f });
-    renderTexture(textureBoss.get(), { 0.1f,0.3f,0.1f }, { 0.3f,0.3f });
-    
-    
-    //    if(textureSmileBinding>=0)
-    //        textureSmile->bind(textureSmileBinding);
-    //    glBindVertexArray(VAO);
-    //    switch (m_shape){
-    //    case Rect:
-    //        glActiveTexture(GL_TEXTURE0);
-    //        //textureWall->bind(0);
-    //        //glActiveTexture(GL_TEXTURE1);
-    //        textureSmile->bind(1);
-    //        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
-    //        break;
-    //    default:
-    //        break;
-    //    }
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    //glDrawArrays(GL_TRIANGLES, 0, 3);
-    //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
-    //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, &indices );
 }
+
+
 
 void RenderWidget::on_timeout()
 {
@@ -246,7 +279,7 @@ void RenderWidget::messageLogHandler(const QOpenGLDebugMessage &debugMessage)
 {
     qDebug()<<debugMessage.message();
 }
-void RenderWidget::renderTexture(QOpenGLTexture* texture,QVector3D offset,QVector2D size)
+void RenderWidget::renderTexture(QOpenGLTexture* texture, QVector3D offset, QVector2D size)
 {
 
     offset.setZ(0.1f); // 统一深度 不要被挡住了 保证正确混合

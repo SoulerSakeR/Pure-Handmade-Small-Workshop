@@ -4,12 +4,23 @@
 #include <QApplication>
 #include <Windows.h>
 #include "Core/SystemStatus/GameEngine.h"
-#include "Core/Core/Test.h"
+#include "Core/Utils/Test.h"
 #include "Core/Input/InputDetection.h"
 #include "Core/Core/Debug.h"
+#include "Core/Core/Image.h"
 
 int main(int argc, char *argv[])
 { 
+#ifdef TEST
+    auto& gp = GameEngine::getInstance().creatGameProject("Test", "E:/SourceCodes/Git/GroupProject/Pure-Handmade-Small-Workshop/debug/test");
+    auto& gameObject1 = GameEngine::getInstance().addGameObject("testGameObejct1");
+    gameObject1.addComponent<Image>()->imgPath ="adsadsad";    
+    GameEngine::getInstance().addGameObject("testGameObejct2", &gameObject1).addComponent<Image>()->imgPath = "qwewqe";
+    auto save = gp.saveTest();
+    const std::string** scenes = new const std::string * [1];
+    scenes[0] = &((save[1]).str());
+    GameEngine::getInstance().openGameProjectTest(save->str(), scenes);
+#endif // TEST
 
     QApplication a(argc, argv);
     RenderWindow w;
@@ -42,16 +53,7 @@ int main(int argc, char *argv[])
         }
     }*/
 
-#ifdef TEST
-    GameProject* gp = GameEngine::getInstance()->creatGameProject("Test", "E:/SourceCodes/Git/GroupProject/Pure-Handmade-Small-Workshop/debug/test");
-    GameObject* gameObject1 = GameEngine::getInstance()->addGameObject("testGameObejct1");
-    GameEngine::getInstance()->addGameObject("testGameObejct2", gameObject1);
-    auto save = gp->saveTest();
-    const std::string** scenes = new const std::string*[1];
-    scenes[0] = &((save[1]).str());
-    GameEngine::getInstance()->openGameProjectTest(save->str(),scenes);
-    auto ge = GameEngine::getInstance();
-#endif // TEST
+
 
     return a.exec();
 }

@@ -1,5 +1,6 @@
 #include "GameObject.h"
-
+#include "Core/Core/Image.h"
+#include <Core/SystemStatus/GameEngine.h>
 using namespace std;
 
 int GameObject::idCount = 0;
@@ -74,8 +75,7 @@ void GameObject::deserialize(std::stringstream& ss)
                     {
                         GameObject* child = new GameObject();
                         child->deserialize(ss);
-                        transform->children.push_back(child->transform);
-                        child->transform->parent = transform;                    
+                        GameEngine::getInstance().getCurrentScene()->insertGameObject(*child, this, INSIDE);
                     }
                 }
             } while (ss.good() && s != "ChildrenEnd");
@@ -99,7 +99,19 @@ GameObject::GameObject(string name)
     id = idCount + 1;
     idCount++;
     components = vector<Component*>();
-    addComponent(TRANSFORM);
+    addComponent<Transform>();
+}
+
+GameObject::~GameObject()
+{
+    for (auto child : transform->children)
+    {
+        delete child->gameObject;
+    }
+    for (auto component : components)
+    {
+        delete component;
+    }
 }
 
 /// @brief add component to game object
@@ -114,12 +126,27 @@ Component* GameObject::addComponent(ComponentType type)
         result = new Transform(this);
         transform =(Transform*)result;
         break;
+    case IMAGE:
+        result = new Image(this);
     default:
         break;
     }
-    if(result!=nullptr)
+    if (result != nullptr)
+    {
+        result->gameObject = this;
         components.push_back(result);
+    }      
     return result;
+}
+
+Component* GameObject::getComponent(ComponentType type)
+{
+    for (auto component : components)
+    {
+        if (component->componentType == type)
+            return component;
+    }
+    return nullptr;
 }
 
 /// @brief add component to game object
@@ -139,5 +166,7 @@ bool GameObject::isRootGameObject()
         return true;
     return false;
 }
+
+
 
 

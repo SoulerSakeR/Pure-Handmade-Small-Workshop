@@ -3,7 +3,7 @@
 
 #include "Core/Core/Scene.h"
 #include "Core/Core/PHString.h"
-#include "Core/Core/Test.h"
+#include "Core/Utils/Test.h"
 #include <string>
 
 
