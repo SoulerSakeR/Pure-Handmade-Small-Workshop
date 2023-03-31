@@ -38,5 +38,6 @@ private:
     std::vector<GameObject*> rootGameObjs; //当前场景下的根GameObject
 
     void addGameObject(GameObject* newObject);
+    void initRootGameObject(GameObject* rootObject);
 };
 
