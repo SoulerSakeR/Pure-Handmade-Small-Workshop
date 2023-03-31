@@ -26,12 +26,13 @@ GameEngine& GameEngine::getInstance()
 /// @return value that indicates the process was completed or not.
 bool GameEngine::initialize()
 {
+	gameProject = nullptr;
 	std::filesystem::path current_path = std::filesystem::current_path();
 	rootPath = current_path.string();
     return true;
 }
 
-Scene*  GameEngine::getCurrentScene()
+Scene* const  GameEngine::getCurrentScene()
 {
 	if (gameProject != nullptr && gameProject->currentScene != nullptr)
 		return gameProject->currentScene;

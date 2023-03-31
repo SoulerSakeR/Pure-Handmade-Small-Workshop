@@ -167,7 +167,7 @@ void RenderWidget::paintGL()
 
     //render scene 
     auto scene = GameEngine::getInstance().getCurrentScene();
-
+    if(scene!=nullptr)
     for (auto rootObj : scene->getRootGameObjs())
     {
         //if(rootobj.needRender())
