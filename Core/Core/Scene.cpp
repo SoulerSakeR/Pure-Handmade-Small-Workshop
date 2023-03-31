@@ -6,34 +6,74 @@ using namespace std;
 
 const string rootGameObjectPrefix = "rootGameObject:";
 
-Scene::Scene()
-{
-	this->name = "ExampleScene";
-	allGameObjs = unordered_map<int,GameObject*>();
-	rootGameObjs = vector<GameObject*>();
-}
 
 Scene::Scene(string name)
 {
 	this->name = name;
-	allGameObjs = unordered_map<int,GameObject*>();
+	allGameObjsByID = unordered_map<int,GameObject*>();
+	allGameObjsByName = unordered_multimap<string, GameObject*>();
 	rootGameObjs = vector<GameObject*>();
 }
 
-void Scene::addRootGameObject(GameObject* newObject)
+void Scene::insertGameObject(GameObject& value,GameObject* target,InsertMode insertMode)
 {
-	rootGameObjs.push_back(newObject);
-	allGameObjs.insert(pair<int,GameObject*>(newObject->getID(), newObject));
+	addGameObject(&value);
+	if (target == nullptr)
+	{
+		rootGameObjs.push_back(&value);
+		return;
+	}
+	switch (insertMode)
+	{
+	case BEFORE:
+		if (target->isRootGameObject())
+		{
+			auto it = find(rootGameObjs.begin(), rootGameObjs.end(), target);
+			rootGameObjs.insert(it, &value);
+		}
+		else
+		{
+			auto& vec = target->transform->parent->children;
+			auto it = find(vec.begin(), vec.end(), target->transform);
+			vec.insert(it, value.transform);
+			value.transform->parent = target->transform->parent;
+		}
+		break;
+	case AFTER:
+		if (target->isRootGameObject())
+		{
+			auto it = find(rootGameObjs.begin(), rootGameObjs.end(), target);
+			rootGameObjs.insert(++it, &value);
+		}
+		else
+		{
+			auto& vec = target->transform->parent->children;
+			auto it = find(vec.begin(), vec.end(), target->transform);
+			vec.insert(++it, value.transform);
+			value.transform->parent = target->transform->parent;
+		}
+		break;
+	case INSIDE:
+		target->transform->children.push_back(value.transform);
+		value.transform->parent = target->transform;
+	default:
+		break;
+	}
 }
+
 
 void Scene::addGameObject(GameObject *newObject)
 {
-	allGameObjs.insert(pair<int,GameObject*>(newObject->getID(), newObject));
+	allGameObjsByID.insert(pair<int,GameObject*>(newObject->getID(), newObject));
+	allGameObjsByName.insert(pair<string, GameObject*>(newObject->name, newObject));
 }
 
 void Scene::removeGameObject(GameObject* gameObject)
 {
-	removeGameObject(gameObject->getID());
+	if (gameObject->isRootGameObject())
+		for (auto obj : rootGameObjs)
+			if (obj == gameObject)
+				return;
 }
 
 void Scene::removeGameObject(int id)
@@ -71,7 +111,7 @@ void Scene::deserialize(std::stringstream& ss)
 				{
 					GameObject* root = new GameObject();
 					root->deserialize(ss);
-					addRootGameObject(root);
+					insertGameObject(*root); //TODO: need to fix to add child objs
 				}
 			}
 		}
@@ -79,7 +119,7 @@ void Scene::deserialize(std::stringstream& ss)
 }
 const std::unordered_map<int, GameObject*> Scene::getAllGameObjs()
 {
-	return allGameObjs;
+	return allGameObjsByID;
 }
 #ifdef TEST
 Scene* Scene::loadFromText(const std::string& text)

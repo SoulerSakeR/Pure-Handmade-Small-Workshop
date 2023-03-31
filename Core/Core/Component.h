@@ -13,10 +13,12 @@ class Component : public ISerializable
 public:
 	GameObject* gameObject;
 	ComponentType componentType;
+	typedef ComponentType customType;
 	virtual void serialize(PHString&)=0;
 	virtual void deserialize(std::stringstream& ss) = 0;
-	Component() {
-		gameObject = nullptr;
+	virtual void reset() = 0;
+	Component(GameObject* gameObj) {
+		gameObject = gameObj;
 		componentType = UNKNOWN;
 	};
 	~Component() {

@@ -117,7 +117,7 @@ void RenderWidget::initializeGL()
     initializeOpenGLFunctions();
     
     // source_path = SOURCE_DIR;
-    source_path = GameEngine::getInstance()->getRootPath();
+    source_path = GameEngine::getInstance().getRootPath();
 
     logger=std::make_unique<QOpenGLDebugLogger>(this);
     logger->initialize();

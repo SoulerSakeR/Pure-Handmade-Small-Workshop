@@ -21,13 +21,13 @@ public:
     Transform* parent; //父节点
 
     //constructor
-    Transform();
     Transform(GameObject* gameObject);
     ~Transform();
 
     //method
     void serialize(PHString&) override; //序列化
     void deserialize(std::stringstream& ss) override; //反序列化  
+    void reset() override;
     Vector2D getWorldPosition(); //获取世界坐标位置
     float getWorldRotation(); //获取世界旋转角度
     Vector2D getWorldScale(); 

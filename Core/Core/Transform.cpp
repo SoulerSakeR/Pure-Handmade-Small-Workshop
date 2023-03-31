@@ -12,17 +12,11 @@ void Transform::serialize(PHString& str)
 }
 
 
-Transform::Transform()
+Transform::Transform(GameObject* gameObject):Component(gameObject)
 {
 	componentType = TRANSFORM;
 	children = vector<Transform*>();
 	parent = nullptr;
-	gameObject = nullptr;
-}
-
-Transform::Transform(GameObject* gameObject):Transform()
-{
-	this->gameObject = gameObject;
 }
 
 Transform::~Transform()
@@ -74,4 +68,11 @@ void Transform::deserialize(stringstream& ss)
 	x = stof(s.substr(0, index - 1));
 	y = stof(s.substr(index + 1, s.size() - 1));
 	localScale = Vector2D(x, y);
+}
+
+void Transform::reset()
+{
+	localPosition = Vector2D::zero();
+	localRotation = 0.0f;
+	localScale = Vector2D::zero();
 }

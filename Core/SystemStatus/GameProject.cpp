@@ -9,13 +9,13 @@ const std::string gameProjectPostfix = "GameProject:";
 const std::string scenePrefix = "Scene:";
 const std::string sceneProjectPostfix = "SceneEnd:";
 
-GameProject::GameProject(const string& name,const string& path, bool withDefaultScene)
+GameProject::GameProject(const string& name,const string& path, bool initDefaultScene)
 {
 	this->name = name;
 	this->path = path;
 	this->Scenes = vector<Scene*>();
 	currentScene = nullptr;
-	if(withDefaultScene)
+	if(initDefaultScene)
 		this->Scenes.push_back(new Scene());
 	// TODO: creat project directory
 }
