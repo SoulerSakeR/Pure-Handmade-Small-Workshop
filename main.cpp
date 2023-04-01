@@ -12,11 +12,11 @@
 int main(int argc, char *argv[])
 { 
 #ifdef TEST
-    auto& gp = GameEngine::getInstance().creatGameProject("Test", "E:/SourceCodes/Git/GroupProject/Pure-Handmade-Small-Workshop/debug/test");
+    auto& gp = GameEngine::getInstance().creatGameProject("Test1", "E:/SourceCodes/Git/GroupProject/Pure-Handmade-Small-Workshop/debug/test");
     auto& gameObj1 = GameEngine::getInstance().addGameObject("testGameObejct1");
     auto img1 = gameObj1.addComponent<Image>();
     gameObj1.transform->localPosition = Vector2D(-0.5f, .0f);
-    img1->imgPath  ="\\resources\\boss_hornet.png";
+    img1->imgPath  ="/resources/boss_hornet.png";
     img1->size = Vector2D(0.2f, 0.2f);
     auto& gameObj2 = GameEngine::getInstance().addGameObject("testGameObejct2");
     gameObj2.transform->localPosition = Vector2D(0.5f, .0f);

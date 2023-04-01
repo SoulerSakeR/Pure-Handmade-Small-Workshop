@@ -1,5 +1,6 @@
 #include "GameProject.h"
 #include <Core/Core/Debug.h>
+#include "Core/FileIO/IO.h"
 
 using namespace std;
 
@@ -15,9 +16,11 @@ GameProject::GameProject(const string& name,const string& path, bool initDefault
 	this->path = path;
 	this->Scenes = vector<Scene*>();
 	currentScene = nullptr;
-	if(initDefaultScene)
+	if (initDefaultScene)
+	{
 		this->Scenes.push_back(new Scene());
-	// TODO: creat project directory
+		save();
+	}	
 }
 
 bool GameProject::openScene(int index)
@@ -35,8 +38,7 @@ bool GameProject::save()
 	saveCurrentScene();
 	PHString content = PHString("");
 	serialize(content);
-	// TODO: 写入文件
-	// file.write(gameProject,path+".gameProject");
+	IO::write(content.str(), path+"\\"+name + ".gameProject", 0);
     return true;
 }
 
@@ -123,10 +125,8 @@ bool GameProject::saveCurrentScene()
 	string fileName = currentScene->name + sceneExtensionName;
 	string path = this->path;
 	path.append("/Scene/");
-	path.append(fileName);
-	// TODO: 写入文件
-	// file.write(scene,path);
-	return true;		
+	path.append(fileName);	
+	return IO::write(scene.str(), path, 0);;
 }
 
 #ifdef TEST

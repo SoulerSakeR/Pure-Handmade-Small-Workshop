@@ -1,11 +1,6 @@
-#include <Global.h>
+#include "IO.h"
 
-Global::Global()
-{
-
-}
-
-bool Global::copy(QString srcPath,QString desPath)
+bool IO::copy(QString srcPath,QString desPath)
 {
     desPath.replace("\\","/");
     int loc=srcPath.lastIndexOf("/");
@@ -31,7 +26,7 @@ bool Global::copy(QString srcPath,QString desPath)
     return true;
 }
 
-bool Global::write(QString content, QString path,int mode)
+bool IO::write(QString content, QString path,int mode)
 {
     if (path.isEmpty() == false)
     {
@@ -79,7 +74,12 @@ bool Global::write(QString content, QString path,int mode)
     return true;
 }
 
-Texture2D Global::loadTexture2D(QString path)
+bool IO::write(const std::string& content,const std::string& path, int mode)
+{
+    return write(QString::fromStdString(content), QString::fromStdString(path), mode);
+}
+
+Texture2D IO::loadTexture2D(QString path)
 {
     QImage image=QImage(path);
     Texture2D temp2D;
@@ -101,7 +101,7 @@ Texture2D Global::loadTexture2D(QString path)
     return temp2D;
 }
 
-QString Global::loadTextAsset(QString path)
+QString IO::loadTextAsset(QString path)
 {
     TextAsset tempTextAsset;
     QString displayString;

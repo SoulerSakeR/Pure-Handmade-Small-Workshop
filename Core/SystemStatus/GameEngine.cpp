@@ -26,9 +26,11 @@ GameEngine& GameEngine::getInstance()
 /// @return value that indicates the process was completed or not.
 bool GameEngine::initialize()
 {
+	Debug::log("Engine initializing");
 	gameProject = nullptr;
 	std::filesystem::path current_path = std::filesystem::current_path();
 	rootPath = current_path.string();
+	Debug::log("Engine initialized");
     return true;
 }
 
@@ -51,6 +53,9 @@ GameProject* const GameEngine::getCurrentGameProject()
 GameProject& GameEngine::creatGameProject(string name, string path)
 {
 	// TODO: 创建前检查当前是否已保存项目，如否，弹出窗口询问是否保存当前项目
+	auto index = path.find_last_of('/');
+	if (path.substr(index + 1) != name)
+		path.append("/"+name);
 	GameProject* game = new GameProject(name, path);
 	gameProject = game;
 	game->openScene(0);
