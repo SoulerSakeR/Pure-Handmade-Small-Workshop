@@ -1,49 +1,49 @@
 #define SOL_ALL_SAFETIES_ON 1
-#include <sol/sol.hpp> // or #include "sol.hpp", whichever suits your needs
+
 #include <iostream>
-#include "Core/GameObject.h"
+#include "lib/sol/sol.hpp" // or #include "sol.hpp", whichever suits your needs
+#include "Core/Core/GameObject.h"
 
 using namespace std;
 
 
-sol::table GameObjectLua(sol::state lua) {
+void GameObjectLua(sol::state lua) {
 	lua.open_libraries(sol::lib::base);
 
 	/*
-	°ó¶¨Ò»¸öc++Àà
+	ç»‘å®šä¸€ä¸ªc++ç±»
 	*/
 
 	/*
 	lua.new_usertype<func_plus>("func_plus",
-		//¹¹Ôìº¯Êı
+		//æ„é€ å‡½æ•°
 		sol::constructors<func_plus(int, int)>(),
-		//ÆäËûº¯Êı
+		//å…¶ä»–å‡½æ•°
 		"plus", &func_plus::plus
 		);
 
-	//ÔÚluaÖĞ´´ÔìÒ»¸öfunc_plusÊ¾Àı
+	//åœ¨luaä¸­åˆ›é€ ä¸€ä¸ªfunc_plusç¤ºä¾‹
 	lua.script("obj=func_plus.new(1,2)");
 
-	// ÔÚ Lua ÖĞµ÷ÓÃ³ÉÔ±º¯Êı
+	// åœ¨ Lua ä¸­è°ƒç”¨æˆå‘˜å‡½æ•°
 	lua.script("print(obj:plus())");
 
 	*/
 
-	//°ó¶¨GameObject.hppÀà
+	//ç»‘å®šGameObject.hppç±»
 	lua.new_usertype<GameObject>("GameObject",
-		//¹¹Ôìº¯Êı
+		//æ„é€ å‡½æ•°
 		sol::constructors<GameObject(), GameObject(std::string name)>(),
-		//¹«¹²²ÎÊı
+		//å…¬å…±å‚æ•°
 		"isActive", &GameObject::isActive,
 		"name", &GameObject::name,
-		"id", &GameObject::id,
 		"transform", &GameObject::transform,
 		"components", &GameObject::components,
-		//Ë½ÓĞ²ÎÊı
+		//ç§æœ‰å‚æ•°
 
-		//ÆÕÍ¨º¯Êı
-		"addComponent", sol::overload<Component* (GameObject::*)(ComponentType), void(GameObject::*)(Component*)>(
-			&GameObject::addComponent, &GameObject::addComponent),
+		//æ™®é€šå‡½æ•°
+		/*"addComponent", sol::overload<Component* (GameObject::*)(ComponentType), void(GameObject::*)(Component*)>(
+			&GameObject::addComponent, &GameObject::addComponent),*/
 		"serialize", &GameObject::serialize,
 		"deserialize", &GameObject::deserialize
 		);

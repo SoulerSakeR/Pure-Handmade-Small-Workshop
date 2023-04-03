@@ -12,36 +12,36 @@ public:
     //void gameLoop(GameProject* gamePrj);
 
     void updatePlayer(float deltaTime) {
-        // ¸üĞÂÍæ¼Ò×´Ì¬-±ÈÈçÎ»ÖÃºÍÖ´ĞĞ¶¯×÷
+        // æ›´æ–°ç©å®¶çŠ¶æ€-æ¯”å¦‚ä½ç½®å’Œæ‰§è¡ŒåŠ¨ä½œ
         
         // ...
     }
 
     void updateScene(float deltaTime) {
-        // ¸üĞÂ³¡¾°ĞÅÏ¢-ĞèÒªºÍ¹â·ò¸çºÍ¾´¸ç¶Ô½Ó
-        // »ñÈ¡³¡¾°ĞÅÏ¢(¹â·ò¸ç)²¢ÇÒ½øĞĞäÖÈ¾£¨¾´¸ç£©
+        // æ›´æ–°åœºæ™¯ä¿¡æ¯-éœ€è¦å’Œå…‰å¤«å“¥å’Œæ•¬å“¥å¯¹æ¥
+        // è·å–åœºæ™¯ä¿¡æ¯(å…‰å¤«å“¥)å¹¶ä¸”è¿›è¡Œæ¸²æŸ“ï¼ˆæ•¬å“¥ï¼‰
         // ...
         
     }
 
     void checkCollisions(float deltaTime) {
-        // ¼ì²éÅö×² ºÍÓî¾¸¶Ô½Ó
+        // æ£€æŸ¥ç¢°æ’ å’Œå®‡é–å¯¹æ¥
         // ...
     }
 
     void updateGameState(float deltaTime) {
-        // ¸üĞÂÓÎÏ·×´Ì¬
-        // ±ÈÈçÍæ¼ÒµÄÎ»ÖÃ
+        // æ›´æ–°æ¸¸æˆçŠ¶æ€
+        // æ¯”å¦‚ç©å®¶çš„ä½ç½®
         // ...
     }
 
     void printDataInfo(float deltaTime) {
-        //Êä³öÊı¾İĞÅÏ¢-²âÊÔÓÃ
+        //è¾“å‡ºæ•°æ®ä¿¡æ¯-æµ‹è¯•ç”¨
     }
 
 
     void update(float deltaTime) {
-        // ÓÎÏ·Âß¼­¸üĞÂº¯Êı£¬Ã¿Ö¡µ÷ÓÃÒ»´Î
+        // æ¸¸æˆé€»è¾‘æ›´æ–°å‡½æ•°ï¼Œæ¯å¸§è°ƒç”¨ä¸€æ¬¡
         updatePlayer(deltaTime);
         updateScene(deltaTime);
         checkCollisions(deltaTime);
@@ -54,9 +54,9 @@ public:
 
  
 private:
-    // Íæ¼Ò¡¢µĞÈË¡¢ÓÎÏ·×´Ì¬µÈÊı¾İ³ÉÔ±
+    // ç©å®¶ã€æ•Œäººã€æ¸¸æˆçŠ¶æ€ç­‰æ•°æ®æˆå‘˜
     // ...
-    // Íæ¼ÒÎ»ÖÃ
+    // ç©å®¶ä½ç½®
     //float position; 
-    int gameTime; // ´¢´æsrand(GetTickCount())
+    int gameTime; // å‚¨å­˜srand(GetTickCount())
 };

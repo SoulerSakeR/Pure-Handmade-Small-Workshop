@@ -4,8 +4,7 @@
 
 class InputDetection {
 public:
-	static bool GetKey(int); // Ä³¸ö¼üÊÇ·ñ°´×¡ ĞèÒª°ó¶¨
-	static bool GetKeyDown(int);// Ä³¸ö¼üÊÇ·ñ°´ÏÂ ĞèÒª°ó¶¨
-	static bool GetKeyUp(int);// Ä³¸ö¼üÊÇ·ñËÉ¿ª ĞèÒª°ó¶¨
-
+	static bool GetKey(int); // æŸä¸ªé”®æ˜¯å¦æŒ‰ä½ éœ€è¦ç»‘å®š
+	static bool GetKeyDown(int);// æŸä¸ªé”®æ˜¯å¦æŒ‰ä¸‹ éœ€è¦ç»‘å®š
+	static bool GetKeyUp(int);// æŸä¸ªé”®æ˜¯å¦æ¾å¼€ éœ€è¦ç»‘å®š
 };
