@@ -65,9 +65,14 @@ private:
     void createVBO();
     void createIBO();
     int renderMain(QString*, QVector3D*, QVector2D*);
+    
 
 
     void renderTexture(QOpenGLTexture* texture,QVector3D offset,QVector2D size);
+
+
+    
+
 };
 
 #endif // RENDERWIDGET_H

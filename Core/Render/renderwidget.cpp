@@ -4,11 +4,14 @@
 #include <iostream>
 #include <Core/SystemStatus/GameEngine.h>
 #include "Core/Core/Image.h"
+#include <QElapsedTimer>
 //#define SOURCE_DIR "E:/GroupProject/PHE(3)/"
 
 
 std::string source_path;
 static int count = 0;
+
+
 
 float vertices[] = {
     // positions  // colors           // texture coords
@@ -24,12 +27,17 @@ unsigned int indices[] = { // note that we start from 0!
                0, 2, 1 // second triangle
              };
 
-RenderWidget::RenderWidget(QWidget *parent) : QOpenGLWidget(parent)
+
+
+RenderWidget::RenderWidget(QWidget* parent) : QOpenGLWidget(parent)
 {
-    timer.start(100);
-    //    connect(&timer, SIGNAL(timeout()), this, SLOT(on_timeout()));
-    //connect(&timer, SIGNAL(timeout()), this, SLOT(on_timeout()));
+    setFocusPolicy(Qt::StrongFocus);
+    connect(&timer, SIGNAL(timeout()), this, SLOT(on_timeout()));
+
+    timer.start(2);
 }
+
+
 
 RenderWidget::~RenderWidget()
 {
@@ -96,12 +104,28 @@ void getTextureInfo(Image& imgComponent, QString* texturePathQ, QVector3D* offse
 
 }
 
+void getTextureInfoTest(QString* texturePathQ, QVector3D* offset, QVector2D* size)
+{
+
+    std::string texturePath = source_path + "\\resources\\boss_hornet_fixed.png";
+
+    *texturePathQ = QString(QString::fromStdString(texturePath));
+
+    *offset = QVector3D(0.0f, 0.0f, 0.0f);
+    
+    *size = QVector2D(0.4f, 0.6f);
+
+}
+
+
 int RenderWidget::renderMain(QString* texturePathQ, QVector3D* offset, QVector2D* size)
 {
     std::unique_ptr<QOpenGLTexture> textureSample = std::make_unique<QOpenGLTexture>(QImage(*texturePathQ).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
 
     textureSample->create();
     textureSample->setFormat(QOpenGLTexture::RGBAFormat);
+    textureSample->allocateStorage();
+
 
     shaderProgram->bind();
 
@@ -111,9 +135,13 @@ int RenderWidget::renderMain(QString* texturePathQ, QVector3D* offset, QVector2D
 }
 
 
+
+
 void RenderWidget::initializeGL()
 {
     initializeOpenGLFunctions();
+
+
     
     // source_path = SOURCE_DIR;
     source_path = GameEngine::getInstance().getRootPath();
@@ -134,10 +162,7 @@ void RenderWidget::initializeGL()
     createVAO();
     createIBO();
 
-    
-    
-
-    
+  
 }
 
 void RenderWidget::resizeGL(int w, int h)
@@ -166,6 +191,7 @@ void RenderWidget::paintGL()
 
 
     //render scene 
+    /*
     auto scene = GameEngine::getInstance().getCurrentScene();
     if(scene!=nullptr)
     for (auto rootObj : scene->getRootGameObjs())
@@ -179,8 +205,49 @@ void RenderWidget::paintGL()
         renderMain(texturePathQ, offset, size);
         //while()
     }
+    */
+
+    QMatrix4x4 matrix;
+    
+    
+    unsigned int time = QTime::currentTime().msec();
+
+    //std::cout << "time " << time << std::endl;
+
+    //matrix.rotate(time, 0.0f, 0.0f, 1.0f);
+    
+    float rotation_speed = 1.0f; // 每帧旋转的角度
+    float angle = (time % 360) * rotation_speed;
+
+    matrix.rotate(angle, 0.0f, 0.0f, 1.0f);
+    //matrix.rotate(m_angle, 0.0f, 0.0f, 1.0f);
+
+
+
+    QString* texturePathQ = new QString;
+    QVector3D* offset = new QVector3D;
+    QVector2D* size = new QVector2D;
+    getTextureInfoTest(texturePathQ, offset, size);
+    std::unique_ptr<QOpenGLTexture> textureSample = std::make_unique<QOpenGLTexture>(QImage(*texturePathQ).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
+  
+    textureSample->create();
+    //textureSample->setFormat(QOpenGLTexture::RGBAFormat);
+
+    //textureSample->setFormat(QOpenGLTexture::RGBA8_UNorm);
+
+
+    //textureSample->allocateStorage();
+
+    shaderProgram->bind();
+
+    shaderProgram->setUniformValue("rotationMatrix", matrix);
 
     
+    renderTexture(textureSample.get(), *offset, *size);
+    
+    
+    
+
 }
 
 /*dfs(root)
@@ -192,17 +259,11 @@ void RenderWidget::paintGL()
 
 void RenderWidget::on_timeout()
 {
-    //if (m_shape = None) return;
 
-    //    makeCurrent();
 
-    //    int timeValue = QDateTime::currentDateTime().time().second();
-    //    float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-    //    shaderProgram.setUniformValue("ourColor", 0.0f, greenValue, 0.0f, 1.0f);
-
-    //    doneCurrent();
-    //    update();
+    update();
 }
+
 void RenderWidget::cleanup()
 {
 
@@ -299,6 +360,10 @@ void RenderWidget::renderTexture(QOpenGLTexture* texture, QVector3D offset, QVec
     shaderProgram->setUniformValue(shaderSizeBinding,size);
     vao->bind();
     ibo->bind();
+
+
+
+    
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

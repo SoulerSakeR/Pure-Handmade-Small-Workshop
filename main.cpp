@@ -1,3 +1,4 @@
+#include <QLoggingCategory>
 #include <QApplication>
 #include <Windows.h>
 #include "Core/UI/renderwindow.h"
@@ -84,8 +85,11 @@ int main(int argc, char *argv[])
     sol_state.open_libraries(sol::lib::base);
     InputDetectionLua(sol_state);
     GameObjectLua(sol_state);
-    sol_state.script_file("test.lua");
+    //sol_state.script_file("test.lua");
 #endif // TEST
+
+    
+    QLoggingCategory::setFilterRules(QStringLiteral("qt.gui.imageio=false")); // 关闭图片格式警告
 
     QApplication a(argc, argv);
     RenderWindow w;
