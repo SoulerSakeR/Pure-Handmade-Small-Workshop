@@ -1,5 +1,7 @@
 #include "Debug.h"
-#include <Core/Core/PHString.h>
+#include "Core/Core/PHString.h"
+#include "Core/Utils/Test.h"
+#include <iostream>
 
 const std::string& infoPrefix = "[info] ";
 const std::string& errorPrefix = "[error] ";
@@ -10,14 +12,19 @@ void Debug::log(const std::string& info)
 	std::string text = infoPrefix + info;
 	if (text.back() != '\n')
 		text.append("\n");
-	auto str = string2Lpwstr(text);
-	OutputDebugString(str);
-	delete str;
-#else
+#ifdef LOG_TO_CONSOLE	
+	Log2Console(text);
+#endif // LOG_TO_CONSOLE
 
-#endif
+#ifdef LOG_TO_OUTPUT_WINDOW
+	Log2OutputWindow(text);
+#endif // LOG_TO_OUTPUT_WINDOW
+
+#endif // NDEBUG
 	
 }
+
+
 
 void Debug::logError(std::string& errorInfo)
 {
@@ -32,6 +39,18 @@ LPWSTR Debug::string2Lpwstr(const std::string& str)
 	LPWSTR result = new WCHAR[dwLen];
 	MultiByteToWideChar(CP_UTF8, 0, cstr, dwLen, result, nwLen);
 	return result;
+}
+
+void Debug::Log2Console(const std::string& info)
+{
+	std::cout << info;
+}
+
+void Debug::Log2OutputWindow(const std::string& text)
+{
+	auto str = string2Lpwstr(text);
+	OutputDebugString(str);
+	delete str;
 }
 
 

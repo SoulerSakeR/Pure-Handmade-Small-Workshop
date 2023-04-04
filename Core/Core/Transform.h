@@ -27,10 +27,10 @@ public:
     //method
     void serialize(PHString&) override; //序列化
     void deserialize(std::stringstream& ss) override; //反序列化  
-    void reset() override;
-    Vector2D getWorldPosition(); //获取世界坐标位置
-    float getWorldRotation(); //获取世界旋转角度
-    Vector2D getWorldScale(); 
-    Transform* translate(Vector2D value); //朝给定向量移动
+    void reset() override; 
+    Vector2D getWorldPosition(); //获取世界坐标位置 需要绑定
+    float getWorldRotation(); //获取世界旋转角度 需要绑定
+    Vector2D getWorldScale(); //需要绑定
+    Transform* translate(Vector2D value); //朝给定向量移动 需要绑定
 };
 

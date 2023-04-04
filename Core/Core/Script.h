@@ -1,8 +1,11 @@
 #pragma once
 #include "Component.h"
-class Camera :
+
+class Script :
     public Component
 {
-
+public:
+    Script(GameObject* gameObj);
 };
+
 

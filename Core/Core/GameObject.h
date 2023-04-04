@@ -10,10 +10,10 @@ class GameObject :
 {
 public:
     //field
-    bool isActive; //当前游戏对象的激活状态
-    std::string name; //名字
-    Transform* transform; //游戏对象的transform组件
-    std::vector<Component*> components; //游戏对象的所有组件
+    bool isActive; //当前游戏对象的激活状态 需要绑定
+    std::string name; //名字 需要绑定
+    Transform* transform; //游戏对象的transform组件 需要绑定
+    std::vector<Component*> components; //游戏对象的所有组件 需要绑定
 
     //constructor
     GameObject(std::string name="",bool withTransform=true); 
@@ -23,7 +23,7 @@ public:
     int getID(); //需要绑定
     void serialize(PHString& str) override;
     void deserialize(std::stringstream& ss) override;
-    Component* addComponent(ComponentType type);
+    Component* addComponent(ComponentType type); 
     template <typename T>
     T* addComponent(); //需要绑定
     template <typename T>
