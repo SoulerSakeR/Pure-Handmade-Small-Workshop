@@ -1,5 +1,14 @@
 #include "IO.h"
 
+bool createPathIfNotExists(const QString& path) {
+    QDir dir(path);
+    if (!dir.exists()) {
+        return dir.mkpath(".");
+    }
+    return true;
+}
+
+
 bool IO::copy(QString srcPath,QString desPath)
 {
     desPath.replace("\\","/");
@@ -26,38 +35,46 @@ bool IO::copy(QString srcPath,QString desPath)
     return true;
 }
 
-bool IO::write(QString content, QString path,int mode)
-{
+bool IO::write(QString content, QString path, int mode) {
     if (path.isEmpty() == false)
     {
-        QFile file;
-        //关联文件名字
-        file.setFileName(path);
-        if(mode==0&&file.exists())
+        QFileInfo fileInfo(path);
+        QString dirPath = fileInfo.absolutePath();
+
+        // Create the directory if it does not exist
+        if (!createPathIfNotExists(dirPath))
         {
-          int loc=path.lastIndexOf(".");
-          QString path1;
-          path1=path.left(loc)+"1"+path.mid(loc);
-          file.setFileName(path1);
+            return false;
+        }
+
+        QFile file;
+        // Associate the file name
+        file.setFileName(path);
+        if (mode == 0 && file.exists())
+        {
+            int loc = path.lastIndexOf(".");
+            QString path1;
+            path1 = path.left(loc) + "1" + path.mid(loc);
+            file.setFileName(path1);
         }
         bool b_open;
-        switch (mode) {
+        switch (mode)
+        {
         case 0:
             b_open = file.open(QIODevice::ReadWrite);
             break;
         case 1:
-             b_open = file.open(QIODevice::ReadWrite | QIODevice::Truncate);
+            b_open = file.open(QIODevice::ReadWrite | QIODevice::Truncate);
             break;
         case 2:
             b_open = file.open(QIODevice::ReadWrite | QIODevice::Append);
             break;
         default:
-             b_open = file.open(QIODevice::ReadWrite);
+            b_open = file.open(QIODevice::ReadWrite);
         }
-
         if (b_open == true)
         {
-            //QFile只支持UTF-8格式
+            // QFile only supports UTF-8 format
             QString str = content;
             file.write(str.toUtf8());
         }
