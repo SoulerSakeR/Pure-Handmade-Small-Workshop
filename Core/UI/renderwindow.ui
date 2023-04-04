@@ -131,12 +131,12 @@
   <customwidget>
    <class>RenderWidget</class>
    <extends>QOpenGLWidget</extends>
-   <header>renderwidget.h</header>
+   <header>Core/Render/renderwidget.h</header>
   </customwidget>
   <customwidget>
    <class>ListBox</class>
    <extends>QListWidget</extends>
-   <header>listbox.h</header>
+   <header>Core/UI/listbox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
