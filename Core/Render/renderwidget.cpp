@@ -7,7 +7,7 @@
 #include <QElapsedTimer>
 //#define SOURCE_DIR "E:/GroupProject/PHE(3)/"
 
-
+RenderWidget* RenderWidget::instance = nullptr;
 std::string source_path;
 static int count = 0;
 
@@ -35,6 +35,9 @@ RenderWidget::RenderWidget(QWidget* parent) : QOpenGLWidget(parent)
     connect(&timer, SIGNAL(timeout()), this, SLOT(on_timeout()));
 
     timer.start(2);
+
+    instance = this;
+
 }
 
 
@@ -228,6 +231,7 @@ void RenderWidget::paintGL()
     QVector3D* offset = new QVector3D;
     QVector2D* size = new QVector2D;
     getTextureInfoTest(texturePathQ, offset, size);
+
     std::unique_ptr<QOpenGLTexture> textureSample = std::make_unique<QOpenGLTexture>(QImage(*texturePathQ).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
   
     textureSample->create();
@@ -267,6 +271,12 @@ void RenderWidget::on_timeout()
 void RenderWidget::cleanup()
 {
 
+}
+
+RenderWidget& RenderWidget::getInstance()
+{
+    // TODO: 在此处插入 return 语句
+    return *instance;
 }
 
 void RenderWidget::createProgram()

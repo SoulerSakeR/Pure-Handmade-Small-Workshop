@@ -25,6 +25,8 @@ public:
     void setWirefame(bool wireframe);
 
     void cleanup();
+
+    static RenderWidget& getInstance();
     
     
 
@@ -41,6 +43,11 @@ public slots:
     void messageLogHandler(const QOpenGLDebugMessage &debugMessage);
 
 private:
+
+    static RenderWidget* instance;
+
+
+
     Shape m_shape;
     std::unique_ptr<QOpenGLVertexArrayObject> vao;
     std::unique_ptr<QOpenGLShaderProgram> shaderProgram;
