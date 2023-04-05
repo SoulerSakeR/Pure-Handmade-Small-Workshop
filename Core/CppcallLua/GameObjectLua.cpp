@@ -1,8 +1,8 @@
 #define SOL_ALL_SAFETIES_ON 1
 
 #include <iostream>
-#include "sol/sol.hpp" // or #include "sol.hpp", whichever suits your needs
-#include "Core/GameObject.h"
+#include "lib/sol/sol.hpp" // or #include "sol.hpp", whichever suits your needs
+#include "Core/Core/GameObject.h"
 
 using namespace std;
 

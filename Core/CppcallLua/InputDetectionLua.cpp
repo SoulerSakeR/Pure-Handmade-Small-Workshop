@@ -1,5 +1,5 @@
-#include "sol/sol.hpp"
-#include "Input/InputDetection.h"
+#include "lib/sol/sol.hpp"
+#include "Core/Input/InputDetection.h"
 
 using namespace std;
 
