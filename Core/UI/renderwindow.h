@@ -15,6 +15,7 @@ class RenderWindow : public QMainWindow
 public:
     RenderWindow(QWidget *parent = nullptr);
     ~RenderWindow();
+    void resizeGL(QResizeEvent*);
 public slots:
     void showContextMenu(const QPoint&);
 

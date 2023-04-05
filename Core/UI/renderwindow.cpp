@@ -37,6 +37,8 @@ RenderWindow::RenderWindow(QWidget *parent)
         ui->listBox->addItem(a);
     }
     QObject::connect(this, &QListWidget::customContextMenuRequested,this , &RenderWindow::showContextMenu);
+    // 链接未完成4.4
+    // QObject::connect(this, &QWidget::resizeEvent, ui->openGLWidget, &RenderWindow::resizeGL);
 }
 
 RenderWindow::~RenderWindow()
@@ -71,6 +73,16 @@ void RenderWindow::createItemsList()
 }
 
 
+void RenderWindow::resizeGL(QResizeEvent* event) {
+    int width = ui->openGLWidget->width();
+    int height = ui->openGLWidget->height();
+    ui->openGLWidget->resize(width, height);
+    event->accept();
+}
+
+
+
+// 以下是测试渲染的三个按钮
 void RenderWindow::on_Render_action_triggered()
 {
     ui->openGLWidget->drawShape(RenderWidget::Rect);
@@ -81,7 +93,6 @@ void RenderWindow::on_Clear_action_triggered()
 {
     ui->openGLWidget->drawShape(RenderWidget::None);
 }
-
 
 void RenderWindow::on_actionWirefame_triggered()
 {
