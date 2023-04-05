@@ -1,6 +1,7 @@
 #include <QLoggingCategory>
 #include <QApplication>
 #include <Windows.h>
+#include <thread>
 #include "Core/UI/renderwindow.h"
 #include "lib/sol/sol.hpp"
 #include "Core/Render/common.h"
@@ -9,6 +10,7 @@
 #include "Core/Input/InputDetection.h"
 #include "Core/Core/Debug.h"
 #include "Core/Core/Image.h"
+#include "Core/ThreadPool/ThreadPool.h"
 
 void InputDetectionLua(sol::state& lua) {
     lua.open_libraries(sol::lib::base, sol::lib::package);
@@ -61,6 +63,10 @@ void GameObjectLua(sol::state& lua) {
         "serialize", &GameObject::serialize,
         "deserialize", &GameObject::deserialize
     );
+}
+void task(int i)
+{
+    std::cout << "Task " << i << " is running on thread " << std::this_thread::get_id() << std::endl;
 }
 
 int main(int argc, char *argv[])
@@ -122,7 +128,13 @@ int main(int argc, char *argv[])
         }
     }*/
 
+    //ThreadPool pool;
 
+    //pool.test();
+    //for (int i = 0; i < 10; i++)
+    //{
+    //    pool.enqueue(task, i);
+    //}
 
     return a.exec();
 }
