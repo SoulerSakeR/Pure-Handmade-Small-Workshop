@@ -230,7 +230,10 @@ void RenderWidget::paintGL()
     QString* texturePathQ = new QString;
     QVector3D* offset = new QVector3D;
     QVector2D* size = new QVector2D;
-    getTextureInfoTest(texturePathQ, offset, size);
+
+    getTextureInfo(*(GameEngine::getInstance().getCurrentScene()->getRootGameObjs()[0]->getComponent<Image>()), texturePathQ, offset, size);
+    
+    //getTextureInfoTest(texturePathQ, offset, size);
 
     std::unique_ptr<QOpenGLTexture> textureSample = std::make_unique<QOpenGLTexture>(QImage(*texturePathQ).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
   
@@ -254,12 +257,6 @@ void RenderWidget::paintGL()
 
 }
 
-/*dfs(root)
-{
-    render root
-    dfs(child)
-}
-*/
 
 void RenderWidget::on_timeout()
 {
