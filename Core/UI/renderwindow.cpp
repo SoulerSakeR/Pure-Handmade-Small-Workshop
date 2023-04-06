@@ -31,8 +31,8 @@ RenderWindow::RenderWindow(QWidget *parent)
     connect(ui->actioncreatProject, &QAction::triggered, [=]() {
         // 文件对话框  参数1 父亲 参数2 标题 参数3 默认打开路径 参数4 过滤文件格式
         QString FileAdress = QFileDialog::getSaveFileName(this, "创建项目", "", "");// 可以重载第四个参数，意义是筛选文件类型  "(*.txt)"
-
-        GameEngine::get_instance().creatGameProject("Test1", FileAdress.toStdString());
+        QString fileName = QFileInfo(FileAdress).fileName();
+        GameEngine::get_instance().creatGameProject(fileName.toStdString(), FileAdress.toStdString());
         });
 
     QList<ListItem*> items;
