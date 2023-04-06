@@ -1,6 +1,7 @@
 #include "GameProject.h"
 #include "Core/Core/Debug.h"
 #include "Core/FileIO/IO.h"
+#include "Core/Core/Scene.h"
 
 using namespace std;
 
@@ -111,7 +112,7 @@ void GameProject::deserialize(std::stringstream& ss)
 					for (int i = 0;i < size;i++)
 					{
 						getline(ss, s);
-						Scene* scene = Scene::loadFromText(IO::readText(s));
+						Scene* scene = Scene::loadFromPath(s);
 						Scenes.push_back(scene);
 					}
 				}
