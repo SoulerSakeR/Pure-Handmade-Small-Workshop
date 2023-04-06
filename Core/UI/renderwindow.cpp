@@ -27,6 +27,13 @@ RenderWindow::RenderWindow(QWidget *parent)
         // 暂时将读取的文件放入数组中
         QByteArray array = file.readAll();
     });
+    // 点击创建项目按钮出现资源对话框
+    connect(ui->actioncreatProject, &QAction::triggered, [=]() {
+        // 文件对话框  参数1 父亲 参数2 标题 参数3 默认打开路径 参数4 过滤文件格式
+        QString FileAdress = QFileDialog::getSaveFileName(this, "创建项目", "", "");// 可以重载第四个参数，意义是筛选文件类型  "(*.txt)"
+
+        GameEngine::get_instance().creatGameProject("Test1", FileAdress.toStdString());
+        });
 
     QList<ListItem*> items;
     auto path = GameEngine::get_instance().getRootPath() + "\\resources\\0027.png";
