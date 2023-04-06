@@ -16,6 +16,7 @@ public:
     RenderWindow(QWidget *parent = nullptr);
     ~RenderWindow();
     void resizeGL(QResizeEvent*);
+    void refreshHierachy();
 public slots:
     void showContextMenu(const QPoint&);
 
@@ -26,7 +27,7 @@ private slots:
     void on_Clear_action_triggered();
 
 
-    void createItemsList();
+    // void createItemsList();
 
     void on_actionWirefame_triggered();
 

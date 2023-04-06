@@ -8,6 +8,7 @@
 #include "Core/UI/listbox.h"
 #include "Core/UI/listitem.h"
 #include "Core/SystemStatus/GameEngine.h"
+#include "HierarchyItem.h"
 
 RenderWindow::RenderWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -34,8 +35,17 @@ RenderWindow::RenderWindow(QWidget *parent)
         QByteArray array = file.readAll();
         */
     });
-   
-
+    connect(ui->actionsaveProject, &QAction::triggered, [=]() {
+        GameEngine::get_instance().saveGameProject();
+    });
+    connect(ui->actionCreatEmptyGameObject, &QAction::triggered, [=]() {
+        GameEngine::get_instance().addGameObject();
+    });
+    connect(ui->actionCreatGameObjectWithImage, &QAction::triggered, [=]() {
+        GameEngine::get_instance().addGameObject("Image",nullptr,IMAGE);
+    });
+    ui->hierarchy->setHeaderHidden(true);
+    /*
     QList<ListItem*> items;
     auto path = GameEngine::get_instance().getRootPath() + "\\resources\\0027.png";
     QString s = QString::fromStdString(path);
@@ -44,6 +54,7 @@ RenderWindow::RenderWindow(QWidget *parent)
         auto a = items.emplace_back(new ListItem(s, QString("item %0").arg(i), ui->listBox));
         ui->listBox->addItem(a);
     }
+    */
     QObject::connect(this, &QListWidget::customContextMenuRequested,this , &RenderWindow::showContextMenu);
     // 链接未完成4.4
     // QObject::connect(this, &QWidget::resizeEvent, ui->openGLWidget, &RenderWindow::resizeGL);
@@ -67,6 +78,7 @@ void RenderWindow::showContextMenu(const QPoint& pos)
     contextMenu.exec(globalPos);
 }
 
+/*
 // 创建items变量
 void RenderWindow::createItemsList()
 {
@@ -79,13 +91,28 @@ void RenderWindow::createItemsList()
       ui->listBox->addItem(a);
   }
 }
-
+*/
 
 void RenderWindow::resizeGL(QResizeEvent* event) {
     int width = ui->openGLWidget->width();
     int height = ui->openGLWidget->height();
     ui->openGLWidget->resize(width, height);
     event->accept();
+}
+
+void RenderWindow::refreshHierachy()
+{
+    ui->hierarchy->clear();    
+    auto scene = GameEngine::get_instance().getCurrentScene();
+    if (scene == nullptr)
+        return;
+    auto items = QList<QTreeWidgetItem*>();
+    for (auto obj : scene->getRootGameObjs())
+    {
+        HierarchyItem* item = new HierarchyItem(obj);
+        items.emplaceBack(item);
+    }
+    ui->hierarchy->addTopLevelItems(items);
 }
 
 

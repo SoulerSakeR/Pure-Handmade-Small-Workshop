@@ -24,15 +24,23 @@
      </rect>
     </property>
    </widget>
-   <widget class="ListBox" name="listBox">
+   <widget class="QTreeWidget" name="hierarchy">
     <property name="geometry">
      <rect>
       <x>0</x>
       <y>0</y>
       <width>211</width>
-      <height>600</height>
+      <height>431</height>
      </rect>
     </property>
+    <property name="headerHidden">
+     <bool>true</bool>
+    </property>
+    <column>
+     <property name="text">
+      <string notr="true">1</string>
+     </property>
+    </column>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -50,11 +58,14 @@
     </property>
     <addaction name="actioncreatProject"/>
     <addaction name="actionopenProject"/>
+    <addaction name="actionsaveProject"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
      <string>物体</string>
     </property>
+    <addaction name="actionCreatEmptyGameObject"/>
+    <addaction name="actionCreatGameObjectWithImage"/>
    </widget>
    <widget class="QMenu" name="menuLUA">
     <property name="title">
@@ -126,17 +137,27 @@
     <string>线框</string>
    </property>
   </action>
+  <action name="actionCreatEmptyGameObject">
+   <property name="text">
+    <string>空物体</string>
+   </property>
+  </action>
+  <action name="actionCreatGameObjectWithImage">
+   <property name="text">
+    <string>图像</string>
+   </property>
+  </action>
+  <action name="actionsaveProject">
+   <property name="text">
+    <string>保存项目</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
    <class>RenderWidget</class>
    <extends>QOpenGLWidget</extends>
    <header>Core/Render/renderwidget.h</header>
-  </customwidget>
-  <customwidget>
-   <class>ListBox</class>
-   <extends>QListWidget</extends>
-   <header>Core/UI/listbox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
