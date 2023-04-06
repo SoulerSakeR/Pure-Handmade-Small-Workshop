@@ -1,7 +1,12 @@
 #include "IO.h"
 
-bool createPathIfNotExists(const QString& path) {
-    QDir dir(path);
+bool IO::createPathIfNotExists(const std::string& directory)
+{
+    return IO::createPathIfNotExists(QString::fromStdString(directory));
+}
+
+bool IO::createPathIfNotExists(const QString& directory) {
+    QDir dir(directory);
     if (!dir.exists()) {
         return dir.mkpath(".");
     }
@@ -33,6 +38,29 @@ bool IO::copy(QString srcPath,QString desPath)
         return false;
     }
     return true;
+}
+
+std::string IO::readText(const std::string& path)
+{
+    return readText(QString::fromStdString(path)).toStdString();
+}
+
+QString IO::readText(const QString& path)
+{
+    TextAsset tempTextAsset;
+    QString displayString;
+    QFile file(path);
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    QTextStream in(&file);
+    QString line = in.readLine();
+
+    while (!line.isNull())
+    {
+        displayString.append(line).append('\n');
+        line = in.readLine();
+    }
+    tempTextAsset.text = displayString;
+    return displayString;
 }
 
 bool IO::write(QString content, QString path, int mode) {
@@ -116,6 +144,11 @@ Texture2D IO::loadTexture2D(QString path)
         }
     }
     return temp2D;
+}
+
+Texture2D IO::loadTexture2D(const std::string& path)
+{
+    return loadTexture2D(QString::fromStdString(path));
 }
 
 QString IO::loadTextAsset(QString path)

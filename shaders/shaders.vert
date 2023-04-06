@@ -10,7 +10,7 @@ uniform vec2 size;
 uniform mat4 rotationMatrix;
 
 void main(){
-    gl_Position = rotationMatrix * vec4(aPos.xy*size+offset.xy, aPos.z+offset.z, 1.0f);
+    gl_Position = rotationMatrix * vec4(aPos, 1.0f);
     ourColor=aColor;
     TexCord=aTexCord;
 }

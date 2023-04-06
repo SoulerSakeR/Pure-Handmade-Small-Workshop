@@ -29,7 +29,7 @@ RenderWindow::RenderWindow(QWidget *parent)
     });
 
     QList<ListItem*> items;
-    auto path = GameEngine::getInstance().getRootPath() + "\\resources\\0027.png";
+    auto path = GameEngine::get_instance().getRootPath() + "\\resources\\0027.png";
     QString s = QString::fromStdString(path);
     for(int i=0;i<9;++i)
     {
@@ -63,7 +63,7 @@ void RenderWindow::showContextMenu(const QPoint& pos)
 void RenderWindow::createItemsList()
 {
     QList<ListItem*> items;
-    auto path = GameEngine::getInstance().getRootPath() + "\\resources\\0027.png";
+    auto path = GameEngine::get_instance().getRootPath() + "\\resources\\0027.png";
     QString s = QString::fromStdString(path);
     for(int i=0;i<3;++i)
   {

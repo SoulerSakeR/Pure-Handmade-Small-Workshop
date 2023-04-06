@@ -1,5 +1,5 @@
 #include "GameProject.h"
-#include <Core/Core/Debug.h>
+#include "Core/Core/Debug.h"
 #include "Core/FileIO/IO.h"
 
 using namespace std;
@@ -19,7 +19,6 @@ GameProject::GameProject(const string& name,const string& path, bool initDefault
 	if (initDefaultScene)
 	{
 		this->Scenes.push_back(new Scene());
-		save();
 	}	
 }
 
@@ -27,18 +26,23 @@ bool GameProject::openScene(int index)
 {
 	if(Scenes.empty())
     	return false;
+	if (index >= 0 && index < Scenes.size())
+	{
+		currentScene = Scenes[index];
+		return true;
+	}
 	// TODO: refresh hierarchy 刷新面板
 	// TODO: render Scene 
-	currentScene = Scenes[index];
-	return true;
+	
 }
 
 bool GameProject::save()
 {
+	IO::createPathIfNotExists(path);
 	saveCurrentScene();
 	PHString content = PHString("");
-	serialize(content);
-	IO::write(content.str(), path+"\\"+name + ".gameProject", 0);
+	serialize(content);	
+	IO::write(content.str(), path+"\\"+name + ".gameProject", 1);
     return true;
 }
 
@@ -107,7 +111,7 @@ void GameProject::deserialize(std::stringstream& ss)
 					for (int i = 0;i < size;i++)
 					{
 						getline(ss, s);
-						Scene* scene = Scene::loadFromPath(s);				
+						Scene* scene = Scene::loadFromText(IO::readText(s));
 						Scenes.push_back(scene);
 					}
 				}
@@ -123,10 +127,11 @@ bool GameProject::saveCurrentScene()
 	PHString scene = PHString("");
 	currentScene->serialize(scene);
 	string fileName = currentScene->name + sceneExtensionName;
-	string path = this->path;
-	path.append("/Scene/");
-	path.append(fileName);	
-	return IO::write(scene.str(), path, 0);;
+	string final_path = this->path;
+	final_path.append("\\Scene");
+	IO::createPathIfNotExists(final_path);
+	final_path.append("\\").append(fileName);
+	return IO::write(scene.str(), final_path, 1);;
 }
 
 #ifdef TEST
@@ -148,7 +153,7 @@ void GameProject::serialize(PHString& result)
 	result.appendLine("Scene:",to_string(Scenes.size()));
 	for(int i=0;i<Scenes.size();i++)
 	{
-		string scenePath = path + "/Scene/" + Scenes[i]->name + sceneExtensionName;
+		string scenePath = path + "\\Scene\\" + Scenes[i]->name + sceneExtensionName;
 		result.appendLine(scenePath);
 	}
 	result.appendLine("SceneEnd");

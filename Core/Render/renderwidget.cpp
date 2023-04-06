@@ -4,6 +4,7 @@
 #include <iostream>
 #include <Core/SystemStatus/GameEngine.h>
 #include "Core/Core/Image.h"
+#include "Core/Core/Camera.h"
 #include <QElapsedTimer>
 //#define SOURCE_DIR "E:/GroupProject/PHE(3)/"
 
@@ -147,7 +148,7 @@ void RenderWidget::initializeGL()
 
     
     // source_path = SOURCE_DIR;
-    source_path = GameEngine::getInstance().getRootPath();
+    source_path = GameEngine::get_instance().getRootPath();
 
     logger=std::make_unique<QOpenGLDebugLogger>(this);
     logger->initialize();
@@ -209,9 +210,6 @@ void RenderWidget::paintGL()
         //while()
     }
     */
-
-    QMatrix4x4 matrix;
-    
     
     unsigned int time = QTime::currentTime().msec();
 
@@ -221,8 +219,6 @@ void RenderWidget::paintGL()
     
     float rotation_speed = 1.0f; // 每帧旋转的角度
     float angle = (time % 360) * rotation_speed;
-
-    matrix.rotate(angle, 0.0f, 0.0f, 1.0f);
     //matrix.rotate(m_angle, 0.0f, 0.0f, 1.0f);
 
 
@@ -230,9 +226,12 @@ void RenderWidget::paintGL()
     QString* texturePathQ = new QString;
     QVector3D* offset = new QVector3D;
     QVector2D* size = new QVector2D;
-
-    getTextureInfo(*(GameEngine::getInstance().getCurrentScene()->getRootGameObjs()[0]->getComponent<Image>()), texturePathQ, offset, size);
-    
+    auto gameobj = GameEngine::get_instance().getCurrentScene()->getRootGameObjs()[0];
+    getTextureInfo(*(GameEngine::get_instance().getCurrentScene()->getRootGameObjs()[0]->getComponent<Image>()), texturePathQ, offset, size);
+    auto matrix = gameobj->getComponent<Camera>()->CalculateProjectionMulViewMatrix();
+    matrix.translate(gameobj->transform->getWorldPosition().toQVector3D());
+    matrix.rotate(gameobj->transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
+    matrix.scale(gameobj->transform->getWorldScale().toQVector3D(1.0f));
     //getTextureInfoTest(texturePathQ, offset, size);
 
     std::unique_ptr<QOpenGLTexture> textureSample = std::make_unique<QOpenGLTexture>(QImage(*texturePathQ).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
@@ -286,10 +285,8 @@ void RenderWidget::createProgram()
     success = shaderProgram->link(); //
     if (!success)
         qDebug() << "ERR:" << shaderProgram->log();
-
     //        textureSmileBinding=shaderProgram->uniformLocation("textureSmile");
     //        textureSmileBinding=shaderProgram->uniformLocation("textureSmile");
-
     shaderOffsetBinding=shaderProgram->uniformLocation("offset");
     shaderSizeBinding=shaderProgram->uniformLocation("size");
     //    textureWallBinding=shaderProgram->uniformLocation("textureWall");

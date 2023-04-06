@@ -3,6 +3,8 @@
 #include "GameEngine.h"
 #include "../Core/Scene.h"
 #include "../Core/Debug.h"
+#include "../FileIO/IO.h"
+#include "Core/Render/renderwidget.h"
 
 using namespace std;
 
@@ -15,7 +17,7 @@ GameEngine::GameEngine()
 
 /// @brief get singleton instance, if it is not exists, create one 
 /// @return the pointer of instance
-GameEngine& GameEngine::getInstance()
+GameEngine& GameEngine::get_instance()
 {
 	if(instance==nullptr)
 		instance = new GameEngine();
@@ -34,6 +36,11 @@ bool GameEngine::initialize()
     return true;
 }
 
+void GameEngine::renderLoop()
+{
+
+}
+
 Scene* const  GameEngine::getCurrentScene()
 {
 	if (gameProject != nullptr && gameProject->currentScene != nullptr)
@@ -50,16 +57,28 @@ GameProject* const GameEngine::getCurrentGameProject()
 /// @param name project name
 /// @param path project absolute path
 /// @return the pointer of the project created by name and path
-GameProject& GameEngine::creatGameProject(string name, string path)
+GameProject& GameEngine::creatGameProject(const string& name,const string& path)
 {
 	// TODO: 创建前检查当前是否已保存项目，如否，弹出窗口询问是否保存当前项目
-	auto index = path.find_last_of('/');
+	// fix path if it contains unnecessary directory
+	string new_path = path;
+	auto index = new_path.find_last_of('\\');
+	if (index == new_path.length() - 1)
+		index = new_path.erase(index).find_last_of('\\');
 	if (path.substr(index + 1) != name)
-		path.append("/"+name);
-	GameProject* game = new GameProject(name, path);
+	{
+		new_path.append("\\").append(name);
+	}		
+	GameProject* game = new GameProject(name, new_path);
 	gameProject = game;
 	game->openScene(0);
+	game->save();
 	return *game;
+}
+Vector2D GameEngine::get_resolution()
+{
+	auto rect = RenderWidget::getInstance().rect();
+	return Vector2D(rect.width(), rect.height());
 }
 #ifdef TEST
 bool GameEngine::openGameProjectTest(const std::string& project, const std::string** scenes)
@@ -79,12 +98,13 @@ bool GameEngine::openGameProjectTest(const std::string& project, const std::stri
 /// @return value that indicates whether the process was completedf
 bool GameEngine::openGameProject(const string& path)
 {
-	// TODO: read from disk by path
-	/*string gameProject = file.readText(path);
+	const string& gameProject = IO::readText(path);
 	stringstream ss(gameProject);
 	GameProject* gp = new GameProject("","",false);
-	gp->deserialize(ss);*/
-	return false;
+	gp->deserialize(ss);
+	this->gameProject = gp;
+	gp->openScene(0);
+	return true;
 }
 
 /// @brief save game project to hard disk
@@ -107,13 +127,13 @@ GameObject& GameEngine::addGameObject(const string& name, GameObject* const pare
     if(parent == nullptr)
 	{
 		GameObject* gameObject = new GameObject(name);
-		GameEngine::getInstance().gameProject->currentScene->insertGameObject(*gameObject);
+		GameEngine::get_instance().gameProject->currentScene->insertGameObject(*gameObject);
 		return *gameObject;
 	}
 	else
 	{
 		GameObject* gameObject = new GameObject(name);
-		GameEngine::getInstance().gameProject->currentScene->insertGameObject(*gameObject,parent);
+		GameEngine::get_instance().gameProject->currentScene->insertGameObject(*gameObject,parent);
 		return *gameObject;
 	}
 }

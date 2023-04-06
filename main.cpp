@@ -10,6 +10,8 @@
 #include "Core/Input/InputDetection.h"
 #include "Core/Core/Debug.h"
 #include "Core/Core/Image.h"
+#include "Core/Core/Camera.h"
+#include <Core/ResourceManagement/SceneMgr.h>
 #include "Core/ThreadPool/ThreadPool.h"
 
 void InputDetectionLua(sol::state& lua) {
@@ -64,34 +66,33 @@ void GameObjectLua(sol::state& lua) {
         "deserialize", &GameObject::deserialize
     );
 }
-void task(int i)
+void task()
 {
-    std::cout << "Task " << i << " is running on thread " << std::this_thread::get_id() << std::endl;
+    sol::state sol_state;
+    sol_state.open_libraries(sol::lib::base);
+    InputDetectionLua(sol_state);
+    GameObjectLua(sol_state);
+    sol_state.script_file("test.lua");
+    //std::cout << "Task " << i << " is running on thread " << std::this_thread::get_id() << std::endl;
 }
 
 int main(int argc, char *argv[])
 { 
 #ifdef TEST
-    auto& gp = GameEngine::getInstance().creatGameProject("Test1", "E:/SourceCodes/Git/GroupProject/Pure-Handmade-Small-Workshop/debug/test");
-    auto& gameObj1 = GameEngine::getInstance().addGameObject("testGameObejct1");
+    auto& gp = GameEngine::get_instance().creatGameProject("Test1", "E:\\SourceCodes\\Git\\GroupProject\\Pure-Handmade-Small-Workshop\\debug");
+    auto& gameObj1 = GameEngine::get_instance().addGameObject("testGameObejct1");
+    gameObj1.addComponent<Camera>();
     auto img1 = gameObj1.addComponent<Image>();
-    gameObj1.transform->localPosition = Vector2D(-0.5f, .0f);
-    img1->imgPath  ="/resources/boss_hornet.png";
-    img1->size = Vector2D(0.2f, 0.2f);
-    auto& gameObj2 = GameEngine::getInstance().addGameObject("testGameObejct2");
-    gameObj2.transform->localPosition = Vector2D(0.5f, .0f);
+    img1->set_imgPath("\\resources\\boss_hornet.png");
+    gameObj1.transform->localRotation += 45.f;
+    auto& gameObj2 = GameEngine::get_instance().addGameObject("testGameObejct2");
+    gameObj2.transform->localPosition = Vector2D(.0f, .0f);
     auto img2 = gameObj2.addComponent<Image>();
-    img2 ->imgPath = "\\resources\\0027.png";
-    img2->size = Vector2D(0.1f, 0.2f);
-    auto save = gp.saveTest();
-    const std::string** scenes = new const std::string * [1];
-    scenes[0] = &((save[1]).str());
-    //GameEngine::getInstance().openGameProjectTest(save->str(), scenes);
-    sol::state sol_state;
-    sol_state.open_libraries(sol::lib::base);
-    InputDetectionLua(sol_state);
-    GameObjectLua(sol_state);
-    //sol_state.script_file("test.lua");
+    img2->set_imgPath("\\resources\\container.png");
+    auto save = gp.save();
+    auto open = GameEngine::get_instance().openGameProject("E:\\SourceCodes\\Git\\GroupProject\\Pure-Handmade-Small-Workshop\\debug\\Test1\\Test1.gameProject");
+    ThreadPool pool;
+
 #endif // TEST
 
     
@@ -100,41 +101,5 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     RenderWindow w;
     w.show();
-    /*while (true)
-    {
-        if (InputDetection::GetKeyDown('B'))
-        {
-            std::cout << "B down!" << std::endl;
-        }
-        if (InputDetection::GetKey('B'))
-        {
-            std::cout << "B hold!" << std::endl;
-        }
-        if (InputDetection::GetKeyUp('B'))
-        {
-            std::cout << "B up!" << std::endl;
-        }
-        if (InputDetection::GetKeyDown('A'))
-        {
-            std::cout << "A down!" << std::endl;
-        }
-        if (InputDetection::GetKey('A'))
-        {
-            std::cout << "A hold!" << std::endl;
-        }
-        if (InputDetection::GetKeyUp('A'))
-        {
-            std::cout << "A up!" << std::endl;
-        }
-    }*/
-
-    //ThreadPool pool;
-
-    //pool.test();
-    //for (int i = 0; i < 10; i++)
-    //{
-    //    pool.enqueue(task, i);
-    //}
-
     return a.exec();
 }

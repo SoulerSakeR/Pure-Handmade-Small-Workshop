@@ -12,11 +12,10 @@ class GameObject;
 class Transform : public Component
 {
 public:
-
     //field
     Vector2D localPosition = Vector2D::zero(); //本地坐标位置
     float localRotation = 0.0f; //本地旋转角度
-    Vector2D localScale = Vector2D::zero();
+    Vector2D localScale = Vector2D::one();
     std::vector<Transform*> children ; //子节点
     Transform* parent; //父节点
 
@@ -33,4 +32,3 @@ public:
     Vector2D getWorldScale(); //需要绑定
     Transform* translate(Vector2D value); //朝给定向量移动 需要绑定
 };
-

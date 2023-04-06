@@ -20,8 +20,7 @@ public:
     void updateScene(float deltaTime) {
         // 更新场景信息-需要和光夫哥和敬哥对接
         // 获取场景信息(光夫哥)并且进行渲染（敬哥）
-        // ...
-        
+        // ...       
     }
 
     void checkCollisions(float deltaTime) {

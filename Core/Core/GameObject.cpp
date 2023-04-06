@@ -1,6 +1,7 @@
 #include "GameObject.h"
 #include "Core/Core/Image.h"
 #include <Core/SystemStatus/GameEngine.h>
+#include "Camera.h"
 using namespace std;
 
 int GameObject::idCount = 0;
@@ -123,6 +124,9 @@ Component* GameObject::addComponent(ComponentType type)
         break;
     case IMAGE:
         result = new Image(this);
+        break;
+    case CAMERA:
+        result = new Camera(this);
     default:
         break;
     }

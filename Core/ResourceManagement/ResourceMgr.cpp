@@ -1,10 +1,13 @@
 #include "ResourceMgr.h"
+#include "Core/SystemStatus/GameEngine.h"
 
-ResourceMgr* ResourceMgr::_instance = nullptr;
+ResourceMgr* ResourceMgr::instance = nullptr;
 
-ResourceMgr& ResourceMgr::getInstance()
+
+ResourceMgr& ResourceMgr::get_instance()
 {
-	if (_instance == nullptr)
-		_instance = new ResourceMgr();
-	return *_instance;
+	if (instance == nullptr)
+		instance = new ResourceMgr();
+	return *instance;
 }
+

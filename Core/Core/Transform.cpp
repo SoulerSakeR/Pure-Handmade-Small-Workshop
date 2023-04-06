@@ -3,6 +3,7 @@
 
 using namespace std;
 
+
 void Transform::serialize(PHString& str)
 {
 	str.appendLine(to_string((int)componentType));

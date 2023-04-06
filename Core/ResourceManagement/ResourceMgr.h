@@ -7,9 +7,12 @@ using std::string;
 class ResourceMgr
 {
 public:
-	static ResourceMgr& getInstance();
+	static ResourceMgr& get_instance();
 private:
-	string assetPath;
-	static ResourceMgr* _instance;
+	ResourceMgr() {};
+	ResourceMgr(ResourceMgr&) = delete;             
+	void operator=(ResourceMgr) = delete;
+	const string assetPath ="Resources";
+	static ResourceMgr* instance;
 };
 

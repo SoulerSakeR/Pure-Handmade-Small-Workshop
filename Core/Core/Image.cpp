@@ -1,6 +1,15 @@
 #include "Image.h"
 #include "GameObject.h"
+#include "Core/FileIO/IO.h"
+#include "Core/SystemStatus/GameEngine.h"
 using namespace std;
+
+void Image::set_imgPath(const std::string& imgPath)
+{
+	this->imgPath = imgPath;
+	auto texture2D = IO::loadTexture2D(GameEngine::get_instance().getRootPath() + imgPath);
+	this->size = Vector2D(texture2D.widthT, texture2D.heightT);
+}
 
 Image::Image(GameObject* gameObj, const std::string& imgPath,Vector2D size):Component(gameObj)
 {
@@ -9,12 +18,23 @@ Image::Image(GameObject* gameObj, const std::string& imgPath,Vector2D size):Comp
 	componentType = IMAGE;
 }
 
+void Image::set_size(Vector2D newSize)
+{
+	this->size = newSize;
+}
+
 
 void Image::serialize(PHString& str)
 {
 	str.appendLine(to_string((int)componentType));
 	str.appendLine(imgPath);
 	str.appendLine(size.tostring());
+}
+
+void Image::set_size(float width, float height)
+{
+	this->size.x = width;
+	this->size.y = height;
 }
 
 void Image::deserialize(std::stringstream& ss)

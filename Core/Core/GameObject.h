@@ -74,8 +74,7 @@ inline T* GameObject::getComponent()
             if (auto p = dynamic_cast<T*>(component); p != nullptr)
             {
                 return (T*)component;
-            }
-                
+            }               
         }
     }
     return nullptr;

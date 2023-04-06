@@ -12,10 +12,11 @@ class GameEngine
 {
 public:	
 	//method
-	static GameEngine& getInstance();	
+	static GameEngine& get_instance();	
 	Scene* const  getCurrentScene();
 	GameProject* const getCurrentGameProject();
-	GameProject& creatGameProject(std::string name, std::string path); //创建新项目
+	GameProject& creatGameProject(const std::string& name,const std::string& path); //创建新项目
+	Vector2D get_resolution();
 
 #ifdef TEST
 	bool openGameProjectTest(const std::string& project,const std::string** scenes); //打开已有项目
@@ -28,15 +29,16 @@ public:
 	const std::string& getRootPath();
 
 private:
-	static GameEngine* instance ; //游戏引擎实例	
-	std::string rootPath;
-	GameProject* gameProject; //current game project
-	ResourceMgr* resourceMgr; //resource manager
 
-	bool initialize();
 	GameEngine();
 	~GameEngine() {
 		//TODO: 析构函数
 	};
+	bool initialize();
+	void renderLoop();
+	static GameEngine* instance ; //游戏引擎实例	
+	std::string rootPath;
+	GameProject* gameProject; //current game project
+	ResourceMgr* resourceMgr; //resource manager
 };
 
