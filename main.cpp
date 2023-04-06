@@ -13,6 +13,7 @@
 #include "Core/Core/Camera.h"
 #include <Core/ResourceManagement/SceneMgr.h>
 #include "Core/ThreadPool/ThreadPool.h"
+#include "Core/Utils/PHPath.h"
 
 void InputDetectionLua(sol::state& lua) {
     lua.open_libraries(sol::lib::base, sol::lib::package);
@@ -105,10 +106,17 @@ int main(int argc, char *argv[])
         std::cout << "Result: " << s << std::endl;
     }
     
-
+    
 #endif // TEST
 
-    
+    //PHPath apath = PHPath("C:/Program Files/My/App.exe");
+    PHPath apath = PHPath("C:\\Program Files\\My\\App");
+    std::cout << "OldPath: " << apath.getOldPath() << std::endl;
+    std::cout << "NewPath: " << apath.getNewPath() << std::endl;
+    if(apath.getIsFile())
+        std::cout << "FileName: " << apath.getFileName() << std::endl;
+    else
+        std::cout << "DirectoryName: " << apath.getFileName() << std::endl;
     QLoggingCategory::setFilterRules(QStringLiteral("qt.gui.imageio=false")); // 关闭图片格式警告
 
     QApplication a(argc, argv);
