@@ -1,13 +1,17 @@
 #define FRAMERATE = 60;
 #define TIMEPERFRAME = 16;
 #include <iostream>
+#include <string>
+#include <conio.h>
+#include <Windows.h>
 #include <Core/SystemStatus/GameEngine.h>
+#include <Core/Render/renderwidget.h>
 
 
-class GameLogic {
+class GameLoop {
 public:
-    GameLogic() {}
-    ~GameLogic() {}
+    GameLoop(RenderWidget* Rwg) {}
+    ~GameLoop() {}
 
     //void gameLoop(GameProject* gamePrj);
 
@@ -17,7 +21,7 @@ public:
         // ...
     }
 
-    void updateScene(float deltaTime) {
+    void updateScene(RenderWidget* Rwg) {
         // 更新场景信息-需要和光夫哥和敬哥对接
         // 获取场景信息(光夫哥)并且进行渲染（敬哥）
         // ...       
@@ -38,16 +42,16 @@ public:
         //输出数据信息-测试用
     }
 
-
-    void update(float deltaTime) {
+        void update(float deltaTime, RenderWidget* Rwg) {
         // 游戏逻辑更新函数，每帧调用一次
         updatePlayer(deltaTime);
-        updateScene(deltaTime);
+        updateScene(Rwg);
         checkCollisions(deltaTime);
         updateGameState(deltaTime);
         printDataInfo(deltaTime);
 
     }
+
 
 
 
