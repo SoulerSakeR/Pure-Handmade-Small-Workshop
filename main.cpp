@@ -76,10 +76,17 @@ void task()
     //std::cout << "Task " << i << " is running on thread " << std::this_thread::get_id() << std::endl;
 }
 
+int add(int a, int b)
+{
+    std::cout << "Task " << a << " is running on thread " << std::this_thread::get_id()<<std::endl;
+    return a + b;
+}
+
 int main(int argc, char *argv[])
 { 
+
 #ifdef TEST
-    auto& gp = GameEngine::get_instance().creatGameProject("Test1", "E:\\SourceCodes\\Git\\GroupProject\\Pure-Handmade-Small-Workshop\\debug");
+    auto& gp = GameEngine::get_instance().creatGameProject("Test1", "D:\\Dates\\PHE");
     auto& gameObj1 = GameEngine::get_instance().addGameObject("testGameObejct1");
     gameObj1.addComponent<Camera>();
     auto img1 = gameObj1.addComponent<Image>();
@@ -89,9 +96,15 @@ int main(int argc, char *argv[])
     gameObj2.transform->localPosition = Vector2D(.0f, .0f);
     auto img2 = gameObj2.addComponent<Image>();
     img2->set_imgPath("\\resources\\container.png");
-    auto save = gp.save();
-    auto open = GameEngine::get_instance().openGameProject("E:\\SourceCodes\\Git\\GroupProject\\Pure-Handmade-Small-Workshop\\debug\\Test1\\Test1.gameProject");
+    // auto save = gp.save();
+    // auto open = GameEngine::get_instance().openGameProject("E:\\SourceCodes\\Git\\GroupProject\\Pure-Handmade-Small-Workshop\\debug\\Test1\\Test1.gameProject");
     ThreadPool pool;
+    for (int i = 0; i < 10; i++) {
+        auto result = pool.enqueue(add, i, 2);
+        auto s = result.get();
+        std::cout << "Result: " << s << std::endl;
+    }
+    
 
 #endif // TEST
 

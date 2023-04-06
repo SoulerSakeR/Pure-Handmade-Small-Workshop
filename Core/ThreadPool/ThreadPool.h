@@ -6,6 +6,7 @@
 #include <functional>
 #include <mutex>
 #include <condition_variable>
+#include <future>
 
 class ThreadPool
 {
@@ -15,17 +16,25 @@ public:
     // 析构函数，停止线程并回收资源
     ~ThreadPool();
     // 向线程池中添加任务
-	template <typename Func, typename... Args>
-	void enqueue(Func&& func, Args &&... args)
-	{
-		{
-			std::unique_lock<std::mutex> lock(m_mutex);
-			// 将任务加入任务队列
-			m_tasks.emplace(std::bind(std::forward<Func>(func), std::forward<Args>(args)...));
-		}
-		// 唤醒一个线程来执行任务
-		m_condition.notify_one();
-	}
+    template <typename Func, typename... Args>
+    auto enqueue(Func&& func, Args&&... args)
+        -> std::future<typename std::result_of<Func(Args...)>::type>
+    {
+        using return_type = typename std::result_of<Func(Args...)>::type;
+
+        auto task = std::make_shared<std::packaged_task<return_type()>>(
+            std::bind(std::forward<Func>(func), std::forward<Args>(args)...)
+            );
+
+        std::future<return_type> result = task->get_future();
+        {
+            std::unique_lock<std::mutex> lock(m_mutex);
+            m_tasks.emplace([task]() { (*task)(); });
+        }
+        m_condition.notify_one();
+
+        return result;
+    }
 
     void test();
 

@@ -1,6 +1,7 @@
 #include "Scene.h"
 #include "Core/Utils/Test.h"
 #include <iostream>
+#include <Core/FileIO/IO.h>
 
 using namespace std;
 
@@ -197,7 +198,7 @@ Scene* Scene::loadFromText(const std::string& text)
 Scene* Scene::loadFromPath(std::string path)
 {
 	Scene* scene = new Scene();
-	//TODO: stringstream ss(file.readText(path));
-	//scene->deserialize(ss);
+	stringstream ss(IO::readText(path));
+	scene->deserialize(ss);
 	return scene;
 }
