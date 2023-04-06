@@ -2,6 +2,11 @@
 #include "Core/Core/Debug.h"
 #include "Core/FileIO/IO.h"
 #include "Core/Core/Scene.h"
+#include <Core/ResourceManagement/SceneMgr.h>
+#include <Core/Utils/PHPath.h>
+#include "GameEngine.h"
+#include <Core/GameLogic/GameLoop.h>
+#include <Core/ThreadPool/ThreadPool.h>
 
 using namespace std;
 
@@ -11,25 +16,20 @@ const std::string gameProjectPostfix = "GameProject:";
 const std::string scenePrefix = "Scene:";
 const std::string sceneProjectPostfix = "SceneEnd:";
 
-GameProject::GameProject(const string& name,const string& path, bool initDefaultScene)
+GameProject::GameProject(const string& name,const string& path, bool initDefaultScene):name(name), path(path)
 {
-	this->name = name;
-	this->path = path;
-	this->Scenes = vector<Scene*>();
+	this->scenes = vector<string>();
 	currentScene = nullptr;
-	if (initDefaultScene)
-	{
-		this->Scenes.push_back(new Scene());
-	}	
 }
 
 bool GameProject::openScene(int index)
 {
-	if(Scenes.empty())
+	if(scenes.empty())
     	return false;
-	if (index >= 0 && index < Scenes.size())
-	{
-		currentScene = Scenes[index];
+	if (index >= 0 && index < scenes.size())
+	{				
+		currentScene = SceneMgr::get_instance().loadScene(index);
+		GameEngine::get_instance().refreshHierarchy();
 		return true;
 	}
 	// TODO: refresh hierarchy 刷新面板
@@ -39,12 +39,24 @@ bool GameProject::openScene(int index)
 
 bool GameProject::save()
 {
-	IO::createPathIfNotExists(path);
+	IO::createPathIfNotExists(path.getNewPath());
 	saveCurrentScene();
 	PHString content = PHString("");
 	serialize(content);	
-	IO::write(content.str(), path+"\\"+name + ".gameProject", 1);
+	IO::write(content.str(), path.combinePath(name + ".gameProject").getNewPath(), 1);
     return true;
+}
+
+void GameProject::creatNewScene(const std::string& name)
+{
+	Scene* scene = new Scene(name);
+	currentScene = scene;
+	auto& cam = GameEngine::get_instance().addGameObject("MainCamera",nullptr,CAMERA);
+	cam.addComponent<Camera>()->view_width = 1000;
+	cam.getComponent<Camera>()->set_main_camera(true);
+	saveCurrentScene();
+	scenes.push_back(scene->name);
+	SceneMgr::get_instance().addScene("\\Scenes\\" + name + sceneExtensionName);
 }
 
 #ifdef TEST
@@ -81,7 +93,7 @@ void GameProject::deserializeTest(std::stringstream& ss, const std::string** sce
 					for (int i = 0;i < size;i++)
 					{
 						Scene* scene = Scene::loadFromText(*(scenes[i]));
-						Scenes.push_back(scene);
+						scenes.push_back(scene);
 					}
 				}
 			} while (ss.good() && s != sceneProjectPostfix);
@@ -112,8 +124,8 @@ void GameProject::deserialize(std::stringstream& ss)
 					for (int i = 0;i < size;i++)
 					{
 						getline(ss, s);
-						Scene* scene = Scene::loadFromPath(s);
-						Scenes.push_back(scene);
+						scenes.push_back(PHPath(s).getFileName(false));
+						SceneMgr::get_instance().addScene(s);
 					}
 				}
 			} while (ss.good() && s != sceneProjectPostfix);
@@ -128,11 +140,8 @@ bool GameProject::saveCurrentScene()
 	PHString scene = PHString("");
 	currentScene->serialize(scene);
 	string fileName = currentScene->name + sceneExtensionName;
-	string final_path = this->path;
-	final_path.append("\\Scene");
-	IO::createPathIfNotExists(final_path);
-	final_path.append("\\").append(fileName);
-	return IO::write(scene.str(), final_path, 1);;
+	IO::createPathIfNotExists(path.combinePath("Scenes").getNewPath());
+	return IO::write(scene.str(), path.combinePath("Scenes").combinePath(fileName).getNewPath(), 1);
 }
 
 #ifdef TEST
@@ -150,11 +159,11 @@ PHString GameProject::saveCurrentSceneTest()
 void GameProject::serialize(PHString& result)
 {
 	result.appendLine("GameProject:",name);
-	result.appendLine(path);
-	result.appendLine("Scene:",to_string(Scenes.size()));
-	for(int i=0;i<Scenes.size();i++)
+	result.appendLine(path.getNewPath());
+	result.appendLine("Scene:",to_string(scenes.size()));
+	for(int i=0;i<scenes.size();i++)
 	{
-		string scenePath = path + "\\Scene\\" + Scenes[i]->name + sceneExtensionName;
+		string scenePath = "\\Scenes\\" + scenes[i] + sceneExtensionName;
 		result.appendLine(scenePath);
 	}
 	result.appendLine("SceneEnd");

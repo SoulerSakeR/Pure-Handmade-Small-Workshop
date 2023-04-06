@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
 #ifdef TEST
     auto& gp = GameEngine::get_instance().creatGameProject("Test1", "D:\\Dates\\PHE");
     auto& gameObj1 = GameEngine::get_instance().addGameObject("testGameObejct1");
-    gameObj1.addComponent<Camera>();
+    gameObj1.addComponent<Camera>()->set_main_camera(true);
     auto img1 = gameObj1.addComponent<Image>();
     img1->set_imgPath("\\resources\\boss_hornet.png");
     gameObj1.transform->localRotation += 45.f;
@@ -121,6 +121,7 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
     RenderWindow w;
+    GameEngine::get_instance().initialize(&w);
     w.show();
     return a.exec();
 }

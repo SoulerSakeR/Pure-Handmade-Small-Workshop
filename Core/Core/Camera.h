@@ -11,8 +11,8 @@ public:
    
     Camera(GameObject* gameObj, float view_width = default_view_width);
 
-    bool get_is_main_camera();
-    void set_is_main_camera(bool value);
+    bool is_main_camera();
+    void set_main_camera(bool value);
     QMatrix4x4 CalculateProjectionMulViewMatrix();
 
     float view_width;
@@ -21,6 +21,6 @@ private:
     void deserialize(std::stringstream& ss) override;
     void reset() override;
 
-    bool is_main_camera;
+    bool is_main_camera_;
 };
 

@@ -5,14 +5,17 @@
 #include "../Core/Debug.h"
 #include "../FileIO/IO.h"
 #include "Core/Render/renderwidget.h"
+#include <Core/ResourceManagement/SceneMgr.h>
+#include <Core/Utils/PHPath.h>
+#include <Core/Core/Image.h>
 
 using namespace std;
 
 GameEngine* GameEngine::instance = nullptr;
 
-GameEngine::GameEngine()
+GameEngine::GameEngine():pool(4)
 {
-	initialize();
+
 }
 
 /// @brief get singleton instance, if it is not exists, create one 
@@ -26,10 +29,12 @@ GameEngine& GameEngine::get_instance()
 
 /// @brief initialize game engine and subsystem.
 /// @return value that indicates the process was completed or not.
-bool GameEngine::initialize()
+bool GameEngine::initialize(RenderWindow* window)
 {
 	Debug::log("Engine initializing");
+	srand((unsigned)time(NULL));
 	gameProject = nullptr;
+	this->window = window;
 	std::filesystem::path current_path = std::filesystem::current_path();
 	rootPath = current_path.string();
 	Debug::log("Engine initialized");
@@ -61,16 +66,14 @@ GameProject& GameEngine::creatGameProject(const string& name,const string& path)
 {
 	// TODO: 创建前检查当前是否已保存项目，如否，弹出窗口询问是否保存当前项目
 	// fix path if it contains unnecessary directory
-	string new_path = path;
-	auto index = new_path.find_last_of('\\');
-	if (index == new_path.length() - 1)
-		index = new_path.erase(index).find_last_of('\\');
-	if (path.substr(index + 1) != name)
+	PHPath new_path(path);
+	if (new_path.getFileName() != name)
 	{
-		new_path.append("\\").append(name);
+		new_path.combinePath(name);
 	}		
-	GameProject* game = new GameProject(name, new_path);
+	GameProject* game = new GameProject(name, new_path.getNewPath());
 	gameProject = game;
+	gameProject->creatNewScene();
 	game->openScene(0);
 	game->save();
 	return *game;
@@ -79,6 +82,10 @@ Vector2D GameEngine::get_resolution()
 {
 	auto rect = RenderWidget::getInstance().rect();
 	return Vector2D(rect.width(), rect.height());
+}
+void GameEngine::refreshHierarchy()
+{
+	window->refreshHierachy();
 }
 #ifdef TEST
 bool GameEngine::openGameProjectTest(const std::string& project, const std::string** scenes)
@@ -122,20 +129,35 @@ bool GameEngine::saveGameProject()
 /// @param parent the pointer of parent game object or null for scene
 /// @param name name of the new game object
 /// @return the pointer of new game object
-GameObject& GameEngine::addGameObject(const string& name, GameObject* const parent)
+GameObject& GameEngine::addGameObject(const string& name, GameObject* const parent,ComponentType type)
 {
+	Debug::log("addGameObject:" + name);
+	GameObject* gameObject = new GameObject(name);
     if(parent == nullptr)
-	{
-		GameObject* gameObject = new GameObject(name);
-		GameEngine::get_instance().gameProject->currentScene->insertGameObject(*gameObject);
-		return *gameObject;
-	}
+		GameEngine::get_instance().gameProject->currentScene->insertGameObject(*gameObject);		
 	else
-	{
-		GameObject* gameObject = new GameObject(name);
 		GameEngine::get_instance().gameProject->currentScene->insertGameObject(*gameObject,parent);
-		return *gameObject;
+	switch (type)
+	{
+	case UNKNOWN:				
+		break;
+	case TRANSFORM:
+		break;
+	case IMAGE:
+		gameObject->transform->translate(Vector2D((rand() / double(RAND_MAX) - 0.5) * 500, (rand() / double(RAND_MAX) - 0.5) * 500));
+		gameObject->addComponent<Image>()->set_imgPath("\\Resources\\boss_hornet.png");
+		gameObject->transform->localScale = Vector2D(200.f, 200.f);
+		gameObject->transform->localRotation = (rand() / double(RAND_MAX) - 0.5) * 360;
+		break;
+	case CAMERA:
+		break;
+	case SCRIPT:
+		break;
+	default:
+		break;
 	}
+	refreshHierarchy();
+	return *gameObject;
 }
 
 void GameEngine::deleteGameObject(GameObject* obj)
@@ -146,4 +168,10 @@ void GameEngine::deleteGameObject(GameObject* obj)
 const std::string& GameEngine::getRootPath()
 {
 	return rootPath;
+}
+
+std::string GameEngine::getGamePath()
+{
+	if (gameProject != nullptr)
+		return gameProject->path.getNewPath();
 }

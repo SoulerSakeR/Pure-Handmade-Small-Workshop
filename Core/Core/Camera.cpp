@@ -2,14 +2,14 @@
 #include "Core/SystemStatus/GameEngine.h"
 #include <Core/ResourceManagement/SceneMgr.h>
 
-bool Camera::get_is_main_camera()
+bool Camera::is_main_camera()
 {
-	return is_main_camera;
+	return is_main_camera_;
 }
 
-void Camera::set_is_main_camera(bool value)
+void Camera::set_main_camera(bool value)
 {
-	if (value == is_main_camera)
+	if (value == is_main_camera_)
 		return;
 	else if (value)
 	{
@@ -22,12 +22,12 @@ void Camera::set_is_main_camera(bool value)
 		}
 		else
 		{
-			is_main_camera = true;
+			is_main_camera_ = true;
 		}
 	}
 	else
 	{
-		is_main_camera = false;
+		is_main_camera_ = false;
 	}
 }
 
@@ -45,12 +45,14 @@ Camera::Camera(GameObject* gameObj,float viewWidth):Component(gameObj)
 {
 	componentType = CAMERA;
 	view_width = viewWidth;
+	is_main_camera_ = false;
 }
 
 void Camera::serialize(PHString& str)
 {
 	str.appendLine(std::to_string((int)componentType));
 	str.appendLine(std::to_string(view_width));
+	str.appendLine(std::to_string(is_main_camera_));
 }
 
 void Camera::deserialize(std::stringstream& ss)
@@ -58,6 +60,10 @@ void Camera::deserialize(std::stringstream& ss)
 	std::string s;
 	std::getline(ss, s);
 	view_width = std::stof(s);
+	std::getline(ss, s);
+	is_main_camera_ = std::stoi(s);
+	if (is_main_camera_)
+		SceneMgr::get_instance().set_main_camera(*this);
 }
 
 void Camera::reset()

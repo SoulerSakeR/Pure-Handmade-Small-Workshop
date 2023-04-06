@@ -7,7 +7,7 @@ using namespace std;
 void Image::set_imgPath(const std::string& imgPath)
 {
 	this->imgPath = imgPath;
-	auto texture2D = IO::loadTexture2D(GameEngine::get_instance().getRootPath() + imgPath);
+	auto texture2D = IO::loadTexture2D(GameEngine::get_instance().getGamePath() + imgPath);
 	this->size = Vector2D(texture2D.widthT, texture2D.heightT);
 }
 

@@ -1,12 +1,17 @@
 #pragma once
 #include "Core/Core/Camera.h"
+#include <Core/Core/Scene.h>
 class SceneMgr
 {
 public:
 	static SceneMgr& get_instance();
 
 	Camera* get_main_camera();
+	Scene* get_current_scene();
+	void addScene(const std::string& relativePath);
 	void set_main_camera(Camera& camera);
+	Scene* loadScene(int index);
+	void loadScene(const std::string& name);
 
 private:
 	SceneMgr();
@@ -15,5 +20,7 @@ private:
 
 	static SceneMgr* instance;
 	Camera* main_camera;
+	Scene* current_scene;
+	std::vector<std::string> scenes;
 };
 

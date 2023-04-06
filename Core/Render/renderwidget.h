@@ -47,7 +47,7 @@ private:
     static RenderWidget* instance;
 
 
-
+    std::unordered_map<std::string, QOpenGLTexture*>textures;
     Shape m_shape;
     std::unique_ptr<QOpenGLVertexArrayObject> vao;
     std::unique_ptr<QOpenGLShaderProgram> shaderProgram;

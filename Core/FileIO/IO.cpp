@@ -130,6 +130,7 @@ Texture2D IO::loadTexture2D(QString path)
     Texture2D temp2D;
     temp2D.widthT=image.width();
     temp2D.heightT=image.height();
+    /*
     temp2D.data.resize(image.width());
     for(int j=0;j<temp2D.data.size();j++)
     {
@@ -143,6 +144,7 @@ Texture2D IO::loadTexture2D(QString path)
             temp2D.data[i][j].b=Colos.blue();
         }
     }
+    */
     return temp2D;
 }
 
