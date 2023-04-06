@@ -221,8 +221,9 @@ void RenderWidget::paintGL()
     float angle = (time % 360) * rotation_speed;
     //matrix.rotate(m_angle, 0.0f, 0.0f, 1.0f);
 
-
-
+    auto scene = GameEngine::get_instance().getCurrentScene();
+    if (scene == nullptr || scene->getRootGameObjs().size() == 0)
+        return;
     QString* texturePathQ = new QString;
     QVector3D* offset = new QVector3D;
     QVector2D* size = new QVector2D;
