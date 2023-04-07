@@ -27,6 +27,8 @@ public:
     void cleanup();
 
     static RenderWidget& getInstance();
+
+    float* getTextureVertices(QVector3D offset, QVector2D size);
     
     
 
