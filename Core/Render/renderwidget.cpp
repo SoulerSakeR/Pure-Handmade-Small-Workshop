@@ -34,7 +34,7 @@ RenderWidget::RenderWidget(QWidget* parent) : QOpenGLWidget(parent)
 	setFocusPolicy(Qt::StrongFocus);
 	connect(&timer, SIGNAL(timeout()), this, SLOT(on_timeout()));
 
-	timer.start(2);
+	//timer.start(2);
 
 	instance = this;
 }

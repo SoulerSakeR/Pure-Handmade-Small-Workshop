@@ -31,14 +31,7 @@ bool GameProject::openScene(int index)
 		currentScene = SceneMgr::get_instance().loadScene(index);
 		GameEngine::get_instance().refreshHierarchy();
 		auto loop = std::bind(&GameLoop::updateScene, new GameLoop(&RenderWidget::getInstance()), &RenderWidget::getInstance());
-		GameEngine::get_instance().pool.enqueue(loop).get();
-		for (int i = 0; i < 10; i++) {
-			PHPath path = PHPath("C:/Program Files/My/App.exe");
-			auto getOldPath = std::bind(&PHPath::getOldPath, &path);
-			auto oldpath = GameEngine::get_instance().pool.enqueue(getOldPath).get();// pool.enqueue(函数的地址，对象实例的地址，参数1，参数2 ...), 然后用.get()获取返回值
-			std::cout << i << "-OldPath: " << oldpath << std::endl;
-			std::cout << i << "-NewPath: " << path.getNewPath() << std::endl;
-		}
+		GameEngine::get_instance().pool.enqueue(loop);
 		return true;
 	}
 	// TODO: refresh hierarchy 刷新面板
