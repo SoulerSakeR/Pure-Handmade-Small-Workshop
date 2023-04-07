@@ -145,7 +145,7 @@ GameObject& GameEngine::addGameObject(const string& name, GameObject* const pare
 		break;
 	case IMAGE:
 		gameObject->transform->translate(Vector2D((rand() / double(RAND_MAX) - 0.5) * 500, (rand() / double(RAND_MAX) - 0.5) * 500));
-		gameObject->addComponent<Image>()->set_imgPath("\\Resources\\0027.png");
+		gameObject->addComponent<Image>()->set_imgPath("\\Resources\\0028.png");
 		gameObject->transform->localScale = Vector2D(1.f, 1.f);
 		gameObject->transform->localRotation = (rand() / double(RAND_MAX) - 0.5) * 360;
 		break;

@@ -74,7 +74,7 @@ private:
     void createVBO();
     void createIBO();
 
-    void createVBOTest(float[]);
+    
 
     int renderMain(QString*, QVector3D*, QVector2D*);
     

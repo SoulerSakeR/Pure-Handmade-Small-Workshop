@@ -157,7 +157,7 @@ float* RenderWidget::getTextureVertices(QVector3D offset, QVector2D size)
 
 	createVBO();
 
-	return vertices;
+	return nullptr;
 }
 
 
@@ -203,7 +203,7 @@ void RenderWidget::initializeGL()
 	createProgram();
 	//createVBO();
 	//createVAO();
-	//createIBO();
+	createIBO();
 
 
 }
@@ -274,11 +274,11 @@ void RenderWidget::paintGL()
 		
 		
 		//getTextureInfoTest(texturePathQ, offset, size);
-		float *vertex = getTextureVertices(QVector3D(0.f,0.f,0.f), *size);
+		getTextureVertices(QVector3D(0.f,0.f,0.f), *size);
 
 		//createVBO();
 		createVAO();
-		createIBO();
+		
 
 		auto matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
 		matrix.translate(gameobj->transform->getWorldPosition().toQVector3D());
@@ -400,13 +400,7 @@ void RenderWidget::createVBO()
 	vbo->allocate(vertices, sizeof(vertices));
 }
 
-void RenderWidget::createVBOTest(float vertices[])
-{
-	vbo = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
-	vbo->create();
-	vbo->bind();
-	vbo->allocate(vertices, sizeof(vertices));
-}
+
 
 
 void RenderWidget::createIBO()
