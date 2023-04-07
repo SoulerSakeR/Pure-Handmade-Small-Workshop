@@ -14,13 +14,12 @@ std::string source_path;
 static int count = 0;
 
 
-
 float vertices[] = {
-	// positions  // colors           // texture coords
-	1.f ,  1.f,  0,1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-	1.f , -1.f,  0,0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-	-1.f , -1.f, 0, 0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-	-1.f ,  1.f, 0, 1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
+	// positions   // colors           // texture coords
+	1.f,  1.f, 0,  1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+	1.f, -1.f, 0,  0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+   -1.f, -1.f, 0,  0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+   -1.f,  1.f, 0,  1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
 };
 
 //counter clockwise
@@ -67,32 +66,6 @@ void RenderWidget::setWirefame(bool wireframe)
 
 
 
-QString getTexturePath() // get from others
-{
-	// TODO: get texture path from config file
-
-	std::string texturePath = source_path + "\\resources\\boss_hornet.png";
-
-	QString texturePathQ = QString::fromStdString(texturePath);
-
-	return texturePathQ;
-}
-
-QVector3D getOffset() // get from others
-{
-	// TODO: get offset from config file
-	QVector3D offset = QVector3D(0.0f, 0.0f, 0.0f);
-	return offset;
-}
-
-QVector2D getSize() // get from others
-{
-	// TODO: get size from config file
-	QVector2D size = QVector2D(0.4f, 0.6f);
-	return size;
-}
-
-
 void getTextureInfo(Image& imgComponent, QString* texturePathQ, QVector3D* offset, QVector2D* size)
 {
 
@@ -118,6 +91,34 @@ void getTextureInfoTest(QString* texturePathQ, QVector3D* offset, QVector2D* siz
 
 	*size = QVector2D(0.4f, 0.6f);
 
+}
+
+
+float* RenderWidget::getTextureVertices(QVector3D offset, QVector2D size)
+{
+
+	float v[] = {
+		// positions   // colors           // texture coords
+		1.f,  1.f, 0,  1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+		1.f, -1.f, 0,  0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+	   -1.f, -1.f, 0,  0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+	   -1.f,  1.f, 0,  1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
+	};
+
+	float* vertices;
+
+	// print size.y()
+	std::cout << "size.y() " << size.y() << std::endl;
+
+	float x = offset.x() - 1 / 2 * size.y();
+
+	QVector3D leftTop{ offset.x() - 1 / 2 * size.y(), offset.y() + 1 / 2 * size.y(), 0.0f };
+
+	// print left Top
+	std::cout << "leftTop " << leftTop.x() << " " << leftTop.y() << " " << leftTop.z() << std::endl;
+
+
+	return nullptr;
 }
 
 

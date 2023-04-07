@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 #endif // TEST
 
     //PHPath apath = PHPath("C:/Program Files/My/App.exe");
-    PHPath apath = PHPath("C:\\Program Files\\My\\App");
+    PHPath apath = PHPath("E:\\DATA\\GroupProject\\pro");
     std::cout << "OldPath: " << apath.getOldPath() << std::endl;
     std::cout << "NewPath: " << apath.getNewPath() << std::endl;
     if(apath.getIsFile())
