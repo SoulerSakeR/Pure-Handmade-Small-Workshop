@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <string>
 
 class PHPath
@@ -16,7 +16,7 @@ public:
 
 		pos = newPath.find_last_of(".");
 		if (pos == std::string::npos) {
-			// Î´ÕÒµ½.£¬ËµÃ÷ÊÇÎÄ¼ş¼ĞµÄÂ·¾¶¶ø·ÇÎÄ¼ş
+			// æœªæ‰¾åˆ°.ï¼Œè¯´æ˜æ˜¯æ–‡ä»¶å¤¹çš„è·¯å¾„è€Œéæ–‡ä»¶
 			isFile =  false;
 		}
 		else {
