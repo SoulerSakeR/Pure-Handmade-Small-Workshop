@@ -1,4 +1,4 @@
-#include "PHPath.h"
+﻿#include "PHPath.h"
 
 std::string PHPath::getNewPath() {
 	return newPath;
