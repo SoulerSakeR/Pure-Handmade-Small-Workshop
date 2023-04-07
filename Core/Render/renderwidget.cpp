@@ -213,7 +213,6 @@ void RenderWidget::paintGL()
 
 	unsigned int time = QTime::currentTime().msec();
 
-	std::cout << "time 1:" << time << std::endl;
 
 	//matrix.rotate(time, 0.0f, 0.0f, 1.0f);
 
