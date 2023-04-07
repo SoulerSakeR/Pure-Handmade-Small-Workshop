@@ -97,28 +97,67 @@ void getTextureInfoTest(QString* texturePathQ, QVector3D* offset, QVector2D* siz
 float* RenderWidget::getTextureVertices(QVector3D offset, QVector2D size)
 {
 
-	float v[] = {
-		// positions   // colors           // texture coords
-		1.f,  1.f, 0,  1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-		1.f, -1.f, 0,  0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-	   -1.f, -1.f, 0,  0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-	   -1.f,  1.f, 0,  1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
-	};
-
-	float* vertices;
-
 	// print size.y()
-	std::cout << "size.y() " << size.y() << std::endl;
+	//std::cout << "size.y() " << 1.0 / 2 * size.y() << std::endl;
 
-	float x = offset.x() - 1 / 2 * size.y();
+	float ltx = offset.x() - 1.0 / 2 * size.y();
+	float lty = offset.y() + 1.0 / 2 * size.y();
 
-	QVector3D leftTop{ offset.x() - 1 / 2 * size.y(), offset.y() + 1 / 2 * size.y(), 0.0f };
+	float rtx = offset.x() + 1.0 / 2 * size.y();
+	float rty = offset.y() + 1.0 / 2 * size.y();
 
-	// print left Top
+	float rbx = offset.x() + 1.0 / 2 * size.y();
+	float rby = offset.y() - 1.0 / 2 * size.y();
+
+	float lbx = offset.x() - 1.0 / 2 * size.y();
+	float lby = offset.y() - 1.0 / 2 * size.y();
+
+
+	//std::cout << "x: " << x << std::endl;
+
+	QVector3D leftTop{ ltx, lty, 0.0f };
+	QVector3D rightTop{ rtx, rty, 0.0f };
+	QVector3D rightBottom{ rbx, rby, 0.0f };
+	QVector3D leftBottom{ lbx, lby, 0.0f };
+
+	/*
+	vertices[0] = {
+		// positions                           // colors           // texture coords
+		rightTop.x(),     rightTop.y(),    0,  1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+		rightBottom.x(),  rightBottom.y(), 0,  0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+	    leftBottom.x(),   leftBottom.y(),  0,  0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+		leftTop.x(),	  leftTop.y(),     0,  1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
+	};
+	*/
+
+	vertices[0] = rightTop.x();
+	vertices[1] = rightTop.y();
+	vertices[8] = rightBottom.x();
+	vertices[9] = rightBottom.y();
+	vertices[16] = leftBottom.x();
+	vertices[17] = leftBottom.y();
+	vertices[24] = leftTop.x();
+	vertices[25] = leftTop.y();
+	// print
+	/*
 	std::cout << "leftTop " << leftTop.x() << " " << leftTop.y() << " " << leftTop.z() << std::endl;
+	std::cout << "rightTop " << rightTop.x() << " " << rightTop.y() << " " << rightTop.z() << std::endl;
+	std::cout << "rightBottom " << rightBottom.x() << " " << rightBottom.y() << " " << rightBottom.z() << std::endl;
+	std::cout << "leftBottom " << leftBottom.x() << " " << leftBottom.y() << " " << leftBottom.z() << std::endl;
+	
+
+	// print vertices with standar formal
+	std::cout<< "right top: "<< vertices[0] << " " << vertices[1] << " " << vertices[2] << " " << vertices[3] << " " << vertices[4] << " " << vertices[5] << " " << vertices[6] << " " << vertices[7] << std::endl;
+	std::cout << "right bottom: " << vertices[8] << " " << vertices[9] << " " << vertices[10] << " " << vertices[11] << " " << vertices[12] << " " << vertices[13] << " " << vertices[14] << " " << vertices[15] << std::endl;
+	std::cout << "left bottom: " << vertices[16] << " " << vertices[17] << " " << vertices[18] << " " << vertices[19] << " " << vertices[20] << " " << vertices[21] << " " << vertices[22] << " " << vertices[23] << std::endl;
+	std::cout << "left top: " << vertices[24] << " " << vertices[25] << " " << vertices[26] << " " << vertices[27] << " " << vertices[28] << " " << vertices[29] << " " << vertices[30] << " " << vertices[31] << std::endl;
+	
+	*/
 
 
-	return nullptr;
+	createVBO();
+
+	return vertices;
 }
 
 
@@ -162,9 +201,9 @@ void RenderWidget::initializeGL()
 
 
 	createProgram();
-	createVBO();
-	createVAO();
-	createIBO();
+	//createVBO();
+	//createVAO();
+	//createIBO();
 
 
 }
@@ -213,18 +252,14 @@ void RenderWidget::paintGL()
 
 	unsigned int time = QTime::currentTime().msec();
 
-	std::cout << "time 1:" << time << std::endl;
+	//std::cout << "time 1:" << time << std::endl;
 
-	//matrix.rotate(time, 0.0f, 0.0f, 1.0f);
-
-	//float rotation_speed = 1.0f; // 每帧旋转的角度
-	//float angle = (time % 360) * rotation_speed;
-	//matrix.rotate(m_angle, 0.0f, 0.0f, 1.0f);
+	
 
 	clock_t begin, end1,end2,end3,end4,end5;
 	begin = clock();
 	end1 = clock();
-	std::cout << "time 1:" << double(end1 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
+	//std::cout << "time 1:" << double(end1 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
 	auto scene = SceneMgr::get_instance().get_current_scene();
 	if (auto cam = SceneMgr::get_instance().get_main_camera(); scene == nullptr || scene->getRootGameObjs().size() == 0 || cam == nullptr)
 		return;
@@ -237,8 +272,18 @@ void RenderWidget::paintGL()
 		if (img == nullptr)
 			continue;
 		end2 = clock();
-		std::cout << "time 2:" << double(end2 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
+		//std::cout << "time 2:" << double(end2 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
+		
 		getTextureInfo(*img, texturePathQ, offset, size);
+		
+		
+		//getTextureInfoTest(texturePathQ, offset, size);
+		float *vertex = getTextureVertices(*offset, *size);
+
+		//createVBO();
+		createVAO();
+		createIBO();
+
 		auto matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
 		matrix.translate(gameobj->transform->getWorldPosition().toQVector3D());
 		gameobj->transform->localRotation += 5.f;
@@ -252,26 +297,25 @@ void RenderWidget::paintGL()
 			shaderProgram->bind();
 			shaderProgram->setUniformValue("rotationMatrix", matrix);
 			end4 = clock();
-			std::cout << "time 4:" << double(end4 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
+			//std::cout << "time 4:" << double(end4 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
 			renderTexture(texture, *offset, *size);
+			
 			end5 = clock();
-			std::cout << "time 5:" << double(end5 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
+			//std::cout << "time 5:" << double(end5 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
 			continue;
 		}
 		auto texture = new QOpenGLTexture(QImage(*texturePathQ).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
-		//std::unique_ptr<QOpenGLTexture> textureSample = std::make_unique<QOpenGLTexture>(QImage(*texturePathQ).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
 		texture->create();
 		textures[texturePathQ->toStdString()] = texture;
-		//textureSample->setFormat(QOpenGLTexture::RGBAFormat);
-		//textureSample->setFormat(QOpenGLTexture::RGBA8_UNorm);
-		//textureSample->allocateStorage();
+		
 		shaderProgram->bind();
 		shaderProgram->setUniformValue("rotationMatrix", matrix);
 		end4 = clock();
-		std::cout << "time 4:" << double(end4 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
+		//std::cout << "time 4:" << double(end4 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
 		renderTexture(texture, *offset, *size);
+		
 		end5 = clock();
-		std::cout << "time 5:" << double(end5 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
+		//std::cout << "time 5:" << double(end5 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
 	}
 }
 
@@ -361,6 +405,16 @@ void RenderWidget::createVBO()
 	vbo->bind();
 	vbo->allocate(vertices, sizeof(vertices));
 }
+
+void RenderWidget::createVBOTest(float vertices[])
+{
+	vbo = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
+	vbo->create();
+	vbo->bind();
+	vbo->allocate(vertices, sizeof(vertices));
+}
+
+
 void RenderWidget::createIBO()
 {
 	ibo = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::IndexBuffer);
