@@ -34,7 +34,7 @@ RenderWidget::RenderWidget(QWidget* parent) : QOpenGLWidget(parent)
 	setFocusPolicy(Qt::StrongFocus);
 	connect(&timer, SIGNAL(timeout()), this, SLOT(on_timeout()));
 
-	timer.start(2);
+	//timer.start(2);
 
 	instance = this;
 }
@@ -250,15 +250,11 @@ void RenderWidget::paintGL()
 	 }
 	 */
 
-	unsigned int time = QTime::currentTime().msec();
+	//matrix.rotate(time, 0.0f, 0.0f, 1.0f);
 
-	//std::cout << "time 1:" << time << std::endl;
-
-	
-
-	clock_t begin, end1,end2,end3,end4,end5;
-	begin = clock();
-	end1 = clock();
+	//float rotation_speed = 1.0f; // 每帧旋转的角度
+	//float angle = (time % 360) * rotation_speed;
+	//matrix.rotate(m_angle, 0.0f, 0.0f, 1.0f);
 	//std::cout << "time 1:" << double(end1 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
 	auto scene = SceneMgr::get_instance().get_current_scene();
 	if (auto cam = SceneMgr::get_instance().get_main_camera(); scene == nullptr || scene->getRootGameObjs().size() == 0 || cam == nullptr)
@@ -271,7 +267,7 @@ void RenderWidget::paintGL()
 		auto img = gameobj->getComponent<Image>();
 		if (img == nullptr)
 			continue;
-		end2 = clock();
+
 		//std::cout << "time 2:" << double(end2 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
 		
 		getTextureInfo(*img, texturePathQ, offset, size);
@@ -287,7 +283,7 @@ void RenderWidget::paintGL()
 		auto matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
 		matrix.translate(gameobj->transform->getWorldPosition().toQVector3D());
 		gameobj->transform->localRotation += 5.f;
-		//matrix.rotate(gameobj->transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
+		matrix.rotate(gameobj->transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
 		matrix.scale(gameobj->transform->getWorldScale().toQVector3D(1.0f));
 
 		//getTextureInfoTest(texturePathQ, offset, size);
@@ -296,11 +292,11 @@ void RenderWidget::paintGL()
 			auto texture = textures[texturePathQ->toStdString()];
 			shaderProgram->bind();
 			shaderProgram->setUniformValue("rotationMatrix", matrix);
-			end4 = clock();
+
 			//std::cout << "time 4:" << double(end4 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
 			renderTexture(texture, *offset, *size);
 			
-			end5 = clock();
+
 			//std::cout << "time 5:" << double(end5 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
 			continue;
 		}
@@ -310,12 +306,10 @@ void RenderWidget::paintGL()
 		
 		shaderProgram->bind();
 		shaderProgram->setUniformValue("rotationMatrix", matrix);
-		end4 = clock();
-		//std::cout << "time 4:" << double(end4 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
+
+
 		renderTexture(texture, *offset, *size);
 		
-		end5 = clock();
-		//std::cout << "time 5:" << double(end5 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
 	}
 }
 

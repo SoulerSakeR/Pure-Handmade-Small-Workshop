@@ -13,6 +13,7 @@
         // 获取场景信息(光夫哥)并且进行渲染（敬哥）
         // ...       
             // 游戏循环
+        std::cout << "update scene" << std::endl;
         while (true) {
             // 计算每一帧的时间间隔
             DWORD start_time = GetTickCount();

@@ -39,10 +39,35 @@ RenderWindow::RenderWindow(QWidget *parent)
         GameEngine::get_instance().saveGameProject();
     });
     connect(ui->actionCreatEmptyGameObject, &QAction::triggered, [=]() {
-        GameEngine::get_instance().addGameObject();
+        if (ui->hierarchy->selectedItems().size() == 1)
+        {
+            auto item = (HierarchyItem*)(ui->hierarchy->selectedItems()[0]);
+            auto parent = item->gameObject;
+            auto& gameobj = GameEngine::get_instance().addGameObject("GameObject", parent, TRANSFORM, INSIDE);
+            item->addChild(new HierarchyItem(&gameobj));
+            item->setExpanded(true);
+        }            
+        else
+        {
+            auto& gameobj = GameEngine::get_instance().addGameObject("GameObject");
+            ui->hierarchy->addTopLevelItem(new HierarchyItem(&gameobj));
+        }
     });
     connect(ui->actionCreatGameObjectWithImage, &QAction::triggered, [=]() {
-        GameEngine::get_instance().addGameObject("Image",nullptr,IMAGE);
+        if (ui->hierarchy->selectedItems().size() == 1)
+        {
+            auto item = (HierarchyItem*)(ui->hierarchy->selectedItems()[0]);
+            auto parent = item->gameObject;
+            auto& gameobj = GameEngine::get_instance().addGameObject("Image", parent, IMAGE,INSIDE);
+            item->addChild(new HierarchyItem(&gameobj));
+            item->setExpanded(true);
+        }
+        else
+        {
+            auto& gameobj = GameEngine::get_instance().addGameObject("Image", nullptr, IMAGE);
+            ui->hierarchy->addTopLevelItem(new HierarchyItem(&gameobj));
+        }
+        
     });
     ui->hierarchy->setHeaderHidden(true);
     /*

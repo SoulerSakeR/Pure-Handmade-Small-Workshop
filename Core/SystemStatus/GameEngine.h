@@ -25,7 +25,7 @@ public:
 
 	bool openGameProject(const std::string& path); //打开已有项目
 	bool saveGameProject(); //保存当前项目
-	GameObject& addGameObject(const std::string& name = "GameObject", GameObject* const parent = nullptr,ComponentType type = UNKNOWN);
+	GameObject& addGameObject(const std::string& name = "GameObject", GameObject* const parent = nullptr,ComponentType type = UNKNOWN,InsertMode insertMode = INSIDE);
 	void deleteGameObject(GameObject* obj);
 	const std::string& getRootPath();
 	std::string getGamePath();	

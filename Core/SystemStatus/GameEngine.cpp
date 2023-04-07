@@ -129,14 +129,14 @@ bool GameEngine::saveGameProject()
 /// @param parent the pointer of parent game object or null for scene
 /// @param name name of the new game object
 /// @return the pointer of new game object
-GameObject& GameEngine::addGameObject(const string& name, GameObject* const parent,ComponentType type)
+GameObject& GameEngine::addGameObject(const string& name, GameObject* const parent,ComponentType type,InsertMode insertMode)
 {
 	Debug::log("addGameObject:" + name);
 	GameObject* gameObject = new GameObject(name);
     if(parent == nullptr)
 		GameEngine::get_instance().gameProject->currentScene->insertGameObject(*gameObject);		
 	else
-		GameEngine::get_instance().gameProject->currentScene->insertGameObject(*gameObject,parent);
+		GameEngine::get_instance().gameProject->currentScene->insertGameObject(*gameObject,parent,insertMode);
 	switch (type)
 	{
 	case UNKNOWN:				
@@ -146,7 +146,7 @@ GameObject& GameEngine::addGameObject(const string& name, GameObject* const pare
 	case IMAGE:
 		gameObject->transform->translate(Vector2D((rand() / double(RAND_MAX) - 0.5) * 500, (rand() / double(RAND_MAX) - 0.5) * 500));
 		gameObject->addComponent<Image>()->set_imgPath("\\Resources\\0027.png");
-		gameObject->transform->localScale = Vector2D(0.5f, 0.5f);
+		gameObject->transform->localScale = Vector2D(1.f, 1.f);
 		gameObject->transform->localRotation = (rand() / double(RAND_MAX) - 0.5) * 360;
 		break;
 	case CAMERA:
@@ -156,7 +156,6 @@ GameObject& GameEngine::addGameObject(const string& name, GameObject* const pare
 	default:
 		break;
 	}
-	refreshHierarchy();
 	return *gameObject;
 }
 
@@ -174,4 +173,5 @@ std::string GameEngine::getGamePath()
 {
 	if (gameProject != nullptr)
 		return gameProject->path.getNewPath();
+	return "";
 }
