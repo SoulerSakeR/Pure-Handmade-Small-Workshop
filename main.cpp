@@ -111,7 +111,8 @@ int main(int argc, char *argv[])
     ThreadPool pool;
     for (int i = 0; i < 10; i++) {
         PHPath path = PHPath("C:/Program Files/My/App.exe");
-        auto oldpath = pool.enqueue(&PHPath::getOldPath, &path).get();// pool.enqueue(函数的地址，对象实例的地址，参数1，参数2 ...), 然后用.get()获取返回值
+        auto getOldPath = std::bind(&PHPath::getOldPath, &path);
+        auto oldpath = pool.enqueue(getOldPath).get();// pool.enqueue(函数的地址，对象实例的地址，参数1，参数2 ...), 然后用.get()获取返回值
         std::cout <<i<< "-OldPath: " << oldpath << std::endl;
         std::cout <<i<< "-NewPath: " << path.getNewPath() << std::endl;
     }
