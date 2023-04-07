@@ -34,7 +34,7 @@ RenderWidget::RenderWidget(QWidget* parent) : QOpenGLWidget(parent)
 	setFocusPolicy(Qt::StrongFocus);
 	connect(&timer, SIGNAL(timeout()), this, SLOT(on_timeout()));
 
-	//timer.start(2);
+	timer.start(2);
 
 	instance = this;
 }
@@ -274,7 +274,7 @@ void RenderWidget::paintGL()
 		
 		
 		//getTextureInfoTest(texturePathQ, offset, size);
-		float *vertex = getTextureVertices(*offset, *size);
+		float *vertex = getTextureVertices(QVector3D(0.f,0.f,0.f), *size);
 
 		//createVBO();
 		createVAO();
