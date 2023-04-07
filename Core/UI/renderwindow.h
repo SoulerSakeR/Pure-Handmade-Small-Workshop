@@ -22,15 +22,9 @@ public slots:
 
 private slots:
     friend class listbox;
-    void on_Render_action_triggered();
-
-    void on_Clear_action_triggered();
-
-
-    // void createItemsList();
-
-    void on_actionWirefame_triggered();
-
+    // void on_Render_action_triggered();
+    // void on_Clear_action_triggered();
+    // void on_actionWirefame_triggered();
 private:
 
     Ui::RenderWindow *ui;

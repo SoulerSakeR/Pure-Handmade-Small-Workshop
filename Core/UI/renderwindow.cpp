@@ -113,10 +113,7 @@ void RenderWindow::refreshHierachy()
         items.emplaceBack(item);
     }
     ui->hierarchy->addTopLevelItems(items);
-}
-
-
-
+}/*
 // 以下是测试渲染的三个按钮
 void RenderWindow::on_Render_action_triggered()
 {
@@ -133,4 +130,4 @@ void RenderWindow::on_actionWirefame_triggered()
 {
     bool wirefame = ui->actionWirefame->isChecked();
     ui->openGLWidget->setWirefame(wirefame);
-}
+}*/

@@ -87,21 +87,6 @@
    <addaction name="menuLUA"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QToolBar" name="toolBar">
-   <property name="windowTitle">
-    <string>toolBar</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="Render_action"/>
-   <addaction name="separator"/>
-   <addaction name="Clear_action"/>
-   <addaction name="actionWirefame"/>
-  </widget>
   <widget class="QDockWidget" name="dockWidget_2">
    <attribute name="dockWidgetArea">
     <number>2</number>
