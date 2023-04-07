@@ -220,10 +220,6 @@ void RenderWidget::paintGL()
 	//float angle = (time % 360) * rotation_speed;
 	//matrix.rotate(m_angle, 0.0f, 0.0f, 1.0f);
 
-	clock_t begin, end1,end2,end3,end4,end5;
-	begin = clock();
-	end1 = clock();
-	std::cout << "time 1:" << double(end1 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
 	auto scene = SceneMgr::get_instance().get_current_scene();
 	if (auto cam = SceneMgr::get_instance().get_main_camera(); scene == nullptr || scene->getRootGameObjs().size() == 0 || cam == nullptr)
 		return;
@@ -235,8 +231,7 @@ void RenderWidget::paintGL()
 		auto img = gameobj->getComponent<Image>();
 		if (img == nullptr)
 			continue;
-		end2 = clock();
-		std::cout << "time 2:" << double(end2 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
+
 		getTextureInfo(*img, texturePathQ, offset, size);
 		auto matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
 		matrix.translate(gameobj->transform->getWorldPosition().toQVector3D());
@@ -250,11 +245,9 @@ void RenderWidget::paintGL()
 			auto texture = textures[texturePathQ->toStdString()];
 			shaderProgram->bind();
 			shaderProgram->setUniformValue("rotationMatrix", matrix);
-			end4 = clock();
-			std::cout << "time 4:" << double(end4 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
+
 			renderTexture(texture, *offset, *size);
-			end5 = clock();
-			std::cout << "time 5:" << double(end5 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
+
 			continue;
 		}
 		auto texture = new QOpenGLTexture(QImage(*texturePathQ).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
@@ -266,11 +259,8 @@ void RenderWidget::paintGL()
 		//textureSample->allocateStorage();
 		shaderProgram->bind();
 		shaderProgram->setUniformValue("rotationMatrix", matrix);
-		end4 = clock();
-		std::cout << "time 4:" << double(end4 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
+
 		renderTexture(texture, *offset, *size);
-		end5 = clock();
-		std::cout << "time 5:" << double(end5 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
 	}
 }
 
@@ -347,7 +337,6 @@ void RenderWidget::createVAO()
 		glVertexAttribPointer(textureLocation, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
 		//    开启VAO管理的第一个属性值
 		glEnableVertexAttribArray(textureLocation);
-
 	}
 	vbo->release();
 
