@@ -49,7 +49,7 @@ void Camera::set_property(Property* property, void* value)
 {
 	if (property->get_name() == "view_width")
 	{
-		view_width = *(double*)value;
+		view_width = *(float*)value;
 	}
 	else if (property->get_name() == "is_main_camera")
 	{

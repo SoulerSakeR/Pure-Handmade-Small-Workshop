@@ -142,7 +142,7 @@ void Transform::set_property(Property* property, void* value)
 {
 	if (property->get_name() == "localPosition")
 	{
-		set_localPosition(Vector2D::fromString(((QString*)value)->toStdString()));
+		set_localPosition(Vector2D::fromString(*(string*)value));
 	}
 	else if (property->get_name() == "localRotation")
 	{
@@ -150,6 +150,6 @@ void Transform::set_property(Property* property, void* value)
 	}
 	else if (property->get_name() == "localScale")
 	{
-		set_localScale(Vector2D::fromString(((QString*)value)->toStdString()));
+		set_localScale(Vector2D::fromString(*(string*)value));
 	}
 }

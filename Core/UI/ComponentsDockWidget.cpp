@@ -135,7 +135,8 @@ void ComponentsDockWidget::onStringChanged()
 	auto sender = QObject::sender();
 	auto value = (QLineEdit*)sender;
 	auto text = value->text();
-	onPropertyInputed(sender, &text);
+	auto str = text.toStdString();
+	onPropertyInputed(sender, &str);
 }
 
 void ComponentsDockWidget::onBoolChanged(bool value)

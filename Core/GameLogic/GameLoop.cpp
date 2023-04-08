@@ -23,7 +23,7 @@ void GameLoop::updateScene(RenderWidget* Rwg) {
             // 等待一段时间，控制游戏速度
             endtime = system_clock::now();
             auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endtime - starttime);
-            if (duration.count() < 16) {
+            if (duration.count() < 10) {
                 continue;//Sleep(1 - elapsed_time);
             }
             starttime = system_clock::now();
