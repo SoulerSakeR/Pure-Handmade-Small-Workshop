@@ -1,5 +1,6 @@
 #include "Transform.h"
 #include <Core/Core/GameObject.h>
+#include <Core/SystemStatus/GameEngine.h>
 
 using namespace std;
 
@@ -17,6 +18,13 @@ Transform::Transform(GameObject* gameObject):Component(gameObject)
 {
 	componentType = TRANSFORM;
 	children = vector<Transform*>();
+	properties = vector<Property*>();
+	localPosition = Vector2D::zero();
+	properties.push_back(new Property("localPosition", &localPosition,Property::VECTOR2D,this));
+	localRotation = 0.0f;
+	properties.push_back(new Property("localRotation", &localRotation, Property::FLOAT,this));
+	localScale = Vector2D::one();
+	properties.push_back(new Property("localScale", &localScale, Property::VECTOR2D,this));
 	parent = nullptr;
 }
 
@@ -49,7 +57,59 @@ Vector2D Transform::getWorldScale()
 Transform* Transform::translate(Vector2D value)
 {
 	localPosition = localPosition + value;
+	if (GameEngine::get_instance().getSelectedGameObject() == gameObject)
+	{
+		GameEngine::get_instance().onPropertyChange(properties[0]);
+	}
 	return this;
+}
+
+Vector2D Transform::get_localPosition()
+{
+	return localPosition;
+}
+
+float Transform::get_localRotation()
+{
+	return localRotation;
+}
+
+Vector2D Transform::get_localScale()
+{
+	return localScale;
+}
+
+void Transform::set_localPosition(Vector2D value)
+{
+	if(localPosition == value)
+		return;
+	localPosition = value;
+	if (GameEngine::get_instance().needToRefeshUI())
+	{
+		GameEngine::get_instance().onPropertyChange(properties[0]);
+	}
+}
+
+void Transform::set_localRotation(float value)
+{
+	if (localRotation == value)
+		return;
+	localRotation = value;
+	if (GameEngine::get_instance().needToRefeshUI())
+	{
+		GameEngine::get_instance().onPropertyChange(properties[1]);
+	}
+}
+
+void Transform::set_localScale(Vector2D value)
+{
+	if (localScale == value)
+		return;
+	localScale = value;
+	if (GameEngine::get_instance().needToRefeshUI())
+	{
+		GameEngine::get_instance().onPropertyChange(properties[2]);
+	}
 }
 
 
@@ -76,4 +136,20 @@ void Transform::reset()
 	localPosition = Vector2D::zero();
 	localRotation = 0.0f;
 	localScale = Vector2D::zero();
+}
+
+void Transform::set_property(Property* property, void* value)
+{
+	if (property->get_name() == "localPosition")
+	{
+		set_localPosition(Vector2D::fromString(((QString*)value)->toStdString()));
+	}
+	else if (property->get_name() == "localRotation")
+	{
+		set_localRotation(*(float*)value);
+	}
+	else if (property->get_name() == "localScale")
+	{
+		set_localScale(Vector2D::fromString(((QString*)value)->toStdString()));
+	}
 }

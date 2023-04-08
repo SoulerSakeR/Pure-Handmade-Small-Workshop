@@ -40,7 +40,7 @@ public:
     
 
     void update(float deltaTime, RenderWidget* Rwg);
-        //// 游戏逻辑更新函数，每帧调用一次
+        // 游戏逻辑更新函数，每帧调用一次
         //updatePlayer(deltaTime);
         //updateScene(Rwg);
         //checkCollisions(deltaTime);

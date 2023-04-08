@@ -19,6 +19,7 @@ public:
 	GameProject& creatGameProject(const std::string& name,const std::string& path); //创建新项目
 	Vector2D get_resolution();
 	void refreshHierarchy();	
+	bool needToRefeshUI();
 #ifdef TEST
 	bool openGameProjectTest(const std::string& project,const std::string** scenes); //打开已有项目
 #endif // TEST
@@ -30,7 +31,8 @@ public:
 	const std::string& getRootPath();
 	std::string getGamePath();	
 	bool initialize(RenderWindow* window);
-
+	GameObject* getSelectedGameObject();
+	void onPropertyChange(Property* property);
 	ThreadPool pool;
 private:
 

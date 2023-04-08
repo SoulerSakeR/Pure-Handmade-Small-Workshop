@@ -54,7 +54,6 @@ void GameProject::creatNewScene(const std::string& name)
 	Scene* scene = new Scene(name);
 	currentScene = scene;
 	auto& cam = GameEngine::get_instance().addGameObject("MainCamera",nullptr,CAMERA);
-	cam.addComponent<Camera>()->view_width = 2000;
 	cam.getComponent<Camera>()->set_main_camera(true);
 	saveCurrentScene();
 	scenes.push_back(scene->name);

@@ -29,6 +29,10 @@ void Camera::set_main_camera(bool value)
 	{
 		is_main_camera_ = false;
 	}
+	if (GameEngine::get_instance().getSelectedGameObject() == gameObject)
+	{
+		GameEngine::get_instance().onPropertyChange(properties[1]);
+	}
 }
 
 QMatrix4x4 Camera::CalculateProjectionMulViewMatrix()
@@ -41,11 +45,40 @@ QMatrix4x4 Camera::CalculateProjectionMulViewMatrix()
 	return result;
 }
 
+void Camera::set_property(Property* property, void* value)
+{
+	if (property->get_name() == "view_width")
+	{
+		view_width = *(double*)value;
+	}
+	else if (property->get_name() == "is_main_camera")
+	{
+		set_main_camera(*(bool*)value);
+	}
+}
+
+void Camera::set_view_width(float value)
+{
+	view_width = value;
+	if (GameEngine::get_instance().getSelectedGameObject() == gameObject)
+	{
+		GameEngine::get_instance().onPropertyChange(properties[0]);
+	}
+}
+
+float Camera::get_view_width()
+{
+	return view_width;
+}
+
 Camera::Camera(GameObject* gameObj,float viewWidth):Component(gameObj)
 {
 	componentType = CAMERA;
 	view_width = viewWidth;
 	is_main_camera_ = false;
+	properties = std::vector<Property*>();
+	properties.push_back(new Property("view_width", &(this->view_width), Property::FLOAT,this));
+	properties.push_back(new Property("is_main_camera", &(this->is_main_camera_), Property::BOOL,this));
 }
 
 void Camera::serialize(PHString& str)

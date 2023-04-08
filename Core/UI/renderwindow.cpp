@@ -9,12 +9,15 @@
 #include "Core/UI/listitem.h"
 #include "Core/SystemStatus/GameEngine.h"
 #include "HierarchyItem.h"
+#include "HierarchyWidget.h"
+#include "ComponentsDockWidget.h"
 
 RenderWindow::RenderWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::RenderWindow)
 {
     ui->setupUi(this);
+    ui->dockWidget_components->set_components_widget(ui->scrollAreaWidgetContents);
     // 点击创建项目按钮出现资源对话框
     connect(ui->actioncreatProject, &QAction::triggered, [=]() {
         // 文件对话框  参数1 父亲 参数2 标题 参数3 默认打开路径 参数4 过滤文件格式
@@ -80,6 +83,7 @@ RenderWindow::RenderWindow(QWidget *parent)
         ui->listBox->addItem(a);
     }
     */
+    connect(ui->hierarchy, &HierarchyWidget::gameObjectSelected, ui->dockWidget_components, &ComponentsDockWidget::onGameObjectSelected);
     QObject::connect(this, &QListWidget::customContextMenuRequested,this , &RenderWindow::showContextMenu);
     // 链接未完成4.4
     // QObject::connect(this, &QWidget::resizeEvent, ui->openGLWidget, &RenderWindow::resizeGL);

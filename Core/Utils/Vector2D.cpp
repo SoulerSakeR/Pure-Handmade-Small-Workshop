@@ -17,6 +17,11 @@ Vector2D& Vector2D::operator=(const Vector2D& b)
 	return *this;
 }
 
+bool Vector2D::operator==(const Vector2D& b)
+{
+	return x == b.x && y == b.y;
+}
+
 const Vector2D Vector2D::zero()
 {
 	return Vector2D(0.0f,0.0f);
@@ -25,6 +30,14 @@ const Vector2D Vector2D::zero()
 const Vector2D Vector2D::one()
 {
 	return Vector2D(1.f,1.f);
+}
+
+const Vector2D Vector2D::fromString(const std::string& src)
+{
+	size_t index = src.find(',');
+	float x = stof(src.substr(0, index));
+	float y = stof(src.substr(index + 1));
+	return Vector2D(x, y);
 }
 
 string Vector2D::tostring()

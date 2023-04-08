@@ -33,9 +33,8 @@ RenderWidget::RenderWidget(QWidget* parent) : QOpenGLWidget(parent)
 {
 	setFocusPolicy(Qt::StrongFocus);
 	connect(&timer, SIGNAL(timeout()), this, SLOT(on_timeout()));
-
+	frameCount = 0;
 	//timer.start(2);
-
 	instance = this;
 }
 
@@ -146,13 +145,14 @@ float* RenderWidget::getTextureVertices(QVector3D offset, QVector2D size)
 	std::cout << "leftBottom " << leftBottom.x() << " " << leftBottom.y() << " " << leftBottom.z() << std::endl;
 	*/
 
+	/*
 	// print vertices with standar formal
 	std::cout<< "right top:     "<< vertices[0] << " " << vertices[1] << " " << vertices[2] << " " << vertices[3] << " " << vertices[4] << " " << vertices[5] << " " << vertices[6] << " " << vertices[7] << std::endl;
 	std::cout << "right bottom: " << vertices[8] << " " << vertices[9] << " " << vertices[10] << " " << vertices[11] << " " << vertices[12] << " " << vertices[13] << " " << vertices[14] << " " << vertices[15] << std::endl;
 	std::cout << "left bottom:  " << vertices[16] << " " << vertices[17] << " " << vertices[18] << " " << vertices[19] << " " << vertices[20] << " " << vertices[21] << " " << vertices[22] << " " << vertices[23] << std::endl;
 	std::cout << "left top:     " << vertices[24] << " " << vertices[25] << " " << vertices[26] << " " << vertices[27] << " " << vertices[28] << " " << vertices[29] << " " << vertices[30] << " " << vertices[31] << std::endl;
 	
-	
+	*/
 
 
 	createVBO();
@@ -189,10 +189,10 @@ void RenderWidget::initializeGL()
 	// source_path = SOURCE_DIR;
 	source_path = GameEngine::get_instance().getRootPath();
 
-	logger = std::make_unique<QOpenGLDebugLogger>(this);
+	/*logger = std::make_unique<QOpenGLDebugLogger>(this);
 	logger->initialize();
 	connect(logger.get(), &QOpenGLDebugLogger::messageLogged, this, &RenderWidget::messageLogHandler);
-	logger->startLogging();
+	logger->startLogging();*/
 
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glEnable(GL_FRAMEBUFFER_SRGB);
@@ -216,6 +216,7 @@ void RenderWidget::resizeGL(int w, int h)
 
 void RenderWidget::paintGL()
 {
+	frameCount++;
 	makeCurrent();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -282,7 +283,7 @@ void RenderWidget::paintGL()
 
 		auto matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
 		matrix.translate(gameobj->transform->getWorldPosition().toQVector3D());
-		gameobj->transform->localRotation += 5.f;
+		gameobj->transform->set_localRotation(gameobj->transform->get_localRotation() + 5.f);
 		matrix.rotate(gameobj->transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
 		matrix.scale(gameobj->transform->getWorldScale().toQVector3D(1.0f));
 

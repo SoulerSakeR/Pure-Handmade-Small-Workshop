@@ -9,6 +9,11 @@ void Image::set_imgPath(const std::string& imgPath)
 	this->imgPath = imgPath;
 	auto texture2D = IO::loadTexture2D(GameEngine::get_instance().getRootPath() + imgPath);
 	this->size = Vector2D(texture2D.widthT, texture2D.heightT);
+	if (GameEngine::get_instance().getSelectedGameObject() == gameObject)
+	{
+		GameEngine::get_instance().onPropertyChange(properties[0]);
+		GameEngine::get_instance().onPropertyChange(properties[1]);
+	}
 }
 
 Image::Image(GameObject* gameObj, const std::string& imgPath,Vector2D size):Component(gameObj)
@@ -16,11 +21,18 @@ Image::Image(GameObject* gameObj, const std::string& imgPath,Vector2D size):Comp
 	this->imgPath = imgPath;
 	this->size = size;
 	componentType = IMAGE;
+	properties = vector<Property*>();
+	properties.push_back(new Property("imgPath", &(this->imgPath), Property::STRING,this));
+	properties.push_back(new Property("size", &(this->size), Property::VECTOR2D,this));
 }
 
 void Image::set_size(Vector2D newSize)
 {
 	this->size = newSize;
+	if (GameEngine::get_instance().getSelectedGameObject() == gameObject)
+	{
+		GameEngine::get_instance().onPropertyChange(properties[1]);
+	}
 }
 
 
@@ -35,6 +47,18 @@ void Image::set_size(float width, float height)
 {
 	this->size.x = width;
 	this->size.y = height;
+}
+
+void Image::set_property(Property* property, void* value)
+{
+	if (property->get_name() == "imgPath")
+	{
+		set_imgPath(*(string*)value);
+	}
+	else if (property->get_name() == "size")
+	{
+		set_size(Vector2D::fromString(((QString*)value)->toStdString()));
+	}
 }
 
 void Image::deserialize(std::stringstream& ss)

@@ -26,7 +26,7 @@ void Debug::log(const std::string& info)
 
 
 
-void Debug::logError(std::string& errorInfo)
+void Debug::logError(const std::string& errorInfo)
 {
 	log(errorPrefix + errorInfo);
 }

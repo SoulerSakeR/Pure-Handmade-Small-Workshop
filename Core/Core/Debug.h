@@ -7,7 +7,7 @@ class Debug
 public:
 	static void log(const std::string& info); //需要绑定
 	//static void log(const char* info);
-	static void logError(std::string&); //需要绑定
+	static void logError(const std::string&); //需要绑定
 	
 
 private:

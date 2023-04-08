@@ -8,6 +8,7 @@
 #include <Core/ResourceManagement/SceneMgr.h>
 #include <Core/Utils/PHPath.h>
 #include <Core/Core/Image.h>
+#include <Core/UI/ComponentsDockWidget.h>
 
 using namespace std;
 
@@ -39,6 +40,19 @@ bool GameEngine::initialize(RenderWindow* window)
 	rootPath = current_path.string();
 	Debug::log("Engine initialized");
     return true;
+}
+
+GameObject* GameEngine::getSelectedGameObject()
+{
+	if (ComponentsDockWidget::get_instance() != nullptr)
+		return ComponentsDockWidget::get_instance()->get_selected_gameobject();
+	return nullptr;
+}
+
+void GameEngine::onPropertyChange(Property* property)
+{
+	if (ComponentsDockWidget::get_instance() != nullptr)
+		ComponentsDockWidget::get_instance()->onPropertyChanged(property);
 }
 
 void GameEngine::renderLoop()
@@ -86,6 +100,14 @@ Vector2D GameEngine::get_resolution()
 void GameEngine::refreshHierarchy()
 {
 	window->refreshHierachy();
+}
+bool GameEngine::needToRefeshUI()
+{
+	if (getSelectedGameObject() == nullptr)
+		return false;
+	if(RenderWidget::getInstance().frameCount%5==0)
+		return true;
+	return false;
 }
 #ifdef TEST
 bool GameEngine::openGameProjectTest(const std::string& project, const std::string** scenes)
@@ -146,8 +168,7 @@ GameObject& GameEngine::addGameObject(const string& name, GameObject* const pare
 	case IMAGE:
 		gameObject->transform->translate(Vector2D((rand() / double(RAND_MAX) - 0.5) * 500, (rand() / double(RAND_MAX) - 0.5) * 500));
 		gameObject->addComponent<Image>()->set_imgPath("\\Resources\\0028.png");
-		gameObject->transform->localScale = Vector2D(1.f, 1.f);
-		gameObject->transform->localRotation = (rand() / double(RAND_MAX) - 0.5) * 360;
+		gameObject->transform->set_localRotation( (rand() / double(RAND_MAX) - 0.5) * 360);
 		break;
 	case CAMERA:
 		break;

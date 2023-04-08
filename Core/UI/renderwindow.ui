@@ -24,7 +24,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QTreeWidget" name="hierarchy">
+   <widget class="HierarchyWidget" name="hierarchy">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -87,21 +87,63 @@
    <addaction name="menuLUA"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QDockWidget" name="dockWidget_2">
+  <widget class="ComponentsDockWidget" name="dockWidget_components">
+   <property name="minimumSize">
+    <size>
+     <width>256</width>
+     <height>94</height>
+    </size>
+   </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
+   <property name="windowTitle">
+    <string>Components</string>
+   </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_2">
-    <widget class="QListWidget" name="listWidget">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>256</width>
-       <height>192</height>
-      </rect>
+   <widget class="QWidget" name="componentsWidget">
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="leftMargin">
+      <number>0</number>
      </property>
-    </widget>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QScrollArea" name="scrollArea">
+       <property name="widgetResizable">
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="scrollAreaWidgetContents">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>254</width>
+          <height>1013</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <action name="actioncreatProject">
@@ -153,6 +195,17 @@
    <class>RenderWidget</class>
    <extends>QOpenGLWidget</extends>
    <header>Core/Render/renderwidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>HierarchyWidget</class>
+   <extends>QTreeWidget</extends>
+   <header location="global">Core/UI/hierarchywidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ComponentsDockWidget</class>
+   <extends>QDockWidget</extends>
+   <header>Core/UI/ComponentsDockWidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

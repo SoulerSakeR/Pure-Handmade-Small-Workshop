@@ -14,14 +14,15 @@ public:
     void set_imgPath(const std::string& imgPath);
     void set_size(Vector2D newSize);
     void set_size(float  width, float height);
+    void set_property(Property * property, void* value) override;
 
     std::string imgPath;
     Vector2D size;
+
 private:   
     void serialize(PHString&) override; 
     void deserialize(std::stringstream& ss) override; 
     void reset() override;
-
     Texture2D texture;
 };
 

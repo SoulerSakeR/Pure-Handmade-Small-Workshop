@@ -23,7 +23,7 @@ public:
 
     void drawShape(Shape shape);
     void setWirefame(bool wireframe);
-
+    int frameCount;
     void cleanup();
 
     static RenderWidget& getInstance();
