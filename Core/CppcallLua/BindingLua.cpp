@@ -1,10 +1,10 @@
-#include "sol/sol.hpp"
-#include "Input/InputDetection.h"
+#include "lib/sol/sol.hpp"
+#include "Core/Input/InputDetection.h"
 
-#include "Core/Debug.h"
-#include "Core/GameObject.h"
-#include "Core/Transform.h"
-#include "Utils/Vector2D.h"
+#include "Core/Core/Debug.h"
+#include "Core/Core/GameObject.h"
+#include "Core/Core/Transform.h"
+#include "Core/Utils/Vector2D.h"
 
 using namespace std;
 
