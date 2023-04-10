@@ -12,7 +12,7 @@
 RenderWidget* RenderWidget::instance = nullptr;
 std::string source_path;
 static int count = 0;
-
+unsigned int VBOBOX, VAOBOX, EBOBOX;
 
 float vertices[] = {
 	// positions   // colors           // texture coords
@@ -23,10 +23,20 @@ float vertices[] = {
 };
 
 //counter clockwise
+
 unsigned int indices[] = { // note that we start from 0!
 			   0, 3, 2, // first triangle
 			   0, 2, 1 // second triangle
 };
+
+
+/*
+//counter clockwise
+unsigned int indices[] = { // note that we start from 0!
+			   0, 1, 2, // first triangle
+			   0, 2, 3 // second triangle
+};
+*/
 
 
 RenderWidget::RenderWidget(QWidget* parent) : QOpenGLWidget(parent)
@@ -129,14 +139,38 @@ float* RenderWidget::getTextureVertices(QVector3D offset, QVector2D size)
 	};
 	*/
 
-	vertices[0] = rightTop.x();
-	vertices[1] = rightTop.y();
-	vertices[8] = rightBottom.x();
-	vertices[9] = rightBottom.y();
-	vertices[16] = leftBottom.x();
-	vertices[17] = leftBottom.y();
-	vertices[24] = leftTop.x();
-	vertices[25] = leftTop.y();
+	bool old = true;
+	if (old)
+	{
+		vertices[0] = rightTop.x();
+		vertices[1] = rightTop.y();
+
+		vertices[8] = rightBottom.x();
+		vertices[9] = rightBottom.y();
+
+		vertices[16] = leftBottom.x();
+		vertices[17] = leftBottom.y();
+
+		vertices[24] = leftTop.x();
+		vertices[25] = leftTop.y();
+	}
+	else
+	{
+		// 左上
+		vertices[0] = leftTop.x();
+		vertices[1] = leftTop.y();
+		// 左下
+		vertices[8] = leftBottom.x();
+		vertices[9] = leftBottom.y();
+		// 右上
+		vertices[16] = rightTop.x();
+		vertices[17] = rightTop.y();
+		// 右下
+		vertices[24] = rightBottom.x();
+		vertices[25] = rightBottom.y();
+
+	}
+	
 	// print
 	/*
 	std::cout << "leftTop " << leftTop.x() << " " << leftTop.y() << " " << leftTop.z() << std::endl;
@@ -201,6 +235,7 @@ void RenderWidget::initializeGL()
 
 
 	createProgram();
+	//createBoxProgram();
 	//createVBO();
 	//createVAO();
 	createIBO();
@@ -220,43 +255,6 @@ void RenderWidget::paintGL()
 	makeCurrent();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	/*
-		//textureBoss = std::make_unique<QOpenGLTexture>(QImage(QString::fromStdString(source_path + "\\resources\\boss_hornet.png")).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
-
-		//textureSmile = std::make_unique<QOpenGLTexture>(QImage(QString::fromStdString(source_path + "\\resources\\awesomeface.png")).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
-
-		// textureSmile = std::make_unique<QOpenGLTexture>(QImage(QString::fromStdString(source_path + "\\resources\\awesomeface.png")).mirrored(), QOpenGLTexture::GenerateMipMaps);
-		// textureSmile->create();
-		// textureBoss->create();
-		// textureWall = std::make_unique<QOpenGLTexture>(QImage(QString::fromStdString(source_path + "\\resources\\boss_hornet.png")).mirrored(), QOpenGLTexture::GenerateMipMaps);
-		// textureSmile->setFormat(QOpenGLTexture::RGBAFormat);
-		// textureBoss->setFormat(QOpenGLTexture::RGBAFormat);
-	 */
-
-
-	 //render scene 
-	 /*
-	 auto scene = GameEngine::getInstance().getCurrentScene();
-	 if(scene!=nullptr)
-	 for (auto rootObj : scene->getRootGameObjs())
-	 {
-		 //if(rootobj.needRender())
-			 //renderMain(texturePathQ, offset, size);
-		 QString* texturePathQ = new QString;
-		 QVector3D* offset = new QVector3D;
-		 QVector2D* size = new QVector2D;
-		 getTextureInfo(*(rootObj->getComponent<Image>()), texturePathQ, offset, size);
-		 renderMain(texturePathQ, offset, size);
-		 //while()
-	 }
-	 */
-
-	//matrix.rotate(time, 0.0f, 0.0f, 1.0f);
-
-	//float rotation_speed = 1.0f; // 每帧旋转的角度
-	//float angle = (time % 360) * rotation_speed;
-	//matrix.rotate(m_angle, 0.0f, 0.0f, 1.0f);
-	//std::cout << "time 1:" << double(end1 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
 	auto scene = SceneMgr::get_instance().get_current_scene();
 	if (auto cam = SceneMgr::get_instance().get_main_camera(); scene == nullptr || scene->getRootGameObjs().size() == 0 || cam == nullptr)
 		return;
@@ -281,11 +279,12 @@ void RenderWidget::paintGL()
 		//createVBO();
 		createVAO();
 		
+		//createBoxVAO();
 
 		auto matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
 		matrix.translate(gameobj->transform->getWorldPosition().toQVector3D());
 		gameobj->transform->set_localRotation(gameobj->transform->get_localRotation() + 5.f);
-		matrix.rotate(gameobj->transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
+		//matrix.rotate(gameobj->transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
 		matrix.scale(gameobj->transform->getWorldScale().toQVector3D(1.0f));
 
 		//getTextureInfoTest(texturePathQ, offset, size);
@@ -310,6 +309,14 @@ void RenderWidget::paintGL()
 
 
 		renderTexture(texture, *offset, *size);
+
+		
+		renderBox();
+
+
+		// render box
+		
+
 		
 	}
 }
@@ -349,6 +356,33 @@ void RenderWidget::createProgram()
 	textureWallBinding = 0;
 }
 
+void RenderWidget::createBoxProgram() {
+	bool success;
+	shaderBoxProgram = std::make_unique<QOpenGLShaderProgram>();
+	shaderBoxProgram->create();
+	shaderBoxProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, QString::fromStdString(source_path + "\\shaders\\boxShader.vert"));	
+	shaderBoxProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\boxShader.frag"));
+	success = shaderBoxProgram->link();
+	if (!success)
+		qDebug() << "ERR:" << shaderProgram->log();
+	
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+}
+
+void RenderWidget::createBoxVAO()
+{
+	shaderBoxProgram->bind();
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	//告知显卡如何解析缓冲里的属性值
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	//开启VAO管理的第一个属性值
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+}
 void RenderWidget::createVAO()
 {
 	// 找shader的起始位置，并且同时修改下两行的poslocation
@@ -394,6 +428,8 @@ void RenderWidget::createVAO()
 
 	glBindVertexArray(0);
 }
+
+
 void RenderWidget::createVBO()
 {
 	vbo = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
@@ -425,15 +461,60 @@ void RenderWidget::renderTexture(QOpenGLTexture* texture, QVector3D offset, QVec
 	vao->bind();
 	ibo->bind();
 
-
-
-
-
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDepthFunc(GL_LEQUAL);
 
 	if (textureWallBinding >= 0)
 		texture->bind(textureWallBinding);
+	
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(std::size(indices)), GL_UNSIGNED_INT, 0);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glLineWidth(3.0f);
+	glDrawElements(GL_TRIANGLE_STRIP, 6, GL_UNSIGNED_INT, NULL);
+
+	shaderProgram->release();
+	
+}
+
+void RenderWidget::renderBox()
+{
+	//创建VBO和VAO对象，并赋予ID
+	glGenVertexArrays(1, &VAOBOX);
+	glGenBuffers(1, &VBOBOX);
+
+	//绑定VBO和VAO对象
+	glBindVertexArray(VAOBOX);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOBOX);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	//告知显卡如何解析缓冲里的属性值
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	//开启VAO管理的第一个属性值
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	shaderBoxProgram = std::make_unique<QOpenGLShaderProgram>(this);
+	shaderBoxProgram->create();
+	shaderBoxProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, QString::fromStdString(source_path + "\\shaders\\boxShader.vert"));
+	shaderBoxProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\boxShader.frag"));
+	shaderBoxProgram->link();
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glGenBuffers(1, &EBOBOX);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOBOX);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glBindVertexArray(0);
+
+	shaderBoxProgram->bind();
+	glBindVertexArray(VAOBOX);
+
+	glDrawElements(GL_TRIANGLE_STRIP, 6, GL_UNSIGNED_INT, NULL);
+
 }

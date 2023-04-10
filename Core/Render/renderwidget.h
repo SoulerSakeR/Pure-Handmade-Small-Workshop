@@ -54,6 +54,9 @@ private:
     std::unique_ptr<QOpenGLVertexArrayObject> vao;
     std::unique_ptr<QOpenGLShaderProgram> shaderProgram;
 
+    std::unique_ptr<QOpenGLVertexArrayObject> vaoBox;
+    std::unique_ptr<QOpenGLShaderProgram> shaderBoxProgram;
+
     std::unique_ptr<QOpenGLBuffer> vbo;
     std::unique_ptr<QOpenGLBuffer> ibo;
 
@@ -74,6 +77,8 @@ private:
     void createVBO();
     void createIBO();
 
+    void createBoxProgram();
+    void createBoxVAO();
     
 
     int renderMain(QString*, QVector3D*, QVector2D*);
@@ -82,7 +87,7 @@ private:
 
     void renderTexture(QOpenGLTexture* texture,QVector3D offset,QVector2D size);
 
-
+    void renderBox();
     
 
 };
