@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "GameObject.h"
+#include "Core/Core/Transform.h"
 
 class PhysicsEngine {
 public:

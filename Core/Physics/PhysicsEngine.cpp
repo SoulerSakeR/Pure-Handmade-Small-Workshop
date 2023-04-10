@@ -18,9 +18,12 @@ void PhysicsEngine::update(float deltaTime) {
     for (int i = 0; i < objects.size(); i++) {
         GameObject* obj1 = objects[i];
 
+        // 获取物体的Transform组件
+        Transform* transform = obj1->transform;
+
         // 更新物体的位置和速度
         obj1->velocity += obj1->acceleration * deltaTime;
-        obj1->position += obj1->velocity * deltaTime;
+        transform->set_localPosition(transform->get_localPosition() + obj1->velocity * deltaTime);
 
         // 检测物体是否和其他物体碰撞
         for (int j = i + 1; j < objects.size(); j++) {
