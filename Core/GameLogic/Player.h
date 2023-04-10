@@ -13,18 +13,23 @@ public:
     void move(float x, float y, float deltaTime);
     void updateInfo(float deltatime);
 
-    // 状态信息
-    int getHealth() ;
-    void setHealth(int health);
-    int getScore() ;
-    void setScore(int score);
+    // 状态信息 （游戏待定义）
+   // int getHealth() ;
+   // void setHealth(int health);
+   // int getScore() ;
+   // void setScore(int score);
+
     Vector2D getPosition();
+    void setPosition(float x, float y);
+
+    Vector2D getVelocity();
+    void setVelocity(float Vx, float Vy);
 
 
-    // 与其他游戏对象的交互信息
-    void interactWithEnemy(GameObject& enemy);
-    void interactWithItem(GameObject& item);
-    void interactWithNPC(GameObject& npc);
+    // 与其他游戏对象的交互信息 （游戏待定义）
+   // void interactWithEnemy(GameObject& enemy);
+   // void interactWithItem(GameObject& item);
+   // void interactWithNPC(GameObject& npc);
 
 private:
     Vector2D m_position; // 位置信息
