@@ -37,6 +37,26 @@ RenderWindow::RenderWindow(QWidget *parent)
         // 暂时将读取的文件放入数组中
         QByteArray array = file.readAll();
         */
+
+
+        // 获取上级目录
+        QString parentDir = QFileInfo(FileAdress).dir().absolutePath();
+
+        // 创建QFileSystemModel并显示上级目录下的文件结构
+        QFileSystemModel* fileModel = new QFileSystemModel(ui->treeView);
+        fileModel->setRootPath(parentDir);
+
+        QStringList filters;
+        filters << "*.scene" << "*.png";
+        fileModel->setNameFilters(filters);
+        fileModel->setNameFilterDisables(false);
+
+        ui->treeView->setModel(fileModel);
+        ui->treeView->setRootIndex(fileModel->index(parentDir));
+
+        ui->treeView->hideColumn(1);
+        ui->treeView->hideColumn(2);
+        ui->treeView->hideColumn(3);
     });
     connect(ui->actionsaveProject, &QAction::triggered, [=]() {
         GameEngine::get_instance().saveGameProject();

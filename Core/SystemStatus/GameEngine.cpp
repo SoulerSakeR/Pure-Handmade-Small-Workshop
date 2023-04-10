@@ -62,9 +62,7 @@ void GameEngine::renderLoop()
 
 Scene* const  GameEngine::getCurrentScene()
 {
-	if (gameProject != nullptr && gameProject->currentScene != nullptr)
-		return gameProject->currentScene;
-	return nullptr;
+	return SceneMgr::get_instance().get_current_scene();
 }
 
 GameProject* const GameEngine::getCurrentGameProject()
@@ -166,7 +164,7 @@ GameObject& GameEngine::addGameObject(const string& name, GameObject* const pare
 	case TRANSFORM:
 		break;
 	case IMAGE:
-		gameObject->transform->translate(Vector2D((rand() / double(RAND_MAX) - 0.5) * 500, (rand() / double(RAND_MAX) - 0.5) * 500));
+		//gameObject->transform->translate(Vector2D((rand() / double(RAND_MAX) - 0.5) * 500, (rand() / double(RAND_MAX) - 0.5) * 500));
 		gameObject->addComponent<Image>()->set_imgPath("\\Resources\\0028.png");
 		gameObject->transform->set_localRotation( (rand() / double(RAND_MAX) - 0.5) * 360);
 		break;
@@ -184,6 +182,7 @@ GameObject& GameEngine::addGameObject(const string& name, GameObject* const pare
 void GameEngine::deleteGameObject(GameObject* obj)
 {
 	getCurrentScene()->removeGameObject(obj);
+	delete obj;
 }
 
 const std::string& GameEngine::getRootPath()
