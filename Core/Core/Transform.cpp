@@ -84,7 +84,7 @@ void Transform::set_localPosition(Vector2D value)
 	if(localPosition == value)
 		return;
 	localPosition = value;
-	if (GameEngine::get_instance().needToRefeshUI())
+	if (GameEngine::get_instance().needToRefeshUI(gameObject))
 	{
 		GameEngine::get_instance().onPropertyChange(properties[0]);
 	}
@@ -95,7 +95,7 @@ void Transform::set_localRotation(float value)
 	if (localRotation == value)
 		return;
 	localRotation = value;
-	if (GameEngine::get_instance().needToRefeshUI())
+	if (GameEngine::get_instance().needToRefeshUI(gameObject))
 	{
 		GameEngine::get_instance().onPropertyChange(properties[1]);
 	}
@@ -106,7 +106,7 @@ void Transform::set_localScale(Vector2D value)
 	if (localScale == value)
 		return;
 	localScale = value;
-	if (GameEngine::get_instance().needToRefeshUI())
+	if (GameEngine::get_instance().needToRefeshUI(gameObject))
 	{
 		GameEngine::get_instance().onPropertyChange(properties[2]);
 	}

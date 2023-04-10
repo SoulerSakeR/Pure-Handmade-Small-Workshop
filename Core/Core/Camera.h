@@ -7,7 +7,7 @@ class Camera :
 {
 public:
     static constexpr int max_component_size=1;
-    static constexpr float default_view_width =10.f;
+    static constexpr float default_view_width =1000.f;
    
     Camera(GameObject* gameObj, float view_width = default_view_width);
 

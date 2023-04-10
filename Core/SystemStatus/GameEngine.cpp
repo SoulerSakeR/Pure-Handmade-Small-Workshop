@@ -101,9 +101,9 @@ void GameEngine::refreshHierarchy()
 {
 	window->refreshHierachy();
 }
-bool GameEngine::needToRefeshUI()
+bool GameEngine::needToRefeshUI(GameObject* gameobj)
 {
-	if (getSelectedGameObject() == nullptr)
+	if (getSelectedGameObject() !=gameobj)
 		return false;
 	if(RenderWidget::getInstance().frameCount%5==0)
 		return true;
@@ -171,6 +171,7 @@ GameObject& GameEngine::addGameObject(const string& name, GameObject* const pare
 		gameObject->transform->set_localRotation( (rand() / double(RAND_MAX) - 0.5) * 360);
 		break;
 	case CAMERA:
+		gameObject->addComponent<Camera>();
 		break;
 	case SCRIPT:
 		break;
