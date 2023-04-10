@@ -2,6 +2,7 @@
 #include "Core/Utils/Test.h"
 #include <iostream>
 #include <Core/FileIO/IO.h>
+#include "Image.h"
 
 using namespace std;
 
@@ -13,6 +14,7 @@ Scene::Scene(string name)
 	this->name = name;
 	allGameObjsByID = unordered_map<int,GameObject*>();
 	allGameObjsByName = unordered_map<std::string, std::vector<GameObject*>>();
+	allGameObjsByDepth = map<int, GameObject* >();
 	rootGameObjs = vector<GameObject*>();
 }
 
@@ -79,6 +81,8 @@ void Scene::addGameObject(GameObject *newObject)
 void Scene::addGameObjectWithChildren(GameObject* newObject)
 {
 	allGameObjsByID.insert(pair<int, GameObject*>(newObject->getID(), newObject));
+	if(newObject->getComponent<Image>()!=nullptr)
+		allGameObjsByDepth[newObject->getComponent<Image>()->get_render_order()] = newObject;
 	auto it = allGameObjsByName.find(newObject->name);
 	if (it != allGameObjsByName.end())
 		it->second.push_back(newObject);
@@ -119,6 +123,8 @@ void Scene::removeGameObject(GameObject* gameObject)
 void Scene::removeGameObjectWithChildren(GameObject* gameObject)
 {
 	auto it = allGameObjsByName.find(gameObject->name);
+	if (gameObject->getComponent<Image>() != nullptr)
+		allGameObjsByDepth.erase(gameObject->getComponent<Image>()->get_render_order());
 	if (it != allGameObjsByName.end())
 	{
 		auto& vec = it->second;
@@ -183,6 +189,10 @@ const std::unordered_map<int, GameObject*> Scene::getAllGameObjs()
 const std::vector<GameObject*> Scene::getRootGameObjs()
 {
 	return rootGameObjs;
+}
+std::map<int, GameObject*>& Scene::getAllGameObjsByDepth()
+{
+	return allGameObjsByDepth;
 }
 #ifdef TEST
 Scene* Scene::loadFromText(const std::string& text)

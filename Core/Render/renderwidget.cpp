@@ -260,8 +260,9 @@ void RenderWidget::paintGL()
 	auto scene = SceneMgr::get_instance().get_current_scene();
 	if (auto cam = SceneMgr::get_instance().get_main_camera(); scene == nullptr || scene->getRootGameObjs().size() == 0 || cam == nullptr)
 		return;
-	for (auto gameobj : scene->getRootGameObjs())
+	for (auto& pair : scene->getAllGameObjsByDepth())
 	{
+		auto gameobj = pair.second;
 		QString* texturePathQ = new QString;
 		QVector3D* offset = new QVector3D;
 		QVector2D* size = new QVector2D;
@@ -297,7 +298,6 @@ void RenderWidget::paintGL()
 			//std::cout << "time 4:" << double(end4 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
 			renderTexture(texture, *offset, *size);
 			
-
 			//std::cout << "time 5:" << double(end5 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
 			continue;
 		}
@@ -348,6 +348,7 @@ void RenderWidget::createProgram()
 	//    textureWallBinding=shaderProgram->uniformLocation("textureWall");
 	textureWallBinding = 0;
 }
+
 void RenderWidget::createVAO()
 {
 	// 找shader的起始位置，并且同时修改下两行的poslocation
@@ -400,7 +401,6 @@ void RenderWidget::createVBO()
 	vbo->bind();
 	vbo->allocate(vertices, sizeof(vertices));
 }
-
 
 
 
