@@ -13,6 +13,7 @@ public:
     float mass;             // 物体质量
     float width;            // 包围盒宽度
     float height;           // 包围盒高度
+    Transform* transform;   // 指向 Transform 组件的指针
 
     GameObject() : velocity(Vector2()), acceleration(Vector2()), mass(1), width(0), height(0), transform(nullptr) {}
     GameObject(Transform* _transform, Vector2 _velocity, Vector2 _acceleration, float _mass, float _width, float _height)
@@ -28,6 +29,4 @@ public:
         return transform->getWorldPosition() + Vector2(width / 2, height / 2);
     }
 
-private:
-    Transform* transform;   // 指向 Transform 组件的指针
 };
