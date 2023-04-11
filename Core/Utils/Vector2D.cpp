@@ -17,6 +17,11 @@ Vector2D& Vector2D::operator=(const Vector2D& b)
 	return *this;
 }
 
+Vector2D Vector2D::operator*(float b)
+{
+	return Vector2D(x * b, y * b);
+}
+
 bool Vector2D::operator==(const Vector2D& b)
 {
 	return x == b.x && y == b.y;
@@ -38,6 +43,13 @@ const Vector2D Vector2D::fromString(const std::string& src)
 	float x = stof(src.substr(0, index));
 	float y = stof(src.substr(index + 1));
 	return Vector2D(x, y);
+}
+
+Vector2D& Vector2D::Scale(const Vector2D& scale)
+{
+	x = x * scale.x;
+	y = y * scale.y;
+	return *this;
 }
 
 string Vector2D::tostring()

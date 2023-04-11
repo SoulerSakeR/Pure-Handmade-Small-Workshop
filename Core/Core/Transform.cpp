@@ -18,14 +18,11 @@ Transform::Transform(GameObject* gameObject):Component(gameObject)
 {
 	componentType = TRANSFORM;
 	children = vector<Transform*>();
-	properties = vector<Property*>();
-	localPosition = Vector2D::zero();
-	properties.push_back(new Property("localPosition", &localPosition,Property::VECTOR2D,this));
-	localRotation = 0.0f;
-	properties.push_back(new Property("localRotation", &localRotation, Property::FLOAT,this));
-	localScale = Vector2D::one();
-	properties.push_back(new Property("localScale", &localScale, Property::VECTOR2D,this));
 	parent = nullptr;
+	reset();
+	properties.emplace("localPosition", new Property("localPosition", &localPosition, Property::VECTOR2D, this));
+	properties.emplace("localRotation",new Property("localRotation", &localRotation, Property::FLOAT, this));
+	properties.emplace("localScale",new Property("localScale", &localScale, Property::VECTOR2D, this));	
 }
 
 Transform::~Transform()
@@ -50,7 +47,7 @@ float Transform::getWorldRotation()
 Vector2D Transform::getWorldScale()
 {
 	if (parent != nullptr)
-		return parent->getWorldScale() + localScale;
+		return parent->getWorldScale().Scale(localScale);
 	return localScale;
 }
 
@@ -97,7 +94,7 @@ void Transform::set_localRotation(float value)
 	localRotation = value;
 	if (GameEngine::get_instance().needToRefeshUI(gameObject))
 	{
-		GameEngine::get_instance().onPropertyChange(properties[1]);
+		GameEngine::get_instance().onPropertyChange(properties["localRotation"]);
 	}
 }
 
@@ -108,7 +105,7 @@ void Transform::set_localScale(Vector2D value)
 	localScale = value;
 	if (GameEngine::get_instance().needToRefeshUI(gameObject))
 	{
-		GameEngine::get_instance().onPropertyChange(properties[2]);
+		GameEngine::get_instance().onPropertyChange(properties["localScale"]);
 	}
 }
 
@@ -135,7 +132,7 @@ void Transform::reset()
 {
 	localPosition = Vector2D::zero();
 	localRotation = 0.0f;
-	localScale = Vector2D::zero();
+	localScale = Vector2D::one();
 }
 
 void Transform::set_property(Property* property, void* value)

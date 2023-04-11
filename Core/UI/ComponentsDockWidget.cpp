@@ -101,63 +101,12 @@ void ComponentsDockWidget::onPropertyChanged(Property* property)
 		Debug::logError("Property not found: "+ property->get_name());
 }
 
-void ComponentsDockWidget::onPropertyInputed(QObject*  sender, void* value)
-{
-	if (Object_Property_map.find(sender) != Object_Property_map.end())
-	{
-		auto property = Object_Property_map[sender];
-		if (changed_property == property)
-		{
-			changed_property = nullptr;
-			return;
-		}
-		property->get_component()->set_property(property, value);
-	}
-	else
-		Debug::logError("Property not found: " + sender->objectName().toStdString());
-}
-
-void ComponentsDockWidget::onIntChanged(int value)
-{
-	auto sender = QObject::sender();
-	onPropertyInputed(sender, &value);
-}
-
-void ComponentsDockWidget::onFloatChanged(double value)
-{
-	auto sender = QObject::sender();
-	float f = (float)value;
-	onPropertyInputed(sender, &f);
-}
-
-void ComponentsDockWidget::onStringChanged()
-{
-	auto sender = QObject::sender();
-	auto value = (QLineEdit*)sender;
-	auto text = value->text();
-	auto str = text.toStdString();
-	onPropertyInputed(sender, &str);
-}
-
-void ComponentsDockWidget::onBoolChanged(bool value)
-{
-	auto sender = QObject::sender();
-	onPropertyInputed(sender, &value);
-}
-
-void ComponentsDockWidget::onVector2DChanged(QString value)
-{
-	auto sender = QObject::sender();
-	onPropertyInputed(sender, &value);
-}
-
-void ComponentsDockWidget::onGameObjectSelected(GameObject* gameobj)
+void ComponentsDockWidget::refresh()
 {
 	clear();
-	selected_gameobject = gameobj;
-	if (gameobj == nullptr)
+	if (selected_gameobject == nullptr)
 		return;
-	for (auto component : gameobj->components)
+	for (auto component : selected_gameobject->components)
 	{
 		auto groupBox = new QGroupBox(QString::fromStdString(component->getName(component->componentType)), components_widget);
 		groupBox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
@@ -165,17 +114,18 @@ void ComponentsDockWidget::onGameObjectSelected(GameObject* gameobj)
 		verticalLayout->setSpacing(20);
 		verticalLayout->setObjectName("verticalLayout");
 		verticalLayout->setContentsMargins(0, 0, 0, 0);
-		
+
 		auto componentWidget = new QTableWidget(groupBox);
 		groupBox->layout()->addWidget(componentWidget);
 		componentWidget->verticalHeader()->setVisible(false);
 		componentWidget->setColumnCount(2);
-		componentWidget->horizontalHeader()->setStretchLastSection(true);	
+		componentWidget->horizontalHeader()->setStretchLastSection(true);
 		componentWidget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
 		componentWidget->setEditTriggers(QAbstractItemView::EditTrigger::NoEditTriggers);
 		componentWidget->setHorizontalHeaderLabels(QStringList() << "Property" << "Value");
-		for (auto property : component->properties)
+		for (auto& pair : component->properties)
 		{
+			auto property = pair.second;
 			componentWidget->setRowCount(componentWidget->rowCount() + 1);
 			componentWidget->setItem(componentWidget->rowCount() - 1, 0, new QTableWidgetItem(QString::fromStdString(property->get_name())));
 			switch (property->type)
@@ -184,7 +134,7 @@ void ComponentsDockWidget::onGameObjectSelected(GameObject* gameobj)
 			{
 				auto spinbox = new QSpinBox();
 				spinbox->setKeyboardTracking(false);
-				spinbox->setValue(property->get_data<int>());				
+				spinbox->setValue(property->get_data<int>());
 				componentWidget->setCellWidget(componentWidget->rowCount() - 1, 1, spinbox);
 				Object_Property_map[spinbox] = property;
 				property_Object_map[property] = spinbox;
@@ -239,6 +189,64 @@ void ComponentsDockWidget::onGameObjectSelected(GameObject* gameobj)
 		components_widget->layout()->addWidget(groupBox);
 	}
 	components_widget->layout()->addItem(new QSpacerItem(20, 40, QSizePolicy::Expanding, QSizePolicy::Expanding));
+}
+
+void ComponentsDockWidget::onPropertyInputed(QObject*  sender, void* value)
+{
+	if (Object_Property_map.find(sender) != Object_Property_map.end())
+	{
+		auto property = Object_Property_map[sender];
+		if (changed_property == property)
+		{
+			changed_property = nullptr;
+			return;
+		}
+		property->get_component()->set_property(property, value);
+	}
+	else
+		Debug::logError("Property not found: " + sender->objectName().toStdString());
+}
+
+void ComponentsDockWidget::onIntChanged(int value)
+{
+	auto sender = QObject::sender();
+	onPropertyInputed(sender, &value);
+}
+
+void ComponentsDockWidget::onFloatChanged(double value)
+{
+	auto sender = QObject::sender();
+	float f = (float)value;
+	onPropertyInputed(sender, &f);
+}
+
+void ComponentsDockWidget::onStringChanged()
+{
+	auto sender = QObject::sender();
+	auto value = (QLineEdit*)sender;
+	auto text = value->text();
+	auto str = text.toStdString();
+	onPropertyInputed(sender, &str);
+}
+
+void ComponentsDockWidget::onBoolChanged(bool value)
+{
+	auto sender = QObject::sender();
+	onPropertyInputed(sender, &value);
+}
+
+void ComponentsDockWidget::onVector2DChanged(QString value)
+{
+	auto sender = QObject::sender();
+	onPropertyInputed(sender, &value);
+}
+
+void ComponentsDockWidget::onGameObjectSelected(GameObject* gameobj)
+{
+	selected_gameobject = gameobj;
+	if (gameobj == nullptr)
+		return;
+	refresh();
 }
 
 

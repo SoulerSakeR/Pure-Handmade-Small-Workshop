@@ -14,6 +14,7 @@ public:
     void clear(); 
     GameObject* get_selected_gameobject();
     void onPropertyChanged(Property* property);
+    void refresh();
 
 public slots:
     void onGameObjectSelected(GameObject* gameobj);

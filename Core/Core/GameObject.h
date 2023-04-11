@@ -8,6 +8,7 @@
 class GameObject :
     public ISerializable
 {
+    friend class Scene;
 public:
     //field
     bool isActive; //当前游戏对象的激活状态 需要绑定
@@ -21,18 +22,20 @@ public:
 
     //method
     int getID(); //需要绑定
-    void serialize(PHString& str) override;
-    void deserialize(std::stringstream& ss) override;
-    Component* addComponent(ComponentType type); 
+   
+    Component* addComponent(Component::ComponentType type); 
     template <typename T>
     T* addComponent(); //需要绑定
     template <typename T>
     T* getComponent(); //需要绑定
-    Component* getComponent(ComponentType type);
+    Component* getComponent(Component::ComponentType type);
     bool isRootGameObject(); //需要绑定
 
 private:  
-    static int idCount;
+    void serialize(PHString& str) override;
+    void deserialize(std::stringstream& ss) override;
+
+    static int idCount; //id计数器
     int id; //唯一id
 };
 
@@ -46,6 +49,8 @@ inline T* GameObject::addComponent()
 {
     if (has_type_member<T>::value)
     {
+        if(getComponent<T>() != nullptr)
+			return nullptr;
         T* result = new T(this);
         if (result != nullptr)
         {

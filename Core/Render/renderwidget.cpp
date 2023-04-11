@@ -78,13 +78,13 @@ void RenderWidget::setWirefame(bool wireframe)
 void getTextureInfo(Image& imgComponent, QString* texturePathQ, QVector3D* offset, QVector2D* size)
 {
 
-	std::string texturePath = source_path + imgComponent.imgPath;
+	std::string texturePath = source_path + imgComponent.get_imgPath();
 
 	*texturePathQ = QString(QString::fromStdString(texturePath));
 
 	auto position = imgComponent.gameObject->transform->getWorldPosition();
 	*offset = QVector3D(position.x, position.y, 0.0f);
-	auto imgSize = imgComponent.size;
+	auto imgSize = imgComponent.get_size();
 	*size = QVector2D(imgSize.x, imgSize.y);
 
 }
@@ -265,7 +265,7 @@ void RenderWidget::paintGL()
 		QVector3D* offset = new QVector3D;
 		QVector2D* size = new QVector2D;
 		auto img = gameobj->getComponent<Image>();
-		if (img == nullptr)
+		if (img == nullptr||!img->get_enabled())
 			continue;
 
 		//std::cout << "time 2:" << double(end2 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
@@ -283,8 +283,7 @@ void RenderWidget::paintGL()
 
 		auto matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
 		matrix.translate(gameobj->transform->getWorldPosition().toQVector3D());
-		gameobj->transform->set_localRotation(gameobj->transform->get_localRotation() + 5.f);
-		//matrix.rotate(gameobj->transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
+		matrix.rotate(gameobj->transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
 		matrix.scale(gameobj->transform->getWorldScale().toQVector3D(1.0f));
 
 		//getTextureInfoTest(texturePathQ, offset, size);

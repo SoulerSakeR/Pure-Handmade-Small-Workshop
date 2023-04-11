@@ -5,27 +5,37 @@
 #include <Core/ResourceManagement/SceneMgr.h>
 using namespace std;
 
-void Image::set_imgPath(const std::string& imgPath)
+const std::string& Image::get_imgPath()
+{
+	return imgPath;
+}
+
+void Image::set_imgPath(const std::string& imgPath,bool refreshUI)
 {
 	this->imgPath = imgPath;
 	auto texture2D = IO::loadTexture2D(GameEngine::get_instance().getRootPath() + imgPath);
 	this->size = Vector2D(texture2D.widthT, texture2D.heightT);
-	if (GameEngine::get_instance().getSelectedGameObject() == gameObject)
+	if (refreshUI && GameEngine::get_instance().getSelectedGameObject() == gameObject)
 	{
-		GameEngine::get_instance().onPropertyChange(properties[0]);
-		GameEngine::get_instance().onPropertyChange(properties[1]);
+		GameEngine::get_instance().onPropertyChange(properties["imgPath"]);
+		GameEngine::get_instance().onPropertyChange(properties["size"]);
 	}
 }
+
+const Vector2D& Image::get_size()
+{
+	return size;
+}
+
 
 Image::Image(GameObject* gameObj, const std::string& imgPath,Vector2D size):Component(gameObj)
 {
 	this->imgPath = imgPath;
 	this->size = size;
 	componentType = IMAGE;
-	properties = vector<Property*>();
-	properties.push_back(new Property("imgPath", &(this->imgPath), Property::STRING,this));
-	properties.push_back(new Property("size", &(this->size), Property::VECTOR2D,this));
-	properties.push_back(new Property("renderOrder", &(this->render_order), Property::INT, this));
+	properties.emplace("imgPath", new Property("imgPath", &(this->imgPath), Property::STRING,this));
+	properties.emplace("size",new Property("size", &(this->size), Property::VECTOR2D,this));
+	properties.emplace("renderOrder",new Property("renderOrder", &(this->render_order), Property::INT, this));
 	if (SceneMgr::get_instance().get_current_scene() != nullptr)
 	{
 		auto& map = SceneMgr::get_instance().get_current_scene()->getAllGameObjsByDepth();
@@ -42,12 +52,12 @@ Image::Image(GameObject* gameObj, const std::string& imgPath,Vector2D size):Comp
 	}		
 }
 
-void Image::set_size(Vector2D newSize)
+void Image::set_size(Vector2D newSize, bool refreshUI)
 {
 	this->size = newSize;
-	if (GameEngine::get_instance().getSelectedGameObject() == gameObject)
+	if (refreshUI && GameEngine::get_instance().getSelectedGameObject() == gameObject)
 	{
-		GameEngine::get_instance().onPropertyChange(properties[1]);
+		GameEngine::get_instance().onPropertyChange(properties["size"]);
 	}
 }
 
@@ -60,29 +70,33 @@ void Image::serialize(PHString& str)
 	str.appendLine(to_string(render_order));
 }
 
-void Image::set_size(float width, float height)
+void Image::set_size(float width, float height, bool refreshUI)
 {
 	this->size.x = width;
 	this->size.y = height;
+	if (refreshUI && GameEngine::get_instance().getSelectedGameObject() == gameObject)
+	{
+		GameEngine::get_instance().onPropertyChange(properties["size"]);
+	}
 }
 
 void Image::set_property(Property* property, void* value)
 {
 	if (property->get_name() == "imgPath")
 	{
-		set_imgPath(*(string*)value);
+		set_imgPath(*(string*)value,false);
 	}
 	else if (property->get_name() == "size")
 	{
-		set_size(Vector2D::fromString(((QString*)value)->toStdString()));
+		set_size(*(Vector2D*)value,false);
 	}
 	else if (property->get_name()== "renderOrder")
 	{
-		set_render_order(*(int*)value);
+		set_render_order(*(int*)value,false);
 	}
 }
 
-void Image::set_render_order(int order)
+void Image::set_render_order(int order,bool refreshUI)
 {
 	auto& map = SceneMgr::get_instance().get_current_scene()->getAllGameObjsByDepth();
 	if (auto it = map.find(order); it != map.end())
@@ -99,9 +113,9 @@ void Image::set_render_order(int order)
 		render_order = order;
 		map.emplace(order, gameObject);
 	}	
-	if (GameEngine::get_instance().needToRefeshUI(gameObject))
+	if (refreshUI && GameEngine::get_instance().needToRefeshUI(gameObject))
 	{
-		GameEngine::get_instance().onPropertyChange(properties[2]);
+		GameEngine::get_instance().onPropertyChange(properties["renderOrder"]);
 	}
 }
 
@@ -116,10 +130,7 @@ void Image::deserialize(std::stringstream& ss)
 	getline(ss, s);
 	imgPath = s;
 	getline(ss, s);
-	size_t index = s.find(',');
-	float x = stof(s.substr(0, index - 1));
-	float y = stof(s.substr(index + 1, s.size() - 1));
-	size = Vector2D(x, y);
+	size = Vector2D::fromString(s);
 	getline(ss, s);
 	render_order = stoi(s);
 }

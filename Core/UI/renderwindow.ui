@@ -62,7 +62,7 @@
      <height>22</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu">
+   <widget class="QMenu" name="menu_file">
     <property name="title">
      <string>文件</string>
     </property>
@@ -70,21 +70,21 @@
     <addaction name="actionopenProject"/>
     <addaction name="actionsaveProject"/>
    </widget>
-   <widget class="QMenu" name="menu_2">
+   <widget class="QMenu" name="menu_gameobject">
     <property name="title">
      <string>物体</string>
     </property>
     <addaction name="actionCreatEmptyGameObject"/>
     <addaction name="actionCreatGameObjectWithImage"/>
    </widget>
-   <widget class="QMenu" name="menuLUA">
+   <widget class="QMenu" name="menu_component">
     <property name="title">
-     <string>LUA</string>
+     <string>组件</string>
     </property>
    </widget>
-   <addaction name="menu"/>
-   <addaction name="menu_2"/>
-   <addaction name="menuLUA"/>
+   <addaction name="menu_file"/>
+   <addaction name="menu_gameobject"/>
+   <addaction name="menu_component"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="ComponentsDockWidget" name="dockWidget_components">

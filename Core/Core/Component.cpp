@@ -24,6 +24,10 @@ std::string Component::getName(ComponentType type)
 	case SCRIPT:
 		return "Script";
 		break;
+	case RIGID_BODY:
+		return "Rigid Body";
+	case BOX_COLLIDER:
+		return "Box Collider";
 	default:
 		return "Unknown";
 		break;

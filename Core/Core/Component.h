@@ -5,33 +5,41 @@
 #include "ISerializable.h"
 #include <vector>
 #include "Property.h"
+#include <unordered_map>
 
 class GameObject;
 
-enum ComponentType {UNKNOWN,TRANSFORM,IMAGE,CAMERA,SCRIPT};
-
 class Component : public ISerializable
 {
+	friend class GameObject;
 public:
-	GameObject* gameObject;
-	ComponentType componentType;
-	std::vector<Property*> properties;
-
-	void set_enabled(bool value);
+	enum ComponentType { UNKNOWN, TRANSFORM, IMAGE, CAMERA, SCRIPT, RIGID_BODY,BOX_COLLIDER };
 	typedef ComponentType customType;
-	virtual void serialize(PHString&)=0;
-	virtual void deserialize(std::stringstream& ss) = 0;
-	virtual void reset() = 0;
-	virtual void set_property(Property* property, void* value) = 0;
-	std::string getName(ComponentType type);
+	static const int componentTypeCount = 6;
+
 	Component(GameObject* gameObj) {
 		gameObject = gameObj;
 		enabled = true;
 		componentType = UNKNOWN;
+		properties = std::unordered_map<std::string,Property*>();
+		properties.emplace("enabled", new Property("enabled", &enabled, Property::BOOL, this));
 	};
 	~Component() {
-		//TODO: 析构函数
+		gameObject = nullptr;
 	};
-private:
+
+	virtual void set_enabled(bool value);		
+	virtual bool get_enabled() { return enabled; }
+	virtual void reset() = 0;
+	virtual void set_property(Property* property, void* value) = 0;
+	static std::string getName(ComponentType type);
+	
+	GameObject* gameObject;
+	ComponentType componentType;
+	std::unordered_map<std::string,Property*> properties;
+
+protected:
 	bool enabled;
+	virtual void serialize(PHString&) = 0;
+	virtual void deserialize(std::stringstream& ss) = 0;
 };

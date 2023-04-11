@@ -2,7 +2,12 @@
 #include "Core/Core/Image.h"
 #include <Core/SystemStatus/GameEngine.h>
 #include "Camera.h"
+#include "RigidBody.h"
+#include "BoxCollider.h"
+#include "Script.h"
+
 using namespace std;
+
 
 int GameObject::idCount = 0;
 
@@ -59,7 +64,7 @@ void GameObject::deserialize(std::stringstream& ss)
                     for (int i = 0;i < componentSize;i++)
                     {
                         getline(ss, s);
-                        Component* component = addComponent((ComponentType)(stoi(s)));
+                        Component* component = addComponent((Component::ComponentType)(stoi(s)));
                         component->deserialize(ss);
                     }
                 }
@@ -113,20 +118,29 @@ GameObject::~GameObject()
 /// @brief add component to game object
 /// @param type component type 
 /// @return the pointer of component
-Component* GameObject::addComponent(ComponentType type)
+Component* GameObject::addComponent(Component::ComponentType type)
 {
     Component* result = nullptr;
+    if (getComponent(type) != nullptr)
+        return result;
     switch (type)
     {
-    case TRANSFORM:
+    case Component::TRANSFORM:
         result = new Transform(this);
         transform =(Transform*)result;
         break;
-    case IMAGE:
+    case Component::IMAGE:
         result = new Image(this);
         break;
-    case CAMERA:
+    case Component::CAMERA:
         result = new Camera(this);
+        break;
+    case Component::RIGID_BODY:
+        result = new RigidBody(this);
+		break;
+    case Component::BOX_COLLIDER:
+        result = new BoxCollider(this);
+		break;
     default:
         break;
     }
@@ -138,7 +152,7 @@ Component* GameObject::addComponent(ComponentType type)
     return result;
 }
 
-Component* GameObject::getComponent(ComponentType type)
+Component* GameObject::getComponent(Component::ComponentType type)
 {
     for (auto component : components)
     {

@@ -17,6 +17,19 @@ RenderWindow::RenderWindow(QWidget *parent)
     , ui(new Ui::RenderWindow)
 {
     ui->setupUi(this);
+    for (int i = 1;i < Component::componentTypeCount + 1;++i)
+    {
+        auto action = new QAction(QString::fromStdString(Component::getName((Component::ComponentType)i)),this);
+        ui->menu_component->addAction(action);
+        connect(action, &QAction::triggered, [=]() {
+            if (ui->hierarchy->selectedGameObject != nullptr)
+            {
+                ui->hierarchy->selectedGameObject->addComponent((Component::ComponentType)i);
+                ui->dockWidget_components->refresh();
+            }
+                
+		});
+    }
     ui->dockWidget_components->set_components_widget(ui->scrollAreaWidgetContents);
     // 点击创建项目按钮出现资源对话框
     connect(ui->actioncreatProject, &QAction::triggered, [=]() {
@@ -66,7 +79,7 @@ RenderWindow::RenderWindow(QWidget *parent)
         {
             auto item = (HierarchyItem*)(ui->hierarchy->selectedItems()[0]);
             auto parent = item->gameObject;
-            auto& gameobj = GameEngine::get_instance().addGameObject("GameObject", parent, TRANSFORM, INSIDE);
+            auto& gameobj = GameEngine::get_instance().addGameObject("GameObject", parent, Component::TRANSFORM, INSIDE);
             item->addChild(new HierarchyItem(&gameobj));
             item->setExpanded(true);
         }            
@@ -81,13 +94,13 @@ RenderWindow::RenderWindow(QWidget *parent)
         {
             auto item = (HierarchyItem*)(ui->hierarchy->selectedItems()[0]);
             auto parent = item->gameObject;
-            auto& gameobj = GameEngine::get_instance().addGameObject("Image", parent, IMAGE,INSIDE);
+            auto& gameobj = GameEngine::get_instance().addGameObject("Image", parent, Component::IMAGE,INSIDE);
             item->addChild(new HierarchyItem(&gameobj));
             item->setExpanded(true);
         }
         else
         {
-            auto& gameobj = GameEngine::get_instance().addGameObject("Image", nullptr, IMAGE);
+            auto& gameobj = GameEngine::get_instance().addGameObject("Image", nullptr, Component::IMAGE);
             ui->hierarchy->addTopLevelItem(new HierarchyItem(&gameobj));
         }
         

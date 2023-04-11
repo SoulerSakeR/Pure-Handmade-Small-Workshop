@@ -7,7 +7,7 @@ bool Camera::is_main_camera()
 	return is_main_camera_;
 }
 
-void Camera::set_main_camera(bool value)
+void Camera::set_main_camera(bool value,bool refreshUI)
 {
 	if (value == is_main_camera_)
 		return;
@@ -29,9 +29,9 @@ void Camera::set_main_camera(bool value)
 	{
 		is_main_camera_ = false;
 	}
-	if (GameEngine::get_instance().getSelectedGameObject() == gameObject)
+	if (refreshUI && GameEngine::get_instance().getSelectedGameObject() == gameObject)
 	{
-		GameEngine::get_instance().onPropertyChange(properties[1]);
+		GameEngine::get_instance().onPropertyChange(properties["is_main_camera"]);
 	}
 }
 
@@ -49,18 +49,18 @@ void Camera::set_property(Property* property, void* value)
 {
 	if (property->get_name() == "view_width")
 	{
-		view_width = *(float*)value;
+		set_view_width(*(float*)value, false);
 	}
 	else if (property->get_name() == "is_main_camera")
 	{
-		set_main_camera(*(bool*)value);
+		set_main_camera(*(bool*)value,false);
 	}
 }
 
-void Camera::set_view_width(float value)
+void Camera::set_view_width(float value,bool refreshUI)
 {
 	view_width = value;
-	if (GameEngine::get_instance().getSelectedGameObject() == gameObject)
+	if (refreshUI && GameEngine::get_instance().getSelectedGameObject() == gameObject)
 	{
 		GameEngine::get_instance().onPropertyChange(properties[0]);
 	}
@@ -76,9 +76,8 @@ Camera::Camera(GameObject* gameObj,float viewWidth):Component(gameObj)
 	componentType = CAMERA;
 	view_width = viewWidth;
 	is_main_camera_ = false;
-	properties = std::vector<Property*>();
-	properties.push_back(new Property("view_width", &(this->view_width), Property::FLOAT,this));
-	properties.push_back(new Property("is_main_camera", &(this->is_main_camera_), Property::BOOL,this));
+	properties.emplace("view_width",new Property("view_width", &(this->view_width), Property::FLOAT,this));
+	properties.emplace("is_main_camera",new Property("is_main_camera", &(this->is_main_camera_), Property::BOOL,this));
 }
 
 void Camera::serialize(PHString& str)

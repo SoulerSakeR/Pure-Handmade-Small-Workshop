@@ -11,21 +11,26 @@ public:
 
     Image(GameObject* gameObj, const std::string& imgPath = "", Vector2D size = Vector2D::zero());
 
-    void set_imgPath(const std::string& imgPath);
-    void set_size(Vector2D newSize);
-    void set_size(float  width, float height);
-    void set_property(Property * property, void* value) override;
-    void set_render_order(int order);
+    const std::string& get_imgPath();
+    void set_imgPath(const std::string& imgPath,bool refreshUI = true);
+    const Vector2D& get_size();
+    void set_size(Vector2D newSize,bool refreshUI = true);
+    void set_size(float  width, float height, bool refreshUI = true);    
     int get_render_order();
-    std::string imgPath;
-    Vector2D size;
+    void set_render_order(int order,bool refreshUI = true);
 
-private:   
+    void set_property(Property* property, void* value) override;
+    void reset() override; 
+
+protected:
     void serialize(PHString&) override; 
     void deserialize(std::stringstream& ss) override; 
-    void reset() override;
+    
     void set_render_order_directly(int order);
+   
+    std::string imgPath;
+    Vector2D size;
+    int render_order;   
     Texture2D texture;
-    int render_order;
 };
 

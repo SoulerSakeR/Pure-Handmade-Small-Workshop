@@ -10,6 +10,8 @@ signals:
     void gameObjectSelected(GameObject* gameobj);
 public:
     HierarchyWidget(QWidget* parent);
+
+    GameObject* selectedGameObject;
 private slots:
     void onSelectionChanged();
 };
