@@ -14,6 +14,7 @@
 #include <Core/ResourceManagement/SceneMgr.h>
 #include "Core/ThreadPool/ThreadPool.h"
 #include "Core/Utils/PHPath.h"
+#include "Core/Utils/Event.h"
 
 void InputDetectionLua(sol::state& lua) {
     lua.open_libraries(sol::lib::base, sol::lib::package);
@@ -41,9 +42,9 @@ int add(int a, int b)
     return a + b;
 }
 
+
 int main(int argc, char *argv[])
 { 
-
 #ifdef TEST
     auto& gp = GameEngine::get_instance().creatGameProject("Test1", "D:\\Dates\\PHE");
     auto& gameObj1 = GameEngine::get_instance().addGameObject("testGameObejct1");
@@ -62,10 +63,9 @@ int main(int argc, char *argv[])
         auto result = pool.enqueue(add, i, 2);
         auto s = result.get();
         std::cout << "Result: " << s << std::endl;
-    }
-    
-    
+    }   
 #endif // TEST
+
     ThreadPool pool;
     for (int i = 0; i < 10; i++) {
         PHPath path = PHPath("C:/Program Files/My/App.exe");
