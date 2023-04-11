@@ -21,6 +21,8 @@ RenderWindow::RenderWindow(QWidget *parent)
     , ui(new Ui::RenderWindow)
 {
     ui->setupUi(this);
+
+    // 根据组件类型动态生成组件按钮
     for (int i = 1;i < Component::componentTypeCount + 1;++i)
     {
         auto action = new QAction(QString::fromStdString(Component::getName((Component::ComponentType)i)),this);
@@ -30,8 +32,7 @@ RenderWindow::RenderWindow(QWidget *parent)
             {
                 ui->hierarchy->selectedGameObject->addComponent((Component::ComponentType)i);
                 ui->dockWidget_components->refresh();
-            }
-                
+            }               
 		});
     }
     ui->dockWidget_components->set_components_widget(ui->scrollAreaWidgetContents);

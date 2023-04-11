@@ -162,6 +162,24 @@ Component* GameObject::getComponent(Component::ComponentType type)
     return nullptr;
 }
 
+void GameObject::removeComponent(Component* component)
+{
+    if (component->componentType == Component::TRANSFORM)
+    {
+        Debug::log("Can not remove transform component");
+        return;
+    }
+    for (int i = 0;i < components.size();i++)
+    {
+        if (components[i] == component)
+        {
+			components.erase(components.begin() + i);
+			delete component;
+			return;
+		}
+	}
+}
+
 
 bool GameObject::isRootGameObject()
 {

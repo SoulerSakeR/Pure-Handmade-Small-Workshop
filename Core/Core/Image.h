@@ -23,6 +23,7 @@ public:
     void reset() override; 
 
 protected:
+    ~Image();
     void serialize(PHString&) override; 
     void deserialize(std::stringstream& ss) override; 
     
