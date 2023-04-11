@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include <QGridLayout>
 #include <QFileDialog>
+#include "Core/SystemStatus/GameEngine.h"
 
 class CreateProjectDialog : public QDialog
 {
@@ -28,5 +29,4 @@ private:
     QPushButton* m_browseButton;
     QPushButton* m_createButton;
 };
-
 #endif // CREATEPROJECTDIALOG_H

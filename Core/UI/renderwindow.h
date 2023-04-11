@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "Core/Render/common.h"
+#include <QLineEdit>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class RenderWindow; }
@@ -27,7 +28,8 @@ private slots:
     // void on_actionWirefame_triggered();
     //void createProject(); //创建项目的初始界面
 private:
-
     Ui::RenderWindow *ui;
+    //QLineEdit* projectNameLineEdit;
+    //QLineEdit* createAddressLineEdit;
 };
 #endif // RENDERWINDOW_H
