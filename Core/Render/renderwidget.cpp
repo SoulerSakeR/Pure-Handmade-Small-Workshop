@@ -492,16 +492,12 @@ void RenderWidget::renderTexture(QOpenGLTexture* texture, QVector3D offset, QVec
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glLineWidth(3.0f);
 
-	//glDrawElements(GL_TRIANGLE_STRIP, 6, GL_UNSIGNED_INT, NULL);
-	
-
-	//ibo->release();
-	//createBoxEBO();
+	ibo->release(); // 释放画图像的ibo
+	createBoxEBO(); // 重新绑定画盒子的ibo
 
 	// 绘制矩形边框
 	glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, nullptr);
 
-	//glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
 	shaderProgram->release();
 	
