@@ -12,7 +12,7 @@
 RenderWidget* RenderWidget::instance = nullptr;
 std::string source_path;
 static int count = 0;
-unsigned int VBOBOX, VAOBOX, EBOBOX;
+
 
 float vertices[] = {
 	// positions   // colors           // texture coords
@@ -24,10 +24,15 @@ float vertices[] = {
 
 //counter clockwise
 
+
 unsigned int indices[] = { // note that we start from 0!
 			   0, 3, 2, // first triangle
 			   0, 2, 1 // second triangle
 };
+
+// 定义需要绘制的边
+GLuint indicesBOX[] = { 0, 1, 1, 2, 2, 3, 3, 0 };
+
 
 
 /*
@@ -37,6 +42,7 @@ unsigned int indices[] = { // note that we start from 0!
 			   0, 2, 3 // second triangle
 };
 */
+
 
 
 RenderWidget::RenderWidget(QWidget* parent) : QOpenGLWidget(parent)
@@ -156,15 +162,15 @@ float* RenderWidget::getTextureVertices(QVector3D offset, QVector2D size)
 	}
 	else
 	{
-		// 左上
-		vertices[0] = leftTop.x();
-		vertices[1] = leftTop.y();
-		// 左下
-		vertices[8] = leftBottom.x();
-		vertices[9] = leftBottom.y();
 		// 右上
-		vertices[16] = rightTop.x();
-		vertices[17] = rightTop.y();
+		vertices[0] = rightTop.x();
+		vertices[1] = rightTop.y();
+		// 左上
+		vertices[8] = leftTop.x();
+		vertices[9] = leftTop.y();
+		// 左下
+		vertices[16] = leftBottom.x();
+		vertices[17] = leftBottom.y();
 		// 右下
 		vertices[24] = rightBottom.x();
 		vertices[25] = rightBottom.y();
@@ -310,7 +316,7 @@ void RenderWidget::paintGL()
 		renderTexture(texture, *offset, *size);
 
 		
-		renderBox();
+		// renderBox();
 
 
 		// render box
@@ -446,6 +452,15 @@ void RenderWidget::createIBO()
 	ibo->bind();
 	ibo->allocate(indices, sizeof(indices));
 }
+
+void RenderWidget::createBoxEBO()
+{
+	EBOBOX = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::IndexBuffer);
+	EBOBOX->create();
+	EBOBOX->bind();
+	EBOBOX->allocate(indicesBOX, sizeof(indicesBOX));
+}
+
 void RenderWidget::messageLogHandler(const QOpenGLDebugMessage& debugMessage)
 {
 	qDebug() << debugMessage.message();
@@ -472,14 +487,28 @@ void RenderWidget::renderTexture(QOpenGLTexture* texture, QVector3D offset, QVec
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+	
+	// 碰撞盒
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glLineWidth(3.0f);
-	glDrawElements(GL_TRIANGLE_STRIP, 6, GL_UNSIGNED_INT, NULL);
+
+	//glDrawElements(GL_TRIANGLE_STRIP, 6, GL_UNSIGNED_INT, NULL);
+	
+
+	//ibo->release();
+	//createBoxEBO();
+
+	// 绘制矩形边框
+	glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, nullptr);
+
+	//glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
 	shaderProgram->release();
 	
 }
 
+
+/*
 void RenderWidget::renderBox()
 {
 	//创建VBO和VAO对象，并赋予ID
@@ -517,3 +546,4 @@ void RenderWidget::renderBox()
 	glDrawElements(GL_TRIANGLE_STRIP, 6, GL_UNSIGNED_INT, NULL);
 
 }
+*/

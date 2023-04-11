@@ -59,6 +59,7 @@ private:
 
     std::unique_ptr<QOpenGLBuffer> vbo;
     std::unique_ptr<QOpenGLBuffer> ibo;
+    std::unique_ptr<QOpenGLBuffer> EBOBOX;
 
     std::unique_ptr<QOpenGLDebugLogger> logger;
 
@@ -79,6 +80,7 @@ private:
 
     void createBoxProgram();
     void createBoxVAO();
+    void createBoxEBO();
     
 
     int renderMain(QString*, QVector3D*, QVector2D*);
