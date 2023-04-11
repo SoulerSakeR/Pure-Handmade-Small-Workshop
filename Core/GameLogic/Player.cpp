@@ -1,37 +1,37 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include <string>
 #include <conio.h>
 #include <Windows.h>
 #include "Player.h"
 
 
-// ÉèÖÃÍæ¼ÒÎ»ÖÃ
+// è®¾ç½®çŽ©å®¶ä½ç½®
 void Player::setPosition(float x, float y) {
 	this->m_position.x = x;
 	this->m_position.y = y;
 }
 
-// »ñÈ¡Íæ¼ÒÎ»ÖÃ
+// èŽ·å–çŽ©å®¶ä½ç½®
 Vector2D Player::getPosition() {
 	return this->m_position;
 }
 
-// ÉèÖÃÍæ¼ÒËÙ¶È
+// è®¾ç½®çŽ©å®¶é€Ÿåº¦
 void Player::setVelocity(float Vx, float Vy) {
 	this->m_position.x = Vx;
 	this->m_position.y = Vy;
 }
 
-// »ñÈ¡Íæ¼ÒËÙ¶È
+// èŽ·å–çŽ©å®¶é€Ÿåº¦
 Vector2D Player::getVelocity() {
 	return this->m_velocity;
 }
 
 void Player::move(float Vx, float Vy, float deltaTime) {
-	// Èç¹ûGameLoopÖÐµÄinputDetection¼ì²âµ½ÁËWASDµÄ°´¼ü
-	// ½øÐÐÏàÓ¦µÄ¶¯×÷
+	// å¦‚æžœGameLoopä¸­çš„inputDetectionæ£€æµ‹åˆ°äº†WASDçš„æŒ‰é”®
+	// è¿›è¡Œç›¸åº”çš„åŠ¨ä½œ
 	// 
-	// ±»LUAµ÷ÓÃ,¸ù¾ÝÔ­Ê¼Î»ÖÃºÍËÙ¶È¸üÐÂÐÂµÄÎ»ÖÃ×ø±ê
+	// è¢«LUAè°ƒç”¨,æ ¹æ®åŽŸå§‹ä½ç½®å’Œé€Ÿåº¦æ›´æ–°æ–°çš„ä½ç½®åæ ‡
 	Vector2D originPos = this->getPosition();
 	Vector2D originVelocity = this->getVelocity();
 
