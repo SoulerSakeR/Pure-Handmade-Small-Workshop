@@ -81,7 +81,7 @@ GameProject& GameEngine::creatGameProject(const string& name,const string& path)
 	PHPath new_path(path);
 	if (new_path.getFileName() != name)
 	{
-		new_path.combinePath(name);
+		new_path =  new_path.combinePath(name);
 	}		
 	GameProject* game = new GameProject(name, new_path.getNewPath());
 	gameProject = game;
