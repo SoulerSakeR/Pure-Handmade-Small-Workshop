@@ -11,7 +11,7 @@ void main(){
 
     vec4 texColor = texture(textureWall, TexCord);
     FragColor = vec4(texColor.rgb, texColor.a);
-
+    //FragColor = vec4(ourColor,1.0);
 
 }
 

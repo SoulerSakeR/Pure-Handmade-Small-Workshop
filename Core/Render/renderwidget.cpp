@@ -241,9 +241,7 @@ void RenderWidget::initializeGL()
 
 
 	createProgram();
-	//createBoxProgram();
-	//createVBO();
-	//createVAO();
+	
 	createIBO();
 
 
@@ -282,10 +280,10 @@ void RenderWidget::paintGL()
 		//getTextureInfoTest(texturePathQ, offset, size);
 		getTextureVertices(QVector3D(0.f,0.f,0.f), *size);
 
-		//createVBO();
+		
 		createVAO();
 		
-		//createBoxVAO();
+		
 
 		auto matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
 		matrix.translate(gameobj->transform->getWorldPosition().toQVector3D());
@@ -316,7 +314,7 @@ void RenderWidget::paintGL()
 		renderTexture(texture, *offset, *size);
 
 		
-		// renderBox();
+		//renderBox();
 
 
 		// render box
@@ -387,7 +385,12 @@ void RenderWidget::createBoxVAO()
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+
 }
+
+
+
+
 void RenderWidget::createVAO()
 {
 	// 找shader的起始位置，并且同时修改下两行的poslocation
@@ -487,8 +490,33 @@ void RenderWidget::renderTexture(QOpenGLTexture* texture, QVector3D offset, QVec
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+	//vao->release();
+	
+
 	
 	// 碰撞盒
+	glDisable(GL_BLEND);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glLineWidth(3.0f);
+
+	ibo->release(); // 释放画图像的ibo
+	createBoxEBO(); // 重新绑定画盒子的ibo
+
+	// 绘制矩形边框
+	glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, nullptr);
+	
+	
+
+	//shaderProgram->release();
+	
+	
+}
+
+
+
+void RenderWidget::renderBox()
+{
+	
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glLineWidth(3.0f);
 
@@ -498,48 +526,5 @@ void RenderWidget::renderTexture(QOpenGLTexture* texture, QVector3D offset, QVec
 	// 绘制矩形边框
 	glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, nullptr);
 
-
-	shaderProgram->release();
-	
 }
 
-
-/*
-void RenderWidget::renderBox()
-{
-	//创建VBO和VAO对象，并赋予ID
-	glGenVertexArrays(1, &VAOBOX);
-	glGenBuffers(1, &VBOBOX);
-
-	//绑定VBO和VAO对象
-	glBindVertexArray(VAOBOX);
-	glBindBuffer(GL_ARRAY_BUFFER, VBOBOX);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	//告知显卡如何解析缓冲里的属性值
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	//开启VAO管理的第一个属性值
-	glEnableVertexAttribArray(0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	shaderBoxProgram = std::make_unique<QOpenGLShaderProgram>(this);
-	shaderBoxProgram->create();
-	shaderBoxProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, QString::fromStdString(source_path + "\\shaders\\boxShader.vert"));
-	shaderBoxProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\boxShader.frag"));
-	shaderBoxProgram->link();
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glGenBuffers(1, &EBOBOX);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOBOX);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-	glBindVertexArray(0);
-
-	shaderBoxProgram->bind();
-	glBindVertexArray(VAOBOX);
-
-	glDrawElements(GL_TRIANGLE_STRIP, 6, GL_UNSIGNED_INT, NULL);
-
-}
-*/
