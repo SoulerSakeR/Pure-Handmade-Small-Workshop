@@ -150,8 +150,8 @@ void RenderWindow::onTreeviewRightClick(const QPoint& pos) {
     if (index.isValid()) {
         // 弹出一个弹框
         QMenu menu(this);
-        menu.addAction("Action1");
-        menu.addAction("Action2");
+        menu.addAction("添加项目");
+        menu.addAction("删除项目");
         menu.exec(ui->treeView->viewport()->mapToGlobal(pos));
     }
 }
