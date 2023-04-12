@@ -13,8 +13,6 @@ RenderWidget* RenderWidget::instance = nullptr;
 std::string source_path;
 static int count = 0;
 
-// test
-
 
 float vertices[] = {
 	// positions   // colors           // texture coords
