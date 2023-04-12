@@ -14,47 +14,44 @@
    <string>RenderWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <widget class="QWidget" name="widget" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="HierarchyWidget" name="hierarchy">
-         <property name="headerHidden">
-          <bool>true</bool>
-         </property>
-         <column>
-          <property name="text">
-           <string notr="true">1</string>
-          </property>
-         </column>
-        </widget>
-       </item>
-       <item>
-        <widget class="QTreeView" name="treeView"/>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="RenderWidget" name="openGLWidget">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-     </widget>
-    </item>
-   </layout>
-   <zorder>widget</zorder>
-   <zorder>openGLWidget</zorder>
+   <widget class="RenderWidget" name="openGLWidget">
+    <property name="geometry">
+     <rect>
+      <x>211</x>
+      <y>0</y>
+      <width>1440</width>
+      <height>810</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="HierarchyWidget" name="hierarchy">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>211</width>
+      <height>431</height>
+     </rect>
+    </property>
+    <property name="headerHidden">
+     <bool>true</bool>
+    </property>
+    <column>
+     <property name="text">
+      <string notr="true">1</string>
+     </property>
+    </column>
+   </widget>
+   <widget class="QTreeView" name="treeView">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>460</y>
+      <width>211</width>
+      <height>261</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -192,7 +189,6 @@
     <string>保存项目</string>
    </property>
   </action>
-  <zorder>dockWidget_components</zorder>
  </widget>
  <customwidgets>
   <customwidget>

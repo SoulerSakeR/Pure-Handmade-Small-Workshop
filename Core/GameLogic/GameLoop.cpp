@@ -1,26 +1,26 @@
-ï»¿#include "GameLoop.h"
+#include "GameLoop.h"
 using std::chrono::system_clock;
 
 
 void GameLoop::updatePlayer(float deltaTime) {
-        // æ›´æ–°ç©å®¶çŠ¶æ€-æ¯”å¦‚ä½ç½®å’Œæ‰§è¡ŒåŠ¨ä½œ
+        // ¸üĞÂÍæ¼Ò×´Ì¬-±ÈÈçÎ»ÖÃºÍÖ´ĞĞ¶¯×÷
 
         // ...
     }
 
 void GameLoop::updateScene(RenderWidget* Rwg) {
-        // æ›´æ–°åœºæ™¯ä¿¡æ¯-éœ€è¦å’Œå…‰å¤«å“¥å’Œæ•¬å“¥å¯¹æ¥
-        // è·å–åœºæ™¯ä¿¡æ¯(å…‰å¤«å“¥)å¹¶ä¸”è¿›è¡Œæ¸²æŸ“ï¼ˆæ•¬å“¥ï¼‰
+        // ¸üĞÂ³¡¾°ĞÅÏ¢-ĞèÒªºÍ¹â·ò¸çºÍ¾´¸ç¶Ô½Ó
+        // »ñÈ¡³¡¾°ĞÅÏ¢(¹â·ò¸ç)²¢ÇÒ½øĞĞäÖÈ¾£¨¾´¸ç£©
         // ...       
-            // æ¸¸æˆå¾ªç¯
+            // ÓÎÏ·Ñ­»·
         DWORD start_time = GetTickCount();
         DWORD end_time = GetTickCount();
         auto starttime= system_clock::now();
         auto endtime = system_clock::now();
         while (true) {
-            // è®¡ç®—æ¯ä¸€å¸§çš„æ—¶é—´é—´éš”
+            // ¼ÆËãÃ¿Ò»Ö¡µÄÊ±¼ä¼ä¸ô
             
-            // ç­‰å¾…ä¸€æ®µæ—¶é—´ï¼Œæ§åˆ¶æ¸¸æˆé€Ÿåº¦
+            // µÈ´ıÒ»¶ÎÊ±¼ä£¬¿ØÖÆÓÎÏ·ËÙ¶È
             endtime = system_clock::now();
             auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endtime - starttime);
             if (duration.count() < 10) {
@@ -29,29 +29,29 @@ void GameLoop::updateScene(RenderWidget* Rwg) {
             starttime = system_clock::now();
             Rwg->update();
             endtime = system_clock::now();
-            //std::cout << "end_timeï¼š" << end_time << "\tstart_time" << start_time << std::endl;
+            //std::cout << "end_time£º" << end_time << "\tstart_time" << start_time << std::endl;
         }
 
     }
 
 void GameLoop::checkCollisions(float deltaTime) {
-        // æ£€æŸ¥ç¢°æ’ å’Œå®‡é–å¯¹æ¥
+        // ¼ì²éÅö×² ºÍÓî¾¸¶Ô½Ó
         // ...
     }
 
 void GameLoop::updateGameState(float deltaTime) {
-        // æ›´æ–°æ¸¸æˆçŠ¶æ€
-        // æ¯”å¦‚ç©å®¶çš„ä½ç½®
+        // ¸üĞÂÓÎÏ·×´Ì¬
+        // ±ÈÈçÍæ¼ÒµÄÎ»ÖÃ
         // ...
     }
 
 void GameLoop::printDataInfo(float deltaTime) {
-        //è¾“å‡ºæ•°æ®ä¿¡æ¯-æµ‹è¯•ç”¨
+        //Êä³öÊı¾İĞÅÏ¢-²âÊÔÓÃ
     }
 
 
 void GameLoop::update(float deltaTime, RenderWidget* Rwg) {
-        // æ¸¸æˆé€»è¾‘æ›´æ–°å‡½æ•°ï¼Œæ¯å¸§è°ƒç”¨ä¸€æ¬¡
+        // ÓÎÏ·Âß¼­¸üĞÂº¯Êı£¬Ã¿Ö¡µ÷ÓÃÒ»´Î
         updatePlayer(deltaTime);
         updateScene(Rwg);
         checkCollisions(deltaTime);
