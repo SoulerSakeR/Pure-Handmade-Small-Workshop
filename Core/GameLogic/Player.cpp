@@ -38,10 +38,7 @@ void Player::move(float deltaTime) {
 	this->setMoveValue(Vector2D(originVelocity.x * deltaTime, originVelocity.y * deltaTime));
 }
 
-// 跟光夫哥和坤佯讨论完后在考虑这个
-void Player::updateInfo(float deltatime) {
 
-}
 
 
 // 获得HP(后面可能放到Lua脚本中)
@@ -64,4 +61,7 @@ void Player::setScore(int score) {
 	this->m_score = score;
 }
 
-
+// 更新Player调用这个就对了
+void Player::updatePlayerInfo(float deltaTime) {
+	this->move(deltaTime);
+}

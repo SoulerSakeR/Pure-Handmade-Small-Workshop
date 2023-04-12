@@ -5,7 +5,9 @@ using std::chrono::system_clock;
 void GameLoop::updatePlayer(float deltaTime) {
         // 更新玩家状态-比如位置和执行动作
 
-        // ...
+        // TODO:更新Player的速度
+        // TODO:更新Player的位置
+
     }
 
 void GameLoop::updateScene(RenderWidget* Rwg) {
@@ -51,10 +53,12 @@ void GameLoop::update(float deltaTime, RenderWidget* Rwg) {
         printDataInfo(deltaTime);
     }
 
-//Player* GameLoop::getPlayer(){ 
-//    return this->player;
-//}
+// 获得这个Player的指针
+Player* GameLoop::getPlayer(){ 
+   return this->player;
+}
 
-//void GameLoop::setPlayer(Player* player) {
-//    this->player = player;
-//}
+// 设置这个游戏循环中的Player
+void GameLoop::setPlayer(Player* player) {
+   this->player = player;
+}
