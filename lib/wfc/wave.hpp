@@ -7,8 +7,8 @@
 
 using std::vector;
 
-#include "utils/array_2d.hpp"
-#include "utils/array_3d.hpp"
+#include "lib/wfc/array_2d.hpp"
+#include "lib/wfc/array_3d.hpp"
 
 /**
  * Contains the pattern possibilities in every cell.

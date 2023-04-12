@@ -4,8 +4,8 @@
 #include <optional>
 #include <random>
 
-#include "utils/array_2d.hpp"
-#include "utils/xoshiro256ss.hpp"
+#include "lib/wfc/array_2d.hpp"
+#include "lib/wfc/xoshiro256ss.hpp"
 #include "wave.hpp"
 
 using std::optional;

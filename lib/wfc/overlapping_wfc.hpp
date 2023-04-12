@@ -5,9 +5,10 @@
 #include <array>
 #include <unordered_map>
 #include <vector>
+#include <iostream>
 
-#include "utils/array_2d.hpp"
-#include "utils/helper.hpp"
+#include "lib/wfc/array_2d.hpp"
+#include "lib/wfc/helper.hpp"
 #include "wfc.hpp"
 
 using std::array;
