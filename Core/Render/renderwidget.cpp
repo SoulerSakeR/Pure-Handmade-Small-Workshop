@@ -7,7 +7,6 @@
 #include "Core/Core/Camera.h"
 #include <QElapsedTimer>
 #include <Core/ResourceManagement/SceneMgr.h>
-//#define SOURCE_DIR "E:/GroupProject/PHE(3)/"
 
 RenderWidget* RenderWidget::instance = nullptr;
 std::string source_path;
@@ -34,14 +33,6 @@ unsigned int indices[] = { // note that we start from 0!
 GLuint indicesBOX[] = { 0, 1, 1, 2, 2, 3, 3, 0 };
 
 
-
-/*
-//counter clockwise
-unsigned int indices[] = { // note that we start from 0!
-			   0, 1, 2, // first triangle
-			   0, 2, 3 // second triangle
-};
-*/
 
 
 
@@ -95,20 +86,8 @@ void getTextureInfo(Image& imgComponent, QString* texturePathQ, QVector3D* offse
 
 }
 
-void getTextureInfoTest(QString* texturePathQ, QVector3D* offset, QVector2D* size)
-{
 
-	std::string texturePath = source_path + "\\resources\\boss_hornet_fixed.png";
-
-	*texturePathQ = QString(QString::fromStdString(texturePath));
-
-	*offset = QVector3D(0.0f, 0.0f, 0.0f);
-
-	*size = QVector2D(0.4f, 0.6f);
-
-}
-
-
+// 根据图片的分辨率和尺寸，设定四个顶点，并创建VBO （后期需要把这四个顶点换成碰撞盒的四个顶点）
 float* RenderWidget::getTextureVertices(QVector3D offset, QVector2D size)
 {
 
@@ -128,54 +107,23 @@ float* RenderWidget::getTextureVertices(QVector3D offset, QVector2D size)
 	float lby = offset.y() - 1.0 / 2 * size.y();
 
 
-	//std::cout << "x: " << x << std::endl;
-
 	QVector3D leftTop{ ltx, lty, 0.0f };
 	QVector3D rightTop{ rtx, rty, 0.0f };
 	QVector3D rightBottom{ rbx, rby, 0.0f };
 	QVector3D leftBottom{ lbx, lby, 0.0f };
+	
+	vertices[0] = rightTop.x();
+	vertices[1] = rightTop.y();
 
-	/*
-	vertices[0] = {
-		// positions                           // colors           // texture coords
-		rightTop.x(),     rightTop.y(),    0,  1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-		rightBottom.x(),  rightBottom.y(), 0,  0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-	    leftBottom.x(),   leftBottom.y(),  0,  0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-		leftTop.x(),	  leftTop.y(),     0,  1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
-	};
-	*/
+	vertices[8] = rightBottom.x();
+	vertices[9] = rightBottom.y();
 
-	bool old = true;
-	if (old)
-	{
-		vertices[0] = rightTop.x();
-		vertices[1] = rightTop.y();
+	vertices[16] = leftBottom.x();
+	vertices[17] = leftBottom.y();
 
-		vertices[8] = rightBottom.x();
-		vertices[9] = rightBottom.y();
-
-		vertices[16] = leftBottom.x();
-		vertices[17] = leftBottom.y();
-
-		vertices[24] = leftTop.x();
-		vertices[25] = leftTop.y();
-	}
-	else
-	{
-		// 右上
-		vertices[0] = rightTop.x();
-		vertices[1] = rightTop.y();
-		// 左上
-		vertices[8] = leftTop.x();
-		vertices[9] = leftTop.y();
-		// 左下
-		vertices[16] = leftBottom.x();
-		vertices[17] = leftBottom.y();
-		// 右下
-		vertices[24] = rightBottom.x();
-		vertices[25] = rightBottom.y();
-
-	}
+	vertices[24] = leftTop.x();
+	vertices[25] = leftTop.y();
+	
 	
 	// print
 	/*
@@ -201,25 +149,6 @@ float* RenderWidget::getTextureVertices(QVector3D offset, QVector2D size)
 }
 
 
-int RenderWidget::renderMain(QString* texturePathQ, QVector3D* offset, QVector2D* size)
-{
-	std::unique_ptr<QOpenGLTexture> textureSample = std::make_unique<QOpenGLTexture>(QImage(*texturePathQ).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
-
-	textureSample->create();
-	textureSample->setFormat(QOpenGLTexture::RGBAFormat);
-	textureSample->allocateStorage();
-
-
-	shaderProgram->bind();
-
-	renderTexture(textureSample.get(), *offset, *size);
-
-	return 1;
-}
-
-
-
-
 void RenderWidget::initializeGL()
 {
 	initializeOpenGLFunctions();
@@ -228,11 +157,6 @@ void RenderWidget::initializeGL()
 
 	// source_path = SOURCE_DIR;
 	source_path = GameEngine::get_instance().getRootPath();
-
-	/*logger = std::make_unique<QOpenGLDebugLogger>(this);
-	logger->initialize();
-	connect(logger.get(), &QOpenGLDebugLogger::messageLogged, this, &RenderWidget::messageLogHandler);
-	logger->startLogging();*/
 
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glEnable(GL_FRAMEBUFFER_SRGB);
@@ -310,7 +234,7 @@ void RenderWidget::paintGL()
 		shaderProgram->bind();
 		shaderProgram->setUniformValue("rotationMatrix", matrix);
 
-
+		// 渲染图像和碰撞盒
 		renderTexture(texture, *offset, *size);
 
 		
@@ -359,6 +283,7 @@ void RenderWidget::createProgram()
 	textureWallBinding = 0;
 }
 
+// 暂时没用
 void RenderWidget::createBoxProgram() {
 	bool success;
 	shaderBoxProgram = std::make_unique<QOpenGLShaderProgram>();
@@ -371,25 +296,6 @@ void RenderWidget::createBoxProgram() {
 	
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
-
-void RenderWidget::createBoxVAO()
-{
-	shaderBoxProgram->bind();
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	//告知显卡如何解析缓冲里的属性值
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	//开启VAO管理的第一个属性值
-	glEnableVertexAttribArray(0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-
-}
-
-
-
 
 void RenderWidget::createVAO()
 {
@@ -437,7 +343,6 @@ void RenderWidget::createVAO()
 	glBindVertexArray(0);
 }
 
-
 void RenderWidget::createVBO()
 {
 	vbo = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
@@ -445,8 +350,6 @@ void RenderWidget::createVBO()
 	vbo->bind();
 	vbo->allocate(vertices, sizeof(vertices));
 }
-
-
 
 void RenderWidget::createIBO()
 {
@@ -490,11 +393,9 @@ void RenderWidget::renderTexture(QOpenGLTexture* texture, QVector3D offset, QVec
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	//vao->release();
 	
-
 	
-	// 碰撞盒
+	// 绘制碰撞盒
 	glDisable(GL_BLEND);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glLineWidth(3.0f);
@@ -507,12 +408,13 @@ void RenderWidget::renderTexture(QOpenGLTexture* texture, QVector3D offset, QVec
 	
 	
 
-	//shaderProgram->release();
+	shaderProgram->release();
 	
 	
 }
 
 
+// 暂时不用
 void RenderWidget::renderBox()
 {
 	

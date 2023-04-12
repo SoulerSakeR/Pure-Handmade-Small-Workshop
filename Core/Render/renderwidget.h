@@ -79,11 +79,11 @@ private:
     void createIBO();
 
     void createBoxProgram();
-    void createBoxVAO();
+    
     void createBoxEBO();
     
 
-    int renderMain(QString*, QVector3D*, QVector2D*);
+   
     
 
 
