@@ -58,6 +58,8 @@ private:
     std::unique_ptr<QOpenGLShaderProgram> shaderBoxProgram;
 
     std::unique_ptr<QOpenGLBuffer> vbo;
+    std::unique_ptr<QOpenGLBuffer> vboBox;
+
     std::unique_ptr<QOpenGLBuffer> ibo;
     std::unique_ptr<QOpenGLBuffer> EBOBOX;
 
@@ -79,7 +81,8 @@ private:
     void createIBO();
 
     void createBoxProgram();
-    
+    void createBoxVAO();
+    void createBoxVBO();
     void createBoxEBO();
     
 

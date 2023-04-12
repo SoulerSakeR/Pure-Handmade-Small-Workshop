@@ -13,12 +13,31 @@ std::string source_path;
 static int count = 0;
 
 
+/*
 float vertices[] = {
 	// positions   // colors           // texture coords
-	1.f,  1.f, 0,  1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-	1.f, -1.f, 0,  0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-   -1.f, -1.f, 0,  0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-   -1.f,  1.f, 0,  1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
+	1.f,  1.f, 0,  1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   1.f,  1.f, 0, // top right
+	1.f, -1.f, 0,  0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   1.f, -1.f, 0, // bottom right
+   -1.f, -1.f, 0,  0.0f, 0.0f, 1.0f,   0.0f, 0.0f,  -1.f, -1.f, 0, // bottom left
+   -1.f,  1.f, 0,  1.0f, 1.0f, 0.0f,   0.0f, 1.0f   -1.f,  1.f, 0, // top left
+};
+*/
+
+float verticesBox[] =
+{    // positions        // colors
+	 0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,	// top right
+	 0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,	// bottom right
+	-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f, 	// bottom left
+	-0.5f,  0.5f, 0.0f,  0.5f, 0.5f, 0.5f,	// top left
+};
+
+
+float vertices[] = {
+	// positions   // colors           // texture coords
+	1.f,  1.f, 0,  1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+	1.f, -1.f, 0,  0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+   -1.f, -1.f, 0,  0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+   -1.f,  1.f, 0,  1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
 };
 
 //counter clockwise
@@ -153,6 +172,10 @@ void RenderWidget::initializeGL()
 {
 	initializeOpenGLFunctions();
 
+	logger = std::make_unique<QOpenGLDebugLogger>(this);
+	logger->initialize();
+	connect(logger.get(), &QOpenGLDebugLogger::messageLogged, this, &RenderWidget::messageLogHandler);
+	logger->startLogging();
 
 
 	// source_path = SOURCE_DIR;
@@ -165,9 +188,10 @@ void RenderWidget::initializeGL()
 
 
 	createProgram();
+	createBoxProgram();
 	
 	createIBO();
-
+	createBoxEBO();
 
 }
 
@@ -202,7 +226,7 @@ void RenderWidget::paintGL()
 		
 		
 		//getTextureInfoTest(texturePathQ, offset, size);
-		getTextureVertices(QVector3D(0.f,0.f,0.f), *size);
+		getTextureVertices(QVector3D(0.f,0.f,0.f), *size); // 根据图片的分辨率和尺寸，设定四个顶点，并创建VBO
 
 		
 		createVAO();
@@ -222,7 +246,7 @@ void RenderWidget::paintGL()
 			shaderProgram->setUniformValue("rotationMatrix", matrix);
 
 			//std::cout << "time 4:" << double(end4 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
-			renderTexture(texture, *offset, *size);
+			//renderTexture(texture, *offset, *size);
 			
 			//std::cout << "time 5:" << double(end5 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
 			continue;
@@ -235,15 +259,17 @@ void RenderWidget::paintGL()
 		shaderProgram->setUniformValue("rotationMatrix", matrix);
 
 		// 渲染图像和碰撞盒
-		renderTexture(texture, *offset, *size);
+		//renderTexture(texture, *offset, *size);
+		shaderProgram->release();
 
 		
-		//renderBox();
-
-
-		// render box
+		shaderBoxProgram->bind();
+		shaderBoxProgram->setUniformValue("rotationMatrix", matrix);
+		createBoxVBO();
+		createBoxVAO();
+		renderBox();
+		shaderBoxProgram->release();
 		
-
 		
 	}
 }
@@ -337,9 +363,40 @@ void RenderWidget::createVAO()
 		//    开启VAO管理的第一个属性值
 		glEnableVertexAttribArray(textureLocation);
 
-	}
+	}	
 	vbo->release();
 
+	glBindVertexArray(0);
+}
+
+void RenderWidget::createBoxVAO() 
+{
+
+	shaderBoxProgram->bind();
+	
+	GLint posLocation = shaderBoxProgram->attributeLocation("aPos");
+	GLint colorLocation = shaderBoxProgram->attributeLocation("aColor");
+
+	vaoBox = std::make_unique<QOpenGLVertexArrayObject>();
+
+	vaoBox->create();
+
+	vaoBox->bind();
+	vboBox->bind();
+
+	//告知显卡如何解析缓冲里的属性值
+	glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	//开启VAO管理的第一个属性值
+	glEnableVertexAttribArray(0);
+
+	//告知显卡如何解析缓冲里的属性值
+	glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	//开启VAO管理的第二个属性值
+	glEnableVertexAttribArray(1);
+
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	vboBox->release();
 	glBindVertexArray(0);
 }
 
@@ -349,6 +406,15 @@ void RenderWidget::createVBO()
 	vbo->create();
 	vbo->bind();
 	vbo->allocate(vertices, sizeof(vertices));
+}
+
+void RenderWidget::createBoxVBO()
+{
+	
+	vboBox = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
+	vboBox->create();
+	vboBox->bind();
+	vboBox->allocate(verticesBox, sizeof(verticesBox));
 }
 
 void RenderWidget::createIBO()
@@ -394,7 +460,9 @@ void RenderWidget::renderTexture(QOpenGLTexture* texture, QVector3D offset, QVec
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	
+	// renderBox();
 	
+	/*
 	// 绘制碰撞盒
 	glDisable(GL_BLEND);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -402,29 +470,31 @@ void RenderWidget::renderTexture(QOpenGLTexture* texture, QVector3D offset, QVec
 
 	ibo->release(); // 释放画图像的ibo
 	createBoxEBO(); // 重新绑定画盒子的ibo
+	EBOBOX->bind();
 
 	// 绘制矩形边框
 	glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, nullptr);
-	
-	
-
-	shaderProgram->release();
-	
-	
+	*/
+		
 }
 
 
 // 暂时不用
 void RenderWidget::renderBox()
 {
+	vaoBox->bind();
 	
+	ibo->release(); // 释放画图像的ibo
+	createBoxEBO(); // 重新绑定画盒子的ibo
+	EBOBOX->bind();
+	
+
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glLineWidth(3.0f);
 
-	ibo->release(); // 释放画图像的ibo
-	createBoxEBO(); // 重新绑定画盒子的ibo
-
 	// 绘制矩形边框
-	glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, nullptr);
+
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, NULL);
+	//glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, nullptr);
 
 }
