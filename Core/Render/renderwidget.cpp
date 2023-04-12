@@ -172,10 +172,13 @@ void RenderWidget::initializeGL()
 {
 	initializeOpenGLFunctions();
 
+	// debug info
+	/*
 	logger = std::make_unique<QOpenGLDebugLogger>(this);
 	logger->initialize();
 	connect(logger.get(), &QOpenGLDebugLogger::messageLogged, this, &RenderWidget::messageLogHandler);
 	logger->startLogging();
+	*/
 
 
 	// source_path = SOURCE_DIR;
@@ -246,7 +249,7 @@ void RenderWidget::paintGL()
 			shaderProgram->setUniformValue("rotationMatrix", matrix);
 
 			//std::cout << "time 4:" << double(end4 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
-			//renderTexture(texture, *offset, *size);
+			renderTexture(texture, *offset, *size);
 			
 			//std::cout << "time 5:" << double(end5 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
 			continue;
@@ -259,7 +262,7 @@ void RenderWidget::paintGL()
 		shaderProgram->setUniformValue("rotationMatrix", matrix);
 
 		// 渲染图像和碰撞盒
-		//renderTexture(texture, *offset, *size);
+		renderTexture(texture, *offset, *size);
 		shaderProgram->release();
 
 		
@@ -479,7 +482,7 @@ void RenderWidget::renderTexture(QOpenGLTexture* texture, QVector3D offset, QVec
 }
 
 
-// 暂时不用
+//
 void RenderWidget::renderBox()
 {
 	vaoBox->bind();
@@ -493,8 +496,6 @@ void RenderWidget::renderBox()
 	glLineWidth(3.0f);
 
 	// 绘制矩形边框
-
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, NULL);
-	//glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, nullptr);
+	glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, nullptr);
 
 }
