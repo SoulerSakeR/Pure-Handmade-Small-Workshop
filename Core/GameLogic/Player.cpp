@@ -5,7 +5,7 @@
 #include "Player.h"
 
 
-// 设置玩家位置
+// 设置玩家偏移值
 void Player::setMoveValue(Vector2D value) {
 	this->gameObject->transform->translate(value);
 }
@@ -26,11 +26,12 @@ Vector2D Player::getVelocity() {
 	return this->m_velocity;
 }
 
+// 玩家进行操作输入时直接调用，通过设置的速度直接移动人物
 void Player::move(float deltaTime) {
 	// 如果GameLoop中的inputDetection检测到了WASD的按键
 	// 进行相应的动作
 	// 
-	// 被LUA调用,根据原始位置和速度更新新的位置坐标
+	// TODO:被Lua函数调用？
 	Vector2D originVelocity = this->getVelocity();
 
 	//偏移量 = 速度 * 间隔时间

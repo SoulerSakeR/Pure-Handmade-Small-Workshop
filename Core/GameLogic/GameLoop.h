@@ -6,6 +6,7 @@
 #include <Windows.h>
 #include <Core/SystemStatus/GameEngine.h>
 #include <Core/Render/renderwidget.h>
+//#include <Core/GameLogic/Player.h>
 
 
 class GameLoop {
@@ -14,6 +15,9 @@ public:
     ~GameLoop() {}
 
     //void gameLoop(GameProject* gamePrj);
+
+  //  Player* getPlayer();
+ //   void setPlayer(Player* player);
 
     void updatePlayer(float deltaTime);
         // 更新玩家状态-比如位置和执行动作
@@ -25,10 +29,6 @@ public:
         // 获取场景信息(光夫哥)并且进行渲染（敬哥）
         // ...       
 
-
-    void checkCollisions(float deltaTime);
-        // 检查碰撞 和宇靖对接
-        // ...
 
     void updateGameState(float deltaTime);
         // 更新游戏状态
@@ -48,9 +48,8 @@ public:
         //printDataInfo(deltaTime);
  
 private:
-    // 玩家、敌人、游戏状态等数据成员
-    // ...
-    // 玩家位置
-    //float position; 
+   // Player* player; //绑定一个Player.包括以下功能 
+    //1.人物移动（TODO:输入检测） 2.设置人物移动速度 3.获取人物位置 4.设置人物状态 
+
     int gameTime; // 储存srand(GetTickCount())
 };
