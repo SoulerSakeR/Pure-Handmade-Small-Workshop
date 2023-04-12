@@ -34,15 +34,8 @@ void GameLoop::updateScene(RenderWidget* Rwg) {
 
     }
 
-void GameLoop::checkCollisions(float deltaTime) {
-        // 检查碰撞 和宇靖对接
-        // ...
-    }
 
 void GameLoop::updateGameState(float deltaTime) {
-        // 更新游戏状态
-        // 比如玩家的位置
-        // ...
     }
 
 void GameLoop::printDataInfo(float deltaTime) {
@@ -54,9 +47,14 @@ void GameLoop::update(float deltaTime, RenderWidget* Rwg) {
         // 游戏逻辑更新函数，每帧调用一次
         updatePlayer(deltaTime);
         updateScene(Rwg);
-        checkCollisions(deltaTime);
         updateGameState(deltaTime);
         printDataInfo(deltaTime);
     }
 
+//Player* GameLoop::getPlayer(){ 
+//    return this->player;
+//}
 
+//void GameLoop::setPlayer(Player* player) {
+//    this->player = player;
+//}
