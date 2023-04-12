@@ -28,6 +28,7 @@ public:
 	std::string getFileName(bool withExtension = true);
 	std::string getNewPath();
 	std::string getOldPath();
+	std::string getFileDir(); //获取文件目录，如果文件在根目录下则返回根目录
 	bool getIsFile();
 
 private:

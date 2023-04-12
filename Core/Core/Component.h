@@ -26,6 +26,10 @@ public:
 	};
 	~Component() {
 		gameObject = nullptr;
+		for (auto& property : properties)
+		{
+			delete property.second;
+		}
 	};
 
 	virtual void set_enabled(bool value);		

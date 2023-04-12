@@ -29,6 +29,7 @@ public:
     template <typename T>
     T* getComponent(); //需要绑定
     Component* getComponent(Component::ComponentType type);
+    void removeComponent(Component* component); //需要绑定
     bool isRootGameObject(); //需要绑定
 
 private:  

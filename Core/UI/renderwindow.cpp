@@ -11,12 +11,18 @@
 #include "HierarchyItem.h"
 #include "HierarchyWidget.h"
 #include "ComponentsDockWidget.h"
+#include "Core/UI/CreateProjectDialog.h"
+//#include <QLineEdit>
+//#include <qlabel.h>
+//#include <QPushButton>
 
 RenderWindow::RenderWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::RenderWindow)
 {
     ui->setupUi(this);
+
+    // 根据组件类型动态生成组件按钮
     for (int i = 1;i < Component::componentTypeCount + 1;++i)
     {
         auto action = new QAction(QString::fromStdString(Component::getName((Component::ComponentType)i)),this);
@@ -26,18 +32,45 @@ RenderWindow::RenderWindow(QWidget *parent)
             {
                 ui->hierarchy->selectedGameObject->addComponent((Component::ComponentType)i);
                 ui->dockWidget_components->refresh();
-            }
-                
+            }               
 		});
     }
     ui->dockWidget_components->set_components_widget(ui->scrollAreaWidgetContents);
+    /*// 以下是Dialog界面的设计
+    QDialog* createDialog = new QDialog(this);
+    createDialog->setWindowTitle("创建项目");
+    createDialog->setFixedSize(300, 200);
+    createDialog->setModal(true);
+
+    // 在createDialog窗口中添加文本输入框和保存按钮
+    projectNameLineEdit = new QLineEdit;
+    createAddressLineEdit = new QLineEdit;
+    QLabel* projectNameLabel = new QLabel(tr("项目名称："));
+    QLabel* createAddressLabel = new QLabel(tr("创建地址："));
+    QPushButton* saveBtn = new QPushButton(tr("创建项目"));
+
+    QVBoxLayout* layout = new QVBoxLayout;
+    layout->addWidget(projectNameLabel);
+    layout->addWidget(projectNameLineEdit);
+    layout->addWidget(createAddressLabel);
+    layout->addWidget(createAddressLineEdit);
+    layout->addWidget(saveBtn);
+
+    createDialog->setLayout(layout);
+    */
+
+    QDialog* createDialog = new CreateProjectDialog(this);
+    //connect(createDialog, &CreateProjectDialog::accepted, this, &RenderWindow::on_saveBtn_clicked);
     // 点击创建项目按钮出现资源对话框
     connect(ui->actioncreatProject, &QAction::triggered, [=]() {
         // 文件对话框  参数1 父亲 参数2 标题 参数3 默认打开路径 参数4 过滤文件格式
-        QString FileAdress = QFileDialog::getSaveFileName(this, "创建项目", "", "");// 可以重载第四个参数，意义是筛选文件类型  "(*.txt)"
-        QString fileName = QFileInfo(FileAdress).fileName();
-        GameEngine::get_instance().creatGameProject(fileName.toStdString(), FileAdress.toStdString());
+        //QString FileAdress = QFileDialog::getSaveFileName(this, "创建项目", "", "");// 可以重载第四个参数，意义是筛选文件类型  "(*.txt)"
+        //QString fileName = QFileInfo(FileAdress).fileName();
+        //GameEngine::get_instance().creatGameProject(fileName.toStdString(), FileAdress.toStdString());
+        createDialog->show();
         });
+    //createDialog->setModal(true); // QDialog窗口模态属性
+
     // 点击按钮出现资源对话框
     connect(ui->actionopenProject,&QAction::triggered,[=](){
         // 文件对话框  参数1 父亲 参数2 标题 参数3 默认打开路径 参数4 过滤文件格式

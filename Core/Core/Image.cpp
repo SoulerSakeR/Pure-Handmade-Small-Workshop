@@ -52,6 +52,15 @@ Image::Image(GameObject* gameObj, const std::string& imgPath,Vector2D size):Comp
 	}		
 }
 
+Image::~Image()
+{
+	if (SceneMgr::get_instance().get_current_scene() != nullptr)
+	{
+		auto& map = SceneMgr::get_instance().get_current_scene()->getAllGameObjsByDepth();
+		map.erase(render_order);
+	}
+}
+
 void Image::set_size(Vector2D newSize, bool refreshUI)
 {
 	this->size = newSize;

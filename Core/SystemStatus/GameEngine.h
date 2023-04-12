@@ -33,6 +33,9 @@ public:
 	bool initialize(RenderWindow* window);
 	GameObject* getSelectedGameObject();
 	void onPropertyChange(Property* property);
+	void test(int a, int b) {
+				std::cout << a << " " << b << std::endl;
+	}
 	ThreadPool pool;
 private:
 

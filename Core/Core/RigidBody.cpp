@@ -15,6 +15,46 @@ RigidBody::~RigidBody()
 {
 }
 
+float RigidBody::get_mass() const
+{
+	return mass;
+}
+
+void RigidBody::set_mass(float value)
+{
+	mass = value;
+}
+
+Vector2D RigidBody::get_velocity() const
+{
+	return velocity;
+}
+
+void RigidBody::set_velocity(Vector2D value)
+{
+	velocity = value;
+}
+
+Vector2D RigidBody::get_acceleration() const
+{
+	return acceleration;
+}
+
+void RigidBody::set_acceleration(Vector2D value)
+{
+	acceleration = value;
+}
+
+float RigidBody::get_friction_ratio() const
+{
+	return friction_ratio;
+}
+
+void RigidBody::set_friction_ratio(float value)
+{
+	friction_ratio = value;
+}
+
 void RigidBody::serialize(PHString& str)
 {
 	str.appendLine(to_string((int)componentType));

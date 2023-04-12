@@ -13,7 +13,7 @@ public:
 	};
 	
 	Property(const std::string& name, void* data,PropertyType type,Component* src);
-
+	~Property();
 	template<typename T>
 	T& get_data() const
 	{
@@ -32,6 +32,7 @@ public:
 	PropertyType type;
 
 private:
+	
 	std::string name;
 	void* data;
 	Component* component;

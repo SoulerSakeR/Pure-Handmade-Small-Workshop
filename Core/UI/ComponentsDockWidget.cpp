@@ -13,6 +13,8 @@
 #include "qlayoutitem.h"
 #include "qscrollarea.h"
 #include "Core/Utils/Vector2D.h"
+#include "qpushbutton.h"
+#include "DeleteComponentButton.h"
 
 ComponentsDockWidget* ComponentsDockWidget::instance = nullptr;
 
@@ -186,6 +188,9 @@ void ComponentsDockWidget::refresh()
 			}
 			}
 		}
+		auto deleteButton = new DeleteComponentButton(groupBox,component);
+		deleteButton->setText(QString("delete "));
+		groupBox->layout()->addWidget(deleteButton);
 		components_widget->layout()->addWidget(groupBox);
 	}
 	components_widget->layout()->addItem(new QSpacerItem(20, 40, QSizePolicy::Expanding, QSizePolicy::Expanding));

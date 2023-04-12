@@ -14,3 +14,8 @@ Component* const Property::get_component()
 {
 	return component;
 }
+
+Property::~Property()
+{
+	//TO
+}
