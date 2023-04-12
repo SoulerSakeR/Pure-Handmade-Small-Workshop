@@ -18,18 +18,16 @@ public:
     ~RenderWindow();
     void resizeGL(QResizeEvent*);
     void refreshHierachy();
+    void setupFileSystemTreeView(const QString& parentDir);
+
 public slots:
     void showContextMenu(const QPoint&);
+    void onTreeviewRightClick(const QPoint& pos);
 
 private slots:
     friend class listbox;
-    // void on_Render_action_triggered();
-    // void on_Clear_action_triggered();
-    // void on_actionWirefame_triggered();
-    //void createProject(); //创建项目的初始界面
+
 private:
     Ui::RenderWindow *ui;
-    //QLineEdit* projectNameLineEdit;
-    //QLineEdit* createAddressLineEdit;
 };
 #endif // RENDERWINDOW_H
