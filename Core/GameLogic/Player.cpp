@@ -1,66 +1,42 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include <string>
 #include <conio.h>
 #include <Windows.h>
 #include "Player.h"
 
 
-// ÉèÖÃÍæ¼ÒÎ»ÖÃ
-void Player::setMoveValue(Vector2D value) {
-	this->gameObject->transform->translate(value);
+// è®¾ç½®çŽ©å®¶ä½ç½®
+void Player::setPosition(float x, float y) {
+	this->m_position.x = x;
+	this->m_position.y = y;
 }
 
-// »ñÈ¡Íæ¼ÒÎ»ÖÃ
+// èŽ·å–çŽ©å®¶ä½ç½®
 Vector2D Player::getPosition() {
-	return this->gameObject->transform->getWorldPosition();
+	return this->m_position;
 }
 
-// ÉèÖÃÍæ¼ÒËÙ¶È
+// è®¾ç½®çŽ©å®¶é€Ÿåº¦
 void Player::setVelocity(float Vx, float Vy) {
-	this->m_velocity.x = Vx;
-	this->m_velocity.y = Vy;
+	this->m_position.x = Vx;
+	this->m_position.y = Vy;
 }
 
-// »ñÈ¡Íæ¼ÒËÙ¶È
+// èŽ·å–çŽ©å®¶é€Ÿåº¦
 Vector2D Player::getVelocity() {
 	return this->m_velocity;
 }
 
-void Player::move(float deltaTime) {
-	// Èç¹ûGameLoopÖÐµÄinputDetection¼ì²âµ½ÁËWASDµÄ°´¼ü
-	// ½øÐÐÏàÓ¦µÄ¶¯×÷
+void Player::move(float Vx, float Vy, float deltaTime) {
+	// å¦‚æžœGameLoopä¸­çš„inputDetectionæ£€æµ‹åˆ°äº†WASDçš„æŒ‰é”®
+	// è¿›è¡Œç›¸åº”çš„åŠ¨ä½œ
 	// 
-	// ±»LUAµ÷ÓÃ,¸ù¾ÝÔ­Ê¼Î»ÖÃºÍËÙ¶È¸üÐÂÐÂµÄÎ»ÖÃ×ø±ê
+	// è¢«LUAè°ƒç”¨,æ ¹æ®åŽŸå§‹ä½ç½®å’Œé€Ÿåº¦æ›´æ–°æ–°çš„ä½ç½®åæ ‡
+	Vector2D originPos = this->getPosition();
 	Vector2D originVelocity = this->getVelocity();
 
-	//Æ«ÒÆÁ¿ = ËÙ¶È * ¼ä¸ôÊ±¼ä
-	this->setMoveValue(Vector2D(originVelocity.x * deltaTime, originVelocity.y * deltaTime));
+	this->setPosition(originPos.x + originVelocity.x * deltaTime, originPos.y + originVelocity.y * deltaTime);
 }
 
-// ¸ú¹â·ò¸çºÍÀ¤ÑðÌÖÂÛÍêºóÔÚ¿¼ÂÇÕâ¸ö
 void Player::updateInfo(float deltatime) {
-
 }
-
-
-// »ñµÃHP(ºóÃæ¿ÉÄÜ·Åµ½Lua½Å±¾ÖÐ)
-int Player::getHealth() {
-	return this->m_health;
-}
-
-// ÉèÖÃHP(ºóÃæ¿ÉÄÜ·Åµ½Lua½Å±¾ÖÐ)
-void Player::setHealth(int health) {
-	this->m_health = health;
-}
-
-// »ñµÃ·ÖÊý(ºóÃæ¿ÉÄÜ·Åµ½Lua½Å±¾ÖÐ)
-int Player::getScore() {
-	return this->m_score;
-}
-
-// ÉèÖÃ·ÖÊý(ºóÃæ¿ÉÄÜ·Åµ½Lua½Å±¾ÖÐ)
-void Player::setScore(int score) {
-	this->m_score = score;
-}
-
-

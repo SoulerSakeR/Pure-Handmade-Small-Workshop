@@ -19,14 +19,11 @@ void PhysicsEngine::update(float deltaTime) {
         GameObject* obj1 = objects[i];
 
         // 获取物体的Transform组件
-        Transform* transform = getTransform(obj1);
-        RigidBody* rigidBody = getRigidBody(obj1);
-        
+        Transform* transform = obj1->transform;
+
         // 更新物体的位置和速度
-        if (rigidBody != nullptr) {
-            rigidBody->set_velocity(rigidBody->get_velocity() + rigidBody->get_acceleration() * deltaTime);
-            transform->set_localPosition(transform->get_localPosition() + rigidBody->get_velocity() * deltaTime);
-        }
+        obj1->velocity += obj1->acceleration * deltaTime;
+        transform->set_localPosition(transform->get_localPosition() + obj1->velocity * deltaTime);
 
         // 检测物体是否和其他物体碰撞
         for (int j = i + 1; j < objects.size(); j++) {
@@ -42,13 +39,10 @@ void PhysicsEngine::update(float deltaTime) {
 
 bool PhysicsEngine::checkCollision(GameObject* obj1, GameObject* obj2) {
     // 获取物体的包围盒
-    BoxCollider* boxCollider1 = getBoxCollider(obj1);
-    Vector2D obj1_topLeft = getTransform(obj1)->get_localPosition() + boxCollider1->getBoundingBoxTopLeft();
-    Vector2D obj1_bottomRight = getTransform(obj1)->get_localPosition() + boxCollider1->getBoundingBoxBottomRight();
-
-    BoxCollider* boxCollider2 = getBoxCollider(obj2);
-    Vector2D obj2_topLeft = getTransform(obj2)->get_localPosition() + boxCollider2->getBoundingBoxTopLeft();
-    Vector2D obj2_bottomRight = getTransform(obj2)->get_localPosition() + boxCollider2->getBoundingBoxBottomRight();
+    Vector2 obj1_topLeft = obj1->getTopLeft();
+    Vector2 obj1_bottomRight = obj1->getBottomRight();
+    Vector2 obj2_topLeft = obj2->getTopLeft();
+    Vector2 obj2_bottomRight = obj2->getBottomRight();
 
     // 检测碰撞
     if (obj1_bottomRight.x < obj2_topLeft.x || obj1_topLeft.x > obj2_bottomRight.x)

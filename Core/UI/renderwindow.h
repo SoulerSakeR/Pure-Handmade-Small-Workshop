@@ -25,6 +25,7 @@ private slots:
     // void on_Render_action_triggered();
     // void on_Clear_action_triggered();
     // void on_actionWirefame_triggered();
+    //void createProject(); //创建项目的初始界面
 private:
 
     Ui::RenderWindow *ui;
