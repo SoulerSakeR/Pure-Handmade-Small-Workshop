@@ -93,10 +93,10 @@ void GameObject::deserialize(std::stringstream& ss)
 
 GameObject::GameObject(string name,bool withTransform)
 {
-    this->name = name;
-    isActive = false;
-    // TODO: 随机生成uuid
     id = idCount + 1;
+    this->name = name+"_"+to_string(id);
+    isActive = true;
+    // TODO: 随机生成uuid   
     idCount++;
     components = vector<Component*>();
     if(withTransform)
@@ -105,14 +105,22 @@ GameObject::GameObject(string name,bool withTransform)
 
 GameObject::~GameObject()
 {
-    for (auto child : transform->children)
+    if (transform->parent != nullptr)
     {
-        delete child->gameObject;
+        auto it = std::find(transform->parent->children.begin(), transform->parent->children.end(), transform);
+        if (it != transform->parent->children.end())
+			transform->parent->children.erase(it);
+    }       
+    auto children = transform->children.data();
+    for (int i=0;i<transform->children.size();++i)
+    {
+        delete children[i]->gameObject;
     }
     for (auto component : components)
     {
         delete component;
     }
+
 }
 
 /// @brief add component to game object
@@ -140,6 +148,9 @@ Component* GameObject::addComponent(Component::ComponentType type)
 		break;
     case Component::BOX_COLLIDER:
         result = new BoxCollider(this);
+		break;
+    case Component::SCRIPT:
+		result = new Script(this);
 		break;
     default:
         break;
@@ -183,9 +194,13 @@ void GameObject::removeComponent(Component* component)
 
 bool GameObject::isRootGameObject()
 {
-    if (transform->parent != nullptr)
-        return true;
-    return false;
+    return transform->parent == nullptr;
+}
+
+void GameObject::destroy()
+{
+    GameEngine::get_instance().deleteGameObject(this);
+    delete this;
 }
 
 

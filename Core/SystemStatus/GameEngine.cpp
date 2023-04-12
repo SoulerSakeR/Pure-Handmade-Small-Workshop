@@ -180,7 +180,6 @@ GameObject& GameEngine::addGameObject(const string& name, GameObject* const pare
 void GameEngine::deleteGameObject(GameObject* obj)
 {
 	getCurrentScene()->removeGameObject(obj);
-	delete obj;
 }
 
 const std::string& GameEngine::getRootPath()

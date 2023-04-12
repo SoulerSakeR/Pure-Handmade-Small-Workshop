@@ -1,4 +1,5 @@
 #pragma once
+
 #include <vector>
 #include <functional>
 /*
@@ -21,22 +22,47 @@ private:
 	std::vector<std::function<void(Sender,Args)>> handles;
 };
 */
-template <typename RT, typename... Args >
+template <typename RT, typename Args >
 class Event
 {
 public:
-	RT operator()(Args ...args) const
+	Event(){}
+	RT operator()(Args args) 
 	{
 		for (auto& handle : handles)
 		{
-			return handle(args ...);
+			std::function<RT(Args)>& f = handle.second;
+			return f(args);
 		}
 	};
-	void registerFunc(const std::function<RT(Args...)> f)
+	template <typename Func,typename Instance>
+	void registerFunc(Func func,Instance instance)
 	{
-		handles.push_back(f);
+		void* function = union_cast<void*>(func);
+		void* inst = (void*)instance;
+		size_t hash = (size_t)function;
+		hash = hash / 2 + (size_t)(inst) / 2;
+		handles.emplace(hash, std::bind(func, instance, std::placeholders::_1));
 	};
-	void unRegisterFunc(){}
+	template <typename Func, typename Instance>
+	void unRegisterFunc(Func func, Instance instance)
+	{
+		void* function = union_cast<void*>(func);
+		void* inst = (void*)instance;
+		size_t hash = (size_t)(function);
+		hash = hash / 2 + (size_t)(inst) / 2;
+		handles.erase(hash);
+	}
+	template<typename dst_type, typename src_type>
+	dst_type union_cast(src_type src)
+	{
+		union {
+			src_type s;
+			dst_type d;
+		}u;
+		u.s = src;
+		return u.d;
+	}
 private:
-	std::vector<std::function<RT(Args...)>> handles;
+	std::unordered_map<size_t,std::function<RT(Args)>> handles;
 };

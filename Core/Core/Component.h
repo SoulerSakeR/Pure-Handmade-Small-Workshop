@@ -6,17 +6,19 @@
 #include <vector>
 #include "Property.h"
 #include <unordered_map>
+#include "Core/Utils/Event.h"
 
 class GameObject;
 
 class Component : public ISerializable
 {
 	friend class GameObject;
+	friend class ComponentsDockWidget;
 public:
 	enum ComponentType { UNKNOWN, TRANSFORM, IMAGE, CAMERA, SCRIPT, RIGID_BODY,BOX_COLLIDER };
 	typedef ComponentType customType;
 	static const int componentTypeCount = 6;
-
+	Event<void,Property*> onPropertyChange;
 	Component(GameObject* gameObj) {
 		gameObject = gameObj;
 		enabled = true;

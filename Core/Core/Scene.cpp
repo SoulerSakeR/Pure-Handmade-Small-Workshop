@@ -112,6 +112,7 @@ void Scene::removeGameObject(GameObject* gameObject)
 			{
 				removeGameObjectWithChildren(*it);
 				rootGameObjs.erase(it);
+				break;
 			}
 	}
 	else
@@ -130,7 +131,10 @@ void Scene::removeGameObjectWithChildren(GameObject* gameObject)
 		auto& vec = it->second;
 		for (auto i = vec.begin();i < vec.end();i++)
 			if (*i == gameObject)
+			{
 				vec.erase(i);
+				break;
+			}				
 	}		
 	allGameObjsByID.erase(gameObject->getID());
 	for (auto t : gameObject->transform->children)

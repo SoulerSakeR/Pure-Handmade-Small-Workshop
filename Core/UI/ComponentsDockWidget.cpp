@@ -110,6 +110,8 @@ void ComponentsDockWidget::refresh()
 		return;
 	for (auto component : selected_gameobject->components)
 	{
+		component->onPropertyChange.registerFunc(&ComponentsDockWidget::onPropertyChanged, this);
+
 		auto groupBox = new QGroupBox(QString::fromStdString(component->getName(component->componentType)), components_widget);
 		groupBox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
 		auto verticalLayout = new QVBoxLayout(groupBox);
@@ -248,10 +250,20 @@ void ComponentsDockWidget::onVector2DChanged(QString value)
 
 void ComponentsDockWidget::onGameObjectSelected(GameObject* gameobj)
 {
+	if (selected_gameobject == gameobj)
+		return;
+	else if(selected_gameobject!=nullptr)
+	{
+		for (auto component : selected_gameobject->components)
+		{
+			component->onPropertyChange.unRegisterFunc(&ComponentsDockWidget::onPropertyChanged, this);
+		}
+	}
 	selected_gameobject = gameobj;
+	refresh();
 	if (gameobj == nullptr)
 		return;
-	refresh();
+	
 }
 
 

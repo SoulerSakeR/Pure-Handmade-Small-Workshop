@@ -38,6 +38,9 @@
        </property>
        <item>
         <widget class="HierarchyWidget" name="hierarchy">
+         <property name="contextMenuPolicy">
+          <enum>Qt::CustomContextMenu</enum>
+         </property>
          <property name="headerHidden">
           <bool>true</bool>
          </property>
