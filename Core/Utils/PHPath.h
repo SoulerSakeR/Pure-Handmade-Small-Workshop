@@ -4,15 +4,16 @@
 class PHPath
 {
 public:
-	PHPath(std::string path)
+	PHPath(const std::string& path)
 	{
+		std::string temp = path;
 		oldPath = path;
 		size_t pos = 0;
 		while ((pos = path.find("/", pos)) != std::string::npos) {
-			path.replace(pos, 1, "\\");
+			temp.replace(pos, 1, "\\");
 			pos += 2;
 		}
-		newPath = path;
+		newPath = temp;
 
 		pos = newPath.find_last_of(".");
 		if (pos == std::string::npos) {

@@ -238,6 +238,7 @@ void RenderWidget::paintGL()
 
 		auto matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
 		matrix.translate(gameobj->transform->getWorldPosition().toQVector3D());
+		gameobj->transform->set_localRotation(gameobj->transform->get_localRotation() + 5.f);
 		matrix.rotate(gameobj->transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
 		matrix.scale(gameobj->transform->getWorldScale().toQVector3D(1.0f));
 

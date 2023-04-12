@@ -11,8 +11,13 @@ signals:
 public:
     HierarchyWidget(QWidget* parent);
 
+    QMenu* contextMenu;
     GameObject* selectedGameObject;
-private slots:
+public slots:
+    void showContextMenu(const QPoint& pos);
     void onSelectionChanged();
+       
+private:
+    void initContextMenu();
 };
 

@@ -17,8 +17,7 @@ public:
     std::vector<Component*> components; //游戏对象的所有组件 需要绑定
 
     //constructor
-    GameObject(std::string name="",bool withTransform=true); 
-    ~GameObject();
+    GameObject(std::string name="",bool withTransform=true);   
 
     //method
     int getID(); //需要绑定
@@ -31,11 +30,12 @@ public:
     Component* getComponent(Component::ComponentType type);
     void removeComponent(Component* component); //需要绑定
     bool isRootGameObject(); //需要绑定
+    void destroy(); //需要绑定
 
 private:  
+    ~GameObject();
     void serialize(PHString& str) override;
-    void deserialize(std::stringstream& ss) override;
-
+    void deserialize(std::stringstream& ss) override;   
     static int idCount; //id计数器
     int id; //唯一id
 };

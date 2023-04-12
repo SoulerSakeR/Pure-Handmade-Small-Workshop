@@ -92,10 +92,13 @@ void Transform::set_localRotation(float value)
 	if (localRotation == value)
 		return;
 	localRotation = value;
+	onPropertyChange(properties["localRotation"]);
+	/*
 	if (GameEngine::get_instance().needToRefeshUI(gameObject))
 	{
 		GameEngine::get_instance().onPropertyChange(properties["localRotation"]);
 	}
+	*/
 }
 
 void Transform::set_localScale(Vector2D value)
@@ -115,17 +118,11 @@ void Transform::deserialize(stringstream& ss)
 {
 	string s;
 	getline(ss,s);	
-	size_t index = s.find(',');
-	float x = stof(s.substr(0,index-1));
-	float y = stof(s.substr(index+1,s.size()-1));
-	localPosition = Vector2D(x,y);
+	localPosition = Vector2D::fromString(s);
 	getline(ss,s);
 	localRotation = stof(s);
 	getline(ss, s);
-	index = s.find(',');
-	x = stof(s.substr(0, index - 1));
-	y = stof(s.substr(index + 1, s.size() - 1));
-	localScale = Vector2D(x, y);
+	localScale = Vector2D::fromString(s);
 }
 
 void Transform::reset()
