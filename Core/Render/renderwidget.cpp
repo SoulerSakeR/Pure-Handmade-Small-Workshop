@@ -25,10 +25,10 @@ float vertices[] = {
 
 float verticesBox[] =
 {    // positions        // colors
-	 0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,	// top right
-	 0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,	// bottom right
-	-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f, 	// bottom left
-	-0.5f,  0.5f, 0.0f,  0.5f, 0.5f, 0.5f,	// top left
+	 200.f,  200.f, 0.0f,  1.0f, 0.0f, 0.0f,	// top right
+	 200.f, -200.f, 0.0f,  0.0f, 1.0f, 0.0f,	// bottom right
+	-200.f, -200.f, 0.0f,  0.0f, 0.0f, 1.0f, 	// bottom left
+	-200.f,  200.f, 0.0f,  0.5f, 0.5f, 0.5f,	// top left
 };
 
 
@@ -194,7 +194,6 @@ void RenderWidget::initializeGL()
 	createBoxProgram();
 	
 	createIBO();
-	createBoxEBO();
 
 }
 
@@ -234,6 +233,8 @@ void RenderWidget::paintGL()
 		
 		createVAO();
 		
+
+		
 		
 
 		auto matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
@@ -248,11 +249,15 @@ void RenderWidget::paintGL()
 			auto texture = textures[texturePathQ->toStdString()];
 			shaderProgram->bind();
 			shaderProgram->setUniformValue("rotationMatrix", matrix);
-
-			//std::cout << "time 4:" << double(end4 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
 			renderTexture(texture, *offset, *size);
 			
-			//std::cout << "time 5:" << double(end5 - begin) / CLOCKS_PER_SEC * 1000 << "ms" << std::endl;
+			shaderBoxProgram->bind();
+			shaderBoxProgram->setUniformValue("rotationMatrix", matrix);
+			createBoxVBO();
+			createBoxVAO();
+			renderBox();
+			shaderBoxProgram->release();
+			
 			continue;
 		}
 		auto texture = new QOpenGLTexture(QImage(*texturePathQ).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
@@ -264,14 +269,12 @@ void RenderWidget::paintGL()
 
 		// 渲染图像和碰撞盒
 		renderTexture(texture, *offset, *size);
-		shaderProgram->release();
-
-		
 		shaderBoxProgram->bind();
 		shaderBoxProgram->setUniformValue("rotationMatrix", matrix);
 		createBoxVBO();
 		createBoxVAO();
 		renderBox();
+
 		shaderBoxProgram->release();
 		
 		
@@ -305,11 +308,8 @@ void RenderWidget::createProgram()
 	success = shaderProgram->link(); //
 	if (!success)
 		qDebug() << "ERR:" << shaderProgram->log();
-	//        textureSmileBinding=shaderProgram->uniformLocation("textureSmile");
-	//        textureSmileBinding=shaderProgram->uniformLocation("textureSmile");
 	shaderOffsetBinding = shaderProgram->uniformLocation("offset");
 	shaderSizeBinding = shaderProgram->uniformLocation("size");
-	//    textureWallBinding=shaderProgram->uniformLocation("textureWall");
 	textureWallBinding = 0;
 }
 
@@ -466,7 +466,7 @@ void RenderWidget::renderTexture(QOpenGLTexture* texture, QVector3D offset, QVec
 	
 	// renderBox();
 	
-	/*
+	
 	// 绘制碰撞盒
 	glDisable(GL_BLEND);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -474,11 +474,10 @@ void RenderWidget::renderTexture(QOpenGLTexture* texture, QVector3D offset, QVec
 
 	ibo->release(); // 释放画图像的ibo
 	createBoxEBO(); // 重新绑定画盒子的ibo
-	EBOBOX->bind();
 
 	// 绘制矩形边框
 	glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, nullptr);
-	*/
+	
 		
 }
 
@@ -490,7 +489,6 @@ void RenderWidget::renderBox()
 	
 	ibo->release(); // 释放画图像的ibo
 	createBoxEBO(); // 重新绑定画盒子的ibo
-	EBOBOX->bind();
 	
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -498,5 +496,9 @@ void RenderWidget::renderBox()
 
 	// 绘制矩形边框
 	glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, nullptr);
+	glLineWidth(3.0f);
 
 }
+
+
+
