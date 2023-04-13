@@ -11,7 +11,6 @@ signals:
     void gameObjectSelected(GameObject* gameobj);
 public:
     HierarchyWidget(QWidget* parent);
-    void mousePressEvent(QMouseEvent* event) override;
 
     void mouseMoveEvent(QMouseEvent* event) override;
 
