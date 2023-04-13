@@ -1,6 +1,8 @@
 #include "WaveFunctionCollapse.h"
+#include "lib/wfc/image.hpp"
+#include "lib/rapidxml/rapidxml_utils.hpp"
 
-using namespace rapidxml;
+
 using namespace std;
 
 int WaveFunctionCollapse::get_random_seed() {
@@ -19,7 +21,7 @@ Wave::Heuristic WaveFunctionCollapse::to_heuristic(const string& heuristic_strin
 #undef CASE
 }
 
-void WaveFunctionCollapse::run_overlapping_xml(xml_node<>* node) {
+void WaveFunctionCollapse::run_overlapping_xml(rapidxml::xml_node<>* node) {
     string name = get_attribute(node, "name");
 
     auto size = get_attribute(node, "size", "48");
@@ -81,7 +83,7 @@ void WaveFunctionCollapse::run_overlapping_xml(xml_node<>* node) {
     }
 }
 
-void WaveFunctionCollapse::run_overlapping(string name, string image_path, string output_path, uint32_t size, uint32_t width, uint32_t height, uint32_t N, bool periodic_output, bool periodic_input, bool ground, uint32_t symmetry, uint32_t screenshots, string heuristic) {
+void WaveFunctionCollapse::run_overlapping(string name, string image_path, string output_path, uint32_t width, uint32_t height, uint32_t N, bool periodic_output, bool periodic_input, bool ground, uint32_t symmetry, uint32_t screenshots, string heuristic) {
     
     cerr << "< " << name << endl;
 
@@ -131,13 +133,13 @@ void WaveFunctionCollapse::read_config_file(const string& config_path) noexcept 
     vector<char> buffer((istreambuf_iterator<char>(config_file)),
         istreambuf_iterator<char>());
     buffer.push_back('\0');
-    auto document = new xml_document<>;
+    auto document = new rapidxml::xml_document<>;
     document->parse<0>(&buffer[0]);
 
-    xml_node<>* root_node = document->first_node("samples");
+    rapidxml::xml_node<>* root_node = document->first_node("samples");
     PHPath path = PHPath(config_path);
     string dir_path = path.getFileDir() + "/" + "samples";
-    for (xml_node<>* node = root_node->first_node("overlapping"); node;
+    for (rapidxml::xml_node<>* node = root_node->first_node("overlapping"); node;
         node = node->next_sibling("overlapping")) {
         run_overlapping_xml(node);
     }

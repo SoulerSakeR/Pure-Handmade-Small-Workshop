@@ -4,9 +4,14 @@ using std::chrono::system_clock;
 
 void GameLoop::updatePlayer(float deltaTime) {
         // 更新玩家状态-比如位置和执行动作
+        
+        // TODO:Player的输入检测
+    
+        // TODO:更新Player的速度 
+    this->getPlayer()->setVelocity(this->getPlayer()->getVelocity().x, this->getPlayer()->getVelocity().y);
 
-        // TODO:更新Player的速度
-        // TODO:更新Player的位置
+        // TODO:Player的移动
+    this->getPlayer()->move(deltaTime);
 
     }
 
