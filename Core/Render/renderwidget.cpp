@@ -106,6 +106,7 @@ void getTextureInfo(Image& imgComponent, QString* texturePathQ, QVector3D* offse
 }
 
 
+
 // 根据图片的分辨率和尺寸，设定四个顶点，并创建VBO （后期需要把这四个顶点换成碰撞盒的四个顶点）
 float* RenderWidget::getTextureVertices(QVector3D offset, QVector2D size)
 {
@@ -181,7 +182,7 @@ void RenderWidget::initializeGL()
 	*/
 
 
-	// source_path = SOURCE_DIR;
+	
 	source_path = GameEngine::get_instance().getRootPath();
 
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
@@ -251,12 +252,13 @@ void RenderWidget::paintGL()
 			shaderProgram->setUniformValue("rotationMatrix", matrix);
 			renderTexture(texture, *offset, *size);
 			
+			// 绘制碰撞盒
 			shaderBoxProgram->bind();
 			shaderBoxProgram->setUniformValue("rotationMatrix", matrix);
-			createBoxVBO();
+			
 			createBoxVAO();
 			renderBox();
-			shaderBoxProgram->release();
+			
 			
 			continue;
 		}
@@ -264,20 +266,16 @@ void RenderWidget::paintGL()
 		texture->create();
 		textures[texturePathQ->toStdString()] = texture;
 		
-		shaderProgram->bind();
-		shaderProgram->setUniformValue("rotationMatrix", matrix);
-
+		
 		// 渲染图像和碰撞盒
+		shaderProgram->bind();
+		shaderProgram->setUniformValue("rotationMatrix", matrix);		
 		renderTexture(texture, *offset, *size);
+		
 		shaderBoxProgram->bind();
 		shaderBoxProgram->setUniformValue("rotationMatrix", matrix);
-		createBoxVBO();
 		createBoxVAO();
-		renderBox();
-
-		shaderBoxProgram->release();
-		
-		
+		renderBox();		
 	}
 }
 
@@ -386,7 +384,9 @@ void RenderWidget::createBoxVAO()
 	vaoBox->create();
 
 	vaoBox->bind();
-	vboBox->bind();
+	//vboBox->bind();
+	createBoxVBO();
+	createBoxEBO();
 
 	//告知显卡如何解析缓冲里的属性值
 	glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
@@ -464,21 +464,19 @@ void RenderWidget::renderTexture(QOpenGLTexture* texture, QVector3D offset, QVec
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	
-	// renderBox();
 	
-	
-	// 绘制碰撞盒
+	// 绘制图像尺寸框
 	glDisable(GL_BLEND);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glLineWidth(3.0f);
 
-	ibo->release(); // 释放画图像的ibo
-	createBoxEBO(); // 重新绑定画盒子的ibo
+	
+	createBoxEBO(); 
 
 	// 绘制矩形边框
 	glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, nullptr);
 	
-		
+	shaderBoxProgram->release();
 }
 
 
@@ -487,7 +485,7 @@ void RenderWidget::renderBox()
 {
 	vaoBox->bind();
 	
-	ibo->release(); // 释放画图像的ibo
+	//ibo->release(); // 释放画图像的ibo
 	createBoxEBO(); // 重新绑定画盒子的ibo
 	
 
@@ -496,9 +494,11 @@ void RenderWidget::renderBox()
 
 	// 绘制矩形边框
 	glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, nullptr);
-	glLineWidth(3.0f);
-
+	
+	shaderBoxProgram->release();
 }
+
+
 
 
 

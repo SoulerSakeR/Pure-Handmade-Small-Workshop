@@ -11,7 +11,7 @@
 #include <QOpenGLBuffer>
 #include <QOpenGLDebugLogger>
 
-#include "common.h"
+
 
 class RenderWidget : public QOpenGLWidget,public QOpenGLFunctions_3_3_Core
 {
@@ -30,6 +30,8 @@ public:
 
     float* getTextureVertices(QVector3D offset, QVector2D size);
     
+    
+
     
 
 protected:
@@ -75,11 +77,13 @@ private:
     GLint shaderOffsetBinding;
     GLint shaderSizeBinding;
 
+    // Texture
     void createProgram();
     void createVAO();
     void createVBO();
     void createIBO();
 
+    // BoxCollider
     void createBoxProgram();
     void createBoxVAO();
     void createBoxVBO();
@@ -94,7 +98,7 @@ private:
 
     void renderBox();
     
-
+    // void getTextureInfo(Image& imgComponent, QString* texturePathQ, QVector3D* offset, QVector2D* size);
 };
 
 #endif // RENDERWIDGET_H
