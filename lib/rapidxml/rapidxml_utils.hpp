@@ -1,7 +1,7 @@
 #ifndef WFC_UTILS_RAPIDXML_UTILS_HPP_
 #define WFC_UTILS_RAPIDXML_UTILS_HPP_
 
-#include "external/rapidxml.hpp"
+#include "lib/rapidxml/rapidxml.hpp"
 
 namespace rapidxml {
 

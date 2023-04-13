@@ -1,5 +1,9 @@
 #include "HierarchyWidget.h"
 #include "qmenu.h"
+#include <QMouseEvent>
+#include <QApplication>
+#include <QMimeData>
+#include <QDrag>
 
 void HierarchyWidget::onSelectionChanged()
 {
@@ -74,6 +78,42 @@ HierarchyWidget::HierarchyWidget(QWidget* parent):QTreeWidget(parent)
 {
 	initContextMenu();
 	connect(this, SIGNAL(itemSelectionChanged()),this, SLOT(onSelectionChanged()));	
+}
+
+void HierarchyWidget::mousePressEvent(QMouseEvent* event)
+{
+	if (event->button() == Qt::LeftButton)
+	{
+		startPos = event->pos();
+		event->accept();
+	}
+}
+
+void HierarchyWidget::mouseMoveEvent(QMouseEvent* event)
+{
+	if ((event->buttons() & Qt::LeftButton) && QApplication::startDragDistance() <= (event->pos() - startPos).manhattanLength())
+	{
+		auto mimeData = new QMimeData();
+		QByteArray byteArray;
+		QDataStream dataStream(&byteArray, QIODevice::WriteOnly);
+		dataStream << gameObject->getID();// ?
+		mimeData->setData("HierarchyItem", byteArray);
+
+		auto drag = new QDrag(this);
+		drag->setMimeData(mimeData);
+		drag->exec(Qt::MoveAction);
+		event->accept();
+	}
+	
+}
+
+void HierarchyWidget::mouseReleaseEvent(QMouseEvent* event)
+{
+	if (event->button() == Qt::LeftButton && !event->isAccepted())
+	{
+		// 处理单击事件
+		// ...
+	}
 }
 
 void HierarchyWidget::showContextMenu(const QPoint& pos)

@@ -5,7 +5,6 @@
 #include <array>
 #include <unordered_map>
 #include <vector>
-#include <iostream>
 
 #include "lib/wfc/array_2d.hpp"
 #include "lib/wfc/helper.hpp"

@@ -20,6 +20,7 @@ RenderWindow::RenderWindow(QWidget *parent)
     , ui(new Ui::RenderWindow)
 {
     ui->setupUi(this);
+    // ui->hierarchy->ui = this;
 
     // 根据组件类型动态生成组件按钮
     for (int i = 1;i < Component::componentTypeCount + 1;++i)
@@ -150,8 +151,8 @@ void RenderWindow::onTreeviewRightClick(const QPoint& pos) {
     if (index.isValid()) {
         // 弹出一个弹框
         QMenu menu(this);
-        menu.addAction("添加项目");
-        menu.addAction("删除项目");
+        menu.addAction("Add item");
+        menu.addAction("Delete item");
         menu.exec(ui->treeView->viewport()->mapToGlobal(pos));
     }
 }

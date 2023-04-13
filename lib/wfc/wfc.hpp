@@ -213,9 +213,8 @@ class WFC {
 
     inline void ban(uint16_t index, uint16_t p) {
         wave->ban(index, p);
-        stack[stack_len++] = {.index = index, .pattern = p};
+        stack[stack_len++] = { index, p };
     }
-
     /** Propagate the state */
     template <typename RNG>
     NOINLINE bool propagate(RNG& rng) noexcept {

@@ -17,8 +17,19 @@
 #include "Core/Utils/Event.h"
 
 
+
 int main(int argc, char *argv[])
 { 
+    
+
+    //std::chrono::time_point<std::chrono::system_clock> start, end;
+    //start = std::chrono::system_clock::now();
+
+    //WaveFunctionCollapse::read_config_file("samples.xml");
+
+    //end = std::chrono::system_clock::now();
+    //auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    //std::cout << "All samples done in " << elapsed_ms << "ms.\n";
     QLoggingCategory::setFilterRules(QStringLiteral("qt.gui.imageio=false")); // 关闭图片格式警告
     QApplication a(argc, argv);
     RenderWindow w;
