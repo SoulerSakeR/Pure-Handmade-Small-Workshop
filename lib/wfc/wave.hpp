@@ -90,9 +90,10 @@ class Wave {
 
         if (heuristic == Heuristic::Entropy) {
             memoisations = vector<ShannonEntropy>(
-                L, {.wSum = wSum, .wSumLogW = wSumLogW, .entropy = e0});
-        } else if (heuristic == Heuristic::Scanline) {
-            scanCursor = 0;
+                L, { wSum, wSumLogW, e0 });
+        }
+        else if (heuristic == Heuristic::Scanline) {
+            scanCursor = decltype(scanCursor){0};
         }
     }
 

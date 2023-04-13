@@ -6,9 +6,9 @@
 
 #include <array>
 #include <optional>
-#include "external/stb_image.h"
-#include "external/stb_image_write.h"
-#include "utils/array_2d.hpp"
+#include "lib/wfc/stb_image.h"
+#include "lib/wfc/stb_image_write.h"
+#include "lib/wfc/array_2d.hpp"
 
 using std::array;
 
