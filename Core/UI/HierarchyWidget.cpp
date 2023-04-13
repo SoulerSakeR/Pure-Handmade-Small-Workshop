@@ -87,7 +87,8 @@ void HierarchyWidget::mouseMoveEvent(QMouseEvent* event)
 		auto mimeData = new QMimeData();
 		QByteArray byteArray;
 		QDataStream dataStream(&byteArray, QIODevice::WriteOnly);
-		dataStream << selectedGameObject->getID();// ?
+		if(selectedGameObject!=nullptr)
+			dataStream << selectedGameObject->getID();// ?
 		mimeData->setData("HierarchyItem", byteArray);
 
 		auto drag = new QDrag(this);
@@ -96,15 +97,15 @@ void HierarchyWidget::mouseMoveEvent(QMouseEvent* event)
 		event->accept();
 	}	
 }
-
-void HierarchyWidget::mouseReleaseEvent(QMouseEvent* event)
-{
-	if (event->button() == Qt::LeftButton && !event->isAccepted())
-	{
-		// 处理单击事件
-		// ...
-	}
-}
+//
+//void HierarchyWidget::mouseReleaseEvent(QMouseEvent* event)
+//{
+//	if (event->button() == Qt::LeftButton && !event->isAccepted())
+//	{
+//		// 处理单击事件
+//		// ...
+//	}
+//}
 
 void HierarchyWidget::showContextMenu(const QPoint& pos)
 {
