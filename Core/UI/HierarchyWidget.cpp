@@ -80,15 +80,6 @@ HierarchyWidget::HierarchyWidget(QWidget* parent):QTreeWidget(parent)
 	connect(this, SIGNAL(itemSelectionChanged()),this, SLOT(onSelectionChanged()));	
 }
 
-void HierarchyWidget::mousePressEvent(QMouseEvent* event)
-{
-	if (event->button() == Qt::LeftButton)
-	{
-		startPos = event->pos();
-		event->accept();
-	}
-}
-
 void HierarchyWidget::mouseMoveEvent(QMouseEvent* event)
 {
 	if ((event->buttons() & Qt::LeftButton) && QApplication::startDragDistance() <= (event->pos() - startPos).manhattanLength())
@@ -96,15 +87,14 @@ void HierarchyWidget::mouseMoveEvent(QMouseEvent* event)
 		auto mimeData = new QMimeData();
 		QByteArray byteArray;
 		QDataStream dataStream(&byteArray, QIODevice::WriteOnly);
-		dataStream << gameObject->getID();// ?
+		dataStream << selectedGameObject->getID();// ?
 		mimeData->setData("HierarchyItem", byteArray);
 
 		auto drag = new QDrag(this);
 		drag->setMimeData(mimeData);
 		drag->exec(Qt::MoveAction);
 		event->accept();
-	}
-	
+	}	
 }
 
 void HierarchyWidget::mouseReleaseEvent(QMouseEvent* event)
