@@ -1,29 +1,29 @@
-#pragma once
+ï»¿#pragma once
 #include "Core/Utils/Vector2D.h"
 #include "Core/Core/GameObject.h"
 #include "Core/Utils/Vector2D.h"
 
 class Player {
 public:
-    Player(GameObject* gameObject, float posX, float posY) // ¹¹Ôìº¯Êı£¬³õÊ¼»¯Î»ÖÃĞÅÏ¢
-        // ÏÖÔÚÔİÊ±
+    Player(GameObject* gameObject, float posX, float posY) // æ„é€ å‡½æ•°ï¼Œåˆå§‹åŒ–ä½ç½®ä¿¡æ¯
+        // ç°åœ¨æš‚æ—¶
         :
-        gameObject(gameObject), //°ó¶¨Ä³¸öÓÎÏ·ÏîÄ¿
+        gameObject(gameObject), //ç»‘å®šæŸä¸ªæ¸¸æˆé¡¹ç›®
         m_position(0.0f, 0.0f),
         m_velocity(0.0f, 0.0f)
     {}
 
-    // ÊäÈë¼ì²â
+    // è¾“å…¥æ£€æµ‹
     void playerInputDetection(float deltaTime);
 
-    // ÔË¶¯ĞÅÏ¢
+    // è¿åŠ¨ä¿¡æ¯
     void move(float deltaTime);
     void updatePlayerInfo(float deltatime);
     void setMoveValue(Vector2D value);
     Vector2D getVelocity();
     void setVelocity(float Vx, float Vy);
 
-    // Î»ÖÃĞÅÏ¢
+    // ä½ç½®ä¿¡æ¯
     Vector2D getPosition();
 
     int getHealth();
@@ -33,23 +33,23 @@ public:
     void setScore(int score);
 
 
-    // ×´Ì¬ĞÅÏ¢ £¨ÓÎÏ·´ı¶¨Òå£©
+    // çŠ¶æ€ä¿¡æ¯ ï¼ˆæ¸¸æˆå¾…å®šä¹‰ï¼‰
    // int getHealth() ;
    // void setHealth(int health);
    // int getScore() ;
    // void setScore(int score);
 
-    // ÓëÆäËûÓÎÏ·¶ÔÏóµÄ½»»¥ĞÅÏ¢ £¨ÓÎÏ·´ı¶¨Òå£©
+    // ä¸å…¶ä»–æ¸¸æˆå¯¹è±¡çš„äº¤äº’ä¿¡æ¯ ï¼ˆæ¸¸æˆå¾…å®šä¹‰ï¼‰
    // void interactWithEnemy(GameObject& enemy);
    // void interactWithItem(GameObject& item);
    // void interactWithNPC(GameObject& npc);
 
 private:
-    Vector2D m_position; // Î»ÖÃĞÅÏ¢ Íæ¼ÒÄ¬ÈÏÎ»ÖÃĞÅÏ¢ÊÇÔÚ(0,0)
-    Vector2D m_velocity; // ËÙ¶È
+    Vector2D m_position; // ä½ç½®ä¿¡æ¯ ç©å®¶é»˜è®¤ä½ç½®ä¿¡æ¯æ˜¯åœ¨(0,0)
+    Vector2D m_velocity; // é€Ÿåº¦
 
-    int m_health;        // ÑªÁ¿-ÓÎÏ·×´Ì¬ĞÅÏ¢
-    int m_score;         // ·ÖÊı-ÓÎÏ·×´Ì¬ĞÅÏ¢
+    int m_health;        // è¡€é‡-æ¸¸æˆçŠ¶æ€ä¿¡æ¯
+    int m_score;         // åˆ†æ•°-æ¸¸æˆçŠ¶æ€ä¿¡æ¯
 
-    GameObject* gameObject; //Ö¸ÏòÒ»¸öÓÎÏ·ÎïÌå
+    GameObject* gameObject; //æŒ‡å‘ä¸€ä¸ªæ¸¸æˆç‰©ä½“
 };
