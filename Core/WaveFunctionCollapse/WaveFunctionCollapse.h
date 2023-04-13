@@ -8,9 +8,8 @@
 #include <unordered_set>
 #include <time.h>
 
+
 #include "lib/rapidxml/rapidxml.hpp"
-#include "lib/rapidxml/rapidxml_utils.hpp"
-#include "lib/wfc/image.hpp"
 #include "lib/wfc/overlapping_wfc.hpp"
 #include "lib/wfc/array_3d.hpp"
 #include "lib/wfc/wfc.hpp"
@@ -28,7 +27,6 @@ public:
 	static void run_overlapping(std::string name,
 		std::string image_path,
 		std::string output_path = "wfc_results/",
-		uint32_t size = 48,
 		uint32_t width = 48,
 		uint32_t height = 48,
 		uint32_t N = 3,

@@ -13,6 +13,9 @@ public:
         m_velocity(0.0f, 0.0f)
     {}
 
+    // 输入检测
+    void playerInputDetection(float deltaTime);
+
     // 运动信息
     void move(float deltaTime);
     void updatePlayerInfo(float deltatime);
