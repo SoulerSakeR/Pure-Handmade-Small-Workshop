@@ -1,5 +1,5 @@
 #pragma once
-#include <qtreewidget.h>
+#include "qtreewidget.h"
 #include "HierarchyItem.h"
 #include "Core/UI/renderwindow.h"
 
@@ -14,7 +14,7 @@ public:
 
     void mouseMoveEvent(QMouseEvent* event) override;
 
-    void mouseReleaseEvent(QMouseEvent* event) override;
+    //void mouseReleaseEvent(QMouseEvent* event) override;
 
     QMenu* contextMenu;
     GameObject* selectedGameObject;
@@ -25,7 +25,6 @@ public slots:
        
 private:
     void initContextMenu();
-    GameObject* gameObject;
     QPoint startPos;
 };
 
