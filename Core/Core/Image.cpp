@@ -13,8 +13,12 @@ const std::string& Image::get_imgPath()
 void Image::set_imgPath(const std::string& imgPath,bool refreshUI)
 {
 	this->imgPath = imgPath;
-	auto texture2D = IO::loadTexture2D(GameEngine::get_instance().getRootPath() + imgPath);
-	this->size = Vector2D(texture2D.widthT, texture2D.heightT);
+	QString path = QString::fromStdString(GameEngine::get_instance().getRootPath() + imgPath);
+	texture = new QOpenGLTexture(QImage(path).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
+	this->size = Vector2D(texture->width(),texture->height());
+	IRenderable::reset();
+	createIndices();
+	updateVertices();	
 	if (refreshUI && GameEngine::get_instance().getSelectedGameObject() == gameObject)
 	{
 		GameEngine::get_instance().onPropertyChange(properties["imgPath"]);
@@ -28,7 +32,7 @@ const Vector2D& Image::get_size()
 }
 
 
-Image::Image(GameObject* gameObj, const std::string& imgPath,Vector2D size):Component(gameObj)
+Image::Image(GameObject* gameObj, const std::string& imgPath,Vector2D size):IRenderable(gameObj)
 {
 	this->imgPath = imgPath;
 	this->size = size;
@@ -50,6 +54,26 @@ Image::Image(GameObject* gameObj, const std::string& imgPath,Vector2D size):Comp
 		render_order = (--it)->first + 1;
 		map.emplace(render_order, gameObject);
 	}		
+}
+
+void Image::updateVertices()
+{
+	float half_width = size.x/2;
+	float half_height = size.y/2;
+	vertices = new float[36] {
+		half_width, half_height, 0.0f, color.r, color.g, color.b, color.a, 1.0f, 1.0f, // top right
+		half_width, -half_height, 0.0f, color.r, color.g, color.b, color.a, 1.0f, 0.0f, // bottom right
+		-half_width,-half_height, 0.0f, color.r, color.g, color.b, color.a, 0.0f, 0.0f, // bottom left
+		-half_width, half_height, 0.0f, color.r, color.g, color.b, color.a, 0.0f, 1.0f  // top left
+	};
+}
+
+void Image::createIndices()
+{
+	indices = new unsigned int[6] {
+		0, 3, 2, // first triangle
+		0, 2, 1  // second triangle
+	};
 }
 
 Image::~Image()
@@ -91,6 +115,7 @@ void Image::set_size(float width, float height, bool refreshUI)
 
 void Image::set_property(Property* property, void* value)
 {
+	Component::set_property(property, value);
 	if (property->get_name() == "imgPath")
 	{
 		set_imgPath(*(string*)value,false);

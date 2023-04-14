@@ -1,7 +1,7 @@
 #pragma once
 #include "Component.h"
-class Collider :
-    public Component
+#include "IRenderable.h"
+class Collider : public IRenderable
 {
 public:   
     bool is_trigger() const;

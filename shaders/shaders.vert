@@ -8,10 +8,10 @@ out vec2 TexCord;
 
 uniform vec3 offset;
 uniform vec2 size;
-uniform mat4 rotationMatrix;
+uniform mat4 MVPMatrix;
 
 void main(){
-    gl_Position = rotationMatrix * vec4(aPos, 1.0f);
+    gl_Position = MVPMatrix * vec4(aPos, 1.0f);
     ourColor=aColor;
     TexCord=aTexCord;
 }

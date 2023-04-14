@@ -10,6 +10,8 @@
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
 #include <QOpenGLDebugLogger>
+#include <Core/Core/BoxCollider.h>
+#include <Core/Core/Image.h>
 
 
 
@@ -28,9 +30,12 @@ public:
 
     static RenderWidget& getInstance();
 
-    float* getTextureVertices(QVector3D offset, QVector2D size);
     
-    
+  
+    void renderScene();
+    void renderGameobject(GameObject* gameobj);
+    void renderBoxCollider(BoxCollider* boxCollider);
+    void renderImage(Image* image);
 
     
 
@@ -59,10 +64,10 @@ private:
 
 
     std::unique_ptr<QOpenGLVertexArrayObject> vao;
-    std::unique_ptr<QOpenGLShaderProgram> shaderProgram;
+    std::unique_ptr<QOpenGLShaderProgram> imageShaderProgram;
 
     std::unique_ptr<QOpenGLVertexArrayObject> vaoBox;
-    std::unique_ptr<QOpenGLShaderProgram> shaderBoxProgram;
+    std::unique_ptr<QOpenGLShaderProgram> boxColliderShaderProgram;
 
     std::unique_ptr<QOpenGLBuffer> vbo;
     std::unique_ptr<QOpenGLBuffer> vboBox;
@@ -90,7 +95,7 @@ private:
 
     // BoxCollider
     void createBoxProgram();
-    void createBoxVAO();
+    void createBoxVAO();   
     void createBoxVBO();
     void createBoxEBO();
     

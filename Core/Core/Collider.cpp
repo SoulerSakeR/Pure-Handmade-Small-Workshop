@@ -1,6 +1,6 @@
 #include "Collider.h"
 
-Collider::Collider(GameObject* gameObj):Component(gameObj)
+Collider::Collider(GameObject* gameObj):IRenderable(gameObj)
 {
 	properties.emplace("is_trigger",new Property("is_trigger", &(this->is_trigger_), Property::BOOL, this));
 }

@@ -4,7 +4,7 @@
 #include <QApplication>
 #include <QMimeData>
 #include <QDrag>
-
+#include "Core/SystemStatus/GameEngine.h"
 
 void HierarchyWidget::onSelectionChanged()
 {
@@ -28,6 +28,65 @@ void HierarchyWidget::onSelectionChanged()
 void HierarchyWidget::initContextMenu()
 {
 	contextMenu = new QMenu(this);
+
+	//创建物体子菜�?
+	QMenu *addGameobjectMenu = new QMenu("Creat GameObject", this);
+
+	//创建空物体按�?
+	QAction* addEmptyBtn = new QAction("Empty Object", this);
+	addGameobjectMenu->addAction(addEmptyBtn);
+	connect(addEmptyBtn, &QAction::triggered, [=]() {
+		if (selectedItems().size() == 1)
+		{
+			auto item = (HierarchyItem*)(selectedItems()[0]);
+			auto parent = item->gameObject;
+			auto& gameobj = GameEngine::get_instance().addGameObject("GameObject", parent, Component::TRANSFORM, INSIDE);
+			item->addChild(new HierarchyItem(&gameobj));
+			item->setExpanded(true);
+		}
+		else
+		{
+			auto& gameobj = GameEngine::get_instance().addGameObject("GameObject");
+			addTopLevelItem(new HierarchyItem(&gameobj));
+		}
+	});
+
+	//创建图像物体按钮
+	QAction* addImageGameObjectBtn = new QAction("Image", this);
+	addGameobjectMenu->addAction(addImageGameObjectBtn);
+	connect(addImageGameObjectBtn, &QAction::triggered, [=]() {
+		if (selectedItems().size() == 1)
+		{
+			auto item = (HierarchyItem*)(selectedItems()[0]);
+			auto parent = item->gameObject;
+			auto& gameobj = GameEngine::get_instance().addGameObject("Image", parent, Component::IMAGE, INSIDE);
+			item->addChild(new HierarchyItem(&gameobj));
+			item->setExpanded(true);
+		}
+		else
+		{
+			auto& gameobj = GameEngine::get_instance().addGameObject("Image", nullptr, Component::IMAGE);
+			addTopLevelItem(new HierarchyItem(&gameobj));
+		}
+	});
+	contextMenu->addMenu(addGameobjectMenu);
+
+	//附加组件菜单
+	QMenu *addComponentMenu = new QMenu("Attach Component", this);
+	for (int i = 1;i < Component::componentTypeCount + 1;++i)
+	{
+		auto action = new QAction(QString::fromStdString(Component::getName((Component::ComponentType)i)), this);
+		addComponentMenu->addAction(action);
+		connect(action, &QAction::triggered, [=]() {
+			if (selectedGameObject != nullptr)
+			{
+				selectedGameObject->addComponent((Component::ComponentType)i);
+				componentsDockWidget->refresh();
+			}
+		});
+	}
+	contextMenu->addMenu(addComponentMenu);
+
 	QAction* moveUpBtn = new QAction("move up", this);
 	contextMenu->addAction(moveUpBtn);
 	connect(moveUpBtn, &QAction::triggered, [=]() {
@@ -77,7 +136,6 @@ void HierarchyWidget::initContextMenu()
 
 HierarchyWidget::HierarchyWidget(QWidget* parent):QTreeWidget(parent)
 {
-	initContextMenu();
 	connect(this, SIGNAL(itemSelectionChanged()),this, SLOT(onSelectionChanged()));	
 }
 
@@ -103,7 +161,7 @@ void HierarchyWidget::mouseMoveEvent(QMouseEvent* event)
 //{
 //	if (event->button() == Qt::LeftButton && !event->isAccepted())
 //	{
-//		// 处理单击事件
+//		// ��������¼�
 //		// ...
 //	}
 //}
