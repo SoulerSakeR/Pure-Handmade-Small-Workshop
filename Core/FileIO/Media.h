@@ -9,6 +9,7 @@
 #include <QAudioProbe>
 #include <QUrl>
 #include <QString>
+#include <QFileInfo>
 
 class Media : public QObject
 {
@@ -27,6 +28,8 @@ public:
     void setAudioPosition(qint64 position)
 
 private:
+    QString codecForFileExtension(const QString& extension) const;
+
     QMediaPlayer* audioPlayer;//指向处理加载音频文件播放的 QMediaPlayer 对象的指针
 
     QMediaRecorder* mediaRecorder;//指向记录音频数据的 QMediaRecorder 对象的指针

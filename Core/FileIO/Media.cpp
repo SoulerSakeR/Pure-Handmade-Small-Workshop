@@ -21,10 +21,18 @@ Media::~Media()
     delete audioProbe;
 }
 
+
 bool Media::loadAudio(const QString& inputPath)
 {
-    audioPlayer->setMedia(QUrl::fromLocalFile(inputPath));
-    return audioPlayer->error() == QMediaPlayer::NoError;
+    QString extension = QFileInfo(inputPath).suffix().toLower();
+    QString codec = codecForFileExtension(extension);
+
+    if (!codec.isEmpty())
+    {
+        audioPlayer->setMedia(QUrl::fromLocalFile(inputPath));
+        return audioPlayer->error() == QMediaPlayer::NoError;
+    }
+    return false;
 }
 
 
@@ -46,15 +54,24 @@ bool Media::stopAudio()
     return audioPlayer->error() == QMediaPlayer::NoError;
 }
 
+
 bool Media::saveAudio(const QString& outputPath)
 {
-    QAudioEncoderSettings audioSettings;
-    audioSettings.setCodec("audio/pcm");
-    audioSettings.setQuality(QMultimedia::HighQuality);
-    mediaRecorder->setEncodingSettings(audioSettings);
-    mediaRecorder->setOutputLocation(QUrl::fromLocalFile(outputPath));
-    mediaRecorder->record();
-    return true;
+    QString extension = QFileInfo(outputPath).suffix().toLower();
+    QString codec = codecForFileExtension(extension);
+
+    if (!codec.isEmpty())
+    {
+        QAudioEncoderSettings audioSettings;
+        audioSettings.setCodec(codec);
+        audioSettings.setQuality(QMultimedia::HighQuality);
+
+        mediaRecorder->setEncodingSettings(audioSettings);
+        mediaRecorder->setOutputLocation(QUrl::fromLocalFile(outputPath));
+        mediaRecorder->record();
+        return true;
+    }
+    return false;
 }
 
 void Media::setAudioVolume(int volume)
@@ -65,4 +82,26 @@ void Media::setAudioVolume(int volume)
 void Media::setAudioPosition(qint64 position)
 {
     audioPlayer->setPosition(position);
+}
+
+
+QString Media::codecForFileExtension(const QString& extension) const
+{
+    if (extension == "wav")
+    {
+        return "audio/x-wav";
+    }
+    else if (extension == "mp3")
+    {
+        return "audio/mpeg";
+    }
+    else if (extension == "ogg")
+    {
+        return "audio/ogg";
+    }
+    else if (extension == "flac")
+    {
+        return "audio/x-flac";
+    }
+    return "";
 }
