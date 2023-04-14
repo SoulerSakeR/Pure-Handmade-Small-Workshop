@@ -15,7 +15,7 @@ public:
 	//method
 	static GameEngine& get_instance();	
 	Scene* const  getCurrentScene();
-	GameProject* const getCurrentGameProject();
+	GameProject* getCurrentGameProject();
 	GameProject& creatGameProject(const std::string& name,const std::string& path); //创建新项目
 	Vector2D get_resolution();
 	void refreshHierarchy();	

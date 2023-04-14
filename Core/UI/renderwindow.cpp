@@ -50,7 +50,6 @@ RenderWindow::RenderWindow(QWidget *parent)
         // 文件对话框  参数1 父亲 参数2 标题 参数3 默认打开路径 参数4 过滤文件格式
         QString FileAdress = QFileDialog::getOpenFileName(this,"打开项目","");// 可以重载第四个参数，意义是筛选文件类型  "(*.txt)"
         GameEngine::get_instance().openGameProject(FileAdress.toStdString());
-
         // 获取上级目录
         QString parentDir = QFileInfo(FileAdress).dir().absolutePath();
 
@@ -163,14 +162,20 @@ void RenderWindow::setupFileSystemTreeView(const QString& parentDir)
     ui->treeView->hideColumn(3);
 }
 
+
 void RenderWindow::onTreeviewRightClick(const QPoint& pos) {
     QModelIndex index = ui->treeView->indexAt(pos);
 
     if (index.isValid()) {
         // 弹出一个弹框
         QMenu menu(this);
-        menu.addAction("Add item");
-        menu.addAction("Delete item");
+        auto openSceneAction = menu.addAction("Open Scene");
+        auto addSceneAction = menu.addAction("Add Scene");
+        auto deleteSceneAction = menu.addAction("Delete Scene");
+        // 将QAction与槽函数绑定
+        connect(openSceneAction, &QAction::triggered, this, &RenderWindow::openScene);
+        connect(addSceneAction, &QAction::triggered, this, &RenderWindow::addScene);
+        connect(deleteSceneAction, &QAction::triggered, this, &RenderWindow::deleteScene);
         menu.exec(ui->treeView->viewport()->mapToGlobal(pos));
     }
 }
@@ -188,4 +193,18 @@ void RenderWindow::refreshHierachy()
         items.emplaceBack(item);
     }
     ui->hierarchy->addTopLevelItems(items);
+}
+
+void RenderWindow::openScene()
+{
+    GameEngine::get_instance().getCurrentGameProject()->openScene(1);
+}
+
+void RenderWindow::addScene()
+{
+    QString FileAdress = QFileDialog::getOpenFileName(this, "打开场景", "");
+}
+
+void RenderWindow::deleteScene()
+{
 }

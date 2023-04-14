@@ -19,6 +19,7 @@ public:
     QMenu* contextMenu;
     GameObject* selectedGameObject;
     // RenderWindow* ui;
+
 public slots:
     void showContextMenu(const QPoint& pos);
     void onSelectionChanged();
@@ -26,5 +27,6 @@ public slots:
 private:
     void initContextMenu();
     QPoint startPos;
+ 
 };
 

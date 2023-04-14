@@ -65,7 +65,7 @@ Scene* const  GameEngine::getCurrentScene()
 	return SceneMgr::get_instance().get_current_scene();
 }
 
-GameProject* const GameEngine::getCurrentGameProject()
+GameProject* GameEngine::getCurrentGameProject()
 {
 	return gameProject;
 }
