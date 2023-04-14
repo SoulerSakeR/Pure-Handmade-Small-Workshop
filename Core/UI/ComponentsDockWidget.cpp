@@ -15,6 +15,7 @@
 #include "Core/Utils/Vector2D.h"
 #include "qpushbutton.h"
 #include "DeleteComponentButton.h"
+#include "PropertyEditor/Vector2DLineEdit.h"
 
 ComponentsDockWidget* ComponentsDockWidget::instance = nullptr;
 
@@ -180,12 +181,12 @@ void ComponentsDockWidget::refresh()
 			}
 			case Property::VECTOR2D:
 			{
-				auto lineEdit = new QLineEdit();
+				auto lineEdit = new Vector2DLineEdit();
 				lineEdit->setText(QString::fromStdString(property->get_data<Vector2D>().tostring()));
 				componentWidget->setCellWidget(componentWidget->rowCount() - 1, 1, lineEdit);
 				Object_Property_map[lineEdit] = property;
 				property_Object_map[property] = lineEdit;
-				connect(lineEdit, &QLineEdit::editingFinished, this, &ComponentsDockWidget::onStringChanged);
+				connect(lineEdit, &Vector2DLineEdit::Vector2DChanged, this, &ComponentsDockWidget::onVector2DChanged);
 				break;
 			}
 			}
@@ -242,10 +243,10 @@ void ComponentsDockWidget::onBoolChanged(bool value)
 	onPropertyInputed(sender, &value);
 }
 
-void ComponentsDockWidget::onVector2DChanged(QString value)
+void ComponentsDockWidget::onVector2DChanged(Vector2D vec)
 {
 	auto sender = QObject::sender();
-	onPropertyInputed(sender, &value);
+	onPropertyInputed(sender, &vec);
 }
 
 void ComponentsDockWidget::onGameObjectSelected(GameObject* gameobj)

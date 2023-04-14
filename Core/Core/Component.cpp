@@ -5,6 +5,12 @@ void Component::set_enabled(bool value)
 	enabled = value;
 }
 
+void Component::set_property(Property* property, void* value)
+{
+	if(property->get_name()=="enabled")
+		set_enabled(*(bool*)value);
+}
+
 std::string Component::getName(ComponentType type)
 {
 	switch (type)

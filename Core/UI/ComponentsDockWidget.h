@@ -23,7 +23,7 @@ public slots:
     void onFloatChanged(double value);
     void onStringChanged();
     void onBoolChanged(bool value);
-    void onVector2DChanged(QString value);
+    void onVector2DChanged(Vector2D value);
 
 private:
     QWidget* components_widget;
