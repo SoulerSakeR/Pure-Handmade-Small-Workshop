@@ -76,7 +76,34 @@ void Player::updatePlayerInfo(float deltaTime) {
 	this->move(deltaTime);
 }
 
-// 检测玩家输入
+// 检测玩家输入(目前仅WASD)
 void Player::playerInputDetection(float deltaTime) {
+
+	// 按下W
+	if (InputDetection::GetKey(0x57) && InputDetection::GetKeyDown(0x57)) {
+		std::cout << "You pressed down 'W'" << std::endl;
+	}
+
+	// 放开W
+	if (InputDetection::GetKey(0x57) && InputDetection::GetKeyUp(0x57)) {
+		std::cout << "You realeased 'W'" << std::endl;
+	}
+
+	/*
+		// 按下A
+	if (InputDetection::GetKey(0x41)) {
+		std::cout << "You pressed 'A'" << std::endl;
+	}
+
+	// 按下S
+	if (InputDetection::GetKey(0x53)) {
+		std::cout << "You pressed 'S'" << std::endl;
+	}
+
+	// 按下D
+	if (InputDetection::GetKey(0x44)) {
+		std::cout << "You pressed 'D'" << std::endl;
+	}
+	*/
 
 }
