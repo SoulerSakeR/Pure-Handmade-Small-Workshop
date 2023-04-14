@@ -5,6 +5,7 @@
 #include <QMimeData>
 #include <QDrag>
 
+
 void HierarchyWidget::onSelectionChanged()
 {
 	if (selectedItems().size() <= 1)
@@ -115,3 +116,4 @@ void HierarchyWidget::showContextMenu(const QPoint& pos)
 		contextMenu->exec(globalPos);
 	}
 }
+
