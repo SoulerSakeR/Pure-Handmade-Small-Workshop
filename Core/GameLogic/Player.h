@@ -3,6 +3,8 @@
 #include "Core/Core/GameObject.h"
 #include "Core/Utils/Vector2D.h"
 
+#include "Core/Input/InputDetection.h"
+
 class Player {
 public:
     Player(GameObject* gameObject, float posX, float posY) // 构造函数，初始化位置信息
@@ -14,7 +16,7 @@ public:
     {}
 
     // 输入检测
-    void playerInputDetection(float deltaTime);
+    static void playerInputDetection(float deltaTime);
 
     // 运动信息
     void move(float deltaTime);

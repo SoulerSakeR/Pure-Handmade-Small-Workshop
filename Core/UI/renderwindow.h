@@ -19,6 +19,9 @@ public:
     void resizeGL(QResizeEvent*);
     void refreshHierachy();
     void setupFileSystemTreeView(const QString& parentDir);
+    void openScene();
+    void addScene();
+    void deleteScene();
 
 public slots:
     void showContextMenu(const QPoint&);
