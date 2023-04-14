@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1660</width>
+    <width>1487</width>
     <height>1080</height>
    </rect>
   </property>
@@ -81,7 +81,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1660</width>
+     <width>1487</width>
      <height>22</height>
     </rect>
    </property>
@@ -105,9 +105,16 @@
      <string>组件</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>工具</string>
+    </property>
+    <addaction name="actionwfc"/>
+   </widget>
    <addaction name="menu_file"/>
    <addaction name="menu_gameobject"/>
    <addaction name="menu_component"/>
+   <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="ComponentsDockWidget" name="dockWidget_components">
@@ -210,6 +217,22 @@
   <action name="actionsaveProject">
    <property name="text">
     <string>保存项目</string>
+   </property>
+  </action>
+  <action name="actionnew">
+   <property name="text">
+    <string>new</string>
+   </property>
+   <property name="iconText">
+    <string>new</string>
+   </property>
+  </action>
+  <action name="actionwfc">
+   <property name="text">
+    <string>波函数坍缩</string>
+   </property>
+   <property name="iconText">
+    <string>wfc</string>
    </property>
   </action>
   <zorder>dockWidget_components</zorder>

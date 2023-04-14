@@ -1,7 +1,7 @@
-#include "WaveFunctionCollapse.h"
+﻿#include "WaveFunctionCollapse.h"
 #include "lib/wfc/image.hpp"
 #include "lib/rapidxml/rapidxml_utils.hpp"
-
+#include "Core/Utils/PHPath.h"
 
 using namespace std;
 
@@ -83,9 +83,10 @@ void WaveFunctionCollapse::run_overlapping_xml(rapidxml::xml_node<>* node) {
     }
 }
 
-void WaveFunctionCollapse::run_overlapping(string name, string image_path, string output_path, uint32_t width, uint32_t height, uint32_t N, bool periodic_output, bool periodic_input, bool ground, uint32_t symmetry, uint32_t screenshots, string heuristic) {
+void WaveFunctionCollapse::run_overlapping(string image_path, string output_path, uint32_t width, uint32_t height, uint32_t N, bool periodic_output, bool periodic_input, bool ground, uint32_t symmetry, uint32_t screenshots, string heuristic) {
     
-    cerr << "< " << name << endl;
+    PHPath path = PHPath(image_path);
+    cerr << "< " << path.getFileName(false) << endl;
 
     auto m = read_image(image_path);
 
@@ -117,7 +118,7 @@ void WaveFunctionCollapse::run_overlapping(string name, string image_path, strin
             cout << "> ";
             if (success) {
                 cout << "DONE" << endl;
-                write_image_png(output_path + name + to_string(seed) + ".png",
+                write_image_png(output_path + path.getFileName(false) + to_string(seed) + ".png",
                     wfc.get_output());
                 break;
             }

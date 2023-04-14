@@ -12,6 +12,7 @@
 #include "HierarchyWidget.h"
 #include "ComponentsDockWidget.h"
 #include "Core/UI/CreateProjectDialog.h"
+#include "Core/UI/WaveFunctionCollapseDialog.h"
 #include <QMessageBox>
 
 
@@ -110,6 +111,10 @@ RenderWindow::RenderWindow(QWidget *parent)
             ui->hierarchy->addTopLevelItem(new HierarchyItem(&gameobj));
         }
         
+    });
+    QDialog* wfcDialog = new WaveFunctionCollapseDialog(this);
+    connect(ui->actionwfc, &QAction::triggered, [=]() {
+        wfcDialog->show();
     });
     ui->hierarchy->setHeaderHidden(true);
     
