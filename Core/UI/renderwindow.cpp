@@ -22,7 +22,8 @@ RenderWindow::RenderWindow(QWidget *parent)
 {
     ui->setupUi(this);
     // ui->hierarchy->ui = this;
-
+    ui->hierarchy->componentsDockWidget = ui->dockWidget_components;
+    ui->hierarchy->initContextMenu();
     // 根据组件类型动态生成组件按钮
     for (int i = 1;i < Component::componentTypeCount + 1;++i)
     {
@@ -49,7 +50,7 @@ RenderWindow::RenderWindow(QWidget *parent)
     // 打开项目，点击按钮出现资源对话框
     connect(ui->actionopenProject,&QAction::triggered,[=](){
         // 文件对话框  参数1 父亲 参数2 标题 参数3 默认打开路径 参数4 过滤文件格式
-        QString FileAdress = QFileDialog::getOpenFileName(this,"打开项目","");// 可以重载第四个参数，意义是筛选文件类型  "(*.txt)"
+        QString FileAdress = QFileDialog::getOpenFileName(this,"打开项目","",QString("game project file (*.gameProject)"));// 可以重载第四个参数，意义是筛选文件类型  "(*.txt)"
         GameEngine::get_instance().openGameProject(FileAdress.toStdString());
         // 获取上级目录
         QString parentDir = QFileInfo(FileAdress).dir().absolutePath();
@@ -82,6 +83,11 @@ RenderWindow::RenderWindow(QWidget *parent)
         msgBox.exec();
     });
     connect(ui->actionCreatEmptyGameObject, &QAction::triggered, [=]() {
+        if (GameEngine::get_instance().getCurrentScene() == nullptr)
+        {
+            Debug::warningBox(this, "No scene is loaded!");
+            return;
+        }
         if (ui->hierarchy->selectedItems().size() == 1)
         {
             auto item = (HierarchyItem*)(ui->hierarchy->selectedItems()[0]);
@@ -97,6 +103,11 @@ RenderWindow::RenderWindow(QWidget *parent)
         }
     });
     connect(ui->actionCreatGameObjectWithImage, &QAction::triggered, [=]() {
+        if (GameEngine::get_instance().getCurrentScene() == nullptr)
+        {
+            Debug::warningBox(this, "No scene is loaded!");
+            return;
+        }
         if (ui->hierarchy->selectedItems().size() == 1)
         {
             auto item = (HierarchyItem*)(ui->hierarchy->selectedItems()[0]);

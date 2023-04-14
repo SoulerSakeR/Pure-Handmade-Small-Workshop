@@ -95,7 +95,7 @@
    </widget>
    <widget class="QMenu" name="menu_gameobject">
     <property name="title">
-     <string>物体</string>
+     <string>创建</string>
     </property>
     <addaction name="actionCreatEmptyGameObject"/>
     <addaction name="actionCreatGameObjectWithImage"/>

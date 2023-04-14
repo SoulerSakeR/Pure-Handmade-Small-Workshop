@@ -33,10 +33,7 @@ bool GameProject::openScene(int index)
 		auto loop = std::bind(&GameLoop::updateScene, new GameLoop(&RenderWidget::getInstance()), &RenderWidget::getInstance());
 		GameEngine::get_instance().pool.enqueue(loop);
 		return true;
-	}
-	// TODO: refresh hierarchy 刷新面板
-	// TODO: render Scene 
-	
+	}	
 }
 
 bool GameProject::save()

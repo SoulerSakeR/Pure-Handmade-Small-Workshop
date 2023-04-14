@@ -2,6 +2,7 @@
 #include "Core/Core/PHString.h"
 #include "Core/Utils/Test.h"
 #include <iostream>
+#include "qmessagebox.h"
 
 const std::string& infoPrefix = "[info] ";
 const std::string& errorPrefix = "[error] ";
@@ -9,7 +10,7 @@ const std::string& errorPrefix = "[error] ";
 void Debug::log(const std::string& info)
 {	
 #ifndef NDEBUG 
-	std::string text = infoPrefix + info;
+	std::string text = info;
 	if (text.back() != '\n')
 		text.append("\n");
 #ifdef LOG_TO_CONSOLE	
@@ -29,6 +30,16 @@ void Debug::log(const std::string& info)
 void Debug::logError(const std::string& errorInfo)
 {
 	log(errorPrefix + errorInfo);
+}
+
+void Debug::logInfo(const std::string& info)
+{
+	log(infoPrefix + info);
+}
+
+void Debug::warningBox(QWidget* parent, const std::string& info)
+{
+	QMessageBox::warning(parent, QString::fromStdString("Warning"), QString::fromStdString(info), QMessageBox::Ok);
 }
 
 LPWSTR Debug::string2Lpwstr(const std::string& str)
