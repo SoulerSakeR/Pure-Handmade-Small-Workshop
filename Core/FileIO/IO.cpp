@@ -124,34 +124,34 @@ bool IO::write(const std::string& content,const std::string& path, int mode)
     return write(QString::fromStdString(content), QString::fromStdString(path), mode);
 }
 
-Texture2D IO::loadTexture2D(QString path)
-{
-    QImage image=QImage(path);
-    Texture2D temp2D;
-    temp2D.widthT=image.width();
-    temp2D.heightT=image.height();
-    /*
-    temp2D.data.resize(image.width());
-    for(int j=0;j<temp2D.data.size();j++)
-    {
-        temp2D.data[j].resize(image.height());
-    }
-    for (int i = 0; i < image.width(); ++i) {
-        for (int j = 0; j < image.height(); ++j) {
-            QColor Colos= image.pixelColor(i,j);
-            temp2D.data[i][j].r=Colos.red();
-            temp2D.data[i][j].g=Colos.green();
-            temp2D.data[i][j].b=Colos.blue();
-        }
-    }
-    */
-    return temp2D;
-}
-
-Texture2D IO::loadTexture2D(const std::string& path)
-{
-    return loadTexture2D(QString::fromStdString(path));
-}
+//Texture2D IO::loadTexture2D(QString path)
+//{
+//    QImage image=QImage(path);
+//    Texture2D temp2D;
+//    temp2D.widthT=image.width();
+//    temp2D.heightT=image.height();
+//    /*
+//    temp2D.data.resize(image.width());
+//    for(int j=0;j<temp2D.data.size();j++)
+//    {
+//        temp2D.data[j].resize(image.height());
+//    }
+//    for (int i = 0; i < image.width(); ++i) {
+//        for (int j = 0; j < image.height(); ++j) {
+//            QColor Colos= image.pixelColor(i,j);
+//            temp2D.data[i][j].r=Colos.red();
+//            temp2D.data[i][j].g=Colos.green();
+//            temp2D.data[i][j].b=Colos.blue();
+//        }
+//    }
+//    */
+//    return temp2D;
+//}
+//
+//Texture2D IO::loadTexture2D(const std::string& path)
+//{
+//    return loadTexture2D(QString::fromStdString(path));
+//}
 
 QString IO::loadTextAsset(QString path)
 {
