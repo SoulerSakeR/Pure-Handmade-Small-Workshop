@@ -52,7 +52,12 @@ private:
 
 
     std::unordered_map<std::string, QOpenGLTexture*>textures;
+    
     Shape m_shape;
+    
+
+
+
     std::unique_ptr<QOpenGLVertexArrayObject> vao;
     std::unique_ptr<QOpenGLShaderProgram> shaderProgram;
 
@@ -91,7 +96,8 @@ private:
     
 
    
-    
+   
+
 
 
     void renderTexture(QOpenGLTexture* texture,QVector3D offset,QVector2D size);
@@ -99,6 +105,29 @@ private:
     void renderBox();
     
     // void getTextureInfo(Image& imgComponent, QString* texturePathQ, QVector3D* offset, QVector2D* size);
+
+    // text
+    void createTextProgram();
+    std::unique_ptr<QOpenGLShaderProgram> shaderTextProgram;
+
+    QOpenGLTexture* genTextTexture(int width, int height, const QString& text, int textPixelSize, const QColor& textColor);
+    
+    std::unique_ptr<QOpenGLBuffer> textBuffer;
+    std::unique_ptr<QOpenGLTexture> *textTexture;
+    
+    QOpenGLTexture* mTexture;
+
+    QMatrix4x4 mProjMatrix;
+    GLuint mPosAttr;
+    GLuint mTexAttr;
+    GLuint mMatrixLoc;
+    GLuint mProjLoc;
+    GLuint mVertexCount;
+
+    void createTextVAO();
+    void createTextVBO();
+    void createTextEBO();
+
 };
 
 #endif // RENDERWIDGET_H

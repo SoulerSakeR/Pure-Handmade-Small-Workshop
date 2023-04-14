@@ -2,6 +2,7 @@
 
 
 #include <iostream>
+#include <QPainter>
 #include <Core/SystemStatus/GameEngine.h>
 #include "Core/Core/Image.h"
 #include "Core/Core/Camera.h"
@@ -23,6 +24,42 @@ float vertices[] = {
 };
 */
 
+// text render 
+static const char* vertexShaderSource =
+"attribute highp vec4 posAttr;\n"
+"attribute highp vec2 texcoord;\n"
+"varying highp vec2 v_texcoord;\n"
+"uniform highp mat4 matrix;\n"
+"uniform highp mat4 projMatrix;\n"
+"void main() {\n"
+"   v_texcoord = texcoord;\n"
+"   gl_Position = projMatrix * matrix * posAttr;\n"
+"}\n";
+
+static const char* fragmentShaderSource =
+"varying highp vec2 v_texcoord;\n"
+"uniform sampler2D texture;\n"
+"void main() {\n"
+"   highp vec4 texColor = texture2D(texture, v_texcoord);\n"
+"   highp float alpha = texColor.a;\n"
+"   if(alpha < 0.2)\n"
+"       discard;\n"
+"   highp vec3 color = vec3(1.0,1.0,1.0);\n"
+"   gl_FragColor = texColor * vec4(color, 1.0);\n"
+"}\n";
+
+
+
+float verticesText[] =
+{    
+	 // positions          // texture coords
+	 200.f,  200.f, 0.0f,  1.0f, 1.0f,	// top right
+	 200.f, -200.f, 0.0f,  1.0f, 0.0f,	// bottom right
+	-200.f, -200.f, 0.0f,  0.0f, 0.0f, 	// bottom left
+	-200.f,  200.f, 0.0f,  0.0f, 0.1f	// top left
+};
+
+
 float verticesBox[] =
 {    // positions        // colors
 	 200.f,  200.f, 0.0f,  1.0f, 0.0f, 0.0f,	// top right
@@ -30,6 +67,8 @@ float verticesBox[] =
 	-200.f, -200.f, 0.0f,  0.0f, 0.0f, 1.0f, 	// bottom left
 	-200.f,  200.f, 0.0f,  0.5f, 0.5f, 0.5f,	// top left
 };
+
+
 
 
 float vertices[] = {
@@ -230,14 +269,9 @@ void RenderWidget::paintGL()
 		
 		//getTextureInfoTest(texturePathQ, offset, size);
 		getTextureVertices(QVector3D(0.f,0.f,0.f), *size); // 根据图片的分辨率和尺寸，设定四个顶点，并创建VBO
-
 		
 		createVAO();
 		
-
-		
-		
-
 		auto matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
 		matrix.translate(gameobj->transform->getWorldPosition().toQVector3D());
 		gameobj->transform->set_localRotation(gameobj->transform->get_localRotation() + 5.f);
@@ -311,7 +345,7 @@ void RenderWidget::createProgram()
 	textureWallBinding = 0;
 }
 
-// 暂时没用
+
 void RenderWidget::createBoxProgram() {
 	bool success;
 	shaderBoxProgram = std::make_unique<QOpenGLShaderProgram>();
@@ -320,9 +354,28 @@ void RenderWidget::createBoxProgram() {
 	shaderBoxProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\boxShader.frag"));
 	success = shaderBoxProgram->link();
 	if (!success)
-		qDebug() << "ERR:" << shaderProgram->log();
+		qDebug() << "ERR:" << shaderBoxProgram->log();
 	
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+}
+
+void RenderWidget::createTextProgram() 
+{
+	bool success;
+	shaderTextProgram = std::make_unique<QOpenGLShaderProgram>();
+	shaderTextProgram->create();
+	shaderTextProgram->addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderSource);
+	shaderTextProgram->addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderSource);
+	success = shaderTextProgram->link();
+	if (!success)
+		qDebug() << "ERR:" << shaderProgram->log();
+
+	
+	mPosAttr = shaderTextProgram->attributeLocation("posAttr");
+	mTexAttr = shaderTextProgram->attributeLocation("texcoord");
+	mMatrixLoc = shaderTextProgram->uniformLocation("matrix");
+	mProjLoc = shaderTextProgram->uniformLocation("projMatrix");
+
 }
 
 void RenderWidget::createVAO()
@@ -477,6 +530,44 @@ void RenderWidget::renderTexture(QOpenGLTexture* texture, QVector3D offset, QVec
 	glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, nullptr);
 	
 	shaderBoxProgram->release();
+
+	
+	//====================== text render test ===========================//
+	/*
+	// 
+	textBuffer->create();
+	textBuffer->bind();
+	textBuffer->allocate(verticesText, sizeof(verticesText) * 6);
+	textBuffer->release();
+	mVertexCount = 6;
+
+	QString date = QDateTime::currentDateTime().toString("现在时间是：yyyy-MM-dd hh:mm:ss.zzz");
+	//QOpenGLTexture* textTexture = genTextTexture(512, 512, date, 32, QColor(255, 255, 255, 255));
+	//*textTexture = genTextTexture(512, 512, date, 60, Qt::red);
+	
+	mTexture = genTextTexture(512, 512, date, 60, Qt::red);
+
+	shaderTextProgram->bind();
+	mTexture->bind();
+	textBuffer->bind();
+	
+	
+	glVertexAttribPointer(mPosAttr, 3, GL_FLOAT, GL_FALSE, sizeof(verticesText), 0);
+	glVertexAttribPointer(mTexAttr, 2, GL_FLOAT, GL_FALSE, sizeof(verticesText), reinterpret_cast<void*>(sizeof(QVector3D)));
+	glEnableVertexAttribArray(mPosAttr);
+	glEnableVertexAttribArray(mTexAttr);
+
+	glDrawArrays(GL_TRIANGLES, 0, mVertexCount);
+
+	glDisableVertexAttribArray(mTexAttr);
+	glDisableVertexAttribArray(mPosAttr);
+
+	textBuffer->release();
+	mTexture->release();
+	shaderTextProgram->release();
+	*/
+
+	//===============================================================//
 }
 
 
@@ -486,7 +577,7 @@ void RenderWidget::renderBox()
 	vaoBox->bind();
 	
 	//ibo->release(); // 释放画图像的ibo
-	createBoxEBO(); // 重新绑定画盒子的ibo
+	//createBoxEBO(); // 重新绑定画盒子的ibo
 	
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -497,6 +588,40 @@ void RenderWidget::renderBox()
 	
 	shaderBoxProgram->release();
 }
+
+
+// text render 
+QOpenGLTexture *RenderWidget::genTextTexture(int width, int height, const QString& text, int textPixelSize, const QColor& textColor)
+{
+	QOpenGLTexture* texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
+
+	QImage img(width, height, QImage::Format_ARGB32_Premultiplied);
+	img.fill(QColor(0, 0, 0, 0));
+
+	QPainter painter;
+
+	QFont font;
+	painter.begin(&img);
+	font.setPixelSize(textPixelSize);
+	painter.setFont(font);
+	QPen pen;
+	pen.setColor(textColor);
+	painter.setPen(pen);
+	QTextOption option(Qt::AlignLeft | Qt::AlignTop);
+	option.setWrapMode(QTextOption::WordWrap);
+	QRectF rect(0, 0, width, height);
+	painter.drawText(rect, text, option);
+	painter.end();
+	texture->setData(img);
+	//    texture->setMipLevelRange(0, mipLevelMax);    //off mipmap
+	texture->setMinificationFilter(QOpenGLTexture::Linear);
+	texture->setMagnificationFilter(QOpenGLTexture::Linear);
+	texture->setWrapMode(QOpenGLTexture::Repeat);
+
+	return texture;
+}
+
+
 
 
 
