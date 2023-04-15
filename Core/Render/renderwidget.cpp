@@ -7,6 +7,7 @@
 #include "Core/Core/Camera.h"
 #include <QElapsedTimer>
 #include <Core/ResourceManagement/SceneMgr.h>
+#include "qevent.h"
 
 RenderWidget* RenderWidget::instance = nullptr;
 std::string source_path;
@@ -245,10 +246,10 @@ void RenderWidget::renderImage(Image* img)
 		img->vbo->destroy();
 		delete img->vbo;
 		img->vbo = nullptr;
-		img->ibo->release();
+		/*img->ibo->release();
 		img->ibo->destroy();
 		img->ibo = nullptr;
-		delete img->ibo;
+		delete img->ibo;*/
 	}
 	img->vao->bind();
 
@@ -265,7 +266,7 @@ void RenderWidget::renderImage(Image* img)
 
 	//bind texture
 	img->texture->bind();
-	
+	img->ibo->bind();
 	//enable alpha blending
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -278,7 +279,21 @@ void RenderWidget::renderImage(Image* img)
 
 	//draw
 	glDrawElements(GL_TRIANGLES, sizeof(unsigned int)*6, GL_UNSIGNED_INT, 0);
-
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	img->ibo->release();
+	auto indices = new unsigned int[8] {
+		0, 1, 1, 2, 2, 3, 3, 0
+	};
+	img->borderIbo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+	img->borderIbo->create();
+	img->borderIbo->bind();
+	img->borderIbo->allocate(indices, 8 * sizeof(unsigned int));
+	boxColliderShaderProgram->bind();
+	boxColliderShaderProgram->setUniformValue("MVPMatrix", matrix);
+	glLineWidth(3.0f);
+	glDrawElements(GL_LINES, sizeof(unsigned int)*8, GL_UNSIGNED_INT, 0);
+	img->borderIbo->release();
+	delete[] indices;
 	//release
 	img->vao->release();
 	img->texture->release();
@@ -651,6 +666,13 @@ QOpenGLTexture *RenderWidget::genTextTexture(int width, int height, const QStrin
 	return texture;
 }
 
+void RenderWidget::mouseMoveEvent(QMouseEvent* event)
+{
+	Vector2D pos = Vector2D(event->localPos().x(),size().height() - event->localPos().y());
+	Debug::log("mouse position: " + pos.tostring());
+	if(SceneMgr::get_instance().get_main_camera()!=nullptr)
+		Debug::log("camera position: "+SceneMgr::get_instance().get_main_camera()->screenToWorld(pos).tostring());
+}
 
 
 

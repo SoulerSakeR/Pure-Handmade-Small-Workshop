@@ -21,7 +21,7 @@ public:
     void setupFileSystemTreeView(const QString& parentDir);
     void openScene();
     void addScene();
-    void deleteScene();
+    void deleteScene();  
 
 public slots:
     void showContextMenu(const QPoint&);

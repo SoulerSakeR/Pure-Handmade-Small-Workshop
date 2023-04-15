@@ -3,8 +3,9 @@
 #include "Core/Utils/Vector2D.h"
 #include "Core/ResourceManagement/Texture2D.h"
 #include "IRenderable.h"
+#include "IResizable.h"
 
-class Image : public IRenderable
+class Image : public IResizable
 {
 public:
     static constexpr int max_component_size = 1;

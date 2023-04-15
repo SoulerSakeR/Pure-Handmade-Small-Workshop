@@ -41,8 +41,27 @@ QMatrix4x4 Camera::CalculateProjectionMulViewMatrix()
 	auto resolution = GameEngine::get_instance().get_resolution();
 	float ratio = resolution.y / resolution.x;
 	result.ortho(-view_width / 2, view_width / 2, -view_width / 2 * ratio, view_width / 2 * ratio,-10.f,10.f);
-	result.lookAt(gameObject->transform->getWorldPosition().toQVector3D(1.f), QVector3D(0.f, 0.f, -1.f), QVector3D(0.f, 1.f, 0.f));
+	QMatrix4x4 matrix = QMatrix4x4();
+	matrix.rotate(gameObject->transform->getWorldRotation(), 0.f, 0.f, 1.f);
+	result.lookAt(gameObject->transform->getWorldPosition().toQVector3D(1.f), QVector3D(0.f, 0.f, -1.f),  matrix* QVector4D(0.f, 1.f, 0.f,1.f).toVector3D());
 	return result;
+}
+
+Vector2D Camera::screenToWorld(Vector2D screenPos)
+{
+	Vector2D res = GameEngine::get_instance().get_resolution();
+	auto ratio = view_width /res.x ;
+	Vector2D leftBottom2point = screenPos * ratio;
+	Vector2D cameraPos = gameObject->transform->getWorldPosition();
+	Vector2D origin2leftBottom = cameraPos + Vector2D(-view_width / 2, -view_width / 2 * res.y / res.x);
+	return origin2leftBottom + leftBottom2point;
+}
+
+Vector2D Camera::WorldToScreen(Vector2D worldPos)
+{
+	auto matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
+	matrix.translate(worldPos.toQVector3D());
+	return Vector2D((matrix * QVector4D(0.f,0.f,0.f,1.f)).toVector3DAffine().toVector2D());
 }
 
 void Camera::set_property(Property* property, void* value)

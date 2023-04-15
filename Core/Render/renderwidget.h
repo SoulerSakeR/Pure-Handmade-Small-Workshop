@@ -36,6 +36,7 @@ public:
     void renderGameobject(GameObject* gameobj);
     void renderBoxCollider(BoxCollider* boxCollider);
     void renderImage(Image* image);
+    void mouseMoveEvent(QMouseEvent* event) override;
 
     
 

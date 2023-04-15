@@ -24,6 +24,7 @@ RenderWindow::RenderWindow(QWidget *parent)
     // ui->hierarchy->ui = this;
     ui->hierarchy->componentsDockWidget = ui->dockWidget_components;
     ui->hierarchy->initContextMenu();
+    auto x= ui->openGLWidget->hasMouseTracking();
     // 根据组件类型动态生成组件按钮
     for (int i = 1;i < Component::componentTypeCount + 1;++i)
     {
@@ -224,3 +225,4 @@ void RenderWindow::addScene()
 void RenderWindow::deleteScene()
 {
 }
+

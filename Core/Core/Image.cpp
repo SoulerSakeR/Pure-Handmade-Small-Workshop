@@ -32,7 +32,7 @@ const Vector2D& Image::get_size()
 }
 
 
-Image::Image(GameObject* gameObj, const std::string& imgPath,Vector2D size):IRenderable(gameObj)
+Image::Image(GameObject* gameObj, const std::string& imgPath,Vector2D size):IResizable(gameObj)
 {
 	this->imgPath = imgPath;
 	this->size = size;
@@ -88,6 +88,8 @@ Image::~Image()
 void Image::set_size(Vector2D newSize, bool refreshUI)
 {
 	this->size = newSize;
+	IRenderable::reset();
+	updateVertices();
 	if (refreshUI && GameEngine::get_instance().getSelectedGameObject() == gameObject)
 	{
 		GameEngine::get_instance().onPropertyChange(properties["size"]);
