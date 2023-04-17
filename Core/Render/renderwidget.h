@@ -36,6 +36,7 @@ public:
     void renderGameobject(GameObject* gameobj);
     void renderBoxCollider(BoxCollider* boxCollider);
     void renderImage(Image* image);
+    void renderText(Image* text);
     void mouseMoveEvent(QMouseEvent* event) override;
 
     
@@ -64,17 +65,22 @@ private:
 
 
 
-    std::unique_ptr<QOpenGLVertexArrayObject> vao;
-    std::unique_ptr<QOpenGLShaderProgram> imageShaderProgram;
-
-    std::unique_ptr<QOpenGLVertexArrayObject> vaoBox;
+   
+    std::unique_ptr<QOpenGLShaderProgram> imageShaderProgram;   
     std::unique_ptr<QOpenGLShaderProgram> boxColliderShaderProgram;
+    std::unique_ptr<QOpenGLShaderProgram> textShaderProgram;
+
+    std::unique_ptr<QOpenGLVertexArrayObject> vao;
+    std::unique_ptr<QOpenGLVertexArrayObject> vaoBox;
+    std::unique_ptr<QOpenGLVertexArrayObject> vaoText;
 
     std::unique_ptr<QOpenGLBuffer> vbo;
     std::unique_ptr<QOpenGLBuffer> vboBox;
+    std::unique_ptr<QOpenGLBuffer> vboText;
 
     std::unique_ptr<QOpenGLBuffer> ibo;
-    std::unique_ptr<QOpenGLBuffer> EBOBOX;
+    std::unique_ptr<QOpenGLBuffer> iboBox;
+    std::unique_ptr<QOpenGLBuffer> iboText;
 
     std::unique_ptr<QOpenGLDebugLogger> logger;
 
@@ -98,7 +104,7 @@ private:
     void createBoxProgram();
     void createBoxVAO();   
     void createBoxVBO();
-    void createBoxEBO();
+    void createBoxIBO();
     
 
    
@@ -114,7 +120,7 @@ private:
 
     // text
     void createTextProgram();
-    std::unique_ptr<QOpenGLShaderProgram> shaderTextProgram;
+    
 
     QOpenGLTexture* genTextTexture(int width, int height, const QString& text, int textPixelSize, const QColor& textColor);
     
@@ -132,7 +138,7 @@ private:
 
     void createTextVAO();
     void createTextVBO();
-    void createTextEBO();
+    void createTextIBO();
 
 };
 

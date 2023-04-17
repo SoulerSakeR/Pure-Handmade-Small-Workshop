@@ -25,15 +25,16 @@ float vertices[] = {
 */
 
 // text render 
+/*
 static const char* vertexShaderSource =
-"attribute highp vec4 posAttr;\n"
-"attribute highp vec2 texcoord;\n"
+"attribute highp vec4 aPos;\n"
+"attribute highp vec2 aTexCord;\n"
 "varying highp vec2 v_texcoord;\n"
 "uniform highp mat4 matrix;\n"
 "uniform highp mat4 projMatrix;\n"
 "void main() {\n"
-"   v_texcoord = texcoord;\n"
-"   gl_Position = posAttr;\n"
+"   v_texcoord = aTexCord;\n"
+"   gl_Position = aPos;\n"
 "}\n";
 
 static const char* fragmentShaderSource =
@@ -49,7 +50,7 @@ static const char* fragmentShaderSource =
 "}\n";
 
 
-
+*/
 float verticesText[] =
 {    
 	 // positions          // texture coords
@@ -72,11 +73,20 @@ float verticesBox[] =
 
 
 float vertices[] = {
-	// positions   // colors           // texture coords
-	1.f,  1.f, 0,  1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-	1.f, -1.f, 0,  0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-   -1.f, -1.f, 0,  0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-   -1.f,  1.f, 0,  1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
+	// positions   // colors                // texture coords
+	1.f,  1.f, 0,  1.0f, 0.0f, 0.0f, 1.f,   1.0f, 1.0f,   // top right
+	1.f, -1.f, 0,  0.0f, 1.0f, 0.0f, 1.f,   1.0f, 0.0f,   // bottom right
+   -1.f, -1.f, 0,  0.0f, 0.0f, 1.0f, 1.f,   0.0f, 0.0f,   // bottom left
+   -1.f,  1.f, 0,  1.0f, 1.0f, 0.0f, 1.f,   0.0f, 1.0f    // top left
+};
+
+
+float TextVertices[] = {
+	// positions   // colors                // texture coords
+	400.f,  400.f, 0,  1.0f, 0.0f, 0.0f, 1.f,   1.0f, 1.0f,   // top right
+	400.f,  300.f, 0,  0.0f, 1.0f, 0.0f, 1.f,   1.0f, 0.0f,   // bottom right
+    300.f,  300.f, 0,  0.0f, 0.0f, 1.0f, 1.f,   0.0f, 0.0f,   // bottom left
+    300.f,  400.f, 0,  1.0f, 1.0f, 0.0f, 1.f,   0.0f, 1.0f    // top left
 };
 
 //counter clockwise
@@ -90,7 +100,7 @@ unsigned int indices[] = { // note that we start from 0!
 // 定义需要绘制的边
 GLuint indicesBOX[] = { 0, 1, 1, 2, 2, 3, 3, 0 };
 
-
+GLuint indicesText[] = { 0, 1, 1, 2, 2, 3, 3, 0 };
 
 
 
@@ -132,12 +142,19 @@ void RenderWidget::renderGameobject(GameObject* gameobj)
 {
 	if (auto img = gameobj->getComponent<Image>(); img != nullptr && img->get_enabled())
 	{
+
+		
+
 		renderImage(img);
+		renderText(img);
+		
 	}
 	if (auto boxCollider = gameobj->getComponent<BoxCollider>();boxCollider != nullptr && boxCollider->get_enabled())
 	{
 		renderBoxCollider(boxCollider);
 	}
+
+	// renderText();
 }
 
 void RenderWidget::renderBoxCollider(BoxCollider* box)
@@ -267,11 +284,6 @@ void RenderWidget::renderImage(Image* img)
 	imageShaderProgram->bind();
 	imageShaderProgram->setUniformValue("MVPMatrix", matrix);
 
-	
-	/*QString date = QDateTime::currentDateTime().toString("现在时间是：yyyy-MM-dd hh:mm:ss.zzz");
-	mTexture = genTextTexture(512, 512, date, 60, Qt::red);
-	mTexture->bind();*/
-	
 
 	//bind texture
 	img->texture->bind();
@@ -312,6 +324,124 @@ void RenderWidget::renderImage(Image* img)
 	img->texture->release();
 }
 
+void RenderWidget::renderText(Image* text)
+{
+
+
+	//bind vao if exist
+	if (text->vao == nullptr)
+	{
+		text->vao = new QOpenGLVertexArrayObject;
+		text->vao->create();
+		text->vao->bind();
+		text->vbo = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+		text->vbo->create();
+		text->vbo->bind();
+		text->vbo->allocate(TextVertices, 36 * sizeof(float));
+		text->ibo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+		text->ibo->create();
+		text->ibo->bind();
+		text->ibo->allocate(indices, 6 * sizeof(unsigned int));
+		textShaderProgram->bind();
+
+		GLint posLocation = textShaderProgram->attributeLocation("aPos");
+		GLint colorLocation = textShaderProgram->attributeLocation("aColor");
+		GLint textureLocation = textShaderProgram->attributeLocation("aTexCord");
+
+		auto stride = 9 * sizeof(float);
+
+		//-----------------position--------------------//
+		//告知显卡如何解析缓冲里的属性值
+		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+		//开启VAO管理的第一个属性值
+		glEnableVertexAttribArray(posLocation);
+
+		
+		if (colorLocation >= 0)
+		{
+			//------------------Color-----------------------//
+			glVertexAttribPointer(colorLocation, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+			glEnableVertexAttribArray(colorLocation);
+		}
+		
+		if (textureLocation)
+		{
+			//------------------Texture-----------------------//
+
+			glVertexAttribPointer(textureLocation, 2, GL_FLOAT, GL_FALSE, stride, (void*)(7 * sizeof(float)));
+
+			glEnableVertexAttribArray(textureLocation);
+		}
+		text->vao->release();
+		text->vbo->release();
+		text->vbo->destroy();
+		delete text->vbo;
+		text->vbo = nullptr;
+		/*text->ibo->release();
+		text->ibo->destroy();
+		text->ibo = nullptr;
+		delete text->ibo;*/
+	}
+	text->vao->bind();
+
+	//calculate the MVP matrix
+	auto matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
+	auto transform = text->gameObject->transform;
+	matrix.translate(transform->getWorldPosition().toQVector3D());
+	matrix.rotate(transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
+	matrix.scale(transform->getWorldScale().toQVector3D(1.0f));
+
+	//transfer the MVP matrix to the shader
+	textShaderProgram->bind();
+	textShaderProgram->setUniformValue("MVPMatrix", matrix);
+
+
+	//bind texture
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	QString date = QDateTime::currentDateTime().toString("现在时间是：yyyy-MM-dd hh:mm:ss.zzz");
+	mTexture = genTextTexture(512, 512, date, 60, Qt::red);
+	mTexture->bind();
+	text->ibo->bind();
+	
+	//enable alpha blending
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	//enable depth test
+	glDepthFunc(GL_LEQUAL);
+
+	//set texture mode
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	//draw
+	glDrawElements(GL_TRIANGLES, sizeof(unsigned int) * 6, GL_UNSIGNED_INT, 0);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	text->ibo->release();
+
+	/*
+	auto indices = new unsigned int[8] {
+		0, 1, 1, 2, 2, 3, 3, 0
+	};
+	text->borderIbo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+	text->borderIbo->create();
+	text->borderIbo->bind();
+	text->borderIbo->allocate(indices, 8 * sizeof(unsigned int));
+	boxColliderShaderProgram->bind();
+	boxColliderShaderProgram->setUniformValue("MVPMatrix", matrix);
+	glLineWidth(3.0f);
+	glDrawElements(GL_LINES, sizeof(unsigned int) * 8, GL_UNSIGNED_INT, 0);
+
+
+
+	text->borderIbo->release();
+	delete[] indices;
+	*/
+	//release
+	text->vao->release();
+	text->texture->release();
+
+}
+
 void RenderWidget::renderScene()
 {
 	auto scene = SceneMgr::get_instance().get_current_scene();
@@ -348,13 +478,14 @@ void RenderWidget::initializeGL()
 
 
 	createProgram();
-	createBoxProgram();
-	
+	createBoxProgram();	
 	createTextProgram();
+	
 	textBuffer = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
 	
 
 	createIBO();
+
 
 }
 
@@ -423,23 +554,32 @@ void RenderWidget::createBoxProgram() {
 
 void RenderWidget::createTextProgram() 
 {
+	/*
 	bool success;
-	shaderTextProgram = std::make_unique<QOpenGLShaderProgram>();
-	shaderTextProgram->create();
-	shaderTextProgram->addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderSource);
-	shaderTextProgram->addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderSource);
-	success = shaderTextProgram->link();
+	textShaderProgram = std::make_unique<QOpenGLShaderProgram>();
+	textShaderProgram->create();
+	textShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderSource);
+	textShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderSource);
+	success = textShaderProgram->link();
 	if (!success)
-		qDebug() << "ERR:" << shaderTextProgram->log();
+		qDebug() << "ERR:" << textShaderProgram->log();
+	mPosAttr = textShaderProgram->attributeLocation("posAttr");
+	mTexAttr = textShaderProgram->attributeLocation("texcoord");
+	mMatrixLoc = textShaderProgram->uniformLocation("matrix");
+	mProjLoc = textShaderProgram->uniformLocation("projMatrix");
+	*/
 
-
-
-	
-	mPosAttr = shaderTextProgram->attributeLocation("posAttr");
-	mTexAttr = shaderTextProgram->attributeLocation("texcoord");
-	mMatrixLoc = shaderTextProgram->uniformLocation("matrix");
-	mProjLoc = shaderTextProgram->uniformLocation("projMatrix");
-
+	bool success;
+	textShaderProgram = std::make_unique<QOpenGLShaderProgram>();
+	textShaderProgram->create();
+	textShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, QString::fromStdString(source_path + "\\shaders\\textShaders.vert"));
+	textShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\textShaders.frag"));
+	success = textShaderProgram->link(); //
+	if (!success)
+		qDebug() << "ERR:" << textShaderProgram->log();
+	shaderOffsetBinding = textShaderProgram->uniformLocation("offset");
+	shaderSizeBinding = textShaderProgram->uniformLocation("size");
+	textureWallBinding = 0;
 }
 
 void RenderWidget::createVAO()
@@ -502,7 +642,7 @@ void RenderWidget::createBoxVAO()
 	vaoBox->bind();
 	//vboBox->bind();
 	createBoxVBO();
-	createBoxEBO();
+	createBoxIBO();
 
 	//告知显卡如何解析缓冲里的属性值
 	glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
@@ -519,6 +659,31 @@ void RenderWidget::createBoxVAO()
 	vboBox->release();
 	glBindVertexArray(0);
 }
+
+void RenderWidget::createTextVAO()
+{
+	textShaderProgram->bind();
+	GLint posLocation = textShaderProgram->attributeLocation("posAttr");
+	GLint texLocation = textShaderProgram->attributeLocation("texcoord");
+	vaoText = std::make_unique<QOpenGLVertexArrayObject>();
+	vaoText->create();
+	vaoText->bind();
+	vboText->bind();
+	iboText->bind();
+	//告知显卡如何解析缓冲里的属性值
+	glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	//开启VAO管理的第一个属性值
+	glEnableVertexAttribArray(0);
+	//告知显卡如何解析缓冲里的属性值
+	glVertexAttribPointer(texLocation, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	//开启VAO管理的第二个属性值
+	glEnableVertexAttribArray(1);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	vboText->release();
+	glBindVertexArray(0);
+}
+
+
 
 void RenderWidget::createVBO()
 {
@@ -537,6 +702,14 @@ void RenderWidget::createBoxVBO()
 	vboBox->allocate(verticesBox, sizeof(verticesBox));
 }
 
+void RenderWidget::createTextVBO()
+{
+	vboText = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
+	vboText->create();
+	vboText->bind();
+	vboText->allocate(verticesText, sizeof(verticesText));
+}
+
 void RenderWidget::createIBO()
 {
 	ibo = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::IndexBuffer);
@@ -545,12 +718,20 @@ void RenderWidget::createIBO()
 	ibo->allocate(indices, sizeof(indices));
 }
 
-void RenderWidget::createBoxEBO()
+void RenderWidget::createBoxIBO()
 {
-	EBOBOX = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::IndexBuffer);
-	EBOBOX->create();
-	EBOBOX->bind();
-	EBOBOX->allocate(indicesBOX, sizeof(indicesBOX));
+	iboBox = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::IndexBuffer);
+	iboBox->create();
+	iboBox->bind();
+	iboBox->allocate(indicesBOX, sizeof(indicesBOX));
+}
+
+void RenderWidget::createTextIBO()
+{
+	iboText = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::IndexBuffer);
+	iboText->create();
+	iboText->bind();
+	iboText->allocate(indicesText, sizeof(indicesText));
 }
 
 void RenderWidget::messageLogHandler(const QOpenGLDebugMessage& debugMessage)
@@ -588,50 +769,12 @@ void RenderWidget::renderTexture(QOpenGLTexture* texture, QVector3D offset, QVec
 	glLineWidth(3.0f);
 
 	
-	createBoxEBO(); 
+	createBoxIBO(); 
 
 	// 绘制矩形边框
 	glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, nullptr);
 	
 	boxColliderShaderProgram->release();
-
-	
-	//====================== text render test ===========================//
-	/*
-	// 
-	textBuffer->create();
-	textBuffer->bind();
-	textBuffer->allocate(verticesText, sizeof(verticesText) * 6);
-	textBuffer->release();
-	mVertexCount = 6;
-
-	QString date = QDateTime::currentDateTime().toString("现在时间是：yyyy-MM-dd hh:mm:ss.zzz");
-	//QOpenGLTexture* textTexture = genTextTexture(512, 512, date, 32, QColor(255, 255, 255, 255));
-	//*textTexture = genTextTexture(512, 512, date, 60, Qt::red);
-	
-	mTexture = genTextTexture(512, 512, date, 60, Qt::red);
-
-	shaderTextProgram->bind();
-	mTexture->bind();
-	textBuffer->bind();
-	
-	
-	glVertexAttribPointer(mPosAttr, 3, GL_FLOAT, GL_FALSE, sizeof(verticesText), 0);
-	glVertexAttribPointer(mTexAttr, 2, GL_FLOAT, GL_FALSE, sizeof(verticesText), reinterpret_cast<void*>(sizeof(QVector3D)));
-	glEnableVertexAttribArray(mPosAttr);
-	glEnableVertexAttribArray(mTexAttr);
-
-	glDrawArrays(GL_TRIANGLES, 0, mVertexCount);
-
-	glDisableVertexAttribArray(mTexAttr);
-	glDisableVertexAttribArray(mPosAttr);
-
-	textBuffer->release();
-	mTexture->release();
-	shaderTextProgram->release();
-	*/
-
-	//===============================================================//
 }
 
 
@@ -642,7 +785,7 @@ void RenderWidget::renderBox()
 	
 	//ibo->release(); // 释放画图像的ibo
 	//createBoxEBO(); // 重新绑定画盒子的ibo
-	//EBOBOX->bind();
+	//iboBox->bind();
 	
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
