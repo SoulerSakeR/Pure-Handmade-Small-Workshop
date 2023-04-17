@@ -3,7 +3,7 @@
 Media::Media(QObject* parent) : QObject(parent), audioPlayer(nullptr), mediaRecorder(nullptr), audioProbe(nullptr)
 {
     audioPlayer = new QMediaPlayer(this);
-    mediaRecorder = new QMediaRecorder(audioPlayer->mediaObject());
+    mediaRecorder = new QMediaRecorder(audioPlayer);
     audioProbe = new QAudioProbe(this);
 
     if (audioProbe->setSource(audioPlayer))
