@@ -96,7 +96,7 @@ RenderWindow::RenderWindow(QWidget *parent)
             auto& gameobj = GameEngine::get_instance().addGameObject("GameObject", parent, Component::TRANSFORM, INSIDE);
             item->addChild(new HierarchyItem(&gameobj));
             item->setExpanded(true);
-        }            
+        }
         else
         {
             auto& gameobj = GameEngine::get_instance().addGameObject("GameObject");
@@ -220,6 +220,8 @@ void RenderWindow::openScene()
 void RenderWindow::addScene()
 {
     QString FileAdress = QFileDialog::getOpenFileName(this, "打开场景", "");
+    // TODO
+    // 具体的代码，传入文件地址
 }
 
 void RenderWindow::deleteScene()
