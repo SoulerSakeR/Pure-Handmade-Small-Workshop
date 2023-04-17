@@ -7,6 +7,9 @@
 #include <QGridLayout>
 #include <QFileDialog>
 #include <QProgressDialog>
+#include <QRadioButton>
+#include <qgroupbox.h>
+#include <qcheckbox.h>
 
 class WaveFunctionCollapseDialog : public QDialog
 {
@@ -35,7 +38,20 @@ private slots:
 private:
     QLineEdit* m_imageLocationLineEdit;
     QLineEdit* m_outputLocationLineEdit;
+    QLineEdit* m_outputWidthLineEdit;
+    QLineEdit* m_outputHeightLineEdit;
+    QLineEdit* m_patternSizeLineEdit;
+    QLineEdit* m_symmetryLineEdit;
+    QLineEdit* m_screenshotsLineEdit;
     QPushButton* m_browseImageButton;
     QPushButton* m_browseOutputButton;
     QPushButton* m_runwfcButton;
+    QGroupBox* m_optionsGroupBox;
+    QCheckBox* m_periodicOutputCheckBox;
+    QCheckBox* m_periodicInputCheckBox;
+    QCheckBox* m_groundCheckBox;
+    QGroupBox* m_heuristicGroupBox;
+    QRadioButton* m_entropyRadioButton;
+    QRadioButton* m_scanlineRadioButton;
+    QRadioButton* m_MRVRadioButton;
 };
