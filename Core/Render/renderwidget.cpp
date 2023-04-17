@@ -146,12 +146,17 @@ void RenderWidget::renderGameobject(GameObject* gameobj)
 		
 
 		renderImage(img);
-		renderText(img);
+		
 		
 	}
 	if (auto boxCollider = gameobj->getComponent<BoxCollider>();boxCollider != nullptr && boxCollider->get_enabled())
 	{
 		renderBoxCollider(boxCollider);
+	}
+
+	if (auto text = gameobj->getComponent<Text>(); text != nullptr && text->get_enabled())
+	{
+		renderText(text);
 	}
 
 	// renderText();
@@ -325,7 +330,7 @@ void RenderWidget::renderImage(Image* img)
 	img->texture->release();
 }
 
-void RenderWidget::renderText(Image* text)
+void RenderWidget::renderText(Text* text)
 {
 
 
@@ -338,11 +343,13 @@ void RenderWidget::renderText(Image* text)
 		text->vbo = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
 		text->vbo->create();
 		text->vbo->bind();
-		text->vbo->allocate(TextVertices, 36 * sizeof(float));
+		//text->vbo->allocate(TextVertices, 36 * sizeof(float));
+		text->vbo->allocate(text->vertices.data(), text->vertices.size() * sizeof(Vertex));
+		
 		text->ibo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
 		text->ibo->create();
 		text->ibo->bind();
-		text->ibo->allocate(indices, 6 * sizeof(unsigned int));
+		text->ibo->allocate(text->indices.data(), text->indices.size() * sizeof(unsigned int));
 		textShaderProgram->bind();
 
 		GLint posLocation = textShaderProgram->attributeLocation("aPos");
@@ -398,10 +405,13 @@ void RenderWidget::renderText(Image* text)
 
 
 	//bind texture
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	QString date = QDateTime::currentDateTime().toString("现在时间是：yyyy-MM-dd hh:mm:ss.zzz");
-	mTexture = genTextTexture(512, 512, date, 60, Qt::red);
+	//glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	//QString date = QDateTime::currentDateTime().toString("现在时间是：yyyy-MM-dd hh:mm:ss.zzz");
+	QString data = "1234567890";
+	mTexture = genTextTexture(350, 70, data, 60, Qt::red);
 	mTexture->bind();
+	//text->texture = mTexture;
+	
 	text->ibo->bind();
 	
 	//enable alpha blending
@@ -419,27 +429,27 @@ void RenderWidget::renderText(Image* text)
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	text->ibo->release();
 
-	/*
-	auto indices = new unsigned int[8] {
-		0, 1, 1, 2, 2, 3, 3, 0
-	};
-	text->borderIbo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
-	text->borderIbo->create();
+	//draw border
+	if (text->borderIbo == nullptr)
+	{
+		text->borderIbo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+		text->borderIbo->create();
+		text->borderIbo->bind();
+		text->borderIbo->allocate(text->borderIndices.data(), text->borderIndices.size() * sizeof(unsigned int));
+	}
 	text->borderIbo->bind();
-	text->borderIbo->allocate(indices, 8 * sizeof(unsigned int));
+
 	boxColliderShaderProgram->bind();
 	boxColliderShaderProgram->setUniformValue("MVPMatrix", matrix);
+
 	glLineWidth(3.0f);
-	glDrawElements(GL_LINES, sizeof(unsigned int) * 8, GL_UNSIGNED_INT, 0);
-
-
-
+	glDrawElements(GL_LINES, sizeof(unsigned int) * text->borderIndices.size(), GL_UNSIGNED_INT, 0);
 	text->borderIbo->release();
-	delete[] indices;
-	*/
+	
+	
 	//release
 	text->vao->release();
-	text->texture->release();
+	//text->texture->release();
 
 }
 
@@ -802,31 +812,57 @@ void RenderWidget::renderBox()
 // text render 
 QOpenGLTexture *RenderWidget::genTextTexture(int width, int height, const QString& text, int textPixelSize, const QColor& textColor)
 {
+	// 创建一个 2D 纹理对象
 	QOpenGLTexture* texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
 
+	// 创建一张空的 QImage，格式为 ARGB32_Premultiplied
 	QImage img(width, height, QImage::Format_ARGB32_Premultiplied);
+
+	// 将图片填充为完全透明的黑色
 	img.fill(QColor(0, 0, 0, 0));
 
+	// 创建一个 QPainter，用于在 QImage 上绘制文字
 	QPainter painter;
 
-	QFont font;
+	// 开始在 QImage 上绘制
 	painter.begin(&img);
+
+	// 设置字体大小
+	QFont font;
 	font.setPixelSize(textPixelSize);
+
+	// 设置 QPainter 使用的字体
 	painter.setFont(font);
+
+	// 创建一个画笔，用于绘制文字颜色
 	QPen pen;
 	pen.setColor(textColor);
 	painter.setPen(pen);
+
+	// 设置文字的对齐方式为左上对齐，并启用自动换行
 	QTextOption option(Qt::AlignLeft | Qt::AlignTop);
 	option.setWrapMode(QTextOption::WordWrap);
+
+	// 设置绘制文字的矩形区域
 	QRectF rect(0, 0, width, height);
+
+	// 在 QImage 上绘制文字
 	painter.drawText(rect, text, option);
+
+	// 停止在 QImage 上绘制
 	painter.end();
+
+	// 将 QImage 的数据绑定到纹理上
 	texture->setData(img);
-	//    texture->setMipLevelRange(0, mipLevelMax);    //off mipmap
+
+	// 设置纹理的放大和缩小过滤器为线性过滤
 	texture->setMinificationFilter(QOpenGLTexture::Linear);
 	texture->setMagnificationFilter(QOpenGLTexture::Linear);
+
+	// 设置纹理的重复模式为 Repeat
 	texture->setWrapMode(QOpenGLTexture::Repeat);
 
+	// 返回生成的纹理对象指针
 	return texture;
 }
 

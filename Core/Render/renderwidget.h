@@ -12,6 +12,7 @@
 #include <QOpenGLDebugLogger>
 #include <Core/Core/BoxCollider.h>
 #include <Core/Core/Image.h>
+#include <Core/Core/Text.h>
 
 
 
@@ -36,7 +37,7 @@ public:
     void renderGameobject(GameObject* gameobj);
     void renderBoxCollider(BoxCollider* boxCollider);
     void renderImage(Image* image);
-    void renderText(Image* text);
+    void renderText(Text* text);
     void mouseMoveEvent(QMouseEvent* event) override;
 
     
