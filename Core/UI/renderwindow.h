@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "Core/Render/common.h"
 #include <QLineEdit>
+#include <QFileSystemModel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class RenderWindow; }
@@ -32,5 +33,6 @@ private slots:
 
 private:
     Ui::RenderWindow *ui;
+    QFileSystemModel* fileModel;
 };
 #endif // RENDERWINDOW_H

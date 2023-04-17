@@ -133,6 +133,16 @@ void HierarchyWidget::initContextMenu()
 	});
 	connect(this, &HierarchyWidget::customContextMenuRequested, this, &HierarchyWidget::showContextMenu);
 }
+/*
+void HierarchyWidget::mouseReleaseEvent(QMouseEvent* event)
+{
+	if (dragMode)
+	{
+		if (curentItem)
+			insert()
+		dragmode = false;
+	}
+}*/
 
 HierarchyWidget::HierarchyWidget(QWidget* parent):QTreeWidget(parent)
 {
@@ -140,18 +150,23 @@ HierarchyWidget::HierarchyWidget(QWidget* parent):QTreeWidget(parent)
 }
 
 void HierarchyWidget::mouseMoveEvent(QMouseEvent* event)
-{
+{// 按下左键开始进入拖拽
 	if (event->buttons() & Qt::LeftButton)
 	{
 		auto draggedItem = currentItem();
 		if (draggedItem == nullptr)
 			return;
+		bool dragMode = true;
 
+		//
 		auto distance = (event->pos() - startPos).manhattanLength();
 		if (distance >= QApplication::startDragDistance())
 		{
 			auto newIndex = indexOfTopLevelItem(draggedItem);
 			auto moveDistance = event->pos() - startPos;
+			// 判断鼠标左键有没有松开
+			//松开的话，松开的时刻，指的是哪个item
+			// 插入item的上面
 			if (moveDistance.y() < 0)
 			{
 				((HierarchyItem*)draggedItem)->moveVeryUP(event->pos());
@@ -165,6 +180,8 @@ void HierarchyWidget::mouseMoveEvent(QMouseEvent* event)
 	}
 	QTreeWidget::mouseMoveEvent(event);
 }
+
+
 
 void HierarchyWidget::showContextMenu(const QPoint& pos)
 {

@@ -163,7 +163,7 @@ void RenderWindow::resizeGL(QResizeEvent* event) {
 // 创建QFileSystemModel并显示上级目录下的文件结构
 void RenderWindow::setupFileSystemTreeView(const QString& parentDir)
 {
-    QFileSystemModel* fileModel = new QFileSystemModel(ui->treeView);
+    fileModel = new QFileSystemModel(ui->treeView);
     fileModel->setRootPath(parentDir);
 
     QStringList filters;
@@ -214,18 +214,58 @@ void RenderWindow::refreshHierachy()
 
 void RenderWindow::openScene()
 {
-    GameEngine::get_instance().getCurrentGameProject()->openScene(1);
+    // 双击获取路径
+    // 获取当前选择的项
+    QModelIndex currentIndex = ui->treeView->currentIndex();
+    // 获取当前项的路径
+    QString currentPath = fileModel->filePath(currentIndex);
+    qDebug() << currentPath;
+    GameEngine::get_instance().getCurrentGameProject()->openScene(1);// 等一手用路径的openScene
 }
 
 void RenderWindow::addScene()
 {
-    QString FileAdress = QFileDialog::getOpenFileName(this, "打开场景", "");
+    // QString FileAdress = QFileDialog::getSaveFileName(this, "保存文件", "", "");
     // TODO
     // 具体的代码，传入文件地址
+    // 获取当前选择的项
+    QModelIndex currentIndex = ui->treeView->currentIndex();
+    // 获取当前项的路径
+    QString currentPath = fileModel->filePath(currentIndex);
+    qDebug() << currentPath;
+    GameEngine::get_instance().getCurrentGameProject()->creatNewScene();// 需要一个弹框输入名字
 }
 
+// 传入需要删除的文件的绝对路径 
+// 删除需要确认   标记完善一下***************************************************
+bool deleteFile(const QString& filePath)
+{
+    QFile file(filePath);
+    if (file.exists()) {
+        if (file.remove()) {
+            QMessageBox::information(nullptr, "Success", "File deleted successfully!");
+            return true;
+        }
+        else {
+            QMessageBox::information(nullptr, "Failed", "Failed to delete file!");
+        }
+    }
+    return false;
+}
 void RenderWindow::deleteScene()
 {
     // TODO
+    // 获取当前选择的项
+    QModelIndex currentIndex = ui->treeView->currentIndex();
+    // 获取当前项的路径
+    QString currentPath = fileModel->filePath(currentIndex);
+    qDebug() << currentPath;
+    // 调用删除文件
+    if (deleteFile(currentPath)) {
+        qDebug() << "File deleted successfully!";
+    }
+    else {
+        qDebug() << "Failed to delete file!";
+    }
 }
 
