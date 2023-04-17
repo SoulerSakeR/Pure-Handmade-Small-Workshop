@@ -268,13 +268,13 @@ void RenderWidget::renderImage(Image* img)
 	imageShaderProgram->setUniformValue("MVPMatrix", matrix);
 
 	
-	QString date = QDateTime::currentDateTime().toString("现在时间是：yyyy-MM-dd hh:mm:ss.zzz");
+	/*QString date = QDateTime::currentDateTime().toString("现在时间是：yyyy-MM-dd hh:mm:ss.zzz");
 	mTexture = genTextTexture(512, 512, date, 60, Qt::red);
-	mTexture->bind();
+	mTexture->bind();*/
 	
 
 	//bind texture
-	//img->texture->bind();
+	img->texture->bind();
 	img->ibo->bind();
 	//enable alpha blending
 	glEnable(GL_BLEND);

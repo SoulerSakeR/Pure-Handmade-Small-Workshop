@@ -164,7 +164,7 @@ void Image::deserialize(std::stringstream& ss)
 {
 	string s;
 	getline(ss, s);
-	imgPath = s;
+	set_imgPath(s);
 	getline(ss, s);
 	size = Vector2D::fromString(s);
 	getline(ss, s);
