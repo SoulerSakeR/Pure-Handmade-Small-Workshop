@@ -141,30 +141,30 @@ HierarchyWidget::HierarchyWidget(QWidget* parent):QTreeWidget(parent)
 
 void HierarchyWidget::mouseMoveEvent(QMouseEvent* event)
 {
-	if ((event->buttons() & Qt::LeftButton) && QApplication::startDragDistance() <= (event->pos() - startPos).manhattanLength())
+	if (event->buttons() & Qt::LeftButton)
 	{
-		auto mimeData = new QMimeData();
-		QByteArray byteArray;
-		QDataStream dataStream(&byteArray, QIODevice::WriteOnly);
-		if(selectedGameObject!=nullptr)
-			dataStream << selectedGameObject->getID();// ?
-		mimeData->setData("HierarchyItem", byteArray);
+		auto draggedItem = currentItem();
+		if (draggedItem == nullptr)
+			return;
 
-		auto drag = new QDrag(this);
-		drag->setMimeData(mimeData);
-		drag->exec(Qt::MoveAction);
-		event->accept();
-	}	
+		auto distance = (event->pos() - startPos).manhattanLength();
+		if (distance >= QApplication::startDragDistance())
+		{
+			auto newIndex = indexOfTopLevelItem(draggedItem);
+			auto moveDistance = event->pos() - startPos;
+			if (moveDistance.y() < 0)
+			{
+				((HierarchyItem*)draggedItem)->moveVeryUP(event->pos());
+			}
+			else if (moveDistance.y() > 0)
+			{
+				((HierarchyItem*)draggedItem)->moveVeryDown(event->pos());
+			}
+			startPos = event->pos();
+		}
+	}
+	QTreeWidget::mouseMoveEvent(event);
 }
-//
-//void HierarchyWidget::mouseReleaseEvent(QMouseEvent* event)
-//{
-//	if (event->button() == Qt::LeftButton && !event->isAccepted())
-//	{
-//		// ��������¼�
-//		// ...
-//	}
-//}
 
 void HierarchyWidget::showContextMenu(const QPoint& pos)
 {

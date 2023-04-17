@@ -179,7 +179,7 @@ void RenderWindow::setupFileSystemTreeView(const QString& parentDir)
     ui->treeView->hideColumn(3);
 }
 
-
+// 场景的点击事件
 void RenderWindow::onTreeviewRightClick(const QPoint& pos) {
     QModelIndex index = ui->treeView->indexAt(pos);
 
@@ -226,5 +226,6 @@ void RenderWindow::addScene()
 
 void RenderWindow::deleteScene()
 {
+    // TODO
 }
 

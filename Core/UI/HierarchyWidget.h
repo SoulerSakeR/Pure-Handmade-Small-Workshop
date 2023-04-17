@@ -14,6 +14,7 @@ public:
     HierarchyWidget(QWidget* parent);
 
     void mouseMoveEvent(QMouseEvent* event) override;
+
     void initContextMenu();
     //void mouseReleaseEvent(QMouseEvent* event) override;
 
@@ -21,10 +22,11 @@ public:
     GameObject* selectedGameObject;
     ComponentsDockWidget* componentsDockWidget;
     // RenderWindow* ui;
+
 public slots:
     void showContextMenu(const QPoint& pos);
     void onSelectionChanged();
-       
+
 private:
     
     QPoint startPos;

@@ -94,3 +94,23 @@ void HierarchyItem::deleteItem()
 	}
 	delete this;
 }
+
+void HierarchyItem::moveVeryUP(QPoint pos)
+{
+	auto tree = static_cast<HierarchyWidget*>(treeWidget());
+	auto targetItem = tree->itemAt(pos);
+	if (targetItem == nullptr || targetItem == this) {
+		// Do nothing if target item is null, self, or descendant
+		return;
+	}
+}
+
+void HierarchyItem::moveVeryDown(QPoint pos)
+{
+	auto tree = static_cast<HierarchyWidget*>(treeWidget());
+	auto targetItem = tree->itemAt(pos);
+	if (targetItem == nullptr || targetItem == this) {
+		// Do nothing if target item is null, self, or descendant
+		return;
+	}
+}

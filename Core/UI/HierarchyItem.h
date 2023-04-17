@@ -11,5 +11,7 @@ public:
     void moveUp();
     void moveDown();
     void deleteItem();
+    void moveVeryUP(QPoint pos);
+    void moveVeryDown(QPoint pos);
 };
 
