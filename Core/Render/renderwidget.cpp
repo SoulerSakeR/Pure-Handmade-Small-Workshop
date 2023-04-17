@@ -33,7 +33,7 @@ static const char* vertexShaderSource =
 "uniform highp mat4 projMatrix;\n"
 "void main() {\n"
 "   v_texcoord = texcoord;\n"
-"   gl_Position = projMatrix * matrix * posAttr;\n"
+"   gl_Position = posAttr;\n"
 "}\n";
 
 static const char* fragmentShaderSource =
@@ -53,10 +53,10 @@ static const char* fragmentShaderSource =
 float verticesText[] =
 {    
 	 // positions          // texture coords
-	 200.f,  200.f, 0.0f,  1.0f, 1.0f,	// top right
-	 200.f, -200.f, 0.0f,  1.0f, 0.0f,	// bottom right
-	-200.f, -200.f, 0.0f,  0.0f, 0.0f, 	// bottom left
-	-200.f,  200.f, 0.0f,  0.0f, 0.1f	// top left
+	 1.f,  1.f, 0,   1.0f, 1.0f,	// top right
+	 1.f, -1.f, 0,   1.0f, 0.0f,	// bottom right
+	-1.f, -1.f, 0,   0.0f, 0.0f, 	// bottom left
+	-1.f,  1.f, 0,   0.0f, 1.0f	// top left
 };
 
 
@@ -215,10 +215,13 @@ void RenderWidget::renderImage(Image* img)
 		img->ibo->bind();
 		img->ibo->allocate(img->indices, 6 * sizeof(unsigned int));
 		imageShaderProgram->bind();
+		
 		GLint posLocation = imageShaderProgram->attributeLocation("aPos");
 		GLint colorLocation = imageShaderProgram->attributeLocation("aColor");
 		GLint textureLocation = imageShaderProgram->attributeLocation("aTexCord");
+		
 		auto stride = 9 * sizeof(float);
+		
 		//-----------------position--------------------//
 		//告知显卡如何解析缓冲里的属性值
 		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
@@ -228,17 +231,17 @@ void RenderWidget::renderImage(Image* img)
 		if (colorLocation >= 0)
 		{
 			//------------------Color-----------------------//
-			//告知显卡如何解析缓冲里的属性值
+			
 			glVertexAttribPointer(colorLocation, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
-			//开启VAO管理的第一个属性值
+			
 			glEnableVertexAttribArray(colorLocation);
 		}
 		if (textureLocation)
 		{
 			//------------------Texture-----------------------//
-			//    告知显卡如何解析缓冲里的属性值
+			
 			glVertexAttribPointer(textureLocation, 2, GL_FLOAT, GL_FALSE, stride, (void*)(7 * sizeof(float)));
-			//    开启VAO管理的第一个属性值
+			
 			glEnableVertexAttribArray(textureLocation);
 		}
 		img->vao->release();
@@ -264,8 +267,14 @@ void RenderWidget::renderImage(Image* img)
 	imageShaderProgram->bind();
 	imageShaderProgram->setUniformValue("MVPMatrix", matrix);
 
+	
+	QString date = QDateTime::currentDateTime().toString("现在时间是：yyyy-MM-dd hh:mm:ss.zzz");
+	mTexture = genTextTexture(512, 512, date, 60, Qt::red);
+	mTexture->bind();
+	
+
 	//bind texture
-	img->texture->bind();
+	//img->texture->bind();
 	img->ibo->bind();
 	//enable alpha blending
 	glEnable(GL_BLEND);
@@ -281,6 +290,7 @@ void RenderWidget::renderImage(Image* img)
 	glDrawElements(GL_TRIANGLES, sizeof(unsigned int)*6, GL_UNSIGNED_INT, 0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	img->ibo->release();
+	
 	auto indices = new unsigned int[8] {
 		0, 1, 1, 2, 2, 3, 3, 0
 	};
@@ -292,6 +302,9 @@ void RenderWidget::renderImage(Image* img)
 	boxColliderShaderProgram->setUniformValue("MVPMatrix", matrix);
 	glLineWidth(3.0f);
 	glDrawElements(GL_LINES, sizeof(unsigned int)*8, GL_UNSIGNED_INT, 0);
+
+	
+
 	img->borderIbo->release();
 	delete[] indices;
 	//release
@@ -337,6 +350,10 @@ void RenderWidget::initializeGL()
 	createProgram();
 	createBoxProgram();
 	
+	createTextProgram();
+	textBuffer = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
+	
+
 	createIBO();
 
 }
@@ -352,6 +369,7 @@ void RenderWidget::paintGL()
 	frameCount++;
 	makeCurrent();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
 
 	renderScene();
 	return;
@@ -414,6 +432,8 @@ void RenderWidget::createTextProgram()
 	if (!success)
 		qDebug() << "ERR:" << shaderTextProgram->log();
 
+
+
 	
 	mPosAttr = shaderTextProgram->attributeLocation("posAttr");
 	mTexAttr = shaderTextProgram->attributeLocation("texcoord");
@@ -440,26 +460,26 @@ void RenderWidget::createVAO()
 	auto stride = 8 * sizeof(float);
 
 	//-----------------position--------------------//
-	//告知显卡如何解析缓冲里的属性值
+	
 	glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
 
-	//开启VAO管理的第一个属性值
+	
 	glEnableVertexAttribArray(posLocation);
 
 	if (colorLocation >= 0)
 	{
 		//------------------Color-----------------------//
-		//告知显卡如何解析缓冲里的属性值
+		
 		glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
-		//开启VAO管理的第一个属性值
+		
 		glEnableVertexAttribArray(colorLocation);
 	}
 	if (textureLocation)
 	{
 		//------------------Texture-----------------------//
-		//    告知显卡如何解析缓冲里的属性值
+		
 		glVertexAttribPointer(textureLocation, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
-		//    开启VAO管理的第一个属性值
+		
 		glEnableVertexAttribArray(textureLocation);
 
 	}	
