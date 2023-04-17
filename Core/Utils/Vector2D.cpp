@@ -10,6 +10,11 @@ Vector2D Vector2D::operator+(const Vector2D& b)
 	return Vector2D(x+b.x,y+b.y);
 }
 
+Vector2D Vector2D::operator/(float b)
+{
+	return Vector2D(x / b, y / b);
+}
+
 Vector2D& Vector2D::operator=(const Vector2D& b)
 {
 	x = b.x;

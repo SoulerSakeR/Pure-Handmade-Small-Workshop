@@ -5,7 +5,7 @@
 #include "IRenderable.h"
 #include "IResizable.h"
 
-class Image : public IResizable
+class Image : public IBoxResizable
 {
 public:
     static constexpr int max_component_size = 1;
@@ -15,19 +15,12 @@ public:
     // getters and setters
     const std::string& get_imgPath();
     void set_imgPath(const std::string& imgPath,bool refreshUI = true);
-    const Vector2D& get_size();
-    void set_size(Vector2D newSize,bool refreshUI = true);
-    void set_size(float  width, float height, bool refreshUI = true);    
     int get_render_order();
     void set_render_order(int order,bool refreshUI = true);
 
     // Inherited via Component
     void set_property(Property* property, void* value) override;
     void reset() override; 
-
-    // Inherited via IRenderable
-    void updateVertices() override;
-    void createIndices() override;
 
 protected:
     ~Image();
@@ -39,7 +32,6 @@ protected:
     void deserialize(std::stringstream& ss) override; 
      
     std::string imgPath;
-    Vector2D size;
     int render_order;
 };
 

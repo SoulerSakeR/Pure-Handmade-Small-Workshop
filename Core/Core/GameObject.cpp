@@ -5,6 +5,7 @@
 #include "RigidBody.h"
 #include "BoxCollider.h"
 #include "Script.h"
+#include "Text.h"
 
 using namespace std;
 
@@ -151,6 +152,9 @@ Component* GameObject::addComponent(Component::ComponentType type)
 		break;
     case Component::SCRIPT:
 		result = new Script(this);
+		break;
+    case Component::TEXT:
+        result = new Text(this);
 		break;
     default:
         break;

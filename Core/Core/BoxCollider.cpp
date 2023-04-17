@@ -1,5 +1,6 @@
 #include "BoxCollider.h"
 #include "Core/SystemStatus/GameEngine.h"
+#include "IResizable.h"
 
 using namespace std;
 
@@ -45,19 +46,19 @@ void BoxCollider::updateVertices()
 {
 	float half_width = size.x / 2;
 	float half_height = size.y / 2;
-	vertices = new float[12]
-	{
-		-half_width, -half_height, 0.0f,
-		half_width, -half_height, 0.0f,
-		half_width, half_height, 0.0f,
-		-half_width, half_height, 0.0f
+	vertices = {
+		Vertex{{half_width, half_height, 0.0f},{color.r, color.g, color.b, color.a},{1.0f, 1.0f}},        // top right
+		Vertex{{half_width, -half_height, 0.0f},{color.r, color.g, color.b, color.a},{1.0f, 0.0f}},	   // bottom right
+		Vertex{{-half_width, -half_height, 0.0f},{color.r, color.g, color.b, color.a},{0.0f, 0.0f}}, 	   // bottom left
+		Vertex{{-half_width, half_height, 0.0f},{color.r, color.g, color.b, color.a},{0.0f,1.0f}}         // top left
 	};
 }
 
 void BoxCollider::createIndices()
 {
-	indices = new unsigned int[8] {
-		0, 1, 1, 2, 2, 3, 3, 0
+	indices = {
+		0, 3, 2, // first triangle
+		0, 2, 1  // second triangle
 	};
 }
 

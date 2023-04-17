@@ -72,7 +72,6 @@ void ComponentsDockWidget::onPropertyChanged(Property* property)
 {
 	if (property_Object_map.find(property) != property_Object_map.end())
 	{
-		changed_property = property;
 		auto object = property_Object_map[property];
 		if (property->type == Property::INT)
 		{
@@ -92,7 +91,7 @@ void ComponentsDockWidget::onPropertyChanged(Property* property)
 		else if (property->type == Property::BOOL)
 		{
 			auto checkBox = (QCheckBox*)object;
-			checkBox->setChecked(property->get_data<bool>());
+			checkBox->setCheckState((Qt::CheckState)(property->get_data<bool>()));
 		}
 		else if (property->type == Property::VECTOR2D)
 		{
@@ -204,11 +203,6 @@ void ComponentsDockWidget::onPropertyInputed(QObject*  sender, void* value)
 	if (Object_Property_map.find(sender) != Object_Property_map.end())
 	{
 		auto property = Object_Property_map[sender];
-		if (changed_property == property)
-		{
-			changed_property = nullptr;
-			return;
-		}
 		property->get_component()->set_property(property, value);
 	}
 	else

@@ -167,11 +167,11 @@ void RenderWidget::renderBoxCollider(BoxCollider* box)
 		box->vbo = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
 		box->vbo->create();
 		box->vbo->bind();
-		box->vbo->allocate(box->vertices, 12*sizeof(float));
+		box->vbo->allocate(box->vertices.data(), box->vertices.size() * sizeof(Vertex));
 		box->ibo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
 		box->ibo->create();
 		box->ibo->bind();
-		box->ibo->allocate(box->indices, 8*sizeof(unsigned int));
+		box->ibo->allocate(box->indices.data(), box->indices.size() * sizeof(unsigned int));
 
 		boxColliderShaderProgram->bind();
 		GLint posLocation = boxColliderShaderProgram->attributeLocation("aPos");
@@ -226,18 +226,18 @@ void RenderWidget::renderImage(Image* img)
 		img->vbo = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
 		img->vbo->create();
 		img->vbo->bind();
-		img->vbo->allocate(img->vertices, 36 * sizeof(float));
+		img->vbo->allocate(img->vertices.data(), img->vertices.size() * sizeof(Vertex));
 		img->ibo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
 		img->ibo->create();
 		img->ibo->bind();
-		img->ibo->allocate(img->indices, 6 * sizeof(unsigned int));
+		img->ibo->allocate(img->indices.data(), img->indices.size() * sizeof(unsigned int));
 		imageShaderProgram->bind();
 		
 		GLint posLocation = imageShaderProgram->attributeLocation("aPos");
 		GLint colorLocation = imageShaderProgram->attributeLocation("aColor");
 		GLint textureLocation = imageShaderProgram->attributeLocation("aTexCord");
 		
-		auto stride = 9 * sizeof(float);
+		auto stride = sizeof(Vertex);
 		
 		//-----------------position--------------------//
 		//告知显卡如何解析缓冲里的属性值
@@ -298,27 +298,28 @@ void RenderWidget::renderImage(Image* img)
 	//set texture mode
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	//draw
+	//draw texture
 	glDrawElements(GL_TRIANGLES, sizeof(unsigned int)*6, GL_UNSIGNED_INT, 0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	img->ibo->release();
 	
-	auto indices = new unsigned int[8] {
-		0, 1, 1, 2, 2, 3, 3, 0
-	};
-	img->borderIbo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
-	img->borderIbo->create();
+	//draw border
+	if (img->borderIbo == nullptr)
+	{
+		img->borderIbo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+		img->borderIbo->create();
+		img->borderIbo->bind();
+		img->borderIbo->allocate(img->borderIndices.data(), img->borderIndices.size() * sizeof(unsigned int));
+	}
 	img->borderIbo->bind();
-	img->borderIbo->allocate(indices, 8 * sizeof(unsigned int));
+	
 	boxColliderShaderProgram->bind();
 	boxColliderShaderProgram->setUniformValue("MVPMatrix", matrix);
+
 	glLineWidth(3.0f);
-	glDrawElements(GL_LINES, sizeof(unsigned int)*8, GL_UNSIGNED_INT, 0);
-
-	
-
+	glDrawElements(GL_LINES, sizeof(unsigned int) * img->borderIndices.size(), GL_UNSIGNED_INT, 0);
 	img->borderIbo->release();
-	delete[] indices;
+
 	//release
 	img->vao->release();
 	img->texture->release();

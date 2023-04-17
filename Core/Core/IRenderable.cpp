@@ -5,8 +5,8 @@ IRenderable::IRenderable(GameObject* gameobj) :Component(gameobj)
 	vao = nullptr;
 	vbo = nullptr;
 	ibo = nullptr;
-	vertices = nullptr;
-	indices = nullptr;
+	vertices.clear();
+	indices.clear();
 	color = Color32{ 0.5f,0.5f,0.5f,0.5f };
 	texture = nullptr;
 }
@@ -31,15 +31,9 @@ IRenderable::~IRenderable()
 		delete ibo;
 		ibo = nullptr;
 	}
-	if (vertices != nullptr)
+	if (vertices.size()>0)
 	{
-		delete[] vertices;
-		vertices = nullptr;
-	}
-	if (indices != nullptr)
-	{
-		delete[] indices;
-		indices = nullptr;
+		vertices.clear();
 	}
 }
 
@@ -63,9 +57,8 @@ void IRenderable::reset()
 		delete ibo;
 		ibo = nullptr;
 	}
-	if (vertices != nullptr)
+	if (vertices.size()>0)
 	{
-		delete[] vertices;
-		vertices = nullptr;
+		vertices.clear();
 	}
 }

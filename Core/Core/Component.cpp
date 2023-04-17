@@ -3,6 +3,7 @@
 void Component::set_enabled(bool value)
 {
 	enabled = value;
+	onPropertyChange(properties["enabled"]);
 }
 
 void Component::set_property(Property* property, void* value)
@@ -34,6 +35,8 @@ std::string Component::getName(ComponentType type)
 		return "Rigid Body";
 	case BOX_COLLIDER:
 		return "Box Collider";
+	case TEXT:
+			return "Text";
 	default:
 		return "Unknown";
 		break;
