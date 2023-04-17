@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 #ifndef MEDIA_H
 #define MEDIA_H
 
@@ -25,7 +26,7 @@ public:
     bool stopAudio();
     bool saveAudio(const QString& outputPath);
     void setAudioVolume(int volume);
-    void setAudioPosition(qint64 position)
+    void setAudioPosition(qint64 position);
 
 private:
     QString codecForFileExtension(const QString& extension) const;
