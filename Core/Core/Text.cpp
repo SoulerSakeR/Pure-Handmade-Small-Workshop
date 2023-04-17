@@ -3,8 +3,9 @@ using namespace std;
 
 Text::Text(GameObject* gameObj, const std::string& text):IBoxResizable(gameObj),text(text)
 {
-	componentType = ComponentType::TEXT;
+	componentType = ComponentType::TEXT;	
 	properties.emplace("text", new Property("text", &(this->text), Property::STRING, this));
+	set_size(Vector2D(100, 100));
 }
 
 void Text::set_property(Property* property, void* value)
