@@ -615,6 +615,29 @@ void RenderWidget::mouseMoveEvent(QMouseEvent* event)
 }
 
 
+void RenderWidget::keyPressEvent(QKeyEvent* event)
+{
+	switch (event->key()) {
+    
+    case Qt::Key_W: mCameraObject->transform->translate(Vector2D(0.f,1.f));break;
+    case Qt::Key_S: mCameraObject->transform->translate(Vector2D(0.f,-1.f)); break;
+    case Qt::Key_D: mCameraObject->transform->translate(Vector2D(1.f, 0.f)); break;
+    case Qt::Key_A: mCameraObject->transform->translate(Vector2D(-1.f, 0.f)); break;
+
+    default:
+        break;
+    }
+}
+
+void RenderWidget::wheelEvent(QWheelEvent* event)
+{
+	if (event->angleDelta().y() > 0)
+		mCamera->set_view_width(mCamera->get_view_width() * 0.9f);
+	else
+		mCamera->set_view_width(mCamera->get_view_width() * 1.1f);
+}
+
+
 
 
 

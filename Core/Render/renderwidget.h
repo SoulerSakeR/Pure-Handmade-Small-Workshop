@@ -38,7 +38,10 @@ public:
     void renderBoxCollider(BoxCollider* boxCollider);
     void renderImage(Image* image);
     void renderText(Text* text);
+    
     void mouseMoveEvent(QMouseEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
+    void wheelEvent(QWheelEvent* event) override;
 
     bool editMode = true;
 

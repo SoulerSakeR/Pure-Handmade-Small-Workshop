@@ -43,7 +43,7 @@ QMatrix4x4 Camera::CalculateProjectionMulViewMatrix()
 	result.ortho(-view_width / 2, view_width / 2, -view_width / 2 * ratio, view_width / 2 * ratio,-10.f,10.f);
 	QMatrix4x4 matrix = QMatrix4x4();
 	matrix.rotate(gameObject->transform->getWorldRotation(), 0.f, 0.f, 1.f);
-	result.lookAt(gameObject->transform->getWorldPosition().toQVector3D(1.f), QVector3D(0.f, 0.f, -1.f),  matrix* QVector4D(0.f, 1.f, 0.f,1.f).toVector3D());
+	result.lookAt(gameObject->transform->getWorldPosition().toQVector3D(1.f), gameObject->transform->getWorldPosition().toQVector3D(-1.f), matrix* QVector4D(0.f, 1.f, 0.f,1.f).toVector3D());
 	return result;
 }
 
