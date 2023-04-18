@@ -15,97 +15,6 @@ RenderWidget* RenderWidget::instance = nullptr;
 std::string source_path;
 static int count = 0;
 
-
-/*
-float vertices[] = {
-	// positions   // colors           // texture coords
-	1.f,  1.f, 0,  1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   1.f,  1.f, 0, // top right
-	1.f, -1.f, 0,  0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   1.f, -1.f, 0, // bottom right
-   -1.f, -1.f, 0,  0.0f, 0.0f, 1.0f,   0.0f, 0.0f,  -1.f, -1.f, 0, // bottom left
-   -1.f,  1.f, 0,  1.0f, 1.0f, 0.0f,   0.0f, 1.0f   -1.f,  1.f, 0, // top left
-};
-*/
-
-// text render 
-/*
-static const char* vertexShaderSource =
-"attribute highp vec4 aPos;\n"
-"attribute highp vec2 aTexCord;\n"
-"varying highp vec2 v_texcoord;\n"
-"uniform highp mat4 matrix;\n"
-"uniform highp mat4 projMatrix;\n"
-"void main() {\n"
-"   v_texcoord = aTexCord;\n"
-"   gl_Position = aPos;\n"
-"}\n";
-
-static const char* fragmentShaderSource =
-"varying highp vec2 v_texcoord;\n"
-"uniform sampler2D texture;\n"
-"void main() {\n"
-"   highp vec4 texColor = texture2D(texture, v_texcoord);\n"
-"   highp float alpha = texColor.a;\n"
-"   if(alpha < 0.2)\n"
-"       discard;\n"
-"   highp vec3 color = vec3(1.0,1.0,1.0);\n"
-"   gl_FragColor = texColor * vec4(color, 1.0);\n"
-"}\n";
-
-
-*/
-float verticesText[] =
-{    
-	 // positions          // texture coords
-	 1.f,  1.f, 0,   1.0f, 1.0f,	// top right
-	 1.f, -1.f, 0,   1.0f, 0.0f,	// bottom right
-	-1.f, -1.f, 0,   0.0f, 0.0f, 	// bottom left
-	-1.f,  1.f, 0,   0.0f, 1.0f	// top left
-};
-
-
-float verticesBox[] =
-{    // positions        // colors
-	 200.f,  200.f, 0.0f,  1.0f, 0.0f, 0.0f,	// top right
-	 200.f, -200.f, 0.0f,  0.0f, 1.0f, 0.0f,	// bottom right
-	-200.f, -200.f, 0.0f,  0.0f, 0.0f, 1.0f, 	// bottom left
-	-200.f,  200.f, 0.0f,  0.5f, 0.5f, 0.5f,	// top left
-};
-
-
-
-
-float vertices[] = {
-	// positions   // colors                // texture coords
-	1.f,  1.f, 0,  1.0f, 0.0f, 0.0f, 1.f,   1.0f, 1.0f,   // top right
-	1.f, -1.f, 0,  0.0f, 1.0f, 0.0f, 1.f,   1.0f, 0.0f,   // bottom right
-   -1.f, -1.f, 0,  0.0f, 0.0f, 1.0f, 1.f,   0.0f, 0.0f,   // bottom left
-   -1.f,  1.f, 0,  1.0f, 1.0f, 0.0f, 1.f,   0.0f, 1.0f    // top left
-};
-
-
-float TextVertices[] = {
-	// positions   // colors                // texture coords
-	400.f,  400.f, 0,  1.0f, 0.0f, 0.0f, 1.f,   1.0f, 1.0f,   // top right
-	400.f,  300.f, 0,  0.0f, 1.0f, 0.0f, 1.f,   1.0f, 0.0f,   // bottom right
-    300.f,  300.f, 0,  0.0f, 0.0f, 1.0f, 1.f,   0.0f, 0.0f,   // bottom left
-    300.f,  400.f, 0,  1.0f, 1.0f, 0.0f, 1.f,   0.0f, 1.0f    // top left
-};
-
-//counter clockwise
-
-
-unsigned int indices[] = { // note that we start from 0!
-			   0, 3, 2, // first triangle
-			   0, 2, 1 // second triangle
-};
-
-// 定义需要绘制的边
-GLuint indicesBOX[] = { 0, 1, 1, 2, 2, 3, 3, 0 };
-
-GLuint indicesText[] = { 0, 1, 1, 2, 2, 3, 3, 0 };
-
-
-
 RenderWidget::RenderWidget(QWidget* parent) : QOpenGLWidget(parent)
 {
 	setFocusPolicy(Qt::StrongFocus);
@@ -114,8 +23,6 @@ RenderWidget::RenderWidget(QWidget* parent) : QOpenGLWidget(parent)
 	instance = this;
 	fbo = nullptr;
 }
-
-
 
 RenderWidget::~RenderWidget()
 {
@@ -524,11 +431,6 @@ void RenderWidget::initializeGL()
 	createTextProgram();
 	
 	textBuffer = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
-	
-
-	
-
-
 }
 
 void RenderWidget::resizeGL(int w, int h)
@@ -542,7 +444,6 @@ void RenderWidget::resizeGL(int w, int h)
 		delete fbo;
 		fbo = nullptr;
 	}
-	
 }
 
 void RenderWidget::paintGL()
@@ -560,20 +461,8 @@ void RenderWidget::paintGL()
 	
 	fbo->bind();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
 	renderScene();
-
-	if (frameCount%200 == 0)
-	{
-		// 将渲染结果保存到 QImage 中
-		QImage image = fbo->toImage();
-		QString filePath = "E:/GroupProject/github/Pure-Handmade-Small-Workshop/output/image.png";
-		if (image.save(filePath, "PNG")) {
-			qDebug() << "Image saved successfully!";
-		}
-		else {
-			qDebug() << "Error saving image!";
-		}
-	}
 	
 	fbo->release();
 	QOpenGLFramebufferObject::blitFramebuffer(nullptr, fbo, GL_COLOR_BUFFER_BIT, GL_LINEAR);
@@ -609,7 +498,7 @@ void RenderWidget::createProgram()
 		qDebug() << "ERR:" << imageShaderProgram->log();
 	shaderOffsetBinding = imageShaderProgram->uniformLocation("offset");
 	shaderSizeBinding = imageShaderProgram->uniformLocation("size");
-	textureWallBinding = 0;
+	imageTextureBinding = 0;
 }
 
 
@@ -628,21 +517,6 @@ void RenderWidget::createBoxProgram() {
 
 void RenderWidget::createTextProgram() 
 {
-	/*
-	bool success;
-	textShaderProgram = std::make_unique<QOpenGLShaderProgram>();
-	textShaderProgram->create();
-	textShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderSource);
-	textShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderSource);
-	success = textShaderProgram->link();
-	if (!success)
-		qDebug() << "ERR:" << textShaderProgram->log();
-	mPosAttr = textShaderProgram->attributeLocation("posAttr");
-	mTexAttr = textShaderProgram->attributeLocation("texcoord");
-	mMatrixLoc = textShaderProgram->uniformLocation("matrix");
-	mProjLoc = textShaderProgram->uniformLocation("projMatrix");
-	*/
-
 	bool success;
 	textShaderProgram = std::make_unique<QOpenGLShaderProgram>();
 	textShaderProgram->create();
@@ -653,77 +527,52 @@ void RenderWidget::createTextProgram()
 		qDebug() << "ERR:" << textShaderProgram->log();
 	shaderOffsetBinding = textShaderProgram->uniformLocation("offset");
 	shaderSizeBinding = textShaderProgram->uniformLocation("size");
-	textureWallBinding = 0;
 }
-
-
 
 void RenderWidget::messageLogHandler(const QOpenGLDebugMessage& debugMessage)
 {
 	qDebug() << debugMessage.message();
 }
 
-
-
-
-
 // text render 
 QOpenGLTexture *RenderWidget::genTextTexture(int width, int height, const QString& text, int textPixelSize, const QColor& textColor)
 {
 	// 创建一个 2D 纹理对象
 	QOpenGLTexture* texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
-
 	// 创建一张空的 QImage，格式为 ARGB32_Premultiplied
 	QImage img(width, height, QImage::Format_ARGB32_Premultiplied);
-
 	// 将图片填充为完全透明的黑色
 	img.fill(QColor(0, 0, 0, 0));
-
 	// 创建一个 QPainter，用于在 QImage 上绘制文字
 	QPainter painter;
-
 	// 开始在 QImage 上绘制
 	painter.begin(&img);
-
 	// 设置字体大小
 	QFont font;
 	font.setPixelSize(textPixelSize);
-
 	// 设置 QPainter 使用的字体
 	painter.setFont(font);
-
 	// 创建一个画笔，用于绘制文字颜色
 	QPen pen;
 	pen.setColor(textColor);
 	painter.setPen(pen);
-
-	// 设置文字的对齐方式为左上对齐，并启用自动换行
+	// 设置文字的对齐方式为左上对齐
 	QTextOption option(Qt::AlignLeft | Qt::AlignTop);
-	
-	//option.setWrapMode(QTextOption::WordWrap);
+	// 设置文字的换行模式为不换行
 	option.setWrapMode(QTextOption::NoWrap);
-
-
-
 	// 设置绘制文字的矩形区域
 	QRectF rect(0, 0, width, height);
-
 	// 在 QImage 上绘制文字
 	painter.drawText(rect, text, option);
-
 	// 停止在 QImage 上绘制
 	painter.end();
-
 	// 将 QImage 的数据绑定到纹理上
 	texture->setData(img);
-
 	// 设置纹理的放大和缩小过滤器为线性过滤
 	texture->setMinificationFilter(QOpenGLTexture::Linear);
 	texture->setMagnificationFilter(QOpenGLTexture::Linear);
-
 	// 设置纹理的重复模式为 Repeat
 	texture->setWrapMode(QOpenGLTexture::Repeat);
-
 	// 返回生成的纹理对象指针
 	return texture;
 }

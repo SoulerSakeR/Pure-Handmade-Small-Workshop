@@ -30,9 +30,7 @@ public:
     int frameCount;
     void cleanup();
 
-    static RenderWidget& getInstance();
-
-    
+    static RenderWidget& getInstance(); 
   
     void renderScene();
     void renderGameobject(GameObject* gameobj);
@@ -40,8 +38,6 @@ public:
     void renderImage(Image* image);
     void renderText(Text* text);
     void mouseMoveEvent(QMouseEvent* event) override;
-
-    
 
 protected:
     virtual void initializeGL();
@@ -59,15 +55,10 @@ private:
 
     static RenderWidget* instance;
 
-
     std::unordered_map<std::string, QOpenGLTexture*>textures;
     
     Shape m_shape;
-    
-
-
-
-   
+  
     std::unique_ptr<QOpenGLShaderProgram> imageShaderProgram;   
     std::unique_ptr<QOpenGLShaderProgram> boxColliderShaderProgram;
     std::unique_ptr<QOpenGLShaderProgram> textShaderProgram;
@@ -87,36 +78,17 @@ private:
     std::unique_ptr<QOpenGLDebugLogger> logger;
 
     QTimer timer;
-    std::unique_ptr<QOpenGLTexture> textureSmile;
-    std::unique_ptr<QOpenGLTexture> textureBoss;
-    std::unique_ptr<QOpenGLTexture> textureWall;
-
-    GLint textureWallBinding;
-
+    GLint imageTextureBinding;
     GLint shaderOffsetBinding;
     GLint shaderSizeBinding;
 
     // Texture
-    void createProgram();
-    
+    void createProgram();    
     // BoxCollider
     void createBoxProgram();
-    
-    
-
-   
-   
-
-
-
-    
-    
-    // void getTextureInfo(Image& imgComponent, QString* texturePathQ, QVector3D* offset, QVector2D* size);
-
-    // text
+    // Text
     void createTextProgram();
     
-
     QOpenGLTexture* genTextTexture(int width, int height, const QString& text, int textPixelSize, const QColor& textColor);
     
     std::unique_ptr<QOpenGLBuffer> textBuffer;
@@ -132,8 +104,6 @@ private:
     GLuint mVertexCount;
 
     
-
-
     QOpenGLFramebufferObject* fbo;
 
 
