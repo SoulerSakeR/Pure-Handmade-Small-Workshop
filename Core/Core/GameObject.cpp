@@ -6,6 +6,7 @@
 #include "BoxCollider.h"
 #include "Script.h"
 #include "Text.h"
+#include "Core/ResourceManagement/SceneMgr.h"
 
 using namespace std;
 
@@ -15,6 +16,16 @@ int GameObject::idCount = 0;
 int GameObject::getID()
 {
     return id;
+}
+
+Result<void*> GameObject::set_name(const std::string& name)
+{
+    if (auto scene = SceneMgr::get_instance().get_current_scene();scene != nullptr)
+    {       
+        return scene->renameGameObject(this, name);
+    }
+    this->name = name;
+    return Result<void*>();
 }
 
 /// @brief serialize game object to custom string

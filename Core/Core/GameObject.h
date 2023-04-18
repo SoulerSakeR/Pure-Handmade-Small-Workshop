@@ -3,6 +3,7 @@
 #include "ISerializable.h"
 #include "Transform.h"
 #include "Core/Utils/Utils.h"
+#include "Core/Utils/Result.h"
 #include "Core/Core/Debug.h"
 
 class GameObject :
@@ -21,7 +22,8 @@ public:
 
     //method
     int getID(); //需要绑定
-   
+    Result<void*> set_name(const std::string& name); //需要绑定
+
     Component* addComponent(Component::ComponentType type); 
     template <typename T>
     T* addComponent(); //需要绑定

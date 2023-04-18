@@ -1,6 +1,6 @@
 #include "DeleteComponentButton.h"
 #include "Core/Core/GameObject.h"
-#include "ComponentsDockWidget.h"
+#include "Core/UI/ComponentsDockWidget.h"
 
 DeleteComponentButton::DeleteComponentButton(QWidget* parent,Component* component): QPushButton(parent),component(component)
 {

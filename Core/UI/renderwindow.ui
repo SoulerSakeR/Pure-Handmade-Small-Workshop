@@ -124,7 +124,7 @@
    <property name="minimumSize">
     <size>
      <width>256</width>
-     <height>94</height>
+     <height>99</height>
     </size>
    </property>
    <property name="autoFillBackground">

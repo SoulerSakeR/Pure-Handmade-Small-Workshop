@@ -18,6 +18,27 @@ Scene::Scene(string name)
 	rootGameObjs = vector<GameObject*>();
 }
 
+Result<void*> Scene::renameGameObject(GameObject* gameObject, std::string newName)
+{
+	if (gameObject == nullptr)
+		return Result<void*>(false,"gameObject is nullptr");
+	if(auto it = allGameObjsByName.find(newName); it != allGameObjsByName.end())
+		return Result<void*>(false,"name already exists");
+	if (auto it = allGameObjsByName.find(gameObject->name); it != allGameObjsByName.end())
+	{
+		auto& vec = it->second;
+		auto it2 = find(vec.begin(), vec.end(), gameObject);
+		if (it2 != vec.end())
+		{
+			vec.erase(it2);
+		}
+	}
+	allGameObjsByName[newName] = vector<GameObject*>();
+	allGameObjsByName[newName].push_back(gameObject);
+	gameObject->name = newName;
+	return Result<void*>();
+}
+
 void Scene::insertGameObject(GameObject& value,GameObject* target,InsertMode insertMode)
 {
 	addGameObject(&value);

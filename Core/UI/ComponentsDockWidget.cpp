@@ -14,8 +14,10 @@
 #include "qscrollarea.h"
 #include "Core/Utils/Vector2D.h"
 #include "qpushbutton.h"
-#include "DeleteComponentButton.h"
 #include "PropertyEditor/Vector2DLineEdit.h"
+#include "PropertyEditor/ComponentGroupBox.h"
+#include "qlabel.h"
+#include "Core/Utils/Result.h"
 
 ComponentsDockWidget* ComponentsDockWidget::instance = nullptr;
 
@@ -48,7 +50,7 @@ void ComponentsDockWidget::set_components_widget(QWidget* widget)
 	auto verticalLayout = new QVBoxLayout(components_widget);
 	verticalLayout->setSpacing(20);
 	verticalLayout->setObjectName("verticalLayout");
-	verticalLayout->setContentsMargins(0, 0, 0, 0);
+	verticalLayout->setContentsMargins(5, 5, 5, 5);
 }
 
 void ComponentsDockWidget::clear()
@@ -108,10 +110,36 @@ void ComponentsDockWidget::refresh()
 	clear();
 	if (selected_gameobject == nullptr)
 		return;
+
+	//setup gameobject properties
+	auto groupBox = new QGroupBox("GameObject", components_widget);
+	groupBox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
+	
+	auto layout = new QGridLayout(groupBox);
+	layout->addWidget(new QLabel("name"), 0, 0);
+	auto lineEdit = new QLineEdit(selected_gameobject->name.c_str(),groupBox);
+	layout->addWidget(lineEdit,0,1);
+	connect(lineEdit, &QLineEdit::editingFinished, [=]()
+	{
+		if (auto result = selected_gameobject->set_name(lineEdit->text().toStdString());!result.result)
+			Debug::warningBox(this, result.message);
+		((RenderWindow*)window())->refreshHierachy();
+	});
+	layout->addWidget(new QLabel("is active"), 1, 0);
+	auto checkBox = new QCheckBox(groupBox);
+	checkBox->setCheckState((Qt::CheckState)((selected_gameobject->isActive)?2:0));
+	layout->addWidget(checkBox, 1, 1);
+	connect(checkBox, &QCheckBox::stateChanged, [=](int state)
+	{
+		selected_gameobject->isActive = (bool)state;
+	});
+	components_widget->layout()->addWidget(groupBox);
+
+	//setup components properties
 	for (auto component : selected_gameobject->components)
 	{
 		component->onPropertyChange.registerFunc(&ComponentsDockWidget::onPropertyChanged, this);
-
+		/*
 		auto groupBox = new QGroupBox(QString::fromStdString(component->getName(component->componentType)), components_widget);
 		groupBox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
 		auto verticalLayout = new QVBoxLayout(groupBox);
@@ -193,7 +221,9 @@ void ComponentsDockWidget::refresh()
 		auto deleteButton = new DeleteComponentButton(groupBox,component);
 		deleteButton->setText(QString("delete "));
 		groupBox->layout()->addWidget(deleteButton);
-		components_widget->layout()->addWidget(groupBox);
+		*/
+		auto groupBox = new ComponentGroupBox(this,component);
+		components_widget->layout()->addWidget(groupBox);		
 	}
 	components_widget->layout()->addItem(new QSpacerItem(20, 40, QSizePolicy::Expanding, QSizePolicy::Expanding));
 }

@@ -6,6 +6,7 @@
 #include "ISerializable.h"
 #include "GameObject.h"
 #include "Core/Utils/Test.h"
+#include "Core/Utils/Result.h"
 
 enum InsertMode { BEFORE, AFTER, INSIDE };
 
@@ -20,7 +21,7 @@ public:
     Scene(std::string name="ExampleScene");
 
     //method
-
+    Result<void*> renameGameObject(GameObject* gameObject, std::string newName);
     void insertGameObject(GameObject& value, GameObject* target=nullptr,InsertMode insertMode = INSIDE);
     
     void removeGameObject(GameObject* gameObject);

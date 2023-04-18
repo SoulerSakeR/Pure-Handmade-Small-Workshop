@@ -1,11 +1,13 @@
 #pragma once
 #include "qdockwidget.h"
 #include <Core/Core/GameObject.h>
+#include "HierarchyWidget.h"
 
 class ComponentsDockWidget :
     public QDockWidget
 {
     Q_OBJECT
+    friend class ComponentGroupBox;
 public:
     ComponentsDockWidget(QWidget* parent);
 
