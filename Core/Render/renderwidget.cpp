@@ -9,6 +9,7 @@
 #include <Core/ResourceManagement/SceneMgr.h>
 #include "qevent.h"
 #include <qopenglframebufferobject.h>
+#include <qapplication.h>
 
 RenderWidget* RenderWidget::instance = nullptr;
 std::string source_path;
@@ -525,7 +526,7 @@ void RenderWidget::initializeGL()
 	textBuffer = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
 	
 
-	createIBO();
+	
 
 
 }
@@ -550,8 +551,11 @@ void RenderWidget::paintGL()
 	makeCurrent();
 	if (fbo == nullptr)
 	{
-		fbo = new QOpenGLFramebufferObject(size());
-
+		// 创建一个 FBO，大小为窗口大小乘以设备像素比
+		qreal dpr = qApp->primaryScreen()->devicePixelRatio();
+		QSize scaledSize = size() * dpr;
+		
+		fbo = new QOpenGLFramebufferObject(scaledSize);
 	}
 	
 	fbo->bind();
@@ -652,220 +656,15 @@ void RenderWidget::createTextProgram()
 	textureWallBinding = 0;
 }
 
-void RenderWidget::createVAO()
-{
-	// 找shader的起始位置，并且同时修改下两行的poslocation
-	imageShaderProgram->bind();
-	GLint posLocation = imageShaderProgram->attributeLocation("aPos");
-	GLint colorLocation = imageShaderProgram->attributeLocation("aColor");
-	GLint textureLocation = imageShaderProgram->attributeLocation("aTexCord");
 
-	vao = std::make_unique<QOpenGLVertexArrayObject>();
-
-	vao->create();
-
-	vao->bind();
-	vbo->bind();
-	ibo->bind();
-	auto stride = 8 * sizeof(float);
-
-	//-----------------position--------------------//
-	
-	glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
-
-	
-	glEnableVertexAttribArray(posLocation);
-
-	if (colorLocation >= 0)
-	{
-		//------------------Color-----------------------//
-		
-		glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
-		
-		glEnableVertexAttribArray(colorLocation);
-	}
-	if (textureLocation)
-	{
-		//------------------Texture-----------------------//
-		
-		glVertexAttribPointer(textureLocation, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
-		
-		glEnableVertexAttribArray(textureLocation);
-
-	}	
-	vbo->release();
-	glBindVertexArray(0);
-}
-
-void RenderWidget::createBoxVAO() 
-{
-
-	boxColliderShaderProgram->bind();
-	
-	GLint posLocation = boxColliderShaderProgram->attributeLocation("aPos");
-	GLint colorLocation = boxColliderShaderProgram->attributeLocation("aColor");
-
-	vaoBox = std::make_unique<QOpenGLVertexArrayObject>();
-
-	vaoBox->create();
-
-	vaoBox->bind();
-	//vboBox->bind();
-	createBoxVBO();
-	createBoxIBO();
-
-	//告知显卡如何解析缓冲里的属性值
-	glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	//开启VAO管理的第一个属性值
-	glEnableVertexAttribArray(0);
-
-	//告知显卡如何解析缓冲里的属性值
-	glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	//开启VAO管理的第二个属性值
-	glEnableVertexAttribArray(1);
-
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	vboBox->release();
-	glBindVertexArray(0);
-}
-
-void RenderWidget::createTextVAO()
-{
-	textShaderProgram->bind();
-	GLint posLocation = textShaderProgram->attributeLocation("posAttr");
-	GLint texLocation = textShaderProgram->attributeLocation("texcoord");
-	vaoText = std::make_unique<QOpenGLVertexArrayObject>();
-	vaoText->create();
-	vaoText->bind();
-	vboText->bind();
-	iboText->bind();
-	//告知显卡如何解析缓冲里的属性值
-	glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	//开启VAO管理的第一个属性值
-	glEnableVertexAttribArray(0);
-	//告知显卡如何解析缓冲里的属性值
-	glVertexAttribPointer(texLocation, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	//开启VAO管理的第二个属性值
-	glEnableVertexAttribArray(1);
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-	vboText->release();
-	glBindVertexArray(0);
-}
-
-
-
-void RenderWidget::createVBO()
-{
-	vbo = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
-	vbo->create();
-	vbo->bind();
-	vbo->allocate(vertices, sizeof(vertices));
-}
-
-void RenderWidget::createBoxVBO()
-{
-	
-	vboBox = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
-	vboBox->create();
-	vboBox->bind();
-	vboBox->allocate(verticesBox, sizeof(verticesBox));
-}
-
-void RenderWidget::createTextVBO()
-{
-	vboText = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
-	vboText->create();
-	vboText->bind();
-	vboText->allocate(verticesText, sizeof(verticesText));
-}
-
-void RenderWidget::createIBO()
-{
-	ibo = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::IndexBuffer);
-	ibo->create();
-	ibo->bind();
-	ibo->allocate(indices, sizeof(indices));
-}
-
-void RenderWidget::createBoxIBO()
-{
-	iboBox = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::IndexBuffer);
-	iboBox->create();
-	iboBox->bind();
-	iboBox->allocate(indicesBOX, sizeof(indicesBOX));
-}
-
-void RenderWidget::createTextIBO()
-{
-	iboText = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::IndexBuffer);
-	iboText->create();
-	iboText->bind();
-	iboText->allocate(indicesText, sizeof(indicesText));
-}
 
 void RenderWidget::messageLogHandler(const QOpenGLDebugMessage& debugMessage)
 {
 	qDebug() << debugMessage.message();
 }
-void RenderWidget::renderTexture(QOpenGLTexture* texture, QVector3D offset, QVector2D size)
-{
-
-	offset.setZ(0.1f); // 统一深度 不要被挡住了 保证正确混合
-
-	imageShaderProgram->setUniformValue(shaderOffsetBinding, offset);
-	imageShaderProgram->setUniformValue(shaderSizeBinding, size);
-	vao->bind();
-	//ibo->bind();
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDepthFunc(GL_LEQUAL);
-
-	if (textureWallBinding >= 0)
-		texture->bind(textureWallBinding);
-	
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(std::size(indices)), GL_UNSIGNED_INT, 0);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	vao->release();
-	
-	
-	// 绘制图像尺寸框
-	glDisable(GL_BLEND);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glLineWidth(3.0f);
-
-	
-	createBoxIBO(); 
-
-	// 绘制矩形边框
-	glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, nullptr);
-	
-	boxColliderShaderProgram->release();
-}
 
 
-//
-void RenderWidget::renderBox()
-{
-	vaoBox->bind();
-	
-	//ibo->release(); // 释放画图像的ibo
-	//createBoxEBO(); // 重新绑定画盒子的ibo
-	//iboBox->bind();
-	
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glLineWidth(3.0f);
-
-	// 绘制矩形边框
-	glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, nullptr);
-	
-	boxColliderShaderProgram->release();
-}
 
 
 // text render 
@@ -932,9 +731,9 @@ QOpenGLTexture *RenderWidget::genTextTexture(int width, int height, const QStrin
 void RenderWidget::mouseMoveEvent(QMouseEvent* event)
 {
 	Vector2D pos = Vector2D(event->localPos().x(),size().height() - event->localPos().y());
-	Debug::log("mouse position: " + pos.tostring());
-	if(SceneMgr::get_instance().get_main_camera()!=nullptr)
-		Debug::log("camera position: "+SceneMgr::get_instance().get_main_camera()->screenToWorld(pos).tostring());
+	//Debug::log("mouse position: " + pos.tostring());
+	//if(SceneMgr::get_instance().get_main_camera()!=nullptr)
+		//Debug::log("camera position: "+SceneMgr::get_instance().get_main_camera()->screenToWorld(pos).tostring());
 }
 
 
