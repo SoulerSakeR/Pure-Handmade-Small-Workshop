@@ -18,6 +18,7 @@
 #include "PropertyEditor/ComponentGroupBox.h"
 #include "qlabel.h"
 #include "Core/Utils/Result.h"
+#include "PropertyEditor/ColorPaletteWidget.h"
 
 ComponentsDockWidget* ComponentsDockWidget::instance = nullptr;
 
@@ -224,7 +225,12 @@ void ComponentsDockWidget::refresh()
 		*/
 		auto groupBox = new ComponentGroupBox(this,component);
 		components_widget->layout()->addWidget(groupBox);		
+
 	}
+
+	auto colorWidget = new ColorPaletteWidget(this);
+	components_widget->layout()->addWidget(colorWidget);
+
 	components_widget->layout()->addItem(new QSpacerItem(20, 40, QSizePolicy::Expanding, QSizePolicy::Expanding));
 }
 

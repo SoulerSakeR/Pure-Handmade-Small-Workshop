@@ -65,16 +65,58 @@
      </widget>
     </item>
     <item>
-     <widget class="RenderWidget" name="openGLWidget">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>1</number>
       </property>
-      <property name="mouseTracking">
-       <bool>true</bool>
-      </property>
+      <widget class="QWidget" name="tab_scene">
+       <attribute name="title">
+        <string>Scene</string>
+       </attribute>
+       <widget class="RenderWidget" name="openGLWidget">
+        <property name="geometry">
+         <rect>
+          <x>-4</x>
+          <y>-1</y>
+          <width>941</width>
+          <height>1031</height>
+         </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="mouseTracking">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_game">
+       <attribute name="title">
+        <string>Game</string>
+       </attribute>
+       <widget class="RenderWidget" name="openGLWidget_2">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>941</width>
+          <height>1031</height>
+         </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="mouseTracking">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </widget>
      </widget>
     </item>
    </layout>
