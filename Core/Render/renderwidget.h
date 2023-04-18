@@ -13,6 +13,7 @@
 #include <Core/Core/BoxCollider.h>
 #include <Core/Core/Image.h>
 #include <Core/Core/Text.h>
+#include <QOpenGLFramebufferObject>
 
 
 
@@ -140,6 +141,10 @@ private:
     void createTextVAO();
     void createTextVBO();
     void createTextIBO();
+
+
+    QOpenGLFramebufferObject* fbo;
+
 
 };
 

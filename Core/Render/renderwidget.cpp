@@ -111,6 +111,7 @@ RenderWidget::RenderWidget(QWidget* parent) : QOpenGLWidget(parent)
 	connect(&timer, SIGNAL(timeout()), this, SLOT(on_timeout()));
 	frameCount = 0;
 	instance = this;
+	fbo = nullptr;
 }
 
 
@@ -533,18 +534,45 @@ void RenderWidget::resizeGL(int w, int h)
 {
 	Q_UNUSED(w); Q_UNUSED(h);
 	glViewport(0, 0, w, h);
+	
+	if (fbo != nullptr)
+	{
+		fbo->release();
+		delete fbo;
+		fbo = nullptr;
+	}
+	
 }
 
 void RenderWidget::paintGL()
 {
 	frameCount++;
 	makeCurrent();
-	QOpenGLFramebufferObject* fbo = new QOpenGLFramebufferObject(size());
+	if (fbo == nullptr)
+	{
+		fbo = new QOpenGLFramebufferObject(size());
+
+	}
+	
 	fbo->bind();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	renderScene();
+
+	if (frameCount%200 == 0)
+	{
+		// 将渲染结果保存到 QImage 中
+		QImage image = fbo->toImage();
+		QString filePath = "E:/GroupProject/github/Pure-Handmade-Small-Workshop/output/image.png";
+		if (image.save(filePath, "PNG")) {
+			qDebug() << "Image saved successfully!";
+		}
+		else {
+			qDebug() << "Error saving image!";
+		}
+	}
+	
 	fbo->release();
-	//QOpenGLFramebufferObject::blitFramebuffer(nullptr, fbo, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	QOpenGLFramebufferObject::blitFramebuffer(nullptr, fbo, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 	return;
 }
 
