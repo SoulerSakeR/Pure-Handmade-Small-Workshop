@@ -22,6 +22,11 @@ RenderWidget::RenderWidget(QWidget* parent) : QOpenGLWidget(parent)
 	frameCount = 0;
 	instance = this;
 	fbo = nullptr;
+
+	mCameraObject = new GameObject("Camera");
+	mCamera = mCameraObject->addComponent<Camera>();
+	mCamera->set_view_width(500);
+
 }
 
 RenderWidget::~RenderWidget()
@@ -114,7 +119,15 @@ void RenderWidget::renderBoxCollider(BoxCollider* box)
 	box->vao->bind();
 	
 	//calculate the MVP matrix
-	auto matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
+	QMatrix4x4 matrix;
+	if (editMode)
+	{
+		matrix = mCamera->CalculateProjectionMulViewMatrix();
+	}
+	else
+	{
+		matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
+	}
 	auto transform = box->gameObject->transform;
 	matrix.translate(transform->getWorldPosition().toQVector3D());
 	matrix.rotate(transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
@@ -188,7 +201,15 @@ void RenderWidget::renderImage(Image* img)
 	img->vao->bind();
 
 	//calculate the MVP matrix
-	auto matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
+	QMatrix4x4 matrix;
+	if (editMode)
+	{
+		 matrix = mCamera->CalculateProjectionMulViewMatrix();
+	}
+	else
+	{
+		 matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
+	}
 	auto transform = img->gameObject->transform;
 	matrix.translate(transform->getWorldPosition().toQVector3D());
 	matrix.rotate(transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
@@ -335,7 +356,15 @@ void RenderWidget::renderText(Text* text)
 	text->vao->bind();
 
 	//calculate the MVP matrix
-	auto matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
+	QMatrix4x4 matrix;
+	if (editMode)
+	{
+		matrix = mCamera->CalculateProjectionMulViewMatrix();
+	}
+	else
+	{
+		matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
+	}
 	auto transform = text->gameObject->transform;
 	matrix.translate(transform->getWorldPosition().toQVector3D());
 	matrix.rotate(transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
@@ -394,7 +423,7 @@ void RenderWidget::renderText(Text* text)
 void RenderWidget::renderScene()
 {
 	auto scene = SceneMgr::get_instance().get_current_scene();
-	if (auto cam = SceneMgr::get_instance().get_main_camera(); scene == nullptr || scene->getRootGameObjs().size() == 0 || cam == nullptr)
+	if ( scene == nullptr || scene->getRootGameObjs().size() == 0 || mCamera == nullptr)
 		return;
 	for (auto& pair : scene->getAllGameObjsByDepth())
 	{
@@ -493,7 +522,7 @@ void RenderWidget::createProgram()
 	imageShaderProgram->create();
 	imageShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, QString::fromStdString(source_path + "\\shaders\\shaders.vert"));
 	imageShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\shaders.frag"));
-	success = imageShaderProgram->link(); //
+	success = imageShaderProgram->link(); 
 	if (!success)
 		qDebug() << "ERR:" << imageShaderProgram->log();
 	shaderOffsetBinding = imageShaderProgram->uniformLocation("offset");

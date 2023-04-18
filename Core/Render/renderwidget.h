@@ -14,6 +14,7 @@
 #include <Core/Core/Image.h>
 #include <Core/Core/Text.h>
 #include <QOpenGLFramebufferObject>
+#include <Core/Core/Camera.h>
 
 
 
@@ -38,6 +39,8 @@ public:
     void renderImage(Image* image);
     void renderText(Text* text);
     void mouseMoveEvent(QMouseEvent* event) override;
+
+    bool editMode = true;
 
 protected:
     virtual void initializeGL();
@@ -106,6 +109,8 @@ private:
     
     QOpenGLFramebufferObject* fbo;
 
+    GameObject* mCameraObject;
+    Camera*  mCamera;
 
 };
 
