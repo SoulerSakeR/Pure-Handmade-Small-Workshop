@@ -1,6 +1,9 @@
 ﻿#include "GameLoop.h"
 using std::chrono::system_clock;
-
+std::vector<GameObject*> gameObjects;
+std::vector<Script*> allScripts;
+sol::state lua;
+std::unordered_map<std::string, sol::protected_function> updateFunctions;
 
 void GameLoop::updatePlayer(float deltaTime) {
         // 更新玩家状态-比如位置和执行动作
@@ -52,28 +55,29 @@ void GameLoop::printDataInfo(float deltaTime) {
 //加载所有游戏对象的所有挂载的脚本，并放入容器中
 void preloadScriptFiles() {
     for (Script* script : allScripts) {
-        lua.script_file(script->get_path);
-        updateFunctions[script->get_name] = lua["update"];
+        lua.script_file(script->get_path());
+        updateFunctions[script->get_name()] = lua["update"];
     }
 }
-
+/*
 //更新游戏逻辑（指调用lua脚本的update函数）  东哥，你看这个函数应该放到什么地方？这个要循环调用
 void updateScripts(float deltaTime) {
     for (GameObject* gameObject : gameObjects) {
-        std::vector<Script*> scripts = gameObject->getComponents<Script>();
+        std::vector<Script*> scripts = gameObject->getComponent<Script>();
         for (Script* script : scripts) {
-            std::string gameObjectName = gameObject->getName();
+            std::string gameObjectName = gameObject->name;
             lua[gameObjectName] = gameObject;
-            updateFunctions[script->get_name](deltaTime);
+            updateFunctions[script->get_name()](deltaTime);
         }
     }
 }
+*/
+
 
 void GameLoop::update(float deltaTime, RenderWidget* Rwg) {
 
-    sol::state lua;
+
     lua.open_libraries(sol::lib::base);// 打开所需的Lua库void GameLoop::update(float deltaTime, RenderWidget* Rwg) {
-    std::unordered_map<std::string, sol::protected_function> updateFunctions;
 
     // 预加载脚本文件
     preloadScriptFiles();
