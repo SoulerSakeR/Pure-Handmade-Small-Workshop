@@ -4,6 +4,9 @@
 #include "Core/Core/Debug.h"
 #include "Core/Core/GameObject.h"
 #include "Core/Core/Transform.h"
+#include "Core/Core/Text.h"
+#include "Core/Core/RigidBody.h"
+
 #include "Core/Utils/Vector2D.h"
 
 using namespace std;
@@ -40,65 +43,108 @@ void bindAllClasses(sol::state& lua) {
 
 
     //  GameObject
+    // 绑定 ComponentType 枚举
+    lua.new_enum("ComponentType",
+        "UNKNOWN", ComponentType::UNKNOWN,
+        "TRANSFORM", ComponentType::TRANSFORM,
+        "IMAGE", ComponentType::IMAGE,
+        "CAMERA", ComponentType::CAMERA,
+        "SCRIPT", ComponentType::SCRIPT,
+        "RIGID_BODY", ComponentType::RIGID_BODY,
+        "BOX_COLLIDER", ComponentType::BOX_COLLIDER,
+        "TEXT", ComponentType::TEXT,
+        "RENDERER", ComponentType::RENDERER);
+
+    // 绑定 GameObject 类
     lua.new_usertype<GameObject>("GameObject",
         // 构造函数
         sol::constructors<GameObject(std::string, bool)>(),
 
-        // 成员变量
+        // 属性
         "isActive", &GameObject::isActive,
-        "name", &GameObject::name,
+        "name", sol::property(&GameObject::name, &GameObject::set_name),
         "transform", &GameObject::transform,
-        "components", &GameObject::components,
 
-        // 成员函数
+        // 方法
         "getID", &GameObject::getID,
-        "isRootGameObject", &GameObject::isRootGameObject
-        );
-
-    lua["GameObject"]["addComponent"] = [](GameObject& obj, ComponentType type) {
-        return obj.addComponent(type);
-    };
-
-    lua["GameObject"]["getComponent"] = [](GameObject& obj, ComponentType type) {
-        return obj.getComponent(type);
-    };
+        "addComponent", sol::overload(
+            [](GameObject& obj, ComponentType type) { return obj.addComponent(type); },
+            [](GameObject& obj) { return obj.template addComponent<Transform>(); },
+            [](GameObject& obj) { return obj.template addComponent<Image>(); },
+            [](GameObject& obj) { return obj.template addComponent<Camera>(); },
+            [](GameObject& obj) { return obj.template addComponent<Script>(); },
+            [](GameObject& obj) { return obj.template addComponent<Rigidbody>(); },
+            [](GameObject& obj) { return obj.template addComponent<BoxCollider>(); },
+            [](GameObject& obj) { return obj.template addComponent<Text>(); },
+            [](GameObject& obj) { return obj.template addComponent<Renderer>(); }
+        ),
+        "getComponent", sol::overload(
+            [](GameObject& obj, ComponentType type) { return obj.getComponent(type); },
+            [](GameObject& obj) { return obj.template getComponent<Transform>(); },
+            [](GameObject& obj) { return obj.template getComponent<Image>(); },
+            [](GameObject& obj) { return obj.template getComponent<Camera>(); },
+            [](GameObject& obj) { return obj.template getComponent<Script>(); },
+            [](GameObject& obj) { return obj.template getComponent<Rigidbody>(); },
+            [](GameObject& obj) { return obj.template getComponent<BoxCollider>(); },
+            [](GameObject& obj) { return obj.template getComponent<Text>(); },
+            [](GameObject& obj) { return obj.template getComponent<Renderer>(); }
+        ),
+        "getComponents", sol::overload(
+            [](GameObject& obj) { return obj.template getComponents<Transform>(); },
+            [](GameObject& obj) { return obj.template getComponents<Image>(); },
+            [](GameObject& obj) { return obj.template getComponents<Camera>(); },
+            [](GameObject& obj) { return obj.template getComponents<Script>(); },
+            [](GameObject& obj) { return obj.template getComponents<Rigidbody>(); },
+            [](GameObject& obj) { return obj.template getComponents<BoxCollider>(); },
+            [](GameObject& obj) { return obj.template getComponents<Text>(); },
+            [](GameObject& obj) { return obj.template getComponents<Renderer>(); }
+        ),
+        "removeComponent", &GameObject::removeComponent,
+        "isRootGameObject", &GameObject::isRootGameObject,
+        "destroy", &GameObject::destroy);
 
 
     //  Transform
-    lua.new_usertype<Transform>(
-        "Transform",
+    lua.new_usertype<Transform>("Transform",
+        // 构造函数
         sol::constructors<Transform(GameObject*)>(),
-        sol::meta_function::garbage_collect, sol::destructor([](Transform& t) { t.~Transform(); }),
 
-        // 获取本地坐标位置
-        "get_localPosition", &Transform::get_localPosition,
+        // 属性
+        "localPosition", sol::property(&Transform::get_localPosition, &Transform::set_localPosition),
+        "localRotation", sol::property(&Transform::get_localRotation, &Transform::set_localRotation),
+        "localScale", sol::property(&Transform::get_localScale, &Transform::set_localScale),
+        "parent", &Transform::parent,
+        "children", &Transform::children,
 
-        // 获取本地旋转角度
-        "get_localRotation", &Transform::get_localRotation,
-
-        // 获取本地缩放
-        "get_localScale", &Transform::get_localScale,
-
-        // 设置本地坐标位置
-        "set_localPosition", &Transform::set_localPosition,
-
-        // 设置本地旋转角度
-        "set_localRotation", &Transform::set_localRotation,
-
-        // 设置本地缩放
-        "set_localScale", &Transform::set_localScale,
-
-        // 获取世界坐标位置
+        // 方法
+        "reset", &Transform::reset,
+        "set_property", &Transform::set_property,
         "getWorldPosition", &Transform::getWorldPosition,
-
-        // 获取世界旋转角度
         "getWorldRotation", &Transform::getWorldRotation,
-
-        // 获取世界缩放
         "getWorldScale", &Transform::getWorldScale,
+        "translate", &Transform::translate);
 
-        // 朝给定向量移动
-        "translate", &Transform::translate
+
+    //Text
+    lua.new_usertype<Text>("Text",
+        // 构造函数
+        sol::constructors<Text(GameObject*, const std::string&)>(),
+
+        // 属性
+        "text", sol::property(&Text::get_text, &Text::set_text),
+
+        // 方法
+        "reset", & Text::reset,
+        "set_property", & Text::set_property);
+
+
+    //RigidBody
+    lua.new_usertype<RigidBody>("RigidBody",
+        sol::constructors<RigidBody(GameObject*)>(),
+        "mass", sol::property(&RigidBody::get_mass, &RigidBody::set_mass),
+        "velocity", sol::property(&RigidBody::get_velocity, &RigidBody::set_velocity),
+        "acceleration", sol::property(&RigidBody::get_acceleration, &RigidBody::set_acceleration),
+        "friction_ratio", sol::property(&RigidBody::get_friction_ratio, &RigidBody::set_friction_ratio)
         );
 }
 
