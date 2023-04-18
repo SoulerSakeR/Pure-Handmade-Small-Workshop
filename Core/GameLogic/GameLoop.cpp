@@ -1,6 +1,5 @@
 ﻿#include "GameLoop.h"
 using std::chrono::system_clock;
-sol::state lua;
 
 
 void GameLoop::updatePlayer(float deltaTime) {
@@ -72,6 +71,7 @@ void updateScripts(float deltaTime) {
 
 void GameLoop::update(float deltaTime, RenderWidget* Rwg) {
 
+    sol::state lua;
     lua.open_libraries(sol::lib::base);// 打开所需的Lua库void GameLoop::update(float deltaTime, RenderWidget* Rwg) {
     std::unordered_map<std::string, sol::protected_function> updateFunctions;
 
