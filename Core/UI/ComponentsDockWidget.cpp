@@ -140,96 +140,9 @@ void ComponentsDockWidget::refresh()
 	for (auto component : selected_gameobject->components)
 	{
 		component->onPropertyChange.registerFunc(&ComponentsDockWidget::onPropertyChanged, this);
-		/*
-		auto groupBox = new QGroupBox(QString::fromStdString(component->getName(component->componentType)), components_widget);
-		groupBox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
-		auto verticalLayout = new QVBoxLayout(groupBox);
-		verticalLayout->setSpacing(20);
-		verticalLayout->setObjectName("verticalLayout");
-		verticalLayout->setContentsMargins(0, 0, 0, 0);
-
-		auto componentWidget = new QTableWidget(groupBox);
-		groupBox->layout()->addWidget(componentWidget);
-		componentWidget->verticalHeader()->setVisible(false);
-		componentWidget->setColumnCount(2);
-		componentWidget->horizontalHeader()->setStretchLastSection(true);
-		componentWidget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
-		componentWidget->setEditTriggers(QAbstractItemView::EditTrigger::NoEditTriggers);
-		componentWidget->setHorizontalHeaderLabels(QStringList() << "Property" << "Value");
-		for (auto it = component->properties.vbegin();it<component->properties.vend();++it)
-		{
-			auto property = *it;
-			componentWidget->setRowCount(componentWidget->rowCount() + 1);
-			componentWidget->setItem(componentWidget->rowCount() - 1, 0, new QTableWidgetItem(QString::fromStdString(property->get_name())));
-			switch (property->type)
-			{
-			case Property::INT:
-			{
-				auto spinbox = new QSpinBox();
-				spinbox->setKeyboardTracking(false);
-				spinbox->setValue(property->get_data<int>());
-				componentWidget->setCellWidget(componentWidget->rowCount() - 1, 1, spinbox);
-				Object_Property_map[spinbox] = property;
-				property_Object_map[property] = spinbox;
-				connect(spinbox, &QSpinBox::valueChanged, this, &ComponentsDockWidget::onIntChanged);
-				break;
-			}
-			case Property::FLOAT:
-			{
-				auto spinbox = new QDoubleSpinBox();
-				spinbox->setKeyboardTracking(false);
-				spinbox->setDecimals(7);
-				spinbox->setRange(-FLT_MAX, FLT_MAX);
-				spinbox->setValue(property->get_data<float>());
-				componentWidget->setCellWidget(componentWidget->rowCount() - 1, 1, spinbox);
-				Object_Property_map[spinbox] = property;
-				property_Object_map[property] = spinbox;
-				connect(spinbox, &QDoubleSpinBox::valueChanged, this, &ComponentsDockWidget::onFloatChanged);
-				break;
-			}
-			case Property::STRING:
-			{
-				auto lineEdit = new QLineEdit();
-				lineEdit->setText(QString::fromStdString(property->get_data<std::string>()));
-				componentWidget->setCellWidget(componentWidget->rowCount() - 1, 1, lineEdit);
-				Object_Property_map[lineEdit] = property;
-				property_Object_map[property] = lineEdit;
-				connect(lineEdit, &QLineEdit::editingFinished, this, &ComponentsDockWidget::onStringChanged);
-				break;
-			}
-			case Property::BOOL:
-			{
-				auto checkbox = new QCheckBox();
-				checkbox->setChecked(property->get_data<bool>());
-				componentWidget->setCellWidget(componentWidget->rowCount() - 1, 1, checkbox);
-				Object_Property_map[checkbox] = property;
-				property_Object_map[property] = checkbox;
-				connect(checkbox, &QCheckBox::stateChanged, this, &ComponentsDockWidget::onIntChanged);
-				break;
-			}
-			case Property::VECTOR2D:
-			{
-				auto lineEdit = new Vector2DLineEdit();
-				lineEdit->setText(QString::fromStdString(property->get_data<Vector2D>().tostring()));
-				componentWidget->setCellWidget(componentWidget->rowCount() - 1, 1, lineEdit);
-				Object_Property_map[lineEdit] = property;
-				property_Object_map[property] = lineEdit;
-				connect(lineEdit, &Vector2DLineEdit::Vector2DChanged, this, &ComponentsDockWidget::onVector2DChanged);
-				break;
-			}
-			}
-		}
-		auto deleteButton = new DeleteComponentButton(groupBox,component);
-		deleteButton->setText(QString("delete "));
-		groupBox->layout()->addWidget(deleteButton);
-		*/
 		auto groupBox = new ComponentGroupBox(this,component);
 		components_widget->layout()->addWidget(groupBox);		
-
 	}
-
-	auto colorWidget = new ColorPaletteWidget(this);
-	components_widget->layout()->addWidget(colorWidget);
 
 	components_widget->layout()->addItem(new QSpacerItem(20, 40, QSizePolicy::Expanding, QSizePolicy::Expanding));
 }
@@ -277,6 +190,12 @@ void ComponentsDockWidget::onVector2DChanged(Vector2D vec)
 {
 	auto sender = QObject::sender();
 	onPropertyInputed(sender, &vec);
+}
+
+void ComponentsDockWidget::onColorChanged(Color32 value)
+{
+	auto sender = QObject::sender();
+	onPropertyInputed(sender, &value);
 }
 
 void ComponentsDockWidget::onGameObjectSelected(GameObject* gameobj)

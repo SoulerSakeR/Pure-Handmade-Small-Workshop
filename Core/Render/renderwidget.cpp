@@ -4,7 +4,6 @@
 #include <iostream>
 #include <QPainter>
 #include <Core/SystemStatus/GameEngine.h>
-#include "Core/Core/Camera.h"
 #include <QElapsedTimer>
 #include <Core/ResourceManagement/SceneMgr.h>
 #include "qevent.h"
@@ -22,12 +21,11 @@ RenderWidget::RenderWidget(QWidget* parent) : QOpenGLWidget(parent)
 	frameCount = 0;
 	instance = this;
 	fbo = nullptr;
-
 	mCameraObject = new GameObject("Camera");
 	mCamera = mCameraObject->addComponent<Camera>();
 	mCamera->set_view_width(500);
-
 }
+
 
 RenderWidget::~RenderWidget()
 {
@@ -91,7 +89,6 @@ void RenderWidget::renderBoxCollider(BoxCollider* box)
 		boxColliderShaderProgram->bind();
 
 		GLint posLocation = boxColliderShaderProgram->attributeLocation("aPos");
-		GLint colorLocation = boxColliderShaderProgram->attributeLocation("aColor");
 
 		auto stride = sizeof(Vertex);
 		//-----------------position--------------------//
@@ -100,12 +97,6 @@ void RenderWidget::renderBoxCollider(BoxCollider* box)
 		//开启VAO管理的第一个属性值
 		glEnableVertexAttribArray(posLocation);
 
-		if (colorLocation >= 0)
-		{
-			//------------------Color-----------------------//
-			glVertexAttribPointer(colorLocation, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
-			glEnableVertexAttribArray(colorLocation);
-		}
 		box->vao->release();
 		box->vbo->release();
 		box->vbo->destroy();
@@ -136,7 +127,7 @@ void RenderWidget::renderBoxCollider(BoxCollider* box)
 	//transfer the MVP matrix to the shader
 	boxColliderShaderProgram->bind();
 	boxColliderShaderProgram->setUniformValue("MVPMatrix", matrix);
-	boxColliderShaderProgram->setUniformValue("color",box->color.r,box->color.g,box->color.b);
+	boxColliderShaderProgram->setUniformValue("color",box->color.red(), box->color.green(), box->color.blue(),box->color.alpha());
 
 	//set line mode
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -166,7 +157,6 @@ void RenderWidget::renderImage(Image* img)
 		imageShaderProgram->bind();
 		
 		GLint posLocation = imageShaderProgram->attributeLocation("aPos");
-		GLint colorLocation = imageShaderProgram->attributeLocation("aColor");
 		GLint textureLocation = imageShaderProgram->attributeLocation("aTexCord");
 		
 		auto stride = sizeof(Vertex);		
@@ -176,16 +166,10 @@ void RenderWidget::renderImage(Image* img)
 		//开启VAO管理的第一个属性值
 		glEnableVertexAttribArray(posLocation);
 
-		if (colorLocation >= 0)
-		{
-			//------------------Color-----------------------//			
-			glVertexAttribPointer(colorLocation, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));			
-			glEnableVertexAttribArray(colorLocation);
-		}
 		if (textureLocation)
 		{
 			//------------------Texture-----------------------//		
-			glVertexAttribPointer(textureLocation, 2, GL_FLOAT, GL_FALSE, stride, (void*)(7 * sizeof(float)));			
+			glVertexAttribPointer(textureLocation, 2, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));			
 			glEnableVertexAttribArray(textureLocation);
 		}
 		img->vao->release();
@@ -218,7 +202,7 @@ void RenderWidget::renderImage(Image* img)
 	//transfer the MVP matrix to the shader
 	imageShaderProgram->bind();
 	imageShaderProgram->setUniformValue("MVPMatrix", matrix);
-
+	imageShaderProgram->setUniformValue("color", img->color.red(), img->color.green(), img->color.blue(), img->color.alpha());
 
 	//bind texture
 	if(img->texture!=nullptr)
@@ -251,6 +235,7 @@ void RenderWidget::renderImage(Image* img)
 	
 	boxColliderShaderProgram->bind();
 	boxColliderShaderProgram->setUniformValue("MVPMatrix", matrix);
+	boxColliderShaderProgram->setUniformValue("color",1.0f,1.0f,1.0f,1.0f);
 
 	glLineWidth(3.0f);
 	glDrawElements(GL_LINES, sizeof(unsigned int) * img->borderIndices.size(), GL_UNSIGNED_INT, 0);
@@ -416,7 +401,8 @@ void RenderWidget::renderText(Text* text)
 	
 	//release
 	text->vao->release();
-	//text->texture->release();
+	if(text->texture!=nullptr)
+		text->texture->release();
 
 }
 
@@ -494,7 +480,7 @@ void RenderWidget::paintGL()
 	renderScene();
 	
 	fbo->release();
-	QOpenGLFramebufferObject::blitFramebuffer(nullptr, fbo, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	QOpenGLFramebufferObject::blitFramebuffer(nullptr,fbo, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 	return;
 }
 

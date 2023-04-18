@@ -14,7 +14,24 @@ void Image::set_imgPath(const std::string& imgPath,bool refreshUI)
 {
 	this->imgPath = imgPath;
 	QString path = QString::fromStdString(GameEngine::get_instance().getRootPath() + imgPath);
-	texture = new QOpenGLTexture(QImage(path).mirrored().convertToFormat(QImage::Format_RGBA8888), QOpenGLTexture::GenerateMipMaps);
+	auto img = QImage(path).mirrored().convertToFormat(QImage::Format_RGBA8888);
+	if (img.isNull())
+	{
+		if(texture!=nullptr)
+		{
+			texture->destroy();
+			delete texture;
+			texture = nullptr;
+		}
+		return;
+	}
+	if (texture != nullptr)
+	{
+		texture->destroy();
+		delete texture;
+		texture = nullptr;
+	}
+	texture = new QOpenGLTexture(img, QOpenGLTexture::GenerateMipMaps);
 	set_size(Vector2D(texture->width(), texture->height()));
 	onPropertyChange(properties["imgPath"]);
 }

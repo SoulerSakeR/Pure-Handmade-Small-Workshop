@@ -33,10 +33,10 @@ void IBoxResizable::updateVertices()
 	float half_width = size.x / 2;
 	float half_height = size.y / 2;
 	vertices =  {
-		Vertex{{half_width, half_height, 0.0f},{color.r, color.g, color.b, color.a},{1.0f, 1.0f}},        // top right
-		Vertex{{half_width, -half_height, 0.0f},{color.r, color.g, color.b, color.a},{1.0f, 0.0f}},	   // bottom right
-		Vertex{{-half_width, -half_height, 0.0f},{color.r, color.g, color.b, color.a},{0.0f, 0.0f}}, 	   // bottom left
-		Vertex{{-half_width, half_height, 0.0f},{color.r, color.g, color.b, color.a},{0.0f,1.0f}}         // top left
+		Vertex{{half_width, half_height, 0.0f},{1.0f, 1.0f}},        // top right
+		Vertex{{half_width, -half_height, 0.0f},{1.0f, 0.0f}},	   // bottom right
+		Vertex{{-half_width, -half_height, 0.0f},{0.0f, 0.0f}}, 	   // bottom left
+		Vertex{{-half_width, half_height, 0.0f},{0.0f,1.0f}}         // top left
 	};
 	updateOperatorVertices();
 }
@@ -80,7 +80,7 @@ void IBoxResizable::updateOperatorVertices()
 		Vector2D texcord2(vertices[borderIndices[i + 1]].texCoord[0], vertices[borderIndices[i + 1]].texCoord[1]);
 		Vector2D center = (position1 + position2) / 2;
 		Vector2D coord = (texcord1 + texcord2) / 2;
-		Vertex vertex = { {center.x,center.y,0.0f},{color.r,color.g,color.b,color.a},{coord.x,coord.y}};
+		Vertex vertex = { {center.x,center.y,0.0f},{coord.x,coord.y}};
 		operatorVertices.push_back(vertex);
 	}
 }
