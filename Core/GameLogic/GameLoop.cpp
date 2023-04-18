@@ -78,12 +78,6 @@ void GameLoop::update(float deltaTime, RenderWidget* Rwg) {
     // 预加载脚本文件
     preloadScriptFiles();
 
-    // 游戏逻辑更新函数，每帧调用一次
-        updatePlayer(deltaTime);
-        updateScene(Rwg);
-        updateGameState(deltaTime);
-        printDataInfo(deltaTime);
-    }
         // 游戏逻辑更新函数，每帧调用一次
         updatePlayer(deltaTime);
         updateScene(Rwg);
