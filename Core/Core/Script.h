@@ -9,13 +9,12 @@ public:
 
     void reset() override;
     
-
     std::string get_name();
     void set_name(const std::string& name);
     std::string get_path();
     void set_path(const std::string& path);
 
-private:
+protected:
     void serialize(PHString& str) override;
 	void deserialize(std::stringstream& ss) override;
     void set_property(Property* property, void* value) override;

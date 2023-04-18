@@ -1,14 +1,21 @@
 #include "IRenderable.h"
+#include "Renderer.h"
+#include "GameObject.h"
 
-IRenderable::IRenderable(GameObject* gameobj) :Component(gameobj)
+IRenderable::IRenderable(GameObject* gameobj) : Component(gameobj)
 {
 	vao = nullptr;
 	vbo = nullptr;
 	ibo = nullptr;
 	vertices.clear();
 	indices.clear();
-	color = Color32{ 0.5f,0.5f,0.5f,0.5f };
+	properties.emplace("color", new Property("color", &color, Property::COLOR, this));
+	color = Color32{ 255,255,255,255 };
 	texture = nullptr;
+	if (auto renderer = gameobj->getComponent<Renderer>(); renderer == nullptr)
+	{
+		gameobj->addComponent<Renderer>();
+	}
 }
 
 IRenderable::~IRenderable()
@@ -34,6 +41,15 @@ IRenderable::~IRenderable()
 	if (vertices.size()>0)
 	{
 		vertices.clear();
+	}
+}
+
+void IRenderable::set_property(Property* property, void* value)
+{
+	Component::set_property(property, value);
+	if (property->get_name() == "color")
+	{
+		color = *(Color32*)value;
 	}
 }
 

@@ -4,68 +4,33 @@
 
 using namespace std;
 
-BoxCollider::BoxCollider(GameObject* gameObj):Collider(gameObj)
+BoxCollider::BoxCollider(GameObject* gameObj):IBoxResizable(gameObj)
 {
 	componentType = BOX_COLLIDER;
-	reset();
-	createIndices();
-	updateVertices();
-	properties.emplace("Size", new Property("Size", &(this->size), Property::VECTOR2D, this));
+	properties.emplace("is trigger", new Property("is trigger", &is_trigger_, Property::VECTOR2D, this));
 }
 
-const Vector2D& BoxCollider::get_size()
-{
-	return size;
-}
-
-void BoxCollider::set_size(Vector2D newSize, bool refreshUI)
-{
-	size = newSize;
-	IRenderable::reset();
-	updateVertices();
-	if (refreshUI && GameEngine::get_instance().getSelectedGameObject() == gameObject)
-	{
-		GameEngine::get_instance().onPropertyChange(properties["Size"]);
-	}
-}
 
 void BoxCollider::reset()
 {
-	size = Vector2D(50.f, 50.f);
+	set_size(Vector2D(100, 100));
 }
 
 void BoxCollider::set_property(Property* property, void* value)
 {
-	if (property->get_name() == "Size")
+	IBoxResizable::set_property(property, value);
+	if (property->get_name() == "is trigger")
 	{
-		set_size(*(Vector2D*)(value));
+		is_trigger_ = *(bool*)value;
 	}
 }
 
-void BoxCollider::updateVertices()
-{
-	float half_width = size.x / 2;
-	float half_height = size.y / 2;
-	vertices = {
-		Vertex{{half_width, half_height, 0.0f},{color.r, color.g, color.b, color.a},{1.0f, 1.0f}},        // top right
-		Vertex{{half_width, -half_height, 0.0f},{color.r, color.g, color.b, color.a},{1.0f, 0.0f}},	   // bottom right
-		Vertex{{-half_width, -half_height, 0.0f},{color.r, color.g, color.b, color.a},{0.0f, 0.0f}}, 	   // bottom left
-		Vertex{{-half_width, half_height, 0.0f},{color.r, color.g, color.b, color.a},{0.0f,1.0f}}         // top left
-	};
-}
-
-void BoxCollider::createIndices()
-{
-	indices = {
-		0, 3, 2, // first triangle
-		0, 2, 1  // second triangle
-	};
-}
 
 void BoxCollider::serialize(PHString& str)
 {
 	str.appendLine(to_string((int)componentType));
 	str.appendLine(size.tostring());
+	str.appendLine(to_string(is_trigger_));
 }
 
 void BoxCollider::deserialize(std::stringstream& ss)
@@ -73,4 +38,6 @@ void BoxCollider::deserialize(std::stringstream& ss)
 	string s;
 	getline(ss, s);
 	size = Vector2D::fromString(s);
+	getline(ss, s);
+	is_trigger_ = stoi(s);
 }

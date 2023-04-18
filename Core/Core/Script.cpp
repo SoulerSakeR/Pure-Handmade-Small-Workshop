@@ -17,6 +17,7 @@ void Script::reset()
 
 void Script::set_property(Property* property, void* value)
 {
+	Component::set_property(property, value);
 	if (property->get_name() == "name")
 	{
 		name = (*(string*)value);

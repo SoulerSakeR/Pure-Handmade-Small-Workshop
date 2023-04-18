@@ -8,6 +8,7 @@
 #include <QElapsedTimer>
 #include <Core/ResourceManagement/SceneMgr.h>
 #include "qevent.h"
+#include <qopenglframebufferobject.h>
 
 RenderWidget* RenderWidget::instance = nullptr;
 std::string source_path;
@@ -142,12 +143,7 @@ void RenderWidget::renderGameobject(GameObject* gameobj)
 {
 	if (auto img = gameobj->getComponent<Image>(); img != nullptr && img->get_enabled())
 	{
-
-		
-
-		renderImage(img);
-		
-		
+		renderImage(img);		
 	}
 	if (auto boxCollider = gameobj->getComponent<BoxCollider>();boxCollider != nullptr && boxCollider->get_enabled())
 	{
@@ -173,32 +169,41 @@ void RenderWidget::renderBoxCollider(BoxCollider* box)
 		box->vbo->create();
 		box->vbo->bind();
 		box->vbo->allocate(box->vertices.data(), box->vertices.size() * sizeof(Vertex));
-		box->ibo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
-		box->ibo->create();
-		box->ibo->bind();
-		box->ibo->allocate(box->indices.data(), box->indices.size() * sizeof(unsigned int));
+		box->borderIbo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+		box->borderIbo->create();
+		box->borderIbo->bind();
+		box->borderIbo->allocate(box->borderIndices.data(), box->borderIndices.size() * sizeof(unsigned int));
 
 		boxColliderShaderProgram->bind();
+
 		GLint posLocation = boxColliderShaderProgram->attributeLocation("aPos");
 		GLint colorLocation = boxColliderShaderProgram->attributeLocation("aColor");
-		auto stride = 3 * sizeof(float);
+
+		auto stride = sizeof(Vertex);
+		//-----------------position--------------------//
 		//告知显卡如何解析缓冲里的属性值
 		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
 		//开启VAO管理的第一个属性值
 		glEnableVertexAttribArray(posLocation);
+
+		if (colorLocation >= 0)
+		{
+			//------------------Color-----------------------//
+			glVertexAttribPointer(colorLocation, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+			glEnableVertexAttribArray(colorLocation);
+		}
 		box->vao->release();
 		box->vbo->release();
 		box->vbo->destroy();
 		delete box->vbo;
 		box->vbo = nullptr;
-		box->ibo->release();
-		box->ibo->destroy();
-		box->ibo = nullptr;
-		delete box->ibo;
+		/*img->ibo->release();
+		img->ibo->destroy();
+		img->ibo = nullptr;
+		delete img->ibo;*/
 	}
 	box->vao->bind();
 	
-
 	//calculate the MVP matrix
 	auto matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
 	auto transform = box->gameObject->transform;
@@ -242,8 +247,7 @@ void RenderWidget::renderImage(Image* img)
 		GLint colorLocation = imageShaderProgram->attributeLocation("aColor");
 		GLint textureLocation = imageShaderProgram->attributeLocation("aTexCord");
 		
-		auto stride = sizeof(Vertex);
-		
+		auto stride = sizeof(Vertex);		
 		//-----------------position--------------------//
 		//告知显卡如何解析缓冲里的属性值
 		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
@@ -252,18 +256,14 @@ void RenderWidget::renderImage(Image* img)
 
 		if (colorLocation >= 0)
 		{
-			//------------------Color-----------------------//
-			
-			glVertexAttribPointer(colorLocation, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
-			
+			//------------------Color-----------------------//			
+			glVertexAttribPointer(colorLocation, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));			
 			glEnableVertexAttribArray(colorLocation);
 		}
 		if (textureLocation)
 		{
-			//------------------Texture-----------------------//
-			
-			glVertexAttribPointer(textureLocation, 2, GL_FLOAT, GL_FALSE, stride, (void*)(7 * sizeof(float)));
-			
+			//------------------Texture-----------------------//		
+			glVertexAttribPointer(textureLocation, 2, GL_FLOAT, GL_FALSE, stride, (void*)(7 * sizeof(float)));			
 			glEnableVertexAttribArray(textureLocation);
 		}
 		img->vao->release();
@@ -291,7 +291,8 @@ void RenderWidget::renderImage(Image* img)
 
 
 	//bind texture
-	img->texture->bind();
+	if(img->texture!=nullptr)
+		img->texture->bind();
 	img->ibo->bind();
 	//enable alpha blending
 	glEnable(GL_BLEND);
@@ -327,14 +328,14 @@ void RenderWidget::renderImage(Image* img)
 
 	//release
 	img->vao->release();
-	img->texture->release();
+	if(img->texture!=nullptr)
+		img->texture->release();
 }
 
 void RenderWidget::renderText(Text* text)
 {
 
 	// 获取纹理
-
 	QString data = QString::fromStdString(text->get_text());
 	
 	data.replace("\\n", "\n");
@@ -538,10 +539,12 @@ void RenderWidget::paintGL()
 {
 	frameCount++;
 	makeCurrent();
+	QOpenGLFramebufferObject* fbo = new QOpenGLFramebufferObject(size());
+	fbo->bind();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-
 	renderScene();
+	fbo->release();
+	//QOpenGLFramebufferObject::blitFramebuffer(nullptr, fbo, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 	return;
 }
 

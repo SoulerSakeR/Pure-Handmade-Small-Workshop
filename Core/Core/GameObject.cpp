@@ -7,6 +7,7 @@
 #include "Script.h"
 #include "Text.h"
 #include "Core/ResourceManagement/SceneMgr.h"
+#include "Renderer.h"
 
 using namespace std;
 
@@ -166,6 +167,9 @@ Component* GameObject::addComponent(Component::ComponentType type)
 		break;
     case Component::TEXT:
         result = new Text(this);
+		break;
+    case Component::RENDERER:
+        result = new Renderer(this);
 		break;
     default:
         break;

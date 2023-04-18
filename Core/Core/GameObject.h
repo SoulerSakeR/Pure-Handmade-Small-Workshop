@@ -29,6 +29,8 @@ public:
     T* addComponent(); //需要绑定
     template <typename T>
     T* getComponent(); //需要绑定
+    template <typename T>
+    std::vector<T*> getComponents(); //需要绑定
     Component* getComponent(Component::ComponentType type);
     void removeComponent(Component* component); //需要绑定
     bool isRootGameObject(); //需要绑定
@@ -86,4 +88,22 @@ inline T* GameObject::getComponent()
         }
     }
     return nullptr;
+}
+
+template<typename T>
+inline std::vector<T*> GameObject::getComponents()
+{
+    if (has_type_member<T>::value)
+    {
+		std::vector<T*> result;
+        for (auto component : components)
+        {
+            if (auto p = dynamic_cast<T*>(component); p != nullptr)
+            {
+				result.push_back(p);
+			}
+		}
+		return result;
+	}
+    return std::vector<T*>();
 }

@@ -37,6 +37,8 @@ std::string Component::getName(ComponentType type)
 		return "Box Collider";
 	case TEXT:
 			return "Text";
+	case RENDERER:
+		return "Renderer";
 	default:
 		return "Unknown";
 		break;

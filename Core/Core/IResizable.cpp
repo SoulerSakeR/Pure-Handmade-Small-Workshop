@@ -4,12 +4,19 @@
 using namespace std;
 
 IBoxResizable::IBoxResizable(GameObject* gameobj):IRenderable(gameobj)
-{
-	size = Vector2D::one();
+{	
 	borderIbo = nullptr;
 	properties.emplace("size", new Property("size", &(this->size), Property::VECTOR2D, this));
+	set_size(Vector2D(100, 100));
 	createIndices();
 	createBorderIndices();
+}
+
+IBoxResizable::~IBoxResizable()
+{
+	borderIbo->destroy();
+	delete borderIbo;
+	borderIbo = nullptr;
 }
 
 void IBoxResizable::set_property(Property* property, void* value)

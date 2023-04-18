@@ -16,9 +16,12 @@ class IRenderable: public Component
 {
 public:
 	IRenderable(GameObject* gameobj);
-	~IRenderable();
+	virtual ~IRenderable();
 	virtual void updateVertices() = 0;
 	virtual void createIndices() = 0;
+
+	// Inherited via Component
+	virtual void set_property(Property* property, void* value) override;
 	virtual void reset() override;
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices; 
@@ -26,6 +29,6 @@ public:
 	QOpenGLTexture* texture;
 	QOpenGLVertexArrayObject* vao;
 	QOpenGLBuffer* vbo;
-	QOpenGLBuffer* ibo;	
+	QOpenGLBuffer* ibo;
 };
 

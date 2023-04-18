@@ -41,7 +41,6 @@ void GameLoop::updateScene(RenderWidget* Rwg) {
             endtime = system_clock::now();
             //std::cout << "end_time：" << end_time << "\tstart_time" << start_time << std::endl;
         }
-
     }
 
 

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <Core/FileIO/IO.h>
 #include "Image.h"
+#include "Core/Core/Renderer.h"
 
 using namespace std;
 
@@ -102,8 +103,8 @@ void Scene::addGameObject(GameObject *newObject)
 void Scene::addGameObjectWithChildren(GameObject* newObject)
 {
 	allGameObjsByID.insert(pair<int, GameObject*>(newObject->getID(), newObject));
-	if(newObject->getComponent<Image>()!=nullptr)
-		allGameObjsByDepth[newObject->getComponent<Image>()->get_render_order()] = newObject;
+	if(newObject->getComponent<Renderer>()!=nullptr)
+		allGameObjsByDepth[newObject->getComponent<Renderer>()->get_render_order()] = newObject;
 	auto it = allGameObjsByName.find(newObject->name);
 	if (it != allGameObjsByName.end())
 		it->second.push_back(newObject);
@@ -145,8 +146,8 @@ void Scene::removeGameObject(GameObject* gameObject)
 void Scene::removeGameObjectWithChildren(GameObject* gameObject)
 {
 	auto it = allGameObjsByName.find(gameObject->name);
-	if (gameObject->getComponent<Image>() != nullptr)
-		allGameObjsByDepth.erase(gameObject->getComponent<Image>()->get_render_order());
+	if (gameObject->getComponent<Renderer>() != nullptr)
+		allGameObjsByDepth.erase(gameObject->getComponent<Renderer>()->get_render_order());
 	if (it != allGameObjsByName.end())
 	{
 		auto& vec = it->second;
