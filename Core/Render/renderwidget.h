@@ -98,15 +98,10 @@ private:
 
     // Texture
     void createProgram();
-    void createVAO();
-    void createVBO();
-    void createIBO();
-
+    
     // BoxCollider
     void createBoxProgram();
-    void createBoxVAO();   
-    void createBoxVBO();
-    void createBoxIBO();
+    
     
 
    
@@ -114,9 +109,7 @@ private:
 
 
 
-    void renderTexture(QOpenGLTexture* texture,QVector3D offset,QVector2D size);
-
-    void renderBox();
+    
     
     // void getTextureInfo(Image& imgComponent, QString* texturePathQ, QVector3D* offset, QVector2D* size);
 
@@ -138,9 +131,7 @@ private:
     GLuint mProjLoc;
     GLuint mVertexCount;
 
-    void createTextVAO();
-    void createTextVBO();
-    void createTextIBO();
+    
 
 
     QOpenGLFramebufferObject* fbo;
