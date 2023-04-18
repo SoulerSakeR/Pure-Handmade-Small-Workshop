@@ -14,8 +14,12 @@ public:
 	GameProject(const std::string& name,const std::string& path, bool initProject = true);
 
 	bool openScene(int index);
+	bool openScene(const std::string& name);
+	bool openScene(Scene* scene);
+	void deleteScene(const std::string name);
+	bool importScene(const std::string& path);
 	bool save();
-	void creatNewScene(const std::string& name = "ExampleScene");
+	Scene* creatNewScene(const std::string& name = "ExampleScene");
 
 	std::string name; //项目名称
 	PHPath path; //项目路径

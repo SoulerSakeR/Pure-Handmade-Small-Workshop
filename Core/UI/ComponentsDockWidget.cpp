@@ -127,9 +127,9 @@ void ComponentsDockWidget::refresh()
 		componentWidget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
 		componentWidget->setEditTriggers(QAbstractItemView::EditTrigger::NoEditTriggers);
 		componentWidget->setHorizontalHeaderLabels(QStringList() << "Property" << "Value");
-		for (auto& pair : component->properties)
+		for (auto it = component->properties.vbegin();it<component->properties.vend();++it)
 		{
-			auto property = pair.second;
+			auto property = *it;
 			componentWidget->setRowCount(componentWidget->rowCount() + 1);
 			componentWidget->setItem(componentWidget->rowCount() - 1, 0, new QTableWidgetItem(QString::fromStdString(property->get_name())));
 			switch (property->type)

@@ -23,7 +23,7 @@ public:
 #ifdef TEST
 	bool openGameProjectTest(const std::string& project,const std::string** scenes); //打开已有项目
 #endif // TEST
-
+	RenderWindow* getWindow();
 	bool openGameProject(const std::string& path); //打开已有项目
 	bool saveGameProject(); //保存当前项目
 	GameObject& addGameObject(const std::string& name = "GameObject", GameObject* const parent = nullptr,Component::ComponentType type = Component::UNKNOWN,InsertMode insertMode = INSIDE);

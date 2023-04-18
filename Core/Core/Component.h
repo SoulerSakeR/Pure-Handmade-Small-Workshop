@@ -23,7 +23,6 @@ public:
 		gameObject = gameObj;
 		enabled = true;
 		componentType = UNKNOWN;
-		properties = std::unordered_map<std::string,Property*>();
 		properties.emplace("enabled", new Property("enabled", &enabled, Property::BOOL, this));
 	};
 	~Component() {
@@ -42,7 +41,8 @@ public:
 	
 	GameObject* gameObject;
 	ComponentType componentType;
-	std::unordered_map<std::string,Property*> properties;
+	//std::unordered_map<std::string,Property*> properties;
+	PropertiesQueue<std::string, Property*> properties;
 
 protected:
 	bool enabled;

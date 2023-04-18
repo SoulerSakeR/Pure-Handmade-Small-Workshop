@@ -29,10 +29,10 @@ void HierarchyWidget::initContextMenu()
 {
 	contextMenu = new QMenu(this);
 
-	//创建物体子菜�?
+	//创建物体子菜单
 	QMenu *addGameobjectMenu = new QMenu("Creat GameObject", this);
 
-	//创建空物体按�?
+	//创建空物体按钮
 	QAction* addEmptyBtn = new QAction("Empty Object", this);
 	addGameobjectMenu->addAction(addEmptyBtn);
 	connect(addEmptyBtn, &QAction::triggered, [=]() {

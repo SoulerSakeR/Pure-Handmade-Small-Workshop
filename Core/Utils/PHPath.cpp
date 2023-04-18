@@ -23,6 +23,12 @@ PHPath PHPath::combinePath(const std::string& path)
 	return PHPath(result);
 }
 
+std::string PHPath::getFileType()
+{
+	size_t pos = newPath.find_last_of(".");
+	return newPath.substr(pos);
+}
+
 std::string PHPath::getFileName(bool withExtension) {
 
 	if (withExtension)

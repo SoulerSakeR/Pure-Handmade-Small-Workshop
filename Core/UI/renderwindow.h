@@ -20,9 +20,10 @@ public:
     void resizeGL(QResizeEvent*);
     void refreshHierachy();
     void setupFileSystemTreeView(const QString& parentDir);
-    void openScene();
+    void open();
     void addScene();
     void deleteScene();  
+    void importScene();
 
 public slots:
     void showContextMenu(const QPoint&);

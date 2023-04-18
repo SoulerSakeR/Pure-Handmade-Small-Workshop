@@ -55,7 +55,10 @@ Scene* SceneMgr::loadScene(int index)
 	return scene;
 }
 
-void SceneMgr::loadScene(const std::string& name)
+Scene* SceneMgr::loadScene(const std::string& path)
 {
-
+	PHPath p(path);
+	auto scene = Scene::loadFromPath(p.getNewPath());
+	current_scene = scene;
+	return scene;
 }

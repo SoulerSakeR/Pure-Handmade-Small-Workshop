@@ -12,6 +12,15 @@ IBoxResizable::IBoxResizable(GameObject* gameobj):IRenderable(gameobj)
 	createBorderIndices();
 }
 
+void IBoxResizable::set_property(Property* property, void* value)
+{
+	IRenderable::set_property(property, value);
+	if (property->get_name() == "size")
+	{
+		set_size(*(Vector2D*)value);
+	}
+}
+
 void IBoxResizable::updateVertices()
 {
 	float half_width = size.x / 2;

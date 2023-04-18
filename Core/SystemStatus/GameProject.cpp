@@ -36,6 +36,62 @@ bool GameProject::openScene(int index)
 	}	
 }
 
+bool GameProject::openScene(const std::string& name)
+{
+	for (auto& s : scenes)
+	{
+		if (s == name)
+		{
+			PHPath path = PHPath(GameEngine::get_instance().getGamePath()).combinePath("\\Scenes\\" + name + sceneExtensionName);
+			currentScene = SceneMgr::get_instance().loadScene(path.getNewPath());
+			GameEngine::get_instance().refreshHierarchy();
+			auto loop = std::bind(&GameLoop::updateScene, new GameLoop(&RenderWidget::getInstance()), &RenderWidget::getInstance());
+			GameEngine::get_instance().pool.enqueue(loop);
+			return true;
+		}
+	}
+	Debug::warningBox(GameEngine::get_instance().getWindow(),"Scene not found!");
+	return false;
+}
+
+bool GameProject::openScene(Scene* scene)
+{
+	GameEngine::get_instance().refreshHierarchy();
+	auto loop = std::bind(&GameLoop::updateScene, new GameLoop(&RenderWidget::getInstance()), &RenderWidget::getInstance());
+	GameEngine::get_instance().pool.enqueue(loop);
+	return true;
+}
+
+void GameProject::deleteScene(const std::string name)
+{
+	for (auto& s : scenes)
+	{
+		if (s == name)
+		{
+			PHPath path = PHPath("\\Scenes\\" + name + sceneExtensionName);
+			auto it = std::find(scenes.begin(), scenes.end(), name);
+			if (it != scenes.end())
+			{
+				scenes.erase(it);
+			}
+			it = std::find(SceneMgr::get_instance().scenes.begin(), SceneMgr::get_instance().scenes.end(), path.getNewPath());
+			if(it != SceneMgr::get_instance().scenes.end())
+			{
+				SceneMgr::get_instance().scenes.erase(it);
+			}
+		}
+	}
+}
+
+bool GameProject::importScene(const std::string& path)
+{
+	currentScene = SceneMgr::get_instance().loadScene(path);
+	GameEngine::get_instance().refreshHierarchy();
+	auto loop = std::bind(&GameLoop::updateScene, new GameLoop(&RenderWidget::getInstance()), &RenderWidget::getInstance());
+	GameEngine::get_instance().pool.enqueue(loop);
+	return true;
+}
+
 bool GameProject::save()
 {
 	IO::createPathIfNotExists(path.getNewPath());
@@ -46,15 +102,16 @@ bool GameProject::save()
     return true;
 }
 
-void GameProject::creatNewScene(const std::string& name)
+Scene* GameProject::creatNewScene(const std::string& name)
 {
 	Scene* scene = new Scene(name);
 	currentScene = scene;
 	auto& cam = GameEngine::get_instance().addGameObject("MainCamera",nullptr, Component::CAMERA);
 	cam.getComponent<Camera>()->set_main_camera(true);
-	saveCurrentScene();
 	scenes.push_back(scene->name);
 	SceneMgr::get_instance().addScene("\\Scenes\\" + name + sceneExtensionName);
+	SceneMgr::get_instance().current_scene = scene;
+	return scene;
 }
 
 #ifdef TEST

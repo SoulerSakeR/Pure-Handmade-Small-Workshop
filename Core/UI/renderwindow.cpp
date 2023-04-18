@@ -165,7 +165,6 @@ void RenderWindow::setupFileSystemTreeView(const QString& parentDir)
 {
     fileModel = new QFileSystemModel(ui->treeView);
     fileModel->setRootPath(parentDir);
-
     QStringList filters;
     filters << "*.scene" << "*.png";
     fileModel->setNameFilters(filters);
@@ -182,17 +181,19 @@ void RenderWindow::setupFileSystemTreeView(const QString& parentDir)
 // 场景的点击事件
 void RenderWindow::onTreeviewRightClick(const QPoint& pos) {
     QModelIndex index = ui->treeView->indexAt(pos);
-
     if (index.isValid()) {
         // 弹出一个弹框
         QMenu menu(this);
-        auto openSceneAction = menu.addAction("Open Scene");
-        auto addSceneAction = menu.addAction("Add Scene");
+        auto openAction = menu.addAction("Open");
+        auto createMenu = menu.addMenu("Create");
+        auto addSceneAction = createMenu->addAction("New Scene");
+        auto importExistSceneAction = menu.addAction("Import Exist Scene");
         auto deleteSceneAction = menu.addAction("Delete Scene");
         // 将QAction与槽函数绑定
-        connect(openSceneAction, &QAction::triggered, this, &RenderWindow::openScene);
+        connect(openAction, &QAction::triggered, this, &RenderWindow::open);
         connect(addSceneAction, &QAction::triggered, this, &RenderWindow::addScene);
         connect(deleteSceneAction, &QAction::triggered, this, &RenderWindow::deleteScene);
+        connect(importExistSceneAction, &QAction::triggered, this, &RenderWindow::importScene);
         menu.exec(ui->treeView->viewport()->mapToGlobal(pos));
     }
 }
@@ -212,15 +213,21 @@ void RenderWindow::refreshHierachy()
     ui->hierarchy->addTopLevelItems(items);
 }
 
-void RenderWindow::openScene()
+void RenderWindow::open()
 {
-    // 双击获取路径
     // 获取当前选择的项
     QModelIndex currentIndex = ui->treeView->currentIndex();
     // 获取当前项的路径
     QString currentPath = fileModel->filePath(currentIndex);
-    qDebug() << currentPath;
-    GameEngine::get_instance().getCurrentGameProject()->openScene(1);// 等一手用路径的openScene
+    PHPath path(currentPath.toStdString());
+    if (path.getFileType() == ".scene")
+    {
+        GameEngine::get_instance().getCurrentGameProject()->openScene(path.getFileName(false));
+    }
+    else
+    {
+        QDesktopServices::openUrl(QUrl::fromLocalFile(currentPath));
+    }   
 }
 
 void RenderWindow::addScene()
@@ -233,7 +240,8 @@ void RenderWindow::addScene()
     // 获取当前项的路径
     QString currentPath = fileModel->filePath(currentIndex);
     qDebug() << currentPath;
-    GameEngine::get_instance().getCurrentGameProject()->creatNewScene();// 需要一个弹框输入名字
+    auto& instance = GameEngine::get_instance();
+    instance.getCurrentGameProject()->openScene(GameEngine::get_instance().getCurrentGameProject()->creatNewScene("1"));// 需要一个弹框输入名字
 }
 
 // 传入需要删除的文件的绝对路径 
@@ -259,6 +267,8 @@ void RenderWindow::deleteScene()
     QModelIndex currentIndex = ui->treeView->currentIndex();
     // 获取当前项的路径
     QString currentPath = fileModel->filePath(currentIndex);
+    PHPath path(currentPath.toStdString());
+    GameEngine::get_instance().getCurrentGameProject()->deleteScene(path.getFileName(false));
     qDebug() << currentPath;
     // 调用删除文件
     if (deleteFile(currentPath)) {
@@ -267,5 +277,19 @@ void RenderWindow::deleteScene()
     else {
         qDebug() << "Failed to delete file!";
     }
+}
+
+void RenderWindow::importScene()
+{
+    QString FileAdress = QFileDialog::getOpenFileName(this, "打开场景", "", QString("Scene file (*.scene)"));// 可以重载第四个参数，意义是筛选文件类型  "(*.txt)"
+    if (FileAdress.isEmpty())
+    {
+		return;
+	}
+    else
+    {
+		// TODO
+		// 具体的代码，传入文件地址
+	}
 }
 

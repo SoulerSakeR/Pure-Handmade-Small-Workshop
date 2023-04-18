@@ -1,8 +1,11 @@
 #pragma once
 #include "Core/Core/Camera.h"
 #include <Core/Core/Scene.h>
+
 class SceneMgr
 {
+	friend class GameEngine;
+	friend class GameProject;
 public:
 	static SceneMgr& get_instance();
 
@@ -11,7 +14,7 @@ public:
 	void addScene(const std::string& relativePath);
 	void set_main_camera(Camera& camera);
 	Scene* loadScene(int index);
-	void loadScene(const std::string& name);
+	Scene* loadScene(const std::string& name);
 
 private:
 	SceneMgr();

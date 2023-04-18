@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <unordered_map>
 
 class Component;
 
@@ -38,3 +39,42 @@ private:
 	Component* component;
 };
 
+template<typename key,typename value>
+class PropertiesQueue
+{
+public:
+	int size() const
+	{
+		return properties.size();
+	}
+	value& operator[](const key& key)
+	{
+		if (auto it = properties.find(key);it != properties.end())
+			return it->second;
+	}
+	void emplace(const key& key, const value& value)
+	{
+		properties.emplace(key, value);
+		values.push_back(value);
+	}
+	auto begin()
+	{
+		return properties.begin();
+	}
+	auto end()
+	{
+		return properties.end();
+	}
+	auto vbegin()
+	{
+		return values.begin();
+	}
+	auto vend()
+	{
+		return values.end();
+	}
+
+private:
+	std::unordered_map<key, value> properties;
+	std::vector<value> values;
+};

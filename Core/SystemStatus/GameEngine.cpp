@@ -85,9 +85,7 @@ GameProject& GameEngine::creatGameProject(const string& name,const string& path)
 	}		
 	GameProject* game = new GameProject(name, new_path.getNewPath());
 	gameProject = game;
-	gameProject->creatNewScene();
-	game->openScene(0);
-	game->save();
+	game->openScene(gameProject->creatNewScene());
 	return *game;
 }
 Vector2D GameEngine::get_resolution()
@@ -115,10 +113,15 @@ bool GameEngine::openGameProjectTest(const std::string& project, const std::stri
 	GameProject* gp = new GameProject("", "", false);
 	gp->deserializeTest(ss,scenes);	
 	gameProject = gp;
-	gameProject->openScene(0);
+	gameProject->open(0);
 	return true;
 }
 #endif // TEST
+
+RenderWindow* GameEngine::getWindow()
+{
+	return window;
+}
 
 /// @brief open exist gameProject
 /// @param path the obsolute path of .gameProject file
@@ -191,5 +194,5 @@ std::string GameEngine::getGamePath()
 {
 	if (gameProject != nullptr)
 		return gameProject->path.getNewPath();
-	return "";
+	return nullptr;
 }
