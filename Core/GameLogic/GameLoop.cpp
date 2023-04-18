@@ -50,7 +50,19 @@ void GameLoop::printDataInfo(float deltaTime) {
     }
 
 
+
 void GameLoop::update(float deltaTime, RenderWidget* Rwg) {
+
+    sol::state lua;
+    lua.open_libraries(sol::lib::base);// 打开所需的Lua库void GameLoop::update(float deltaTime, RenderWidget* Rwg) {
+    std::unordered_map<std::string, sol::protected_function> updateFunctions;
+
+    // 游戏逻辑更新函数，每帧调用一次
+        updatePlayer(deltaTime);
+        updateScene(Rwg);
+        updateGameState(deltaTime);
+        printDataInfo(deltaTime);
+    }
         // 游戏逻辑更新函数，每帧调用一次
         updatePlayer(deltaTime);
         updateScene(Rwg);

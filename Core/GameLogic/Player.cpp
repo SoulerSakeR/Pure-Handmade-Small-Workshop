@@ -40,7 +40,7 @@ Vector2D Player::getVelocity() {
 void Player::move(float deltaTime) {
 	// 如果GameLoop中的inputDetection检测到了WASD的按键
 	// 进行相应的动作
-	// 
+	
 	// TODO:被Lua函数调用？
 	Vector2D originVelocity = this->getVelocity();
 

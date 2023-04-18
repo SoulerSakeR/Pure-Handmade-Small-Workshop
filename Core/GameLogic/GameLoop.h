@@ -6,6 +6,9 @@
 #include <Windows.h>
 #include <Core/SystemStatus/GameEngine.h>
 #include <Core/Render/renderwidget.h>
+#include "Core/Core/GameObject.h"
+#include "Core/Core/Script.h"
+#include "lib/sol/sol.hpp"
 
 #include "Player.h"
 
