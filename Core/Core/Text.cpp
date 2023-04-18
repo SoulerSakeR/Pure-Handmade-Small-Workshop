@@ -5,7 +5,8 @@ Text::Text(GameObject* gameObj, const std::string& text):IBoxResizable(gameObj),
 {
 	componentType = ComponentType::TEXT;	
 	properties.emplace("text", new Property("text", &(this->text), Property::STRING, this));
-	set_size(Vector2D(350, 70));
+	set_size(Vector2D(380, 150));
+	color = { 255,255,255,255 };
 }
 
 void Text::set_property(Property* property, void* value)

@@ -333,6 +333,38 @@ void RenderWidget::renderImage(Image* img)
 void RenderWidget::renderText(Text* text)
 {
 
+	// 获取纹理
+
+	QString data = QString::fromStdString(text->get_text());
+	
+	data.replace("\\n", "\n");
+	// 将data根据\n拆分成若干个字符串
+	QStringList list = data.split("\n");
+	// 获取最长字符串的长度和字符串的个数
+	int maxLen = 0;
+	int count = list.count();
+	for (int i = 0; i < count; i++)
+	{
+		if (list[i].length() > maxLen)
+		{
+			maxLen = list[i].length();
+		}
+	}
+	// 输出最大长度和字符串的个数
+	// qDebug() << "maxLen:" << maxLen << "count:" << count;
+
+	// 宽度设置为最大字符串长度 * 字符宽度，字符宽度设置为35
+	int width = maxLen * 35;
+	// 高度设置为字符串个数 * 字符高度，字符高度设置为75
+	int height = count * 75;
+
+	text->set_size(Vector2D(width, height));
+
+	// 创建QColor对象color为text.color
+	QColor color(text->color.r, text->color.g, text->color.b, text->color.a);
+
+	mTexture = genTextTexture(width, height, data, 60, color);
+
 
 	//bind vao if exist
 	if (text->vao == nullptr)
@@ -405,10 +437,6 @@ void RenderWidget::renderText(Text* text)
 
 
 	//bind texture
-	//glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	//QString date = QDateTime::currentDateTime().toString("现在时间是：yyyy-MM-dd hh:mm:ss.zzz");
-	QString data = "1234567890";
-	mTexture = genTextTexture(350, 70, data, 60, Qt::red);
 	mTexture->bind();
 	//text->texture = mTexture;
 	
@@ -841,7 +869,11 @@ QOpenGLTexture *RenderWidget::genTextTexture(int width, int height, const QStrin
 
 	// 设置文字的对齐方式为左上对齐，并启用自动换行
 	QTextOption option(Qt::AlignLeft | Qt::AlignTop);
-	option.setWrapMode(QTextOption::WordWrap);
+	
+	//option.setWrapMode(QTextOption::WordWrap);
+	option.setWrapMode(QTextOption::NoWrap);
+
+
 
 	// 设置绘制文字的矩形区域
 	QRectF rect(0, 0, width, height);

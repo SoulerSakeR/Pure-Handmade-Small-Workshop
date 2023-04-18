@@ -6,6 +6,7 @@
 #include "qopengltexture.h"
 
 struct Color32{
+public:
     float r;
     float g;
     float b;
