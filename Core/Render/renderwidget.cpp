@@ -10,7 +10,8 @@
 #include <qopenglframebufferobject.h>
 #include <qapplication.h>
 
-RenderWidget* RenderWidget::instance = nullptr;
+RenderWidget* RenderWidget::sceneWidget= nullptr;
+RenderWidget* RenderWidget::gameWidget = nullptr;
 std::string source_path;
 static int count = 0;
 
@@ -19,7 +20,6 @@ RenderWidget::RenderWidget(QWidget* parent) : QOpenGLWidget(parent)
 	setFocusPolicy(Qt::StrongFocus);
 	connect(&timer, SIGNAL(timeout()), this, SLOT(on_timeout()));
 	frameCount = 0;
-	instance = this;
 	fbo = nullptr;
 	fboOverlay = nullptr;
 	mCameraObject = new GameObject("Camera");
@@ -465,11 +465,9 @@ void RenderWidget::paintGL()
 	{
 		// 创建一个 FBO，大小为窗口大小乘以设备像素比
 		qreal dpr = qApp->primaryScreen()->devicePixelRatio();
-		QSize scaledSize = size() * dpr;
-		
+		QSize scaledSize = size() * dpr;		
 		fbo = new QOpenGLFramebufferObject(scaledSize);
-	}
-	
+	}	
 	fbo->bind();
 	glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -501,17 +499,14 @@ void RenderWidget::paintGL()
 	
 	
 	fbo->release();
-	//QOpenGLFramebufferObject::blitFramebuffer(nullptr,fbo, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
 
 	// render overlay
-
 	if (fboOverlay == nullptr)
 	{
 		// 创建一个 FBO，大小为窗口大小乘以设备像素比
 		qreal dpr = qApp->primaryScreen()->devicePixelRatio();
 		QSize scaledSize = size() * dpr;
-
 		fboOverlay = new QOpenGLFramebufferObject(scaledSize);
 	}
 
@@ -654,7 +649,7 @@ void RenderWidget::cleanup()
 RenderWidget& RenderWidget::getInstance()
 {
 	// TODO: 在此处插入 return 语句
-	return *instance;
+	return *sceneWidget;
 }
 
 void RenderWidget::createProgram()

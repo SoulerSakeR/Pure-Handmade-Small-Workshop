@@ -21,6 +21,7 @@
 class RenderWidget : public QOpenGLWidget,public QOpenGLFunctions_3_3_Core
 {
     Q_OBJECT
+    friend class RenderWindow;
 public:
     enum Shape { None, Rect, Circle, Triangle };
     explicit RenderWidget(QWidget *parent = nullptr);
@@ -63,7 +64,8 @@ public slots:
 
 private:
 
-    static RenderWidget* instance;
+    static RenderWidget* sceneWidget;
+    static RenderWidget* gameWidget;
 
     std::unordered_map<std::string, QOpenGLTexture*>textures;
     

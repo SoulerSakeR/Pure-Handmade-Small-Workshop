@@ -22,6 +22,8 @@ RenderWindow::RenderWindow(QWidget *parent)
 {
     ui->setupUi(this);
     // ui->hierarchy->ui = this;
+    RenderWidget::sceneWidget = ui->openGLWidget;
+    RenderWidget::gameWidget = ui->openGLWidget_2;
     ui->hierarchy->componentsDockWidget = ui->dockWidget_components;
     ui->hierarchy->initContextMenu();
     auto x= ui->openGLWidget->hasMouseTracking();
