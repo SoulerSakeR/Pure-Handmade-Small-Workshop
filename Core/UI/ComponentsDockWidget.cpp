@@ -43,6 +43,7 @@ ComponentsDockWidget::ComponentsDockWidget(QWidget* parent) :QDockWidget(parent)
 {
 	instance = this;
 	selected_gameobject = nullptr;
+	hierarchy = nullptr;
 }
 
 void ComponentsDockWidget::set_components_widget(QWidget* widget)
@@ -123,8 +124,16 @@ void ComponentsDockWidget::refresh()
 	connect(lineEdit, &QLineEdit::editingFinished, [=]()
 	{
 		if (auto result = selected_gameobject->set_name(lineEdit->text().toStdString());!result.result)
+		{
+			lineEdit->setText(selected_gameobject->name.c_str());
+			lineEdit->selectAll();
 			Debug::warningBox(this, result.message);
-		((RenderWindow*)window())->refreshHierachy();
+		}			
+		else
+		{
+			selected_gameobject->name = lineEdit->text().toStdString();
+			hierarchy->refreshGameObject();
+		}
 	});
 	layout->addWidget(new QLabel("is active"), 1, 0);
 	auto checkBox = new QCheckBox(groupBox);

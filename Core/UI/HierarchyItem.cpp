@@ -1,12 +1,15 @@
 #include "HierarchyItem.h"
 #include "HierarchyWidget.h"
 
-HierarchyItem::HierarchyItem(GameObject* gameObject):gameObject(gameObject)
+HierarchyItem::HierarchyItem(GameObject* gameObject, HierarchyWidget* tree) :gameObject(gameObject), tree(tree)
 {
 	setText(0, QString::fromStdString(gameObject->name));
+	auto& map = tree->gameobj_item_map;
+	map.emplace(gameObject, this);
 	for (auto transform : gameObject->transform->children)
 	{
-		addChild(new HierarchyItem(transform->gameObject));
+		auto item = new HierarchyItem(transform->gameObject,tree);
+		addChild(item);
 	}
 }
 

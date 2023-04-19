@@ -11,6 +11,7 @@ SceneMgr::SceneMgr()
 	main_camera = nullptr;
 	current_scene = nullptr;
 	scenes = vector<string>();
+	cameras = vector<Camera*>();
 }
 
 SceneMgr& SceneMgr::get_instance()

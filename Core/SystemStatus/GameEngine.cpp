@@ -157,9 +157,9 @@ GameObject& GameEngine::addGameObject(const string& name, GameObject* const pare
 	Debug::log("addGameObject:" + name);
 	GameObject* gameObject = new GameObject(name);
     if(parent == nullptr)
-		GameEngine::get_instance().gameProject->currentScene->insertGameObject(*gameObject);		
+		SceneMgr::get_instance().get_current_scene()->insertGameObject(*gameObject);
 	else
-		GameEngine::get_instance().gameProject->currentScene->insertGameObject(*gameObject,parent,insertMode);
+		SceneMgr::get_instance().get_current_scene()->insertGameObject(*gameObject,parent,insertMode);
 	switch (type)
 	{
 	case Component::UNKNOWN:
@@ -176,6 +176,10 @@ GameObject& GameEngine::addGameObject(const string& name, GameObject* const pare
 		break;
 	default:
 		break;
+	}
+	if (inEditor)
+	{
+		hierarchy->addGameObject(gameObject, parent, insertMode);
 	}
 	return *gameObject;
 }

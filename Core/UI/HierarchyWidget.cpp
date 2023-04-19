@@ -41,13 +41,10 @@ void HierarchyWidget::initContextMenu()
 			auto item = (HierarchyItem*)(selectedItems()[0]);
 			auto parent = item->gameObject;
 			auto& gameobj = GameEngine::get_instance().addGameObject("GameObject", parent, Component::TRANSFORM, INSIDE);
-			item->addChild(new HierarchyItem(&gameobj));
-			item->setExpanded(true);
 		}
 		else
 		{
 			auto& gameobj = GameEngine::get_instance().addGameObject("GameObject");
-			addTopLevelItem(new HierarchyItem(&gameobj));
 		}
 	});
 
@@ -60,13 +57,10 @@ void HierarchyWidget::initContextMenu()
 			auto item = (HierarchyItem*)(selectedItems()[0]);
 			auto parent = item->gameObject;
 			auto& gameobj = GameEngine::get_instance().addGameObject("Image", parent, Component::IMAGE, INSIDE);
-			item->addChild(new HierarchyItem(&gameobj));
-			item->setExpanded(true);
 		}
 		else
 		{
 			auto& gameobj = GameEngine::get_instance().addGameObject("Image", nullptr, Component::IMAGE);
-			addTopLevelItem(new HierarchyItem(&gameobj));
 		}
 	});
 	contextMenu->addMenu(addGameobjectMenu);
@@ -134,74 +128,149 @@ void HierarchyWidget::initContextMenu()
 	connect(this, &HierarchyWidget::customContextMenuRequested, this, &HierarchyWidget::showContextMenu);
 }
 
-void HierarchyWidget::insertItem(QTreeWidgetItem* oldItem, QTreeWidgetItem* newItem)
+//
+//void HierarchyWidget::insertItem(QTreeWidgetItem* oldItem, QTreeWidgetItem* newItem)
+//{
+//	if (newItem->parent() == nullptr) {
+//		// 新的项目是根节点
+//		if (oldItem->parent() != nullptr) {// 老的不是根节点
+//			QTreeWidgetItem* parentItem = oldItem->parent(); // 获取老节点的父亲节点
+//			parentItem->insertChild(newItem->indexOfChild(oldItem), oldItem); // 将老节点插入到新节点上面
+//		}
+//		else {//老的是根节点
+//			QTreeWidget* treeWidget = newItem->treeWidget();
+//			int index = treeWidget->indexOfTopLevelItem(newItem);
+//			treeWidget->insertTopLevelItem(index, oldItem);
+//			treeWidget->takeTopLevelItem(index + 1);
+//		}
+//	}
+//	else {
+//		if (newItem->parent() != nullptr) { // newItem不是根节点
+//			if (oldItem->parent() != nullptr) { // oldItem不是根节点
+//				if (oldItem->parent() == newItem->parent()) { // 在同一分支
+//					int newIndex = newItem->parent()->indexOfChild(newItem);
+//					int oldIndex = oldItem->parent()->indexOfChild(oldItem);
+//					if (newIndex > oldIndex) {
+//						newIndex--;
+//					}
+//					newItem->parent()->insertChild(newIndex, oldItem);
+//					oldItem->parent()->removeChild(oldItem);
+//				}
+//				else { // 不在同一分支
+//					int newIndex = newItem->parent()->indexOfChild(newItem);
+//					newItem->parent()->insertChild(newIndex, oldItem);
+//					oldItem->parent()->removeChild(oldItem);
+//				}
+//			}
+//			else { // oldItem是根节点
+//				int newIndex = newItem->indexOfChild(newItem);
+//				newItem->insertChild(newIndex, oldItem);
+//				oldItem->treeWidget()->takeTopLevelItem(oldItem->treeWidget()->indexOfTopLevelItem(oldItem));
+//			}
+//		}
+//		else { // newItem是根节点
+//			if (oldItem->parent() != nullptr) { // oldItem不是根节点
+//				int newIndex = newItem->indexOfChild(newItem);
+//				newItem->insertChild(newIndex, oldItem);
+//				oldItem->parent()->removeChild(oldItem);
+//			}
+//			else { // oldItem是根节点
+//				int newIndex = newItem->treeWidget()->indexOfTopLevelItem(newItem);
+//				newItem->treeWidget()->insertTopLevelItem(newIndex, oldItem);
+//				oldItem->treeWidget()->takeTopLevelItem(oldItem->treeWidget()->indexOfTopLevelItem(oldItem));
+//			}
+//		}
+//	}
+//}
+
+void HierarchyWidget::refreshGameObject()
 {
-	if (newItem->parent() == nullptr) {
-		// 新的项目是根节点
-		if (oldItem->parent() != nullptr) {// 老的不是根节点
-			QTreeWidgetItem* parentItem = oldItem->parent(); // 获取老节点的父亲节点
-			parentItem->insertChild(newItem->indexOfChild(oldItem), oldItem); // 将老节点插入到新节点上面
-		}
-		else {//老的是根节点
-			QTreeWidget* treeWidget = newItem->treeWidget();
-			int index = treeWidget->indexOfTopLevelItem(newItem);
-			treeWidget->insertTopLevelItem(index, oldItem);
-			treeWidget->takeTopLevelItem(index + 1);
-		}
-	}
-	else {
-		if (newItem->parent() != nullptr) { // newItem不是根节点
-			if (oldItem->parent() != nullptr) { // oldItem不是根节点
-				if (oldItem->parent() == newItem->parent()) { // 在同一分支
-					int newIndex = newItem->parent()->indexOfChild(newItem);
-					int oldIndex = oldItem->parent()->indexOfChild(oldItem);
-					if (newIndex > oldIndex) {
-						newIndex--;
-					}
-					newItem->parent()->insertChild(newIndex, oldItem);
-					oldItem->parent()->removeChild(oldItem);
-				}
-				else { // 不在同一分支
-					int newIndex = newItem->parent()->indexOfChild(newItem);
-					newItem->parent()->insertChild(newIndex, oldItem);
-					oldItem->parent()->removeChild(oldItem);
-				}
-			}
-			else { // oldItem是根节点
-				int newIndex = newItem->indexOfChild(newItem);
-				newItem->insertChild(newIndex, oldItem);
-				oldItem->treeWidget()->takeTopLevelItem(oldItem->treeWidget()->indexOfTopLevelItem(oldItem));
-			}
-		}
-		else { // newItem是根节点
-			if (oldItem->parent() != nullptr) { // oldItem不是根节点
-				int newIndex = newItem->indexOfChild(newItem);
-				newItem->insertChild(newIndex, oldItem);
-				oldItem->parent()->removeChild(oldItem);
-			}
-			else { // oldItem是根节点
-				int newIndex = newItem->treeWidget()->indexOfTopLevelItem(newItem);
-				newItem->treeWidget()->insertTopLevelItem(newIndex, oldItem);
-				oldItem->treeWidget()->takeTopLevelItem(oldItem->treeWidget()->indexOfTopLevelItem(oldItem));
-			}
-		}
+	if (selectedGameObject != nullptr)
+	{
+		auto item = gameobj_item_map[selectedGameObject];
+		item->setText(0, QString::fromStdString(selectedGameObject->name));
 	}
 }
 
-void HierarchyWidget::mouseReleaseEvent(QMouseEvent* event)
-{
-	if (dragMode)// 拖拽状态成立
-	{
-		QTreeWidgetItem* curentItem = itemAt(event->pos());
-		if (curentItem)
-			insertItem(draggedItem, curentItem);//插入到当前项的上面
-		dragMode = false;
-	}
-}
+
+//void HierarchyWidget::mouseReleaseEvent(QMouseEvent* event)
+//{
+//	if (dragMode)// 拖拽状态成立
+//	{
+//		QTreeWidgetItem* curentItem = itemAt(event->pos());
+//		if (curentItem)
+//			insertItem(draggedItem, curentItem);//插入到当前项的上面
+//		dragMode = false;
+//	}
+//}
 
 HierarchyWidget::HierarchyWidget(QWidget* parent):QTreeWidget(parent)
 {
+	gameobj_item_map = std::unordered_map<GameObject*, HierarchyItem*>();
 	connect(this, SIGNAL(itemSelectionChanged()),this, SLOT(onSelectionChanged()));	
+}
+
+void HierarchyWidget::refresh()
+{
+	clear();
+	gameobj_item_map.clear();
+	auto scene = GameEngine::get_instance().getCurrentScene();
+	if (scene == nullptr)
+		return;
+	auto items = QList<QTreeWidgetItem*>();
+	for (auto obj : scene->getRootGameObjs())
+	{
+		HierarchyItem* item = new HierarchyItem(obj,this);
+		items.emplaceBack(item);
+	}
+	addTopLevelItems(items);
+}
+
+void HierarchyWidget::addGameObject(GameObject* gameobj, GameObject* parent, InsertMode insertMode)
+{
+	if (parent == nullptr)
+	{
+		auto item = new HierarchyItem(gameobj,this);
+		addTopLevelItem(item);		
+	}
+	else
+	{
+		auto parentItem = gameobj_item_map[parent];
+		switch (insertMode)
+		{
+		case BEFORE:
+			if (parentItem->parent() == nullptr)
+			{
+				auto index = indexOfTopLevelItem(parentItem);
+				auto item = new HierarchyItem(gameobj,this);
+				insertTopLevelItem(index , item);
+			}
+			else
+			{
+				auto index = parentItem->parent()->indexOfChild(parentItem);
+				parentItem->parent()->insertChild(index , new HierarchyItem(gameobj,this));
+			}
+			break;
+		case AFTER:
+			if (parentItem->parent() == nullptr)
+			{
+				auto index = indexOfTopLevelItem(parentItem);
+				insertTopLevelItem(index + 1, new HierarchyItem(gameobj,this));
+			}
+			else
+			{
+				auto index = parentItem->parent()->indexOfChild(parentItem);
+				parentItem->parent()->insertChild(index + 1, new HierarchyItem(gameobj,this));
+			}
+			break;
+		case INSIDE:
+			parentItem->addChild(new HierarchyItem(gameobj,this));
+			parentItem->setExpanded(true);
+			break;
+		default:
+			break;
+		}
+	}
 }
 
 void HierarchyWidget::mouseMoveEvent(QMouseEvent* event)

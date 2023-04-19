@@ -1,12 +1,15 @@
 #pragma once
-#include "qtreewidget.h"
+#include <qtreewidget.h>
 #include <Core/Core/GameObject.h>
+
+class HierarchyWidget;
 
 class HierarchyItem : public QTreeWidgetItem
 {
 public:
     GameObject* gameObject;
-    HierarchyItem(GameObject* gameObject);
+    HierarchyWidget* tree;
+    HierarchyItem(GameObject* gameObject, HierarchyWidget* tree);
     ~HierarchyItem();
     void moveUp();
     void moveDown();

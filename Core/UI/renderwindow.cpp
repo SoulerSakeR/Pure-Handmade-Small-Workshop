@@ -25,8 +25,10 @@ RenderWindow::RenderWindow(QWidget *parent)
     // ui->hierarchy->ui = this;
     RenderWidget::sceneWidget = ui->openGLWidget;
     RenderWidget::gameWidget = ui->openGLWidget_2;
+    GameEngine::get_instance().hierarchy = ui->hierarchy;
     ui->hierarchy->componentsDockWidget = ui->dockWidget_components;
     ui->hierarchy->initContextMenu();
+    ui->dockWidget_components->hierarchy = ui->hierarchy;
     auto x= ui->openGLWidget->hasMouseTracking();
     // 根据组件类型动态生成组件按钮
     for (int i = 1;i < Component::componentTypeCount + 1;++i)
@@ -99,13 +101,10 @@ RenderWindow::RenderWindow(QWidget *parent)
             auto item = (HierarchyItem*)(ui->hierarchy->selectedItems()[0]);
             auto parent = item->gameObject;
             auto& gameobj = GameEngine::get_instance().addGameObject("GameObject", parent, Component::TRANSFORM, INSIDE);
-            item->addChild(new HierarchyItem(&gameobj));
-            item->setExpanded(true);
         }
         else
         {
             auto& gameobj = GameEngine::get_instance().addGameObject("GameObject");
-            ui->hierarchy->addTopLevelItem(new HierarchyItem(&gameobj));
         }
     });
     connect(ui->actionCreatGameObjectWithImage, &QAction::triggered, [=]() {
@@ -119,13 +118,10 @@ RenderWindow::RenderWindow(QWidget *parent)
             auto item = (HierarchyItem*)(ui->hierarchy->selectedItems()[0]);
             auto parent = item->gameObject;
             auto& gameobj = GameEngine::get_instance().addGameObject("Image", parent, Component::IMAGE,INSIDE);
-            item->addChild(new HierarchyItem(&gameobj));
-            item->setExpanded(true);
         }
         else
         {
             auto& gameobj = GameEngine::get_instance().addGameObject("Image", nullptr, Component::IMAGE);
-            ui->hierarchy->addTopLevelItem(new HierarchyItem(&gameobj));
         }
         
     });
@@ -207,17 +203,7 @@ void RenderWindow::onTreeviewRightClick(const QPoint& pos) {
 
 void RenderWindow::refreshHierachy()
 {
-    ui->hierarchy->clear();
-    auto scene = GameEngine::get_instance().getCurrentScene();
-    if (scene == nullptr)
-        return;
-    auto items = QList<QTreeWidgetItem*>();
-    for (auto obj : scene->getRootGameObjs())
-    {
-        HierarchyItem* item = new HierarchyItem(obj);
-        items.emplaceBack(item);
-    }
-    ui->hierarchy->addTopLevelItems(items);
+    ui->hierarchy->refresh();
 }
 void RenderWindow::onListItemDoubleClicked()
 {

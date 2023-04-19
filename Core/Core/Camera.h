@@ -15,6 +15,8 @@ public:
     void set_main_camera(bool value,bool refreshUI = true);
     void set_view_width(float value, bool refreshUI = true);
     float get_view_width();
+    bool is_overlay();
+    void set_overlay(bool value);
 
     QMatrix4x4 CalculateProjectionMulViewMatrix();
     Vector2D screenToWorld(Vector2D screenPos);
@@ -29,5 +31,6 @@ protected:
     
     bool is_main_camera_;
     float view_width;
+    bool is_overlay_;
 };
 

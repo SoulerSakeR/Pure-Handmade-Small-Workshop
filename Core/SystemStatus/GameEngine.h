@@ -4,6 +4,7 @@
 #include "Core/Utils/Test.h"
 #include <Core/UI/renderwindow.h>
 #include <Core/ThreadPool/ThreadPool.h>
+#include <Core/UI/HierarchyWidget.h>
 
 class ResourceMgr;
 
@@ -11,6 +12,7 @@ class ResourceMgr;
 /// @brief game engine singleton
 class GameEngine
 {
+	friend class RenderWindow;
 public:	
 	//method
 	static GameEngine& get_instance();	
@@ -46,9 +48,11 @@ private:
 	
 	void renderLoop();
 	RenderWindow* window;
+	HierarchyWidget* hierarchy;
 	static GameEngine* instance ; //游戏引擎实例		
 	std::string rootPath;
 	GameProject* gameProject; //current game project
 	ResourceMgr* resourceMgr; //resource manager
+	bool inEditor;
 };
 

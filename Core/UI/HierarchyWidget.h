@@ -3,25 +3,32 @@
 #include "HierarchyItem.h"
 #include "Core/UI/renderwindow.h"
 #include "ComponentsDockWidget.h"
+#include "Core/UI/HierarchyItem.h"
+#include "Core/Core/Scene.h"
 
-class HierarchyWidget :
-    public QTreeWidget
+class HierarchyWidget : public QTreeWidget
 {
+    friend class HierachyItem;
     Q_OBJECT
 signals:
     void gameObjectSelected(GameObject* gameobj);
 public:
     HierarchyWidget(QWidget* parent);
+    void refresh();
+    void addGameObject(GameObject* gameobj,GameObject* parent = nullptr,InsertMode insertMode = INSIDE);
 
     void mouseMoveEvent(QMouseEvent* event) override;
 
     void initContextMenu();
-    void mouseReleaseEvent(QMouseEvent* event) override;
+    void refreshGameObject();
+   // void mouseReleaseEvent(QMouseEvent* event) override;
 
     QMenu* contextMenu;
     GameObject* selectedGameObject;
     ComponentsDockWidget* componentsDockWidget;
-    void insertItem(QTreeWidgetItem* oldItem, QTreeWidgetItem* newItem);
+    std::unordered_map<GameObject*, HierarchyItem*> gameobj_item_map;
+    // RenderWindow* ui;
+    //void insertItem(QTreeWidgetItem* oldItem, QTreeWidgetItem* newItem);
 
 public slots:
     void showContextMenu(const QPoint& pos);
@@ -29,6 +36,7 @@ public slots:
 
 private:
     bool dragMode;
+private:    
     QPoint startPos;
     QTreeWidgetItem* draggedItem;
 };

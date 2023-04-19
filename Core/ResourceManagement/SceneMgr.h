@@ -6,6 +6,7 @@ class SceneMgr
 {
 	friend class GameEngine;
 	friend class GameProject;
+	friend class Camera;
 public:
 	static SceneMgr& get_instance();
 
@@ -25,5 +26,6 @@ private:
 	Camera* main_camera;
 	Scene* current_scene;
 	std::vector<std::string> scenes;
+	std::vector<Camera*> cameras;
 };
 

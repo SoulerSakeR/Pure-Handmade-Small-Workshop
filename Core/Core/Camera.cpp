@@ -74,6 +74,10 @@ void Camera::set_property(Property* property, void* value)
 	{
 		set_main_camera(*(bool*)value,false);
 	}
+	else if (property->get_name() == "is_overlay")
+	{
+		set_overlay(*(bool*)value);
+	}
 }
 
 void Camera::set_view_width(float value,bool refreshUI)
@@ -90,13 +94,39 @@ float Camera::get_view_width()
 	return view_width;
 }
 
+bool Camera::is_overlay()
+{
+	return is_overlay_;
+}
+
+void Camera::set_overlay(bool value)
+{
+	is_overlay_ = value;
+}
+
 Camera::Camera(GameObject* gameObj,float viewWidth):Component(gameObj)
 {
 	componentType = CAMERA;
 	view_width = viewWidth;
 	is_main_camera_ = false;
-	properties.emplace("view_width",new Property("view_width", &(this->view_width), Property::FLOAT,this));
-	properties.emplace("is_main_camera",new Property("is_main_camera", &(this->is_main_camera_), Property::BOOL,this));
+	is_overlay_ = false;
+	properties.emplace("view_width",new Property("view width", &(this->view_width), Property::FLOAT,this));
+	properties.emplace("is_main_camera",new Property("is main camera", &(this->is_main_camera_), Property::BOOL,this));
+	properties.emplace("is _overlay_",new Property("is overlay", &(this->is_overlay_), Property::BOOL,this));
+	if (SceneMgr::get_instance().get_current_scene() != nullptr)
+	{
+		SceneMgr::get_instance().cameras.push_back(this);
+	}
+}
+
+Camera::~Camera()
+{
+	if (SceneMgr::get_instance().get_current_scene() != nullptr)
+	{
+		auto& cameras = SceneMgr::get_instance().cameras;
+		if(auto it = std::find(cameras.begin(),cameras.end(),this); it != cameras.end())
+			cameras.erase(it);
+	}
 }
 
 void Camera::serialize(PHString& str)

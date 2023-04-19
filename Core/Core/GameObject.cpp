@@ -21,6 +21,8 @@ int GameObject::getID()
 
 Result<void*> GameObject::set_name(const std::string& name)
 {
+    if (this->name == name)
+        return Result<void*>();
     if (auto scene = SceneMgr::get_instance().get_current_scene();scene != nullptr)
     {       
         return scene->renameGameObject(this, name);

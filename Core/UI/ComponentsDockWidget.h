@@ -19,6 +19,8 @@ public:
     void onPropertyChanged(Property* property);
     void refresh();
 
+    HierarchyWidget* hierarchy;
+
 public slots:
     void onGameObjectSelected(GameObject* gameobj);
     void onPropertyInputed(QObject* sender,void* value);
@@ -30,7 +32,7 @@ public slots:
     void onColorChanged(Color32 value);
 
 private:
-    QWidget* components_widget;
+    QWidget* components_widget;   
     std::map<Property*, QObject*> property_Object_map;
     std::map<QObject*, Property*> Object_Property_map;
     static ComponentsDockWidget* instance;

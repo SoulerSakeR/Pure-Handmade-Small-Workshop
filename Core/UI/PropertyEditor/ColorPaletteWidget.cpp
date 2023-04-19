@@ -40,7 +40,7 @@ void ColorPaletteWidget::setColor(Color32 color)
 void ColorPaletteWidget::chooseColor()
 {
     // 打开颜色对话框，让用户选择颜色
-    QColor color = QColorDialog::getColor(m_currentColor, this, "Choose color");
+    QColor color = QColorDialog::getColor(m_currentColor, this, "Choose color",QColorDialog::ShowAlphaChannel);
 
     // 如果用户选择了颜色，则更新当前颜色并在标签上显示
     if (color.isValid())
