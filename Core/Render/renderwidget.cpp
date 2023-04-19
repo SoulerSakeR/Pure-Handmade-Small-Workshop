@@ -555,6 +555,7 @@ void RenderWidget::renderFboOverlay()
 	for (auto camera : cameras)
 	{
 		if (camera->get_enabled() && camera->gameObject->isActive && camera->is_overlay())
+		{
 			renderScene(camera);
 	}	
 	fboOverlay->release();
@@ -679,6 +680,18 @@ void RenderWidget::createTextProgram()
 	shaderSizeBinding = textShaderProgram->uniformLocation("size");
 }
 
+void RenderWidget::createTextureProgram()
+{
+	bool success;
+	textureShaderProgram = std::make_unique<QOpenGLShaderProgram>();
+	textureShaderProgram->create();
+	textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, QString::fromStdString(source_path + "\\shaders\\mixTexttureShader.vert"));
+	textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\mixTexttureShader.frag"));
+	success = textureShaderProgram->link();
+	if (!success)
+		qDebug() << "ERR:" << textureShaderProgram->log();
+
+}
 void RenderWidget::messageLogHandler(const QOpenGLDebugMessage& debugMessage)
 {
 	qDebug() << debugMessage.message();
@@ -803,17 +816,7 @@ void RenderWidget::contextMenuEvent(QContextMenuEvent* event)
 	event->accept();
 }
 
-void RenderWidget::createTextureProgram()
-{
-	bool success;
-	textureShaderProgram = std::make_unique<QOpenGLShaderProgram>();
-	textureShaderProgram->create();
-	textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, QString::fromStdString(source_path + "\\shaders\\mixTexttureShader.vert"));
-	textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\mixTexttureShader.frag"));
-	success = textureShaderProgram->link();
-	if (!success)
-		qDebug() << "ERR:" << textureShaderProgram->log();
-}
+
 
 
 
