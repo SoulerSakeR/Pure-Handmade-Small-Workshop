@@ -23,13 +23,13 @@ RenderWindow::RenderWindow(QWidget *parent)
 {
     ui->setupUi(this);
     // ui->hierarchy->ui = this;
-    RenderWidget::sceneWidget = ui->openGLWidget;
-    RenderWidget::gameWidget = ui->openGLWidget_2;
+    RenderWidget::sceneWidget = ui->sceneWidget;
+    RenderWidget::gameWidget = ui->gameWidget;
     GameEngine::get_instance().hierarchy = ui->hierarchy;
     ui->hierarchy->componentsDockWidget = ui->dockWidget_components;
     ui->hierarchy->initContextMenu();
     ui->dockWidget_components->hierarchy = ui->hierarchy;
-    auto x= ui->openGLWidget->hasMouseTracking();
+    auto x= ui->gameWidget->hasMouseTracking();
     // 根据组件类型动态生成组件按钮
     for (int i = 1;i < Component::componentTypeCount + 1;++i)
     {
@@ -157,9 +157,9 @@ void RenderWindow::showContextMenu(const QPoint& pos)
 }
 
 void RenderWindow::resizeGL(QResizeEvent* event) {
-    int width = ui->openGLWidget->width();
-    int height = ui->openGLWidget->height();
-    ui->openGLWidget->resize(width, height);
+    int width = ui->sceneWidget->width();
+    int height = ui->sceneWidget->height();
+    ui->sceneWidget->resize(width, height);
     event->accept();
 }
 

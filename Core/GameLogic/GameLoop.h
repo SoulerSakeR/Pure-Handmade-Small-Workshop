@@ -15,7 +15,7 @@
 
 class GameLoop {
 public:
-    GameLoop(RenderWidget* Rwg) {}
+    GameLoop() {}
     ~GameLoop() {}
 
     //void gameLoop(GameProject* gamePrj);
@@ -31,7 +31,7 @@ public:
         // TODO:更新Player的位置
 
 
-    void updateScene(RenderWidget* Rwg);
+    void updateScene(RenderWidget* sceneWidget, RenderWidget* gameWidget);
         // 更新游戏引擎中的场景信息-（已完成？）
 
 
@@ -44,7 +44,7 @@ public:
         //输出数据信息-测试用
     
 
-    void update(float deltaTime, RenderWidget* Rwg);
+    void update(float deltaTime, RenderWidget* sceneWidget, RenderWidget* gameWidget);
         // 游戏逻辑更新函数，每帧调用一次
         //updatePlayer(deltaTime);
         //updateScene(Rwg);

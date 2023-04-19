@@ -32,7 +32,8 @@ public:
     int frameCount;
     void cleanup();
 
-    static RenderWidget& getInstance(); 
+    static RenderWidget& getSceneWidget(); 
+    static RenderWidget& getGameWidget();
   
     void renderScene(Camera* camera);
     void renderGameobject(GameObject* gameobj, Camera* camera);

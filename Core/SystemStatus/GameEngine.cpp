@@ -90,7 +90,7 @@ GameProject& GameEngine::creatGameProject(const string& name,const string& path)
 }
 Vector2D GameEngine::get_resolution()
 {
-	auto rect = RenderWidget::getInstance().rect();
+	auto rect = RenderWidget::getGameWidget().rect();
 	return Vector2D(rect.width(), rect.height());
 }
 void GameEngine::refreshHierarchy()
@@ -101,7 +101,7 @@ bool GameEngine::needToRefeshUI(GameObject* gameobj)
 {
 	if (getSelectedGameObject() !=gameobj)
 		return false;
-	if(RenderWidget::getInstance().frameCount%5==0)
+	if(RenderWidget::getGameWidget().frameCount%5==0)
 		return true;
 	return false;
 }
