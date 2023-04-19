@@ -40,9 +40,11 @@ public:
     void renderBoxCollider(BoxCollider* boxCollider, Camera* boxColliderCamera);
     void renderImage(Image* image, Camera* imageCamera);
     void renderText(Text* text, Camera* textCamera);
+    void renderCameraBorder(Camera* target, Camera* camera);
     void renderFbo();
     void renderFboOverlay();
     void mixTexture();
+    
     
     void mouseMoveEvent(QMouseEvent* event) override;
     void keyPressEvent(QKeyEvent* event) override;
@@ -81,21 +83,25 @@ private:
     std::unique_ptr<QOpenGLShaderProgram> boxColliderShaderProgram;
     std::unique_ptr<QOpenGLShaderProgram> textShaderProgram;
     std::unique_ptr<QOpenGLShaderProgram> textureShaderProgram;
+    std::unique_ptr<QOpenGLShaderProgram> cameraBorderShaderProgram;
 
     std::unique_ptr<QOpenGLVertexArrayObject> vao;
     std::unique_ptr<QOpenGLVertexArrayObject> vaoBox;
     std::unique_ptr<QOpenGLVertexArrayObject> vaoText;
     std::unique_ptr<QOpenGLVertexArrayObject> vaoTexture;
+    std::unique_ptr<QOpenGLVertexArrayObject> vaoCameraBorder;
 
     std::unique_ptr<QOpenGLBuffer> vbo;
     std::unique_ptr<QOpenGLBuffer> vboBox;
     std::unique_ptr<QOpenGLBuffer> vboText;
     std::unique_ptr<QOpenGLBuffer> vboTexture;
+    std::unique_ptr<QOpenGLBuffer> vboCameraBorder;
 
     std::unique_ptr<QOpenGLBuffer> ibo;
     std::unique_ptr<QOpenGLBuffer> iboBox;
     std::unique_ptr<QOpenGLBuffer> iboText;
     std::unique_ptr<QOpenGLBuffer> iboTexture;
+    std::unique_ptr<QOpenGLBuffer> iboCameraBorder;
 
     std::unique_ptr<QOpenGLDebugLogger> logger;
 
@@ -112,6 +118,8 @@ private:
     void createTextProgram();
     // Texture
     void createTextureProgram();
+    // CameraBorder
+    void createCameraBorderProgram();
     
     QOpenGLTexture* genTextTexture(int width, int height, const QString& text, int textPixelSize, const QColor& textColor);
     
