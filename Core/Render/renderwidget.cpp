@@ -304,28 +304,18 @@ void RenderWidget::renderText(Text* text)
 		GLint colorLocation = textShaderProgram->attributeLocation("aColor");
 		GLint textureLocation = textShaderProgram->attributeLocation("aTexCord");
 
-		auto stride = 9 * sizeof(float);
+		auto stride = sizeof(Vertex);
 
 		//-----------------position--------------------//
 		//告知显卡如何解析缓冲里的属性值
 		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
 		//开启VAO管理的第一个属性值
 		glEnableVertexAttribArray(posLocation);
-
-		
-		if (colorLocation >= 0)
-		{
-			//------------------Color-----------------------//
-			glVertexAttribPointer(colorLocation, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
-			glEnableVertexAttribArray(colorLocation);
-		}
 		
 		if (textureLocation)
 		{
 			//------------------Texture-----------------------//
-
-			glVertexAttribPointer(textureLocation, 2, GL_FLOAT, GL_FALSE, stride, (void*)(7 * sizeof(float)));
-
+			glVertexAttribPointer(textureLocation, 2, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
 			glEnableVertexAttribArray(textureLocation);
 		}
 		text->vao->release();
