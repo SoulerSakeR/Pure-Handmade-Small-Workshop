@@ -608,12 +608,38 @@ QOpenGLTexture *RenderWidget::genTextTexture(int width, int height, const QStrin
 
 void RenderWidget::mouseMoveEvent(QMouseEvent* event)
 {
-	Vector2D pos = Vector2D(event->localPos().x(),size().height() - event->localPos().y());
+	Vector2D Pos = Vector2D(event->localPos().x(),size().height() - event->localPos().y());
 	//Debug::log("mouse position: " + pos.tostring());
 	//if(SceneMgr::get_instance().get_main_camera()!=nullptr)
 		//Debug::log("camera position: "+SceneMgr::get_instance().get_main_camera()->screenToWorld(pos).tostring());
+
+	if (event->buttons() & Qt::LeftButton) {
+
+	}
+	else if (event->buttons() & Qt::RightButton)
+	{
+		QPoint diff = event->pos() - lastPos;
+
+		float ratio = mCamera->get_view_width() / size().width();
+		
+
+		Vector2D diff2 = Vector2D(-diff.x(), diff.y()) * ratio;
+
+
+		mCameraObject->transform->translate(diff2);
+		lastPos = event->pos();
+		update();
+	}
+
 }
 
+void RenderWidget::mousePressEvent(QMouseEvent* event)
+{
+	if (event->button() == Qt::RightButton)
+	{
+		lastPos = event->pos();
+	}
+}
 
 void RenderWidget::keyPressEvent(QKeyEvent* event)
 {
@@ -636,6 +662,8 @@ void RenderWidget::wheelEvent(QWheelEvent* event)
 	else
 		mCamera->set_view_width(mCamera->get_view_width() * 1.1f);
 }
+
+
 
 
 
