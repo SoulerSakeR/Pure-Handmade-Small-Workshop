@@ -31,7 +31,7 @@ void Camera::set_main_camera(bool value,bool refreshUI)
 	}
 	if (refreshUI && GameEngine::get_instance().getSelectedGameObject() == gameObject)
 	{
-		GameEngine::get_instance().onPropertyChange(properties["is_main_camera"]);
+		GameEngine::get_instance().onPropertyChange(properties["is main camera"]);
 	}
 }
 
@@ -66,12 +66,12 @@ Vector2D Camera::WorldToScreen(Vector2D worldPos)
 
 void Camera::set_property(Property* property, void* value)
 {
-	Component::set_property(property, value);
-	if (property->get_name() == "view_width")
+	IBoxResizable::set_property(property, value);
+	if (property->get_name() == "view width")
 	{
 		set_view_width(*(float*)value, false);
 	}
-	else if (property->get_name() == "is_main_camera")
+	else if (property->get_name() == "is main camera")
 	{
 		set_main_camera(*(bool*)value,false);
 	}
@@ -105,7 +105,7 @@ void Camera::set_overlay(bool value)
 	is_overlay_ = value;
 }
 
-Camera::Camera(GameObject* gameObj,float viewWidth):Component(gameObj)
+Camera::Camera(GameObject* gameObj,float viewWidth):IBoxResizable(gameObj)
 {
 	componentType = CAMERA;
 	view_width = viewWidth;

@@ -2,8 +2,9 @@
 #include "Component.h"
 #include "Core/Utils/Vector2D.h"
 #include <qmatrix4x4.h>
-class Camera :
-    public Component
+#include "IResizable.h"
+
+class Camera : public IBoxResizable
 {
 public:
     static constexpr int max_component_size=1;
