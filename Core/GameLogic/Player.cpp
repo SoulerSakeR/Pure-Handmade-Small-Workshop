@@ -38,14 +38,37 @@ Vector2D Player::getVelocity() {
 
 // 玩家进行操作输入时直接调用，通过设置的速度直接移动人物
 void Player::move(float deltaTime) {
-	// 如果GameLoop中的inputDetection检测到了WASD的按键
-	// 进行相应的动作
-	
+
 	// TODO:被Lua函数调用？
 	Vector2D originVelocity = this->getVelocity();
 
-	//偏移量 = 速度 * 间隔时间
-	this->setMoveValue(Vector2D(originVelocity.x * deltaTime, originVelocity.y * deltaTime));
+	// 如果GameLoop中的inputDetection检测到了WASD的按键
+	// 进行相应的动作
+
+	char key = playerInputDetection(deltaTime); // 假设 playerInputDetection 是上一个问题中的方法
+
+	switch (key) {
+	case 'w':
+		//偏移量 = 速度 * 间隔时间
+		this->setMoveValue(Vector2D(0, originVelocity.y * deltaTime));
+		break;
+	case 'a':
+		//偏移量 = 速度 * 间隔时间
+		this->setMoveValue(Vector2D(-originVelocity.x * deltaTime, 0));
+		break;
+	case 's':
+		//偏移量 = 速度 * 间隔时间
+		this->setMoveValue(Vector2D(0, -originVelocity.y * deltaTime));
+		break;
+	case 'd':
+		//偏移量 = 速度 * 间隔时间
+		this->setMoveValue(Vector2D(originVelocity.x * deltaTime, 0));
+		break;
+	default:
+		break; // 如果没有键被按下，则什么都不做
+	}
+
+
 }
 
 
@@ -77,33 +100,54 @@ void Player::updatePlayerInfo(float deltaTime) {
 }
 
 // 检测玩家输入(目前仅WASD)
-void Player::playerInputDetection(float deltaTime) {
+char Player::playerInputDetection(float deltaTime) {
 
 	// 按下W
 	if (InputDetection::GetKey(0x57) && InputDetection::GetKeyDown(0x57)) {
 		std::cout << "You pressed down 'W'" << std::endl;
+		return 'w';
 	}
 
 	// 放开W
-	if (InputDetection::GetKey(0x57) && InputDetection::GetKeyUp(0x57)) {
+	if (InputDetection::GetKeyUp(0x57)) {
 		std::cout << "You realeased 'W'" << std::endl;
+		return 'r';
 	}
 
-	/*
-		// 按下A
-	if (InputDetection::GetKey(0x41)) {
-		std::cout << "You pressed 'A'" << std::endl;
+	// 按下A
+	if (InputDetection::GetKey(0x41) && InputDetection::GetKeyDown(0x41)) {
+		std::cout << "You pressed down 'A'" << std::endl;
+		return 'a';
+	}
+
+	// 放开A
+	if (InputDetection::GetKeyUp(0x41)) {
+		std::cout << "You released 'A'" << std::endl;
+		return 'r';
 	}
 
 	// 按下S
-	if (InputDetection::GetKey(0x53)) {
-		std::cout << "You pressed 'S'" << std::endl;
+	if (InputDetection::GetKey(0x53) && InputDetection::GetKeyDown(0x53)) {
+		std::cout << "You pressed down 'S'" << std::endl;
+		return 's';
+	}
+
+	// 放开S
+	if (InputDetection::GetKeyUp(0x53)) {
+		std::cout << "You released 'S'" << std::endl;
+		return 'r';
 	}
 
 	// 按下D
-	if (InputDetection::GetKey(0x44)) {
-		std::cout << "You pressed 'D'" << std::endl;
+	if (InputDetection::GetKey(0x44) && InputDetection::GetKeyDown(0x44)) {
+		std::cout << "You pressed down 'D'" << std::endl;
+		return 'd';
 	}
-	*/
+
+	// 放开D
+	if (InputDetection::GetKeyUp(0x44)) {
+		std::cout << "You released 'D'" << std::endl;
+		return 'r';
+	}
 
 }
