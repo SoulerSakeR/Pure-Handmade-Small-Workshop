@@ -56,19 +56,44 @@ void RenderWidget::setWirefame(bool wireframe)
 
 void RenderWidget::renderGameobject(GameObject* gameobj, Camera* camera)
 {
-	if (auto img = gameobj->getComponent<Image>(); img != nullptr && img->get_enabled())
+	if (camera == mCamera) // edit mode, render all components
 	{
-		renderImage(img, camera);
+		if (auto img = gameobj->getComponent<Image>(); img != nullptr && img->get_enabled())
+		{
+			renderImage(img, camera);
+		}
+		if (auto boxCollider = gameobj->getComponent<BoxCollider>(); boxCollider != nullptr && boxCollider->get_enabled())
+		{
+			renderBoxCollider(boxCollider, camera);
+		}
+
+		if (auto text = gameobj->getComponent<Text>(); text != nullptr && text->get_enabled())
+		{
+			renderText(text, camera);
+		}
+
+		// camera border
+		if (auto target = gameobj->getComponent<Camera>(); camera != nullptr && camera->get_enabled())
+		{
+			renderCameraBorder(target, camera);
+		}
+		
 	}
-	if (auto boxCollider = gameobj->getComponent<BoxCollider>();boxCollider != nullptr && boxCollider->get_enabled())
+	else // game mode, only render image and text
 	{
-		renderBoxCollider(boxCollider, camera);
+		if (auto img = gameobj->getComponent<Image>(); img != nullptr && img->get_enabled())
+		{
+			renderImage(img, camera);
+		}
+
+		if (auto text = gameobj->getComponent<Text>(); text != nullptr && text->get_enabled())
+		{
+			renderText(text, camera);
+		}
+
 	}
 
-	if (auto text = gameobj->getComponent<Text>(); text != nullptr && text->get_enabled())
-	{
-		renderText(text, camera);
-	}
+	
 
 	// renderText();
 }
@@ -229,24 +254,26 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera)
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	img->ibo->release();
 	
-	//draw border
-	if (img->borderIbo == nullptr)
+	if (imageCamera == mCamera)
 	{
-		img->borderIbo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
-		img->borderIbo->create();
+		//draw border
+		if (img->borderIbo == nullptr)
+		{
+			img->borderIbo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+			img->borderIbo->create();
+			img->borderIbo->bind();
+			img->borderIbo->allocate(img->borderIndices.data(), static_cast<int>(img->borderIndices.size() * sizeof(unsigned int)));
+		}
 		img->borderIbo->bind();
-		img->borderIbo->allocate(img->borderIndices.data(), static_cast<int>(img->borderIndices.size() * sizeof(unsigned int)));
-	}
-	img->borderIbo->bind();
-	
-	boxColliderShaderProgram->bind();
-	boxColliderShaderProgram->setUniformValue("MVPMatrix", matrix);
-	boxColliderShaderProgram->setUniformValue("color",1.0f,1.0f,1.0f,1.0f);
 
-	glLineWidth(3.0f);
-	glDrawElements(GL_LINES, static_cast<GLsizei>(sizeof(unsigned int) * img->borderIndices.size()), GL_UNSIGNED_INT, 0);
-	img->borderIbo->release();
+		boxColliderShaderProgram->bind();
+		boxColliderShaderProgram->setUniformValue("MVPMatrix", matrix);
+		boxColliderShaderProgram->setUniformValue("color", 1.0f, 1.0f, 1.0f, 1.0f);
 
+		glLineWidth(3.0f);
+		glDrawElements(GL_LINES, static_cast<GLsizei>(sizeof(unsigned int) * img->borderIndices.size()), GL_UNSIGNED_INT, 0);
+		img->borderIbo->release();
+	}	
 	//release
 	img->vao->release();
 	if(img->texture!=nullptr)
@@ -374,27 +401,34 @@ void RenderWidget::renderText(Text* text, Camera* textCamera)
 	//set texture mode
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+	
 	//draw
 	glDrawElements(GL_TRIANGLES, sizeof(unsigned int) * 6, GL_UNSIGNED_INT, 0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	text->ibo->release();
-
-	//draw border
-	if (text->borderIbo == nullptr)
+	
+	
+	if (textCamera == mCamera)
 	{
-		text->borderIbo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
-		text->borderIbo->create();
+		//draw border
+		if (text->borderIbo == nullptr)
+		{
+			text->borderIbo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+			text->borderIbo->create();
+			text->borderIbo->bind();
+			text->borderIbo->allocate(text->borderIndices.data(), static_cast<int>(text->borderIndices.size() * sizeof(unsigned int)));
+		}
 		text->borderIbo->bind();
-		text->borderIbo->allocate(text->borderIndices.data(), static_cast<int>(text->borderIndices.size() * sizeof(unsigned int)));
+
+		boxColliderShaderProgram->bind();
+		boxColliderShaderProgram->setUniformValue("MVPMatrix", matrix);
+
+		glLineWidth(3.0f);
+		glDrawElements(GL_LINES, static_cast<GLsizei>(sizeof(unsigned int) * text->borderIndices.size()), GL_UNSIGNED_INT, 0);
+		text->borderIbo->release();
+
 	}
-	text->borderIbo->bind();
-
-	boxColliderShaderProgram->bind();
-	boxColliderShaderProgram->setUniformValue("MVPMatrix", matrix);
-
-	glLineWidth(3.0f);
-	glDrawElements(GL_LINES, static_cast<GLsizei>(sizeof(unsigned int) * text->borderIndices.size()), GL_UNSIGNED_INT, 0);
-	text->borderIbo->release();
+	
 	
 	
 	//release
@@ -403,6 +437,53 @@ void RenderWidget::renderText(Text* text, Camera* textCamera)
 		text->texture->release();
 
 }
+
+// render camera border
+
+void RenderWidget::renderCameraBorder(Camera* target, Camera* renderCamera)
+{
+	/*
+	if (target->vao == nullptr)
+	{
+		target->vao = new QOpenGLVertexArrayObject;
+		target->vao->create();
+		target->vao->bind();
+		target->vbo = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+		target->vbo->create();
+		target->vbo->bind();
+		target->vbo->allocate(target->vertices.data(), static_cast<int>(target->vertices.size() * sizeof(Vertex)));
+		target->ibo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+		target->ibo->create();
+		target->ibo->bind();
+		target->ibo->allocate(target->indices.data(), static_cast<int>(target->indices.size() * sizeof(unsigned int)));
+		cameraBorderShaderProgram->bind();
+		GLint posLocation = cameraBorderShaderProgram->attributeLocation("aPos");
+		GLint colorLocation = cameraBorderShaderProgram->attributeLocation("aColor");
+
+		GLsizei stride = sizeof(Vertex);
+		//-----------------position--------------------//
+		//告知显卡如何解析缓冲里的属性值
+		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+		//开启VAO管理的第一个属性值
+		glEnableVertexAttribArray(posLocation);
+		if (colorLocation)
+		{
+			//------------------Texture-----------------------//
+			glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+			glEnableVertexAttribArray(colorLocation);
+		}
+		target->vao->release();
+		target->vbo->release();
+		target->vbo->destroy();
+		delete target->vbo;
+		target->vbo = nullptr;
+		
+	}
+	*/
+
+}
+
+	
 
 void RenderWidget::renderScene(Camera* camera)
 {
@@ -441,6 +522,7 @@ void RenderWidget::initializeGL()
 	createBoxProgram();	
 	createTextProgram();
 	createTextureProgram();
+	createCameraBorderProgram();
 	
 	textBuffer = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
 }
@@ -557,8 +639,9 @@ void RenderWidget::renderFboOverlay()
 		if (camera->get_enabled() && camera->gameObject->isActive && camera->is_overlay())
 		{
 			renderScene(camera);
-	}	
-	fboOverlay->release();
+		}
+		fboOverlay->release();
+	}
 }
 
 void RenderWidget::mixTexture()
@@ -692,6 +775,20 @@ void RenderWidget::createTextureProgram()
 		qDebug() << "ERR:" << textureShaderProgram->log();
 
 }
+
+// camera border shader create
+void RenderWidget::createCameraBorderProgram()
+{
+	bool success;
+	cameraBorderShaderProgram = std::make_unique<QOpenGLShaderProgram>();
+	cameraBorderShaderProgram->create();
+	cameraBorderShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, QString::fromStdString(source_path + "\\shaders\\cameraBorderShader.vert"));
+	cameraBorderShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\cameraBorderShader.frag"));
+	success = cameraBorderShaderProgram->link();
+	if (!success)
+		qDebug() << "ERR:" << cameraBorderShaderProgram->log();
+}
+
 void RenderWidget::messageLogHandler(const QOpenGLDebugMessage& debugMessage)
 {
 	qDebug() << debugMessage.message();
