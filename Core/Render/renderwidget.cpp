@@ -21,6 +21,7 @@ RenderWidget::RenderWidget(QWidget* parent) : QOpenGLWidget(parent)
 	frameCount = 0;
 	instance = this;
 	fbo = nullptr;
+	fboOverlay = nullptr;
 	mCameraObject = new GameObject("Camera");
 	mCamera = mCameraObject->addComponent<Camera>();
 	mCamera->set_view_width(500);
@@ -430,11 +431,11 @@ void RenderWidget::initializeGL()
 	
 	source_path = GameEngine::get_instance().getRootPath();
 
-	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+	glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
 	glEnable(GL_FRAMEBUFFER_SRGB);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
-
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	createProgram();
 	createBoxProgram();	
@@ -470,6 +471,7 @@ void RenderWidget::paintGL()
 	}
 	
 	fbo->bind();
+	glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	if(editMode)
@@ -480,7 +482,37 @@ void RenderWidget::paintGL()
 	
 	
 	fbo->release();
-	QOpenGLFramebufferObject::blitFramebuffer(nullptr,fbo, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	//QOpenGLFramebufferObject::blitFramebuffer(nullptr,fbo, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+
+
+	// render overlay
+
+	if (fboOverlay == nullptr)
+	{
+		// 创建一个 FBO，大小为窗口大小乘以设备像素比
+		qreal dpr = qApp->primaryScreen()->devicePixelRatio();
+		QSize scaledSize = size() * dpr;
+
+		fboOverlay = new QOpenGLFramebufferObject(scaledSize);
+	}
+
+	fboOverlay->bind();
+	
+	glEnable(GL_BLEND);
+	glBlendEquation(GL_FUNC_ADD);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	renderScene(SceneMgr::get_instance().get_main_camera());// 使用场景相机
+	fboOverlay->release();
+
+
+	// 合并场景和 UI 的纹理
+	QOpenGLFramebufferObject::blitFramebuffer(nullptr, fbo, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	QOpenGLFramebufferObject::blitFramebuffer(nullptr, fboOverlay, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	
+
 	return;
 }
 

@@ -115,6 +115,7 @@ private:
 
     
     QOpenGLFramebufferObject* fbo;
+    QOpenGLFramebufferObject* fboOverlay;
 
     GameObject* mCameraObject;
     Camera*  mCamera;
