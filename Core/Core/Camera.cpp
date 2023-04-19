@@ -66,6 +66,7 @@ Vector2D Camera::WorldToScreen(Vector2D worldPos)
 
 void Camera::set_property(Property* property, void* value)
 {
+	Component::set_property(property, value);
 	if (property->get_name() == "view_width")
 	{
 		set_view_width(*(float*)value, false);
@@ -74,7 +75,7 @@ void Camera::set_property(Property* property, void* value)
 	{
 		set_main_camera(*(bool*)value,false);
 	}
-	else if (property->get_name() == "is_overlay")
+	else if (property->get_name() == "is overlay")
 	{
 		set_overlay(*(bool*)value);
 	}
@@ -115,7 +116,9 @@ Camera::Camera(GameObject* gameObj,float viewWidth):Component(gameObj)
 	properties.emplace("is _overlay_",new Property("is overlay", &(this->is_overlay_), Property::BOOL,this));
 	if (SceneMgr::get_instance().get_current_scene() != nullptr)
 	{
-		SceneMgr::get_instance().cameras.push_back(this);
+		auto& cameras = SceneMgr::get_instance().cameras;
+		if (auto it = std::find(cameras.begin(), cameras.end(), this); it == cameras.end())
+			cameras.push_back(this);
 	}
 }
 
@@ -145,6 +148,12 @@ void Camera::deserialize(std::stringstream& ss)
 	is_main_camera_ = std::stoi(s);
 	if (is_main_camera_)
 		SceneMgr::get_instance().set_main_camera(*this);
+	if (SceneMgr::get_instance().get_current_scene() != nullptr)
+	{
+		auto& cameras = SceneMgr::get_instance().cameras;
+		if (auto it = std::find(cameras.begin(), cameras.end(), this); it == cameras.end())
+			cameras.push_back(this);
+	}
 }
 
 void Camera::reset()

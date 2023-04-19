@@ -35,7 +35,7 @@ public:
 #ifdef TEST
     static Scene* loadFromText(const std::string& text);
 #endif // TEST
-    static Scene* loadFromPath(std::string path);
+    static Scene* loadFromPath(std::string path,Scene* scene = nullptr);
 private:
     std::unordered_map<int,GameObject*> allGameObjsByID; //当前场景下所有的GameObject
     std::unordered_map<std::string, std::vector<GameObject*>> allGameObjsByName;

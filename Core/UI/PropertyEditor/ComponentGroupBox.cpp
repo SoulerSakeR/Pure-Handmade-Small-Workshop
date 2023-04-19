@@ -59,7 +59,7 @@ ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGr
 		case Property::BOOL:
 		{
 			auto checkbox = new QCheckBox();
-			checkbox->setChecked(property->get_data<bool>());
+			checkbox-> setCheckState((Qt::CheckState)((property->get_data<bool>()) ? 2 : 0));
 			layout->addWidget(checkbox, row, 1);
 			widget->Object_Property_map[checkbox] = property;
 			widget->property_Object_map[property] = checkbox;

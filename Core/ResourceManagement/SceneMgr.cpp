@@ -51,8 +51,9 @@ void SceneMgr::set_main_camera(Camera& camera)
 
 Scene* SceneMgr::loadScene(int index)
 {
-	auto scene = Scene::loadFromPath(PHPath(GameEngine::get_instance().getGamePath()).combinePath(scenes[index]).getNewPath());
+	auto scene = new Scene();
 	current_scene = scene;
+	Scene::loadFromPath(PHPath(GameEngine::get_instance().getGamePath()).combinePath(scenes[index]).getNewPath(),scene);	
 	return scene;
 }
 

@@ -552,9 +552,7 @@ void RenderWidget::renderFboOverlay()
 	{
 		if (camera->get_enabled() && camera->gameObject->isActive && camera->is_overlay())
 			renderScene(camera);
-	}
-
-	
+	}	
 	fboOverlay->release();
 }
 

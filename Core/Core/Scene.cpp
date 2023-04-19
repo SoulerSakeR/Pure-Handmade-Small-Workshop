@@ -231,9 +231,10 @@ Scene* Scene::loadFromText(const std::string& text)
 #endif // TEST
 
 
-Scene* Scene::loadFromPath(std::string path)
+Scene* Scene::loadFromPath(std::string path,Scene* scene)
 {
-	Scene* scene = new Scene();
+	if(scene==nullptr)
+		scene = new Scene();
 	stringstream ss(IO::readText(path));
 	scene->deserialize(ss);
 	return scene;
