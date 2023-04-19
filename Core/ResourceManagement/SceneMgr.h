@@ -1,12 +1,14 @@
 #pragma once
 #include "Core/Core/Camera.h"
 #include <Core/Core/Scene.h>
+#include <Core/Render/renderwidget.h>
 
 class SceneMgr
 {
 	friend class GameEngine;
 	friend class GameProject;
 	friend class Camera;
+	friend class Renderwidget;
 public:
 	static SceneMgr& get_instance();
 
@@ -16,6 +18,7 @@ public:
 	void set_main_camera(Camera& camera);
 	Scene* loadScene(int index);
 	Scene* loadScene(const std::string& name);
+	std::vector<Camera*> cameras;
 
 private:
 	SceneMgr();
@@ -26,6 +29,6 @@ private:
 	Camera* main_camera;
 	Scene* current_scene;
 	std::vector<std::string> scenes;
-	std::vector<Camera*> cameras;
+	
 };
 

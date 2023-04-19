@@ -510,7 +510,10 @@ void RenderWidget::renderFbo()
 	if (editMode)
 		renderScene(mCamera);
 	else
-		renderScene(SceneMgr::get_instance().get_main_camera());
+	{
+		if (auto camera = SceneMgr::get_instance().get_main_camera();camera->get_enabled() && camera->gameObject->isActive)
+			renderScene(camera);
+	}
 
 	/*
 	if (frameCount % 200 == 0)
@@ -542,7 +545,16 @@ void RenderWidget::renderFboOverlay()
 	}
 	fboOverlay->bind();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	renderScene(SceneMgr::get_instance().get_main_camera()); // 用场景相机
+
+	auto& cameras = SceneMgr::get_instance().cameras;
+
+	for (auto camera : cameras)
+	{
+		if (camera->get_enabled() && camera->gameObject->isActive && camera->is_overlay())
+			renderScene(camera);
+	}
+
+	
 	fboOverlay->release();
 }
 
