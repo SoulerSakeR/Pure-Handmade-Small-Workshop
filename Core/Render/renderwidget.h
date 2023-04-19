@@ -33,11 +33,11 @@ public:
 
     static RenderWidget& getInstance(); 
   
-    void renderScene();
-    void renderGameobject(GameObject* gameobj);
-    void renderBoxCollider(BoxCollider* boxCollider);
-    void renderImage(Image* image);
-    void renderText(Text* text);
+    void renderScene(Camera* camera);
+    void renderGameobject(GameObject* gameobj, Camera* camera);
+    void renderBoxCollider(BoxCollider* boxCollider, Camera* boxColliderCamera);
+    void renderImage(Image* image, Camera* imageCamera);
+    void renderText(Text* text, Camera* textCamera);
     
     void mouseMoveEvent(QMouseEvent* event) override;
     void keyPressEvent(QKeyEvent* event) override;

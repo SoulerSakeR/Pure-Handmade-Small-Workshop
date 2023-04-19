@@ -51,26 +51,26 @@ void RenderWidget::setWirefame(bool wireframe)
 }
 
 
-void RenderWidget::renderGameobject(GameObject* gameobj)
+void RenderWidget::renderGameobject(GameObject* gameobj, Camera* camera)
 {
 	if (auto img = gameobj->getComponent<Image>(); img != nullptr && img->get_enabled())
 	{
-		renderImage(img);		
+		renderImage(img, camera);
 	}
 	if (auto boxCollider = gameobj->getComponent<BoxCollider>();boxCollider != nullptr && boxCollider->get_enabled())
 	{
-		renderBoxCollider(boxCollider);
+		renderBoxCollider(boxCollider, camera);
 	}
 
 	if (auto text = gameobj->getComponent<Text>(); text != nullptr && text->get_enabled())
 	{
-		renderText(text);
+		renderText(text, camera);
 	}
 
 	// renderText();
 }
 
-void RenderWidget::renderBoxCollider(BoxCollider* box)
+void RenderWidget::renderBoxCollider(BoxCollider* box, Camera* boxColliderCamera)
 {
 	if (box->vao == nullptr)
 	{
@@ -119,6 +119,8 @@ void RenderWidget::renderBoxCollider(BoxCollider* box)
 	{
 		matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
 	}
+
+	matrix = boxColliderCamera->CalculateProjectionMulViewMatrix();
 	auto transform = box->gameObject->transform;
 	matrix.translate(transform->getWorldPosition().toQVector3D());
 	matrix.rotate(transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
@@ -138,7 +140,7 @@ void RenderWidget::renderBoxCollider(BoxCollider* box)
 	box->vao->release();
 }
 
-void RenderWidget::renderImage(Image* img)
+void RenderWidget::renderImage(Image* img, Camera* imageCamera)
 {
 	//bind vao if exist
 	if (img->vao == nullptr)
@@ -194,6 +196,7 @@ void RenderWidget::renderImage(Image* img)
 	{
 		 matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
 	}
+	matrix = imageCamera->CalculateProjectionMulViewMatrix();
 	auto transform = img->gameObject->transform;
 	matrix.translate(transform->getWorldPosition().toQVector3D());
 	matrix.rotate(transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
@@ -247,7 +250,7 @@ void RenderWidget::renderImage(Image* img)
 		img->texture->release();
 }
 
-void RenderWidget::renderText(Text* text)
+void RenderWidget::renderText(Text* text, Camera* textCamera)
 {
 
 	// 获取纹理
@@ -340,6 +343,8 @@ void RenderWidget::renderText(Text* text)
 	{
 		matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
 	}
+
+	matrix = textCamera->CalculateProjectionMulViewMatrix();
 	auto transform = text->gameObject->transform;
 	matrix.translate(transform->getWorldPosition().toQVector3D());
 	matrix.rotate(transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
@@ -396,7 +401,7 @@ void RenderWidget::renderText(Text* text)
 
 }
 
-void RenderWidget::renderScene()
+void RenderWidget::renderScene(Camera* camera)
 {
 	auto scene = SceneMgr::get_instance().get_current_scene();
 	if ( scene == nullptr || scene->getRootGameObjs().size() == 0 || mCamera == nullptr)
@@ -404,7 +409,7 @@ void RenderWidget::renderScene()
 	for (auto& pair : scene->getAllGameObjsByDepth())
 	{
 		if (pair.second->isActive)
-			renderGameobject(pair.second);
+			renderGameobject(pair.second, camera);
 	}
 }
 
@@ -467,7 +472,12 @@ void RenderWidget::paintGL()
 	fbo->bind();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	renderScene();
+	if(editMode)
+		renderScene(mCamera);
+	else
+		renderScene(SceneMgr::get_instance().get_main_camera());
+
+	
 	
 	fbo->release();
 	QOpenGLFramebufferObject::blitFramebuffer(nullptr,fbo, GL_COLOR_BUFFER_BIT, GL_LINEAR);
