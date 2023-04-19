@@ -7,16 +7,15 @@
 
 class Player {
 public:
-    Player(GameObject* gameObject, float posX, float posY) // 构造函数，初始化位置信息
+    Player(float posX, float posY) // 构造函数，初始化位置信息
         // 现在暂时
-        :
-        gameObject(gameObject), //绑定某个游戏项目
+        : //绑定某个游戏项目
         m_position(0.0f, 0.0f),
         m_velocity(0.0f, 0.0f)
     {}
 
     // 输入检测
-    static void playerInputDetection(float deltaTime);
+    static char playerInputDetection(float deltaTime);
 
     // 运动信息
     void move(float deltaTime);
