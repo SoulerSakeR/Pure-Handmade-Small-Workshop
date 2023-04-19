@@ -14,6 +14,7 @@
 #include "Core/UI/CreateProjectDialog.h"
 #include "Core/UI/WaveFunctionCollapseDialog.h"
 #include <QMessageBox>
+#include "Core/UI/AddSceneDialog.h"
 
 
 RenderWindow::RenderWindow(QWidget *parent)
@@ -41,10 +42,12 @@ RenderWindow::RenderWindow(QWidget *parent)
 		});
     }
     ui->dockWidget_components->set_components_widget(ui->scrollAreaWidgetContents);
+    // 连接treeView视图的右键点击事件
     connect(ui->treeView, &QTreeView::customContextMenuRequested, this, &RenderWindow::onTreeviewRightClick);
+    // 连接treeView视图的左键双击事件
+    connect(ui->treeView, &QTreeView::doubleClicked, this, &RenderWindow::onListItemDoubleClicked);
+
     QDialog* createDialog = new CreateProjectDialog(this);
-    //connect(createDialog, &CreateProjectDialog::accepted, this, &RenderWindow::on_saveBtn_clicked);
-    // 点击创建项目按钮出现资源对话框
     connect(ui->actioncreatProject, &QAction::triggered, [=]() {
         createDialog->show();
         });
@@ -216,7 +219,11 @@ void RenderWindow::refreshHierachy()
     }
     ui->hierarchy->addTopLevelItems(items);
 }
-
+void RenderWindow::onListItemDoubleClicked()
+{
+    // 处理双击事件
+    open();
+}
 void RenderWindow::open()
 {
     // 获取当前选择的项
@@ -236,16 +243,10 @@ void RenderWindow::open()
 
 void RenderWindow::addScene()
 {
-    // QString FileAdress = QFileDialog::getSaveFileName(this, "保存文件", "", "");
-    // TODO
     // 具体的代码，传入文件地址
     // 获取当前选择的项
-    QModelIndex currentIndex = ui->treeView->currentIndex();
-    // 获取当前项的路径
-    QString currentPath = fileModel->filePath(currentIndex);
-    qDebug() << currentPath;
-    auto& instance = GameEngine::get_instance();
-    instance.getCurrentGameProject()->openScene(GameEngine::get_instance().getCurrentGameProject()->creatNewScene("1"));// 需要一个弹框输入名字
+    QDialog* createSceneDialog = new AddSceneDialog(this);
+    createSceneDialog->show();
 }
 
 // 传入需要删除的文件的绝对路径 
@@ -276,10 +277,10 @@ void RenderWindow::deleteScene()
     qDebug() << currentPath;
     // 调用删除文件
     if (deleteFile(currentPath)) {
-        qDebug() << "File deleted successfully!";
+        QMessageBox::information(nullptr, "Success", "Scene deleted successfully!");
     }
     else {
-        qDebug() << "Failed to delete file!";
+        QMessageBox::information(nullptr, "Failed", "Failed to delete scene!");
     }
 }
 
@@ -294,6 +295,7 @@ void RenderWindow::importScene()
     {
 		// TODO
 		// 具体的代码，传入文件地址
+        return;
 	}
 }
 

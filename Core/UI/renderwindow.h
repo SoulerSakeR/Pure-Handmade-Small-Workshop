@@ -28,6 +28,7 @@ public:
 public slots:
     void showContextMenu(const QPoint&);
     void onTreeviewRightClick(const QPoint& pos);
+    void onListItemDoubleClicked();
 
 private slots:
     friend class listbox;

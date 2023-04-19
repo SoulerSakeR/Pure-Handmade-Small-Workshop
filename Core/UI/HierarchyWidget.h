@@ -16,19 +16,20 @@ public:
     void mouseMoveEvent(QMouseEvent* event) override;
 
     void initContextMenu();
-    //void mouseReleaseEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
 
     QMenu* contextMenu;
     GameObject* selectedGameObject;
     ComponentsDockWidget* componentsDockWidget;
-    // RenderWindow* ui;
+    void insertItem(QTreeWidgetItem* oldItem, QTreeWidgetItem* newItem);
 
 public slots:
     void showContextMenu(const QPoint& pos);
     void onSelectionChanged();
 
 private:
-    
+    bool dragMode;
     QPoint startPos;
+    QTreeWidgetItem* draggedItem;
 };
 

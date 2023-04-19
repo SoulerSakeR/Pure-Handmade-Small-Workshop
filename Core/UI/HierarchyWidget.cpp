@@ -133,16 +133,71 @@ void HierarchyWidget::initContextMenu()
 	});
 	connect(this, &HierarchyWidget::customContextMenuRequested, this, &HierarchyWidget::showContextMenu);
 }
-/*
+
+void HierarchyWidget::insertItem(QTreeWidgetItem* oldItem, QTreeWidgetItem* newItem)
+{
+	if (newItem->parent() == nullptr) {
+		// 新的项目是根节点
+		if (oldItem->parent() != nullptr) {// 老的不是根节点
+			QTreeWidgetItem* parentItem = oldItem->parent(); // 获取老节点的父亲节点
+			parentItem->insertChild(newItem->indexOfChild(oldItem), oldItem); // 将老节点插入到新节点上面
+		}
+		else {//老的是根节点
+			QTreeWidget* treeWidget = newItem->treeWidget();
+			int index = treeWidget->indexOfTopLevelItem(newItem);
+			treeWidget->insertTopLevelItem(index, oldItem);
+			treeWidget->takeTopLevelItem(index + 1);
+		}
+	}
+	else {
+		if (newItem->parent() != nullptr) { // newItem不是根节点
+			if (oldItem->parent() != nullptr) { // oldItem不是根节点
+				if (oldItem->parent() == newItem->parent()) { // 在同一分支
+					int newIndex = newItem->parent()->indexOfChild(newItem);
+					int oldIndex = oldItem->parent()->indexOfChild(oldItem);
+					if (newIndex > oldIndex) {
+						newIndex--;
+					}
+					newItem->parent()->insertChild(newIndex, oldItem);
+					oldItem->parent()->removeChild(oldItem);
+				}
+				else { // 不在同一分支
+					int newIndex = newItem->parent()->indexOfChild(newItem);
+					newItem->parent()->insertChild(newIndex, oldItem);
+					oldItem->parent()->removeChild(oldItem);
+				}
+			}
+			else { // oldItem是根节点
+				int newIndex = newItem->indexOfChild(newItem);
+				newItem->insertChild(newIndex, oldItem);
+				oldItem->treeWidget()->takeTopLevelItem(oldItem->treeWidget()->indexOfTopLevelItem(oldItem));
+			}
+		}
+		else { // newItem是根节点
+			if (oldItem->parent() != nullptr) { // oldItem不是根节点
+				int newIndex = newItem->indexOfChild(newItem);
+				newItem->insertChild(newIndex, oldItem);
+				oldItem->parent()->removeChild(oldItem);
+			}
+			else { // oldItem是根节点
+				int newIndex = newItem->treeWidget()->indexOfTopLevelItem(newItem);
+				newItem->treeWidget()->insertTopLevelItem(newIndex, oldItem);
+				oldItem->treeWidget()->takeTopLevelItem(oldItem->treeWidget()->indexOfTopLevelItem(oldItem));
+			}
+		}
+	}
+}
+
 void HierarchyWidget::mouseReleaseEvent(QMouseEvent* event)
 {
-	if (dragMode)
+	if (dragMode)// 拖拽状态成立
 	{
+		QTreeWidgetItem* curentItem = itemAt(event->pos());
 		if (curentItem)
-			insert()
-		dragmode = false;
+			insertItem(draggedItem, curentItem);//插入到当前项的上面
+		dragMode = false;
 	}
-}*/
+}
 
 HierarchyWidget::HierarchyWidget(QWidget* parent):QTreeWidget(parent)
 {
@@ -153,35 +208,13 @@ void HierarchyWidget::mouseMoveEvent(QMouseEvent* event)
 {// 按下左键开始进入拖拽
 	if (event->buttons() & Qt::LeftButton)
 	{
-		auto draggedItem = currentItem();
+		draggedItem = currentItem();
 		if (draggedItem == nullptr)
 			return;
 		bool dragMode = true;
-
-		//
-		auto distance = (event->pos() - startPos).manhattanLength();
-		if (distance >= QApplication::startDragDistance())
-		{
-			auto newIndex = indexOfTopLevelItem(draggedItem);
-			auto moveDistance = event->pos() - startPos;
-			// 判断鼠标左键有没有松开
-			//松开的话，松开的时刻，指的是哪个item
-			// 插入item的上面
-			if (moveDistance.y() < 0)
-			{
-				((HierarchyItem*)draggedItem)->moveVeryUP(event->pos());
-			}
-			else if (moveDistance.y() > 0)
-			{
-				((HierarchyItem*)draggedItem)->moveVeryDown(event->pos());
-			}
-			startPos = event->pos();
-		}
 	}
 	QTreeWidget::mouseMoveEvent(event);
 }
-
-
 
 void HierarchyWidget::showContextMenu(const QPoint& pos)
 {
