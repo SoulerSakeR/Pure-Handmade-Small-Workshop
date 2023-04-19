@@ -25,6 +25,8 @@ RenderWidget::RenderWidget(QWidget* parent) : QOpenGLWidget(parent)
 	mCameraObject = new GameObject("Camera");
 	mCamera = mCameraObject->addComponent<Camera>();
 	mCamera->set_view_width(500);
+	setContextMenuPolicy(Qt::NoContextMenu);
+
 }
 
 
@@ -455,6 +457,14 @@ void RenderWidget::resizeGL(int w, int h)
 		delete fbo;
 		fbo = nullptr;
 	}
+
+	if (fboOverlay != nullptr)
+	{
+		fboOverlay->release();
+		delete fboOverlay;
+		fboOverlay = nullptr;
+	}
+
 }
 
 void RenderWidget::paintGL()
@@ -537,14 +547,14 @@ void RenderWidget::paintGL()
 	
 	// 合并场景和 UI 的纹理	
 	// 先将 fbo 中的内容渲染到屏幕上
-	QOpenGLFramebufferObject::blitFramebuffer(nullptr, fbo, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	//QOpenGLFramebufferObject::blitFramebuffer(nullptr, fbo, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 	// 启用混合
 	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// 绘制 fboOverlay 的内容，并混合到屏幕上
-	QOpenGLFramebufferObject::blitFramebuffer(nullptr, fboOverlay, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	//QOpenGLFramebufferObject::blitFramebuffer(nullptr, fboOverlay, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 	
 	
 	
@@ -770,13 +780,27 @@ void RenderWidget::mouseMoveEvent(QMouseEvent* event)
 
 }
 
+
 void RenderWidget::mousePressEvent(QMouseEvent* event)
 {
+	
+
 	if (event->button() == Qt::RightButton)
 	{
 		lastPos = event->pos();
+		
 	}
 }
+
+void RenderWidget::mouseReleaseEvent(QMouseEvent* event)
+{
+	if (event->button() == Qt::RightButton)
+	{
+		event->ignore();
+	}
+}
+
+
 
 void RenderWidget::keyPressEvent(QKeyEvent* event)
 {
@@ -800,6 +824,10 @@ void RenderWidget::wheelEvent(QWheelEvent* event)
 		mCamera->set_view_width(mCamera->get_view_width() * 1.1f);
 }
 
+void RenderWidget::contextMenuEvent(QContextMenuEvent* event)
+{
+	event->accept();
+}
 
 
 

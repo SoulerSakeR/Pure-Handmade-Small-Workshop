@@ -145,6 +145,7 @@ RenderWindow::~RenderWindow()
 // 显示右键菜单
 void RenderWindow::showContextMenu(const QPoint& pos)
 {
+    /*
     // 创建右键菜单
     QMenu contextMenu(tr("Context menu"), this);
     QAction action("Action", this);
@@ -153,6 +154,7 @@ void RenderWindow::showContextMenu(const QPoint& pos)
     // 显示右键菜单
     QPoint globalPos = this->mapToGlobal(pos);
     contextMenu.exec(globalPos);
+    */
 }
 
 void RenderWindow::resizeGL(QResizeEvent* event) {
