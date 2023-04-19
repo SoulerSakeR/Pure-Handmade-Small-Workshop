@@ -30,7 +30,7 @@ bool GameProject::openScene(int index)
 	{				
 		currentScene = SceneMgr::get_instance().loadScene(index);
 		GameEngine::get_instance().refreshHierarchy();
-		auto loop = std::bind(&GameLoop::updateScene, new GameLoop(&RenderWidget::getInstance()), &RenderWidget::getInstance());
+		auto loop = std::bind(&GameLoop::updateScene, new GameLoop(), &RenderWidget::getSceneWidget(), &RenderWidget::getGameWidget());
 		GameEngine::get_instance().pool.enqueue(loop);
 		return true;
 	}	
@@ -45,7 +45,7 @@ bool GameProject::openScene(const std::string& name)
 			PHPath path = PHPath(GameEngine::get_instance().getGamePath()).combinePath("\\Scenes\\" + name + sceneExtensionName);
 			currentScene = SceneMgr::get_instance().loadScene(path.getNewPath());
 			GameEngine::get_instance().refreshHierarchy();
-			auto loop = std::bind(&GameLoop::updateScene, new GameLoop(&RenderWidget::getInstance()), &RenderWidget::getInstance());
+			auto loop = std::bind(&GameLoop::updateScene, new GameLoop(), &RenderWidget::getSceneWidget(), &RenderWidget::getGameWidget());
 			GameEngine::get_instance().pool.enqueue(loop);
 			return true;
 		}
@@ -57,7 +57,7 @@ bool GameProject::openScene(const std::string& name)
 bool GameProject::openScene(Scene* scene)
 {
 	GameEngine::get_instance().refreshHierarchy();
-	auto loop = std::bind(&GameLoop::updateScene, new GameLoop(&RenderWidget::getInstance()), &RenderWidget::getInstance());
+	auto loop = std::bind(&GameLoop::updateScene, new GameLoop(), &RenderWidget::getSceneWidget(), &RenderWidget::getGameWidget());
 	GameEngine::get_instance().pool.enqueue(loop);
 	return true;
 }
@@ -87,7 +87,7 @@ bool GameProject::importScene(const std::string& path)
 {
 	currentScene = SceneMgr::get_instance().loadScene(path);
 	GameEngine::get_instance().refreshHierarchy();
-	auto loop = std::bind(&GameLoop::updateScene, new GameLoop(&RenderWidget::getInstance()), &RenderWidget::getInstance());
+	auto loop = std::bind(&GameLoop::updateScene, new GameLoop(), &RenderWidget::getSceneWidget(), &RenderWidget::getGameWidget());
 	GameEngine::get_instance().pool.enqueue(loop);
 	return true;
 }

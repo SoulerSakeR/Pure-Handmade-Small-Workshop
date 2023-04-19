@@ -487,9 +487,13 @@ void RenderWidget::cleanup()
 
 }
 
-RenderWidget& RenderWidget::getInstance()
+RenderWidget& RenderWidget::getSceneWidget()
 {
-	// TODO: 在此处插入 return 语句
+	return *sceneWidget;
+}
+
+RenderWidget& RenderWidget::getGameWidget()
+{
 	return *sceneWidget;
 }
 
@@ -627,19 +631,12 @@ void RenderWidget::mixTexture()
 	glDrawElements(GL_TRIANGLES, sizeof(unsigned int) * 6, GL_UNSIGNED_INT, 0);
 
 	vaoTexture->release();
+
+	
+
+	return;
 }
 
-void RenderWidget::createTextureProgram()
-{
-	bool success;
-	textureShaderProgram = std::make_unique<QOpenGLShaderProgram>();
-	textureShaderProgram->create();
-	textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, QString::fromStdString(source_path + "\\shaders\\mixTexttureShader.vert"));
-	textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\mixTexttureShader.frag"));
-	success = textureShaderProgram->link();
-	if (!success)
-		qDebug() << "ERR:" << textureShaderProgram->log();
-}
 
 void RenderWidget::createProgram()
 {
@@ -808,6 +805,17 @@ void RenderWidget::contextMenuEvent(QContextMenuEvent* event)
 	event->accept();
 }
 
+void RenderWidget::createTextureProgram()
+{
+	bool success;
+	textureShaderProgram = std::make_unique<QOpenGLShaderProgram>();
+	textureShaderProgram->create();
+	textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, QString::fromStdString(source_path + "\\shaders\\mixTexttureShader.vert"));
+	textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\mixTexttureShader.frag"));
+	success = textureShaderProgram->link();
+	if (!success)
+		qDebug() << "ERR:" << textureShaderProgram->log();
+}
 
 
 
