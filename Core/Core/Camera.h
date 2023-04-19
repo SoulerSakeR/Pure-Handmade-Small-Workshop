@@ -10,7 +10,7 @@ public:
     static constexpr float default_view_width =1000.f;
    
     Camera(GameObject* gameObj, float view_width = default_view_width);
-
+    ~Camera();
     bool is_main_camera();
     void set_main_camera(bool value,bool refreshUI = true);
     void set_view_width(float value, bool refreshUI = true);
