@@ -2,6 +2,7 @@
 #include "qdockwidget.h"
 #include <Core/Core/GameObject.h>
 #include "HierarchyWidget.h"
+#include "Core/ResourceManagement/Texture2D.h"
 
 class ComponentsDockWidget :
     public QDockWidget
@@ -26,6 +27,7 @@ public slots:
     void onStringChanged();
     void onBoolChanged(bool value);
     void onVector2DChanged(Vector2D value);
+    void onColorChanged(Color32 value);
 
 private:
     QWidget* components_widget;

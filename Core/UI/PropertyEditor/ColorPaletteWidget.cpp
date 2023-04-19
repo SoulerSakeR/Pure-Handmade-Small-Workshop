@@ -7,11 +7,12 @@
 ColorPaletteWidget::ColorPaletteWidget(QWidget* parent)
     : QWidget(parent)
 {
-    QVBoxLayout* layout = new QVBoxLayout(this);
+    QHBoxLayout* layout = new QHBoxLayout(this);
 
     // 创建一个标签用于显示当前选定的颜色
     m_colorLabel = new QLabel(this);
-    m_colorLabel->setText("Selected color");
+    m_colorLabel->setText("");
+    m_colorLabel->setFixedWidth(23);
 
     // 创建一个按钮，用于打开颜色对话框
     m_colorButton = new QPushButton("Choose color", this);
@@ -21,6 +22,19 @@ ColorPaletteWidget::ColorPaletteWidget(QWidget* parent)
 
     layout->addWidget(m_colorLabel);
     layout->addWidget(m_colorButton);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(30);
+}
+
+Color32 ColorPaletteWidget::getColor()
+{
+    return Color32(m_currentColor.red(), m_currentColor.green(), m_currentColor.blue(), m_currentColor.alpha());
+}
+
+void ColorPaletteWidget::setColor(Color32 color)
+{
+    m_currentColor = QColor(color.r, color.g, color.b, color.a);
+    m_colorLabel->setStyleSheet("QLabel { background-color: " + m_currentColor.name() + "; color: white; }");
 }
 
 void ColorPaletteWidget::chooseColor()
@@ -32,7 +46,8 @@ void ColorPaletteWidget::chooseColor()
     if (color.isValid())
     {
         m_currentColor = color;
-        m_colorLabel->setText("Selected color: " + m_currentColor.name());
+        //m_colorLabel->setText("Selected color: " + m_currentColor.name());
         m_colorLabel->setStyleSheet("QLabel { background-color: " + m_currentColor.name() + "; color: white; }");
+        emit colorChanged(getColor());
     }
 }

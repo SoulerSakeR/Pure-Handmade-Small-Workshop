@@ -7,6 +7,7 @@
 #include "Core/UI/ComponentsDockWidget.h"
 #include "Vector2DLineEdit.h"
 #include "DeleteComponentButton.h"
+#include "ColorPaletteWidget.h"
 
 ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGroupBox(parent), component(component)
 {
@@ -74,6 +75,15 @@ ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGr
 			widget->property_Object_map[property] = lineEdit;
 			connect(lineEdit, &Vector2DLineEdit::Vector2DChanged, widget, &ComponentsDockWidget::onVector2DChanged);
 			break;
+		}
+		case Property::COLOR:
+		{
+			auto ColorPaletteWidegt = new ColorPaletteWidget();
+			ColorPaletteWidegt->setColor(property->get_data<Color32>());
+			layout->addWidget(ColorPaletteWidegt, row, 1);
+			widget->Object_Property_map[ColorPaletteWidegt] = property;
+			widget->property_Object_map[property] = ColorPaletteWidegt;
+			connect(ColorPaletteWidegt, &ColorPaletteWidget::colorChanged, widget, &ComponentsDockWidget::onColorChanged);
 		}
 		}
 		row++;

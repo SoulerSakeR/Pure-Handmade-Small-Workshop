@@ -8,12 +8,12 @@
 
 struct Color32{
 public:
-    float r;
-    float g;
-    float b;
-    float a;
+    int r;
+    int g;
+    int b;
+    int a;
     Color32(){}
-    Color32(float r, float g, float b, float a)
+    Color32(int r, int g, int b, int a)
     {
 		this->r = r;
 		this->g = g;
@@ -25,18 +25,34 @@ public:
         std::istringstream iss(string);
         std::string item;
         std::getline(iss, item, ',');
-        r = std::stof(item);
+        r = std::stoi(item);
         std::getline(iss, item, ',');
-        g = std::stof(item);
+        g = std::stoi(item);
         std::getline(iss, item, ',');
-        b = std::stof(item);
+        b = std::stoi(item);
         std::getline(iss, item, ',');
-        a = std::stof(item);
+        a = std::stoi(item);
     }
     std::string toString() const
     {
         return std::to_string(r) + "," + std::to_string(g) + "," + std::to_string(b) + "," + std::to_string(a);
     }
+    float red() const
+    {
+		return r / 255.0f;
+	}
+    float green() const
+    {
+		return g / 255.0f;
+	}
+    float blue() const
+    {
+		return b / 255.0f;
+	}
+    float alpha() const
+    {
+		return a / 255.0f;
+	}
 };
 
 class Texture2D: public ISerializable
