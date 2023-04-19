@@ -164,7 +164,7 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera)
 		GLint posLocation = imageShaderProgram->attributeLocation("aPos");
 		GLint textureLocation = imageShaderProgram->attributeLocation("aTexCord");
 		
-		GLuint stride = sizeof(Vertex);		
+		GLsizei stride = sizeof(Vertex);		
 		//-----------------position--------------------//
 		//告知显卡如何解析缓冲里的属性值
 		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
@@ -548,21 +548,20 @@ void RenderWidget::renderFboOverlay()
 
 void RenderWidget::mixTexture()
 {
-	float vertices[] = {
-		// positions   // colors                // texture coords
+	float vertices[] = 
+	{
+		// positions      // texture coords
 		1.f,  1.f, 0,     1.0f, 1.0f,   // top right
 		1.f, -1.f, 0,     1.0f, 0.0f,   // bottom right
 	   -1.f, -1.f, 0,     0.0f, 0.0f,   // bottom left
 	   -1.f,  1.f, 0,     0.0f, 1.0f    // top left
 	};
 
-	unsigned int indices[] = { // note that we start from 0!
-			   0, 3, 2, // first triangle
-			   0, 2, 1 // second triangle
+	unsigned int indices[] = 
+	{ 
+		0, 3, 2, // first triangle
+		0, 2, 1 // second triangle
 	};
-
-
-
 
 	vaoTexture = std::make_unique<QOpenGLVertexArrayObject>();
 	vaoTexture->create();
