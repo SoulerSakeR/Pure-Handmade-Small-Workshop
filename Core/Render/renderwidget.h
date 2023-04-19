@@ -72,18 +72,22 @@ private:
     std::unique_ptr<QOpenGLShaderProgram> imageShaderProgram;   
     std::unique_ptr<QOpenGLShaderProgram> boxColliderShaderProgram;
     std::unique_ptr<QOpenGLShaderProgram> textShaderProgram;
+    std::unique_ptr<QOpenGLShaderProgram> textureShaderProgram;
 
     std::unique_ptr<QOpenGLVertexArrayObject> vao;
     std::unique_ptr<QOpenGLVertexArrayObject> vaoBox;
     std::unique_ptr<QOpenGLVertexArrayObject> vaoText;
+    std::unique_ptr<QOpenGLVertexArrayObject> vaoTexture;
 
     std::unique_ptr<QOpenGLBuffer> vbo;
     std::unique_ptr<QOpenGLBuffer> vboBox;
     std::unique_ptr<QOpenGLBuffer> vboText;
+    std::unique_ptr<QOpenGLBuffer> vboTexture;
 
     std::unique_ptr<QOpenGLBuffer> ibo;
     std::unique_ptr<QOpenGLBuffer> iboBox;
     std::unique_ptr<QOpenGLBuffer> iboText;
+    std::unique_ptr<QOpenGLBuffer> iboTexture;
 
     std::unique_ptr<QOpenGLDebugLogger> logger;
 

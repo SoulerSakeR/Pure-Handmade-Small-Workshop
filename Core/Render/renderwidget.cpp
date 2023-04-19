@@ -474,11 +474,30 @@ void RenderWidget::paintGL()
 	glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
+	/*
 	if(editMode)
 		renderScene(mCamera);
 	else
 		renderScene(SceneMgr::get_instance().get_main_camera());
+	*/
 
+	glActiveTexture(GL_TEXTURE0);
+	renderScene(SceneMgr::get_instance().get_main_camera()); // 用场景相机
+
+	/*
+	if (frameCount % 200 == 0)
+	{
+		// 将渲染结果保存到 QImage 中
+		QImage image = fbo->toImage();
+		QString filePath = "E:/GroupProject/github/Pure-Handmade-Small-Workshop/output/image.png";
+		if (image.save(filePath, "PNG")) {
+			qDebug() << "Image saved successfully!";
+		}
+		else {
+			qDebug() << "Error saving image!";
+		}
+	}
+	*/
 	
 	
 	fbo->release();
@@ -498,19 +517,124 @@ void RenderWidget::paintGL()
 
 	fboOverlay->bind();
 	
+	//glClearColor(0.5f, 0.6f, 0.7f, 0.5f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
+	renderScene(mCamera); // 用自己创建的相机
+	
+	/*
+	if (frameCount % 200 == 0)
+	{
+		// 将渲染结果保存到 QImage 中
+		QImage image = fboOverlay->toImage();
+		QString filePath = "E:/GroupProject/github/Pure-Handmade-Small-Workshop/output/imageOverlay.png";
+		if (image.save(filePath, "PNG")) {
+			qDebug() << "Image saved successfully!";
+		}
+		else {
+			qDebug() << "Error saving image!";
+		}
+	}
+	*/
+	
+
+	fboOverlay->release();
+
+	
+	// 合并场景和 UI 的纹理	
+	// 先将 fbo 中的内容渲染到屏幕上
+	QOpenGLFramebufferObject::blitFramebuffer(nullptr, fbo, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	// 启用混合
 	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	renderScene(SceneMgr::get_instance().get_main_camera());// 使用场景相机
-	fboOverlay->release();
 
-
-	// 合并场景和 UI 的纹理
-	QOpenGLFramebufferObject::blitFramebuffer(nullptr, fbo, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	// 绘制 fboOverlay 的内容，并混合到屏幕上
 	QOpenGLFramebufferObject::blitFramebuffer(nullptr, fboOverlay, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	
+	
+	
+	
+	// 混合两个纹理
+	
+	bool success;
+	textureShaderProgram = std::make_unique<QOpenGLShaderProgram>();
+	textureShaderProgram->create();
+	textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, QString::fromStdString(source_path + "\\shaders\\vertex_shader.glsl"));
+	textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\fragment_shader.glsl"));
+	success = textureShaderProgram->link();
+	if (!success)
+		qDebug() << "ERR:" << textureShaderProgram->log();
+
+
+	float vertices[] = {
+		// positions   // colors                // texture coords
+		1.f,  1.f, 0,     1.0f, 1.0f,   // top right
+		1.f, -1.f, 0,     1.0f, 0.0f,   // bottom right
+	   -1.f, -1.f, 0,     0.0f, 0.0f,   // bottom left
+	   -1.f,  1.f, 0,     0.0f, 1.0f    // top left
+	};
+
+	unsigned int indices[] = { // note that we start from 0!
+			   0, 3, 2, // first triangle
+			   0, 2, 1 // second triangle
+	};
+
+
+	
+	
+	vaoTexture = std::make_unique<QOpenGLVertexArrayObject>();
+	vaoTexture->create();
+	vaoTexture->bind();
+
+	vboTexture = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
+	vboTexture->create();
+	vboTexture->bind();
+	vboTexture->allocate(vertices, sizeof(vertices));
+
+	iboTexture = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::IndexBuffer);
+	iboTexture->create();
+	iboTexture->bind();
+	iboTexture->allocate(indices, sizeof(indices));
+
+	textureShaderProgram->bind();
+	GLint posLocation = textureShaderProgram->attributeLocation("aPos");
+	GLint textureLocation = textureShaderProgram->attributeLocation("aTexCoord");
+
+	auto stride = 5 * sizeof(float);
+	//-----------------position--------------------//
+	//告知显卡如何解析缓冲里的属性值
+	glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+	//开启VAO管理的第一个属性值
+	glEnableVertexAttribArray(posLocation);
+
+	if (textureLocation)
+	{
+		//------------------Texture-----------------------//		
+		glVertexAttribPointer(textureLocation, 2, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(textureLocation);
+	}
+
+	textureShaderProgram->setUniformValue("texture1", 1);
+	textureShaderProgram->setUniformValue("texture2", 2);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, fbo->texture());
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, fboOverlay->texture());
+
+	//enable alpha blending
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//enable depth test
+	glDepthFunc(GL_LEQUAL);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	//draw
+	glDrawElements(GL_TRIANGLES, sizeof(unsigned int) * 6, GL_UNSIGNED_INT, 0);
+
+	vaoTexture->release();
+
 	
 
 	return;
