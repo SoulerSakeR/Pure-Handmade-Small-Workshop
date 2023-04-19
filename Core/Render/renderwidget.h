@@ -39,6 +39,9 @@ public:
     void renderBoxCollider(BoxCollider* boxCollider, Camera* boxColliderCamera);
     void renderImage(Image* image, Camera* imageCamera);
     void renderText(Text* text, Camera* textCamera);
+    void renderFbo();
+    void renderFboOverlay();
+    void mixTexture();
     
     void mouseMoveEvent(QMouseEvent* event) override;
     void keyPressEvent(QKeyEvent* event) override;
@@ -48,7 +51,7 @@ public:
     void contextMenuEvent(QContextMenuEvent* event) override;
 
     float moveSpeed;
-    QPoint lastPos; //  Û±ÍŒª÷√
+    QPoint lastPos; // mouse location
 
     bool editMode = true;
 
@@ -106,6 +109,8 @@ private:
     void createBoxProgram();
     // Text
     void createTextProgram();
+    // Texture
+    void createTextureProgram();
     
     QOpenGLTexture* genTextTexture(int width, int height, const QString& text, int textPixelSize, const QColor& textColor);
     

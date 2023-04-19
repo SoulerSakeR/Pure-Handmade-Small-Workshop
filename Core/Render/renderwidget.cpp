@@ -83,17 +83,17 @@ void RenderWidget::renderBoxCollider(BoxCollider* box, Camera* boxColliderCamera
 		box->vbo = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
 		box->vbo->create();
 		box->vbo->bind();
-		box->vbo->allocate(box->vertices.data(), box->vertices.size() * sizeof(Vertex));
+		box->vbo->allocate(box->vertices.data(), static_cast<int>(box->vertices.size() * sizeof(Vertex)));
 		box->borderIbo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
 		box->borderIbo->create();
 		box->borderIbo->bind();
-		box->borderIbo->allocate(box->borderIndices.data(), box->borderIndices.size() * sizeof(unsigned int));
+		box->borderIbo->allocate(box->borderIndices.data(), static_cast<int>(box->borderIndices.size() * sizeof(unsigned int)));
 
 		boxColliderShaderProgram->bind();
 
 		GLint posLocation = boxColliderShaderProgram->attributeLocation("aPos");
 
-		auto stride = sizeof(Vertex);
+		GLuint stride = sizeof(Vertex);
 		//-----------------position--------------------//
 		//告知显卡如何解析缓冲里的属性值
 		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
@@ -154,17 +154,17 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera)
 		img->vbo = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
 		img->vbo->create();
 		img->vbo->bind();
-		img->vbo->allocate(img->vertices.data(), img->vertices.size() * sizeof(Vertex));
+		img->vbo->allocate(img->vertices.data(), static_cast<int>(img->vertices.size() * sizeof(Vertex)));
 		img->ibo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
 		img->ibo->create();
 		img->ibo->bind();
-		img->ibo->allocate(img->indices.data(), img->indices.size() * sizeof(unsigned int));
+		img->ibo->allocate(img->indices.data(), static_cast<int>(img->indices.size() * sizeof(unsigned int)));
 		imageShaderProgram->bind();
 		
 		GLint posLocation = imageShaderProgram->attributeLocation("aPos");
 		GLint textureLocation = imageShaderProgram->attributeLocation("aTexCord");
 		
-		auto stride = sizeof(Vertex);		
+		GLuint stride = sizeof(Vertex);		
 		//-----------------position--------------------//
 		//告知显卡如何解析缓冲里的属性值
 		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
@@ -235,7 +235,7 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera)
 		img->borderIbo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
 		img->borderIbo->create();
 		img->borderIbo->bind();
-		img->borderIbo->allocate(img->borderIndices.data(), img->borderIndices.size() * sizeof(unsigned int));
+		img->borderIbo->allocate(img->borderIndices.data(), static_cast<int>(img->borderIndices.size() * sizeof(unsigned int)));
 	}
 	img->borderIbo->bind();
 	
@@ -244,7 +244,7 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera)
 	boxColliderShaderProgram->setUniformValue("color",1.0f,1.0f,1.0f,1.0f);
 
 	glLineWidth(3.0f);
-	glDrawElements(GL_LINES, sizeof(unsigned int) * img->borderIndices.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_LINES, static_cast<GLsizei>(sizeof(unsigned int) * img->borderIndices.size()), GL_UNSIGNED_INT, 0);
 	img->borderIbo->release();
 
 	//release
@@ -298,19 +298,19 @@ void RenderWidget::renderText(Text* text, Camera* textCamera)
 		text->vbo->create();
 		text->vbo->bind();
 		//text->vbo->allocate(TextVertices, 36 * sizeof(float));
-		text->vbo->allocate(text->vertices.data(), text->vertices.size() * sizeof(Vertex));
+		text->vbo->allocate(text->vertices.data(), static_cast<int>(text->vertices.size() * sizeof(Vertex)));
 		
 		text->ibo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
 		text->ibo->create();
 		text->ibo->bind();
-		text->ibo->allocate(text->indices.data(), text->indices.size() * sizeof(unsigned int));
+		text->ibo->allocate(text->indices.data(), static_cast<int>(text->indices.size() * sizeof(unsigned int)));
 		textShaderProgram->bind();
 
 		GLint posLocation = textShaderProgram->attributeLocation("aPos");
-		GLint colorLocation = textShaderProgram->attributeLocation("aColor");
+		//GLint colorLocation = textShaderProgram->attributeLocation("aColor");
 		GLint textureLocation = textShaderProgram->attributeLocation("aTexCord");
 
-		auto stride = sizeof(Vertex);
+		GLsizei stride = sizeof(Vertex);
 
 		//-----------------position--------------------//
 		//告知显卡如何解析缓冲里的属性值
@@ -385,7 +385,7 @@ void RenderWidget::renderText(Text* text, Camera* textCamera)
 		text->borderIbo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
 		text->borderIbo->create();
 		text->borderIbo->bind();
-		text->borderIbo->allocate(text->borderIndices.data(), text->borderIndices.size() * sizeof(unsigned int));
+		text->borderIbo->allocate(text->borderIndices.data(), static_cast<int>(text->borderIndices.size() * sizeof(unsigned int)));
 	}
 	text->borderIbo->bind();
 
@@ -393,7 +393,7 @@ void RenderWidget::renderText(Text* text, Camera* textCamera)
 	boxColliderShaderProgram->setUniformValue("MVPMatrix", matrix);
 
 	glLineWidth(3.0f);
-	glDrawElements(GL_LINES, sizeof(unsigned int) * text->borderIndices.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_LINES, static_cast<GLsizei>(sizeof(unsigned int) * text->borderIndices.size()), GL_UNSIGNED_INT, 0);
 	text->borderIbo->release();
 	
 	
@@ -429,8 +429,6 @@ void RenderWidget::initializeGL()
 	logger->startLogging();
 	*/
 
-
-	
 	source_path = GameEngine::get_instance().getRootPath();
 
 	glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
@@ -442,6 +440,7 @@ void RenderWidget::initializeGL()
 	createProgram();
 	createBoxProgram();	
 	createTextProgram();
+	createTextureProgram();
 	
 	textBuffer = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
 }
@@ -471,26 +470,47 @@ void RenderWidget::paintGL()
 {
 	frameCount++;
 	makeCurrent();
+	renderFbo();
+	renderFboOverlay();
+	mixTexture();
+	return;
+}
+
+
+void RenderWidget::on_timeout()
+{
+	update();
+}
+
+void RenderWidget::cleanup()
+{
+
+}
+
+RenderWidget& RenderWidget::getInstance()
+{
+	// TODO: 在此处插入 return 语句
+	return *sceneWidget;
+}
+
+void RenderWidget::renderFbo() 
+{
 	if (fbo == nullptr)
 	{
 		// 创建一个 FBO，大小为窗口大小乘以设备像素比
 		qreal dpr = qApp->primaryScreen()->devicePixelRatio();
-		QSize scaledSize = size() * dpr;		
+		QSize scaledSize = size() * dpr;
 		fbo = new QOpenGLFramebufferObject(scaledSize);
-	}	
+	}
 	fbo->bind();
 	glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	/*
-	if(editMode)
+
+	glActiveTexture(GL_TEXTURE0);
+	if (editMode)
 		renderScene(mCamera);
 	else
 		renderScene(SceneMgr::get_instance().get_main_camera());
-	*/
-
-	glActiveTexture(GL_TEXTURE0);
-	renderScene(SceneMgr::get_instance().get_main_camera()); // 用场景相机
 
 	/*
 	if (frameCount % 200 == 0)
@@ -506,11 +526,12 @@ void RenderWidget::paintGL()
 		}
 	}
 	*/
-	
-	
+
 	fbo->release();
+}
 
-
+void RenderWidget::renderFboOverlay()
+{
 	// render overlay
 	if (fboOverlay == nullptr)
 	{
@@ -519,58 +540,14 @@ void RenderWidget::paintGL()
 		QSize scaledSize = size() * dpr;
 		fboOverlay = new QOpenGLFramebufferObject(scaledSize);
 	}
-
 	fboOverlay->bind();
-	
-	//glClearColor(0.5f, 0.6f, 0.7f, 0.5f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
-	renderScene(mCamera); // 用自己创建的相机
-	
-	/*
-	if (frameCount % 200 == 0)
-	{
-		// 将渲染结果保存到 QImage 中
-		QImage image = fboOverlay->toImage();
-		QString filePath = "E:/GroupProject/github/Pure-Handmade-Small-Workshop/output/imageOverlay.png";
-		if (image.save(filePath, "PNG")) {
-			qDebug() << "Image saved successfully!";
-		}
-		else {
-			qDebug() << "Error saving image!";
-		}
-	}
-	*/
-	
-
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	renderScene(SceneMgr::get_instance().get_main_camera()); // 用场景相机
 	fboOverlay->release();
+}
 
-	
-	// 合并场景和 UI 的纹理	
-	// 先将 fbo 中的内容渲染到屏幕上
-	//QOpenGLFramebufferObject::blitFramebuffer(nullptr, fbo, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-	// 启用混合
-	glEnable(GL_BLEND);
-	glBlendEquation(GL_FUNC_ADD);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// 绘制 fboOverlay 的内容，并混合到屏幕上
-	//QOpenGLFramebufferObject::blitFramebuffer(nullptr, fboOverlay, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-	
-	
-	
-	
-	// 混合两个纹理
-	
-	bool success;
-	textureShaderProgram = std::make_unique<QOpenGLShaderProgram>();
-	textureShaderProgram->create();
-	textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, QString::fromStdString(source_path + "\\shaders\\vertex_shader.glsl"));
-	textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\fragment_shader.glsl"));
-	success = textureShaderProgram->link();
-	if (!success)
-		qDebug() << "ERR:" << textureShaderProgram->log();
-
-
+void RenderWidget::mixTexture()
+{
 	float vertices[] = {
 		// positions   // colors                // texture coords
 		1.f,  1.f, 0,     1.0f, 1.0f,   // top right
@@ -585,8 +562,8 @@ void RenderWidget::paintGL()
 	};
 
 
-	
-	
+
+
 	vaoTexture = std::make_unique<QOpenGLVertexArrayObject>();
 	vaoTexture->create();
 	vaoTexture->bind();
@@ -639,27 +616,18 @@ void RenderWidget::paintGL()
 	glDrawElements(GL_TRIANGLES, sizeof(unsigned int) * 6, GL_UNSIGNED_INT, 0);
 
 	vaoTexture->release();
-
-	
-
-	return;
 }
 
-
-void RenderWidget::on_timeout()
+void RenderWidget::createTextureProgram()
 {
-	update();
-}
-
-void RenderWidget::cleanup()
-{
-
-}
-
-RenderWidget& RenderWidget::getInstance()
-{
-	// TODO: 在此处插入 return 语句
-	return *sceneWidget;
+	bool success;
+	textureShaderProgram = std::make_unique<QOpenGLShaderProgram>();
+	textureShaderProgram->create();
+	textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, QString::fromStdString(source_path + "\\shaders\\mixTexttureShader.vert"));
+	textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\mixTexttureShader.frag"));
+	success = textureShaderProgram->link();
+	if (!success)
+		qDebug() << "ERR:" << textureShaderProgram->log();
 }
 
 void RenderWidget::createProgram()
