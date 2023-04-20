@@ -23,12 +23,15 @@ public:
 private:
 	SceneMgr();
 	SceneMgr(const SceneMgr&) = delete;
+
+	void clear();
 	SceneMgr& operator=(const SceneMgr&) = delete;
 
 	static SceneMgr* instance;
 	Camera* main_camera;
 	Scene* current_scene;
 	std::vector<std::string> scenes;
-	
+	std::unordered_map<std::string,std::vector<GameObject*>> nameToGameObjects;
+	std::unordered_map<std::string, std::vector<GameObject*>> tagToGameObjects;
 };
 

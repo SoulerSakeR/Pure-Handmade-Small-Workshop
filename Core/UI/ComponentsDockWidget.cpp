@@ -143,6 +143,13 @@ void ComponentsDockWidget::refresh()
 	{
 		selected_gameobject->isActive = (bool)state;
 	});
+	layout->addWidget(new QLabel("tag"), 2, 0);
+	auto tagLineEdit = new QLineEdit(selected_gameobject->get_tag().c_str(), groupBox);
+	layout->addWidget(tagLineEdit, 2, 1);
+	connect(tagLineEdit, &QLineEdit::editingFinished, [=]()
+	{
+		auto string = tagLineEdit->text().toStdString();
+	});
 	components_widget->layout()->addWidget(groupBox);
 
 	//setup components properties

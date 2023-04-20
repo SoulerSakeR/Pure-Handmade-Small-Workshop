@@ -31,6 +31,16 @@ Result<void*> GameObject::set_name(const std::string& name)
     return Result<void*>();
 }
 
+std::string GameObject::get_tag()
+{
+    return tag;
+}
+
+void GameObject::set_tag(const std::string& tag)
+{
+    this->tag = tag;
+}
+
 /// @brief serialize game object to custom string
 /// @return the reference of the string
 void GameObject::serialize(PHString& result)
@@ -94,7 +104,7 @@ void GameObject::deserialize(std::stringstream& ss)
                     int childrenSize = stoi(s.substr(9, s.size() - 1));
                     for (int i = 0;i < childrenSize;i++)
                     {
-                        GameObject* child = new GameObject();
+                        GameObject* child = new GameObject("", false);
                         child->deserialize(ss);
                         child->transform->parent = transform;
                         transform->children.push_back(child->transform);
@@ -110,6 +120,7 @@ GameObject::GameObject(string name,bool withTransform)
 {
     id = idCount + 1;
     this->name = name+"_"+to_string(id);
+    tag = "Untagged";
     isActive = true;
     // TODO: 随机生成uuid   
     idCount++;

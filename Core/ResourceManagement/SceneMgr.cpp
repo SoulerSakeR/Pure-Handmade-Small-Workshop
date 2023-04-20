@@ -3,6 +3,7 @@
 
 using std::string;
 using std::vector;
+using std::unordered_map;
 
 SceneMgr* SceneMgr::instance = nullptr;
 
@@ -12,6 +13,16 @@ SceneMgr::SceneMgr()
 	current_scene = nullptr;
 	scenes = vector<string>();
 	cameras = vector<Camera*>();
+	nameToGameObjects = unordered_map<string, vector<GameObject*>>();
+	tagToGameObjects = unordered_map<string, vector<GameObject*>>();
+}
+
+void SceneMgr::clear()
+{
+	main_camera = nullptr;
+	tagToGameObjects.clear();
+	nameToGameObjects.clear();
+	cameras.clear();
 }
 
 SceneMgr& SceneMgr::get_instance()
@@ -51,6 +62,7 @@ void SceneMgr::set_main_camera(Camera& camera)
 
 Scene* SceneMgr::loadScene(int index)
 {
+	clear();
 	auto scene = new Scene();
 	current_scene = scene;
 	Scene::loadFromPath(PHPath(GameEngine::get_instance().getGamePath()).combinePath(scenes[index]).getNewPath(),scene);	
@@ -59,6 +71,7 @@ Scene* SceneMgr::loadScene(int index)
 
 Scene* SceneMgr::loadScene(const std::string& path)
 {
+	clear();
 	PHPath p(path);
 	auto scene = Scene::loadFromPath(p.getNewPath());
 	current_scene = scene;

@@ -23,7 +23,8 @@ public:
     //method
     int getID(); //需要绑定
     Result<void*> set_name(const std::string& name); //需要绑定
-
+    std::string get_tag(); //需要绑定
+    void set_tag(const std::string& tag); //需要绑定
     Component* addComponent(Component::ComponentType type); 
     template <typename T>
     T* addComponent(); //需要绑定
@@ -42,6 +43,7 @@ private:
     void deserialize(std::stringstream& ss) override;   
     static int idCount; //id计数器
     int id; //唯一id
+    std::string tag;
 };
 
 /// <summary>
