@@ -36,7 +36,10 @@ int main(int argc, char *argv[])
 
 
     QLoggingCategory::setFilterRules(QStringLiteral("qt.gui.imageio=false")); // 关闭图片格式警告
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     QApplication a(argc, argv);
+    auto flag = a.testAttribute(Qt::AA_ShareOpenGLContexts);
+
     RenderWindow w;
     GameEngine::get_instance().initialize(&w);
     w.show();

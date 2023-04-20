@@ -15,6 +15,7 @@ public:
     // getters and setters
     const std::string& get_imgPath();
     void set_imgPath(const std::string& imgPath,bool refreshUI = true);
+    QImage* get_img();
 
     // Inherited via Component
     void set_property(Property* property, void* value) override;
@@ -25,5 +26,6 @@ protected:
     void serialize(PHString&) override; 
     void deserialize(std::stringstream& ss) override;     
     std::string imgPath;   
+    QImage* img;
 };
 

@@ -12,6 +12,9 @@
 
 RenderWidget* RenderWidget::sceneWidget= nullptr;
 RenderWidget* RenderWidget::gameWidget = nullptr;
+QOpenGLContext* RenderWidget::sharedContext = nullptr;
+
+bool RenderWidget::widgetChanged = false;
 std::string source_path;
 static int count = 0;
 
@@ -22,11 +25,11 @@ RenderWidget::RenderWidget(QWidget* parent) : QOpenGLWidget(parent)
 	frameCount = 0;
 	fbo = nullptr;
 	fboOverlay = nullptr;
+	sharedContext = nullptr;
 	mCameraObject = new GameObject("Camera");
 	mCamera = mCameraObject->addComponent<Camera>();
 	mCamera->set_view_width(500);
 	setContextMenuPolicy(Qt::NoContextMenu);
-
 }
 
 
@@ -56,12 +59,10 @@ void RenderWidget::setWirefame(bool wireframe)
 
 void RenderWidget::renderGameobject(GameObject* gameobj, Camera* camera)
 {
-	bool visBorder = gameobj == getSelectedGameObject();
-
-
 	
 	if (camera == mCamera) // edit mode, render all components
 	{
+		bool visBorder = gameobj == getSelectedGameObject();
 		if (auto img = gameobj->getComponent<Image>(); img != nullptr && img->get_enabled())
 		{
 			renderImage(img, camera, visBorder);
@@ -105,7 +106,6 @@ void RenderWidget::renderGameobject(GameObject* gameobj, Camera* camera)
 
 void RenderWidget::renderBoxCollider(BoxCollider* box, Camera* boxColliderCamera, bool visBorder)
 {
-	
 	if(!visBorder) 
 		return;	
 	if (box->vao == nullptr)
@@ -178,6 +178,37 @@ void RenderWidget::renderBoxCollider(BoxCollider* box, Camera* boxColliderCamera
 
 void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 {
+	if (widgetChanged)
+	{
+		if (img->vao != nullptr)
+		{
+			img->vao->release();
+			img->vao->destroy();
+			delete img->vao;
+			img->vao = nullptr;
+		}
+		if (img->vbo != nullptr)
+		{
+			img->vbo->release();
+			img->vbo->destroy();
+			delete img->vbo;
+			img->vbo = nullptr;
+		}
+		if (img->ibo != nullptr)
+		{
+			img->ibo->release();
+			img->ibo->destroy();
+			delete img->ibo;
+			img->ibo = nullptr;
+		}
+		if (img->borderIbo != nullptr)
+		{
+			img->borderIbo->release();
+			img->borderIbo->destroy();
+			delete img->borderIbo;
+			img->borderIbo = nullptr;
+		}
+	}
 	//bind vao if exist
 	if (img->vao == nullptr)
 	{
@@ -192,6 +223,17 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 		img->ibo->create();
 		img->ibo->bind();
 		img->ibo->allocate(img->indices.data(), static_cast<int>(img->indices.size() * sizeof(unsigned int)));
+		if (img->get_img() != nullptr)
+		{
+			if (img->texture == nullptr)
+			{
+				img->texture = new QOpenGLTexture((*(img->get_img())).mirrored());
+				img->texture->create();
+				bool flag = img->texture->isCreated();
+				if(!flag)
+					Debug::log("texture create failed");
+			}		
+		}
 		imageShaderProgram->bind();
 		
 		GLint posLocation = imageShaderProgram->attributeLocation("aPos");
@@ -221,7 +263,6 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 		delete img->ibo;*/
 	}
 	img->vao->bind();
-
 	//calculate the MVP matrix
 	QMatrix4x4 matrix;
 	if (editMode)
@@ -322,6 +363,37 @@ void RenderWidget::renderText(Text* text, Camera* textCamera, bool visBorder)
 
 	mTexture = genTextTexture(width, height, data, 60, color);
 
+	if (widgetChanged)
+	{
+		if (text->vao != nullptr)
+		{
+			text->vao->release();
+			text->vao->destroy();
+			delete text->vao;
+			text->vao = nullptr;
+		}
+		if (text->vbo != nullptr)
+		{
+			text->vbo->release();
+			text->vbo->destroy();
+			delete text->vbo;
+			text->vbo = nullptr;
+		}
+		if (text->ibo != nullptr)
+		{
+			text->ibo->release();
+			text->ibo->destroy();
+			delete text->ibo;
+			text->ibo = nullptr;
+		}
+		if (text->borderIbo != nullptr)
+		{
+			text->borderIbo->release();
+			text->borderIbo->destroy();
+			delete text->borderIbo;
+			text->borderIbo = nullptr;
+		}
+	}
 
 	//bind vao if exist
 	if (text->vao == nullptr)
@@ -457,7 +529,37 @@ void RenderWidget::renderCameraBorder(Camera* target, Camera* renderCamera, bool
 	float cameraHeight = cameraWidth / aspect;
 	target->set_size(Vector2D(cameraWidth, cameraHeight));
 
-
+	if (widgetChanged)
+	{
+		if (target->vao != nullptr)
+		{
+			target->vao->release();
+			target->vao->destroy();
+			delete target->vao;
+			target->vao = nullptr;
+		}
+		if (target->vbo != nullptr)
+		{
+			target->vbo->release();
+			target->vbo->destroy();
+			delete target->vbo;
+			target->vbo = nullptr;
+		}
+		if (target->ibo != nullptr)
+		{
+			target->ibo->release();
+			target->ibo->destroy();
+			delete target->ibo;
+			target->ibo = nullptr;
+		}
+		if (target->borderIbo != nullptr)
+		{
+			target->borderIbo->release();
+			target->borderIbo->destroy();
+			delete target->borderIbo;
+			target->borderIbo = nullptr;
+		}
+	}
 
 	if (target->vao == nullptr)
 	{
@@ -531,7 +633,6 @@ void RenderWidget::renderScene(Camera* camera)
 void RenderWidget::initializeGL()
 {
 	initializeOpenGLFunctions();
-
 	// debug info
 	/*
 	logger = std::make_unique<QOpenGLDebugLogger>(this);
@@ -581,11 +682,11 @@ void RenderWidget::resizeGL(int w, int h)
 void RenderWidget::paintGL()
 {
 	frameCount++;
-	makeCurrent();
 	renderFbo();
 	renderFboOverlay();
 	mixTexture();
-	return;
+	if(widgetChanged)
+		widgetChanged = false;
 }
 
 
@@ -606,7 +707,7 @@ RenderWidget& RenderWidget::getSceneWidget()
 
 RenderWidget& RenderWidget::getGameWidget()
 {
-	return *sceneWidget;
+	return *gameWidget;
 }
 
 void RenderWidget::renderFbo() 
@@ -623,11 +724,11 @@ void RenderWidget::renderFbo()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glActiveTexture(GL_TEXTURE0);
-	if (editMode)
+	if (!isGameWidget)
 		renderScene(mCamera);
 	else
 	{
-		if (auto camera = SceneMgr::get_instance().get_main_camera();camera->get_enabled() && camera->gameObject->isActive)
+		if (auto camera = SceneMgr::get_instance().get_main_camera();camera!=nullptr && camera->get_enabled() && camera->gameObject->isActive)
 			renderScene(camera);
 	}
 
@@ -636,7 +737,6 @@ void RenderWidget::renderFbo()
 	{
 		// 将渲染结果保存到 QImage 中
 		QImage image = fbo->toImage();
-		QString filePath = "E:/GroupProject/github/Pure-Handmade-Small-Workshop/output/image.png";
 		if (image.save(filePath, "PNG")) {
 			qDebug() << "Image saved successfully!";
 		}

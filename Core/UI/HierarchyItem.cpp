@@ -20,9 +20,6 @@ HierarchyItem::~HierarchyItem()
 	{
 		delete child;
 	}
-	if(gameObject!=nullptr)
-		gameObject->destroy();
-	gameObject = nullptr;
 }
 
 void HierarchyItem::moveUp()
@@ -95,7 +92,19 @@ void HierarchyItem::deleteItem()
 		auto index = parentItem->indexOfChild(this);
 		parentItem->takeChild(index);
 	}
-	delete this;
+	destroyGameObject();
+	auto children = takeChildren();
+	for (auto child : children)
+	{
+		((HierarchyItem*)child)->deleteItem();
+	}
+}
+
+void HierarchyItem::destroyGameObject()
+{
+	if (gameObject != nullptr)
+		gameObject->destroy();
+	gameObject = nullptr;
 }
 
 void HierarchyItem::moveVeryUP(QPoint pos)

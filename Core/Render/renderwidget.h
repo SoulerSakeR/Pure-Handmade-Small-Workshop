@@ -59,7 +59,10 @@ public:
     float moveSpeed;
     QPoint lastPos; // mouse location
 
+    static QOpenGLContext* sharedContext;
     bool editMode = true;
+    bool isGameWidget = false;
+    static bool widgetChanged;
 
 protected:
     virtual void initializeGL();

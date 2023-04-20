@@ -14,7 +14,8 @@ IBoxResizable::IBoxResizable(GameObject* gameobj):IRenderable(gameobj)
 
 IBoxResizable::~IBoxResizable()
 {
-	borderIbo->destroy();
+	if(borderIbo != nullptr)
+		borderIbo->destroy();
 	delete borderIbo;
 	borderIbo = nullptr;
 }

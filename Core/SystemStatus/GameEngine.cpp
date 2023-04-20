@@ -90,7 +90,7 @@ GameProject& GameEngine::creatGameProject(const string& name,const string& path)
 }
 Vector2D GameEngine::get_resolution()
 {
-	auto rect = RenderWidget::getGameWidget().rect();
+	auto rect = RenderWidget::getSceneWidget().rect();
 	return Vector2D(rect.width(), rect.height());
 }
 void GameEngine::refreshHierarchy()
@@ -157,9 +157,9 @@ GameObject& GameEngine::addGameObject(const string& name, GameObject* const pare
 	Debug::log("addGameObject:" + name);
 	GameObject* gameObject = new GameObject(name);
     if(parent == nullptr)
-		SceneMgr::get_instance().get_current_scene()->insertGameObject(*gameObject);
+		GameEngine::get_instance().gameProject->currentScene->insertGameObject(*gameObject);
 	else
-		SceneMgr::get_instance().get_current_scene()->insertGameObject(*gameObject,parent,insertMode);
+		GameEngine::get_instance().gameProject->currentScene->insertGameObject(*gameObject,parent,insertMode);
 	switch (type)
 	{
 	case Component::UNKNOWN:

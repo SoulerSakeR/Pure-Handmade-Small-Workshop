@@ -23,10 +23,14 @@ RenderWindow::RenderWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->sceneWidget->hierarchyWidget = ui->hierarchy;
-    // ui->hierarchy->ui = this;
+    ui->sceneWidget->isGameWidget = false;
+    ui->gameWidget->isGameWidget = true;
     RenderWidget::sceneWidget = ui->sceneWidget;
     RenderWidget::gameWidget = ui->gameWidget;
     GameEngine::get_instance().hierarchy = ui->hierarchy;
+    connect(ui->tabWidget, &QTabWidget::currentChanged, [=](int index) {
+        ui->sceneWidget->widgetChanged = true;
+		});
     ui->hierarchy->componentsDockWidget = ui->dockWidget_components;
     ui->hierarchy->initContextMenu();
     ui->dockWidget_components->hierarchy = ui->hierarchy;

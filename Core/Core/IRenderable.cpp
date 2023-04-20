@@ -12,10 +12,6 @@ IRenderable::IRenderable(GameObject* gameobj) : Component(gameobj)
 	properties.emplace("color", new Property("color", &color, Property::COLOR, this));
 	color = Color32{ 255,255,255,255 };
 	texture = nullptr;
-	if (auto renderer = gameobj->getComponent<Renderer>(); renderer == nullptr)
-	{
-		gameobj->addComponent<Renderer>();
-	}
 }
 
 IRenderable::~IRenderable()

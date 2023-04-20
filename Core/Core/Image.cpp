@@ -14,26 +14,26 @@ void Image::set_imgPath(const std::string& imgPath,bool refreshUI)
 {
 	this->imgPath = imgPath;
 	QString path = QString::fromStdString(GameEngine::get_instance().getRootPath() + imgPath);
-	auto img = QImage(path).mirrored().convertToFormat(QImage::Format_RGBA8888);
-	if (img.isNull())
+	if(img!=nullptr)
+		delete img;
+	img = new QImage(path);
+	if (!img->isNull())
 	{
-		if(texture!=nullptr)
+		img->convertToFormat(QImage::Format_RGBA8888);
+		if (texture != nullptr)
 		{
 			texture->destroy();
 			delete texture;
 			texture = nullptr;
 		}
-		return;
-	}
-	if (texture != nullptr)
-	{
-		texture->destroy();
-		delete texture;
-		texture = nullptr;
-	}
-	texture = new QOpenGLTexture(img, QOpenGLTexture::GenerateMipMaps);
-	set_size(Vector2D(texture->width(), texture->height()));
+		set_size(Vector2D(img->width(), img->height()));
+	}	
 	onPropertyChange(properties["imgPath"]);
+}
+
+QImage* Image::get_img()
+{
+	return img;
 }
 
 
@@ -41,6 +41,7 @@ Image::Image(GameObject* gameObj, const std::string& imgPath,Vector2D size):IBox
 {
 	this->imgPath = imgPath;
 	this->size = size;
+	img = nullptr;
 	componentType = IMAGE;
 	properties.emplace("imgPath", new Property("imgPath", &(this->imgPath), Property::STRING,this));
 }
