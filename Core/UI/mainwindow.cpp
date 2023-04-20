@@ -15,6 +15,7 @@
 #include "Core/UI/WaveFunctionCollapseDialog.h"
 #include <QMessageBox>
 #include "Core/UI/AddSceneDialog.h"
+#include "Core/GameLogic/GameLoop.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -319,20 +320,31 @@ void MainWindow::importScene()
 // 重写关闭窗口事件
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    QMessageBox::StandardButton button;
-    button = QMessageBox::question(this, tr("关闭"), QString(tr("是否保存项目？")), QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, QMessageBox::Save);
-
-    if (button == QMessageBox::Save) {
-        bool saveSuccess = GameEngine::get_instance().saveGameProject();
-        if (saveSuccess) {
+    if (GameEngine::get_instance().gameProject == nullptr)
+    {
+         QMainWindow::closeEvent(event);
+    }
+    else
+    {
+        QMessageBox::StandardButton button;
+        button = QMessageBox::question(this, tr("关闭"), QString(tr("是否保存项目？")), QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, QMessageBox::Save);
+        if (button == QMessageBox::Save)
+        {
+            bool saveSuccess = GameEngine::get_instance().saveGameProject();
+            if (saveSuccess) {
+                GameEngine::get_instance().gameLoop->shutdown();
+                QMainWindow::closeEvent(event);
+            }
+        }
+        else if (button == QMessageBox::Discard)
+        {
+            GameEngine::get_instance().gameLoop->shutdown();
             QMainWindow::closeEvent(event);
         }
-    }
-    else if (button == QMessageBox::Discard) {
-        QMainWindow::closeEvent(event);
-    }
-    else {
-        event->ignore();
+        else
+        {
+            event->ignore();
+        }
     }
 }
 

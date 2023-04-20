@@ -45,9 +45,5 @@ int main(int argc, char *argv[])
     GameEngine::get_instance().initialize(&w);
     w.show();
 
-    QObject::connect(&a, &QCoreApplication::aboutToQuit, []() {
-        GameEngine::get_instance().gameLoop->shutdown();
-        });
-
     return a.exec();
 }
