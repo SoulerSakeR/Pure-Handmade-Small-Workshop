@@ -7,6 +7,7 @@ class SceneMgr
 {
 	friend class GameEngine;
 	friend class GameProject;
+	friend class GameObject;
 	friend class Camera;
 	friend class Renderwidget;
 public:
@@ -18,6 +19,10 @@ public:
 	void set_main_camera(Camera& camera);
 	Scene* loadScene(int index);
 	Scene* loadScene(const std::string& name);
+	void tagToGameObjects_add(const std::string& tag, GameObject* gameObject);
+	void tagToGameObjects_remove(const std::string& tag, GameObject* gameObject);
+	void nameToGameObjects_add(const std::string& name, GameObject* gameObject);
+	void nameToGameObjects_remove(const std::string& name, GameObject* gameObject);
 	std::vector<Camera*> cameras;
 
 private:

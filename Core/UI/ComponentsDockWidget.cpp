@@ -149,6 +149,7 @@ void ComponentsDockWidget::refresh()
 	connect(tagLineEdit, &QLineEdit::editingFinished, [=]()
 	{
 		auto string = tagLineEdit->text().toStdString();
+		selected_gameobject->set_tag(string);
 	});
 	components_widget->layout()->addWidget(groupBox);
 

@@ -25,9 +25,8 @@ Result<void*> GameObject::set_name(const std::string& name)
         return Result<void*>();
     if (auto scene = SceneMgr::get_instance().get_current_scene();scene != nullptr)
     {       
-        return scene->renameGameObject(this, name);
+        return scene->renameGameObject(this, name);       
     }
-    this->name = name;
     return Result<void*>();
 }
 
@@ -38,8 +37,22 @@ std::string GameObject::get_tag()
 
 void GameObject::set_tag(const std::string& tag)
 {
+    if (SceneMgr::get_instance().get_current_scene() != nullptr)
+    {
+        SceneMgr::get_instance().tagToGameObjects_remove(this->tag, this);
+    }
     this->tag = tag;
+    if (SceneMgr::get_instance().get_current_scene() != nullptr)
+    {
+        SceneMgr::get_instance().tagToGameObjects_add(this->tag, this);
+    }
 }
+
+std::string GameObject::get_name()
+{
+    return name;
+}
+
 
 /// @brief serialize game object to custom string
 /// @return the reference of the string
@@ -48,6 +61,7 @@ void GameObject::serialize(PHString& result)
     result.appendLine("GameObject:", to_string(id));
     result.appendLine(name);
     result.appendLine(to_string(isActive));
+    result.appendLine(tag);
     result.appendLine("Components:", to_string(components.size()));
     for(int i=0;i<components.size();i++)
     {
@@ -78,6 +92,8 @@ void GameObject::deserialize(std::stringstream& ss)
             name = s;
             getline(ss, s);
             isActive = (bool)stoi(s);
+            getline(ss, s);
+            set_tag(s);
 
             do // deserialize components
             {

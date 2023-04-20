@@ -4,6 +4,7 @@
 #include <Core/FileIO/IO.h>
 #include "Image.h"
 #include "Core/Core/Renderer.h"
+#include <Core/ResourceManagement/SceneMgr.h>
 
 using namespace std;
 
@@ -25,6 +26,7 @@ Result<void*> Scene::renameGameObject(GameObject* gameObject, std::string newNam
 		return Result<void*>(false,"gameObject is nullptr");
 	if(auto it = allGameObjsByName.find(newName); it != allGameObjsByName.end())
 		return Result<void*>(false,"name already exists");
+	SceneMgr::get_instance().nameToGameObjects_remove(gameObject->get_name(), gameObject);
 	if (auto it = allGameObjsByName.find(gameObject->name); it != allGameObjsByName.end())
 	{
 		auto& vec = it->second;
@@ -37,6 +39,7 @@ Result<void*> Scene::renameGameObject(GameObject* gameObject, std::string newNam
 	allGameObjsByName[newName] = vector<GameObject*>();
 	allGameObjsByName[newName].push_back(gameObject);
 	gameObject->name = newName;
+	SceneMgr::get_instance().nameToGameObjects_add(newName, gameObject);
 	return Result<void*>();
 }
 

@@ -25,6 +25,7 @@ public:
     Result<void*> set_name(const std::string& name); //需要绑定
     std::string get_tag(); //需要绑定
     void set_tag(const std::string& tag); //需要绑定
+    std::string get_name();
     Component* addComponent(Component::ComponentType type); 
     template <typename T>
     T* addComponent(); //需要绑定
