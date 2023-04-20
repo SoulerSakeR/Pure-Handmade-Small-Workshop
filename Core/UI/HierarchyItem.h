@@ -15,7 +15,5 @@ public:
     void moveDown();
     void deleteItem();
     void destroyGameObject();
-    void moveVeryUP(QPoint pos);
-    void moveVeryDown(QPoint pos);
 };
 

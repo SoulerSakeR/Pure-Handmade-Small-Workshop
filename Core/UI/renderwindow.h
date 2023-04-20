@@ -24,14 +24,12 @@ public:
     void addScene();
     void deleteScene();  
     void importScene();
-
-public slots:
     void showContextMenu(const QPoint&);
     void onTreeviewRightClick(const QPoint& pos);
     void onListItemDoubleClicked();
 
-private slots:
-    friend class listbox;
+protected:
+    void closeEvent(QCloseEvent* event) override;
 
 private:
     Ui::RenderWindow *ui;

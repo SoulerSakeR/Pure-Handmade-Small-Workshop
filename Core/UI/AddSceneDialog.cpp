@@ -30,4 +30,6 @@ void AddSceneDialog::createScene()
     auto& instance = GameEngine::get_instance();
     instance.getCurrentGameProject()->openScene(GameEngine::get_instance().getCurrentGameProject()->creatNewScene(sceneName.toStdString()));// 需要一个弹框输入名字
     close();
+    // 实现保存操作，返回保存是否成功的状态
+    bool saveSuccess = GameEngine::get_instance().saveGameProject();
 }

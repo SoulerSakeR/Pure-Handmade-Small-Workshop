@@ -16,7 +16,6 @@
 #include <QMessageBox>
 #include "Core/UI/AddSceneDialog.h"
 
-
 RenderWindow::RenderWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::RenderWindow)
@@ -145,7 +144,6 @@ RenderWindow::~RenderWindow()
 {
     delete ui;
 }
-
 // 显示右键菜单
 void RenderWindow::showContextMenu(const QPoint& pos)
 {
@@ -167,7 +165,6 @@ void RenderWindow::resizeGL(QResizeEvent* event) {
     ui->sceneWidget->resize(width, height);
     event->accept();
 }
-
 // 创建QFileSystemModel并显示上级目录下的文件结构
 void RenderWindow::setupFileSystemTreeView(const QString& parentDir)
 {
@@ -185,7 +182,6 @@ void RenderWindow::setupFileSystemTreeView(const QString& parentDir)
     ui->treeView->hideColumn(2);
     ui->treeView->hideColumn(3);
 }
-
 // 场景的点击事件
 void RenderWindow::onTreeviewRightClick(const QPoint& pos) {
     QModelIndex index = ui->treeView->indexAt(pos);
@@ -210,11 +206,13 @@ void RenderWindow::refreshHierachy()
 {
     ui->hierarchy->refresh();
 }
+
 void RenderWindow::onListItemDoubleClicked()
 {
     // 处理双击事件
     open();
 }
+
 void RenderWindow::open()
 {
     // 获取当前选择的项
@@ -239,8 +237,6 @@ void RenderWindow::addScene()
     QDialog* createSceneDialog = new AddSceneDialog(this);
     createSceneDialog->show();
 }
-
-// 传入需要删除的文件的绝对路径 
 // 删除需要确认   标记完善一下***************************************************
 bool deleteFile(const QString& filePath)
 {
@@ -256,6 +252,7 @@ bool deleteFile(const QString& filePath)
     }
     return false;
 }
+
 void RenderWindow::deleteScene()
 {
     // TODO
@@ -288,5 +285,24 @@ void RenderWindow::importScene()
 		// 具体的代码，传入文件地址
         return;
 	}
+}
+// 重写关闭窗口事件
+void RenderWindow::closeEvent(QCloseEvent* event)
+{
+    QMessageBox::StandardButton button;
+    button = QMessageBox::question(this, tr("关闭"), QString(tr("是否保存项目？")), QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, QMessageBox::Save);
+
+    if (button == QMessageBox::Save) {
+        bool saveSuccess = GameEngine::get_instance().saveGameProject();
+        if (saveSuccess) {
+            QMainWindow::closeEvent(event);
+        }
+    }
+    else if (button == QMessageBox::Discard) {
+        QMainWindow::closeEvent(event);
+    }
+    else {
+        event->ignore();
+    }
 }
 
