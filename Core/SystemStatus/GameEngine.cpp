@@ -30,7 +30,7 @@ GameEngine& GameEngine::get_instance()
 
 /// @brief initialize game engine and subsystem.
 /// @return value that indicates the process was completed or not.
-bool GameEngine::initialize(RenderWindow* window)
+bool GameEngine::initialize(MainWindow* window)
 {
 	Debug::log("Engine initializing");
 	srand((unsigned)time(NULL));
@@ -118,7 +118,7 @@ bool GameEngine::openGameProjectTest(const std::string& project, const std::stri
 }
 #endif // TEST
 
-RenderWindow* GameEngine::getWindow()
+MainWindow* GameEngine::getWindow()
 {
 	return window;
 }

@@ -3,7 +3,7 @@
 #include <QApplication>
 #include <Windows.h>
 #include <thread>
-#include "Core/UI/renderwindow.h"
+#include "Core/UI/mainwindow.h"
 #include "lib/sol/sol.hpp"
 #include "Core/Render/common.h"
 #include "Core/SystemStatus/GameEngine.h"
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     auto flag = a.testAttribute(Qt::AA_ShareOpenGLContexts);
 
-    RenderWindow w;
+    MainWindow w;
     GameEngine::get_instance().initialize(&w);
     w.show();
     return a.exec();

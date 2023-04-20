@@ -1,6 +1,6 @@
 #include "listbox.h"
 #include "listitem.h"
-#include "renderwindow.h"
+#include "mainwindow.h"
 
 ListBox::ListBox(QWidget* parent): QListWidget(parent)
 {

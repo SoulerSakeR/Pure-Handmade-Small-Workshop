@@ -1,7 +1,7 @@
 #pragma once
 #include "qtreewidget.h"
 #include "HierarchyItem.h"
-#include "Core/UI/renderwindow.h"
+#include "Core/UI/mainwindow.h"
 #include "ComponentsDockWidget.h"
 #include "Core/UI/HierarchyItem.h"
 #include "Core/Core/Scene.h"
@@ -27,7 +27,7 @@ public:
     GameObject* selectedGameObject;
     ComponentsDockWidget* componentsDockWidget;
     std::unordered_map<GameObject*, HierarchyItem*> gameobj_item_map;
-    // RenderWindow* ui;
+    // MainWindow* ui;
     //void insertItem(QTreeWidgetItem* oldItem, QTreeWidgetItem* newItem);
 
 public slots:

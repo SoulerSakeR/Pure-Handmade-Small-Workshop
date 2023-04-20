@@ -7,16 +7,16 @@
 #include <QFileSystemModel>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class RenderWindow; }
+namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-class RenderWindow : public QMainWindow
+class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    RenderWindow(QWidget *parent = nullptr);
-    ~RenderWindow();
+    MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
     void resizeGL(QResizeEvent*);
     void refreshHierachy();
     void setupFileSystemTreeView(const QString& parentDir);
@@ -32,7 +32,7 @@ protected:
     void closeEvent(QCloseEvent* event) override;
 
 private:
-    Ui::RenderWindow *ui;
+    Ui::MainWindow *ui;
     QFileSystemModel* fileModel;
 };
 #endif // RENDERWINDOW_H

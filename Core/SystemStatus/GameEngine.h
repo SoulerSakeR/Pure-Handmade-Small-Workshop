@@ -2,7 +2,7 @@
 #include "GameProject.h"
 #include "Core/Core/PHString.h"
 #include "Core/Utils/Test.h"
-#include <Core/UI/renderwindow.h>
+#include <Core/UI/mainwindow.h>
 #include <Core/ThreadPool/ThreadPool.h>
 #include <Core/UI/HierarchyWidget.h>
 
@@ -12,7 +12,7 @@ class ResourceMgr;
 /// @brief game engine singleton
 class GameEngine
 {
-	friend class RenderWindow;
+	friend class MainWindow;
 public:	
 	//method
 	static GameEngine& get_instance();	
@@ -25,14 +25,14 @@ public:
 #ifdef TEST
 	bool openGameProjectTest(const std::string& project,const std::string** scenes); //打开已有项目
 #endif // TEST
-	RenderWindow* getWindow();
+	MainWindow* getWindow();
 	bool openGameProject(const std::string& path); //打开已有项目
 	bool saveGameProject(); //保存当前项目
 	GameObject& addGameObject(const std::string& name = "GameObject", GameObject* const parent = nullptr,Component::ComponentType type = Component::UNKNOWN,InsertMode insertMode = INSIDE);
 	void deleteGameObject(GameObject* obj);
 	const std::string& getRootPath();
 	std::string getGamePath();	
-	bool initialize(RenderWindow* window);
+	bool initialize(MainWindow* window);
 	GameObject* getSelectedGameObject();
 	void onPropertyChange(Property* property);
 	void test(int a, int b) {
@@ -47,7 +47,7 @@ private:
 	};
 	
 	void renderLoop();
-	RenderWindow* window;
+	MainWindow* window;
 	HierarchyWidget* hierarchy;
 	static GameEngine* instance ; //游戏引擎实例		
 	std::string rootPath;

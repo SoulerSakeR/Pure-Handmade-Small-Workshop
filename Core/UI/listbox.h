@@ -21,7 +21,7 @@ protected:
     Qt::DropAction supportedDropActions();
 
 private:
-    friend class renderwindow;
+    friend class mainwindow;
 
 signals:
 
