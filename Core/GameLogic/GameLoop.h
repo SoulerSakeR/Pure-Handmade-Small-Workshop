@@ -1,3 +1,4 @@
+#pragma once
 #define FRAMERATE = 60;
 #define TIMEPERFRAME = 16;
 #include <iostream>
@@ -51,10 +52,11 @@ public:
         //checkCollisions(deltaTime);
         //updateGameState(deltaTime);
         //printDataInfo(deltaTime);
- 
+    void shutdown();
 private:
    Player* player; //绑定一个Player.包括以下功能 
     //1.人物移动（TODO:输入检测） 2.设置人物移动速度 3.获取人物位置 4.设置人物状态 
    
    int gameTime; // 储存srand(GetTickCount())
+   bool isRunning = true;
 };

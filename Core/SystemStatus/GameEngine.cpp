@@ -16,7 +16,7 @@ GameEngine* GameEngine::instance = nullptr;
 
 GameEngine::GameEngine():pool(4)
 {
-
+	gameLoop = nullptr;
 }
 
 /// @brief get singleton instance, if it is not exists, create one 

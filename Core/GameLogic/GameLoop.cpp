@@ -27,7 +27,7 @@ void GameLoop::updateScene(RenderWidget* sceneWidget, RenderWidget* gameWidget) 
         DWORD end_time = GetTickCount();
         auto starttime= system_clock::now();
         auto endtime = system_clock::now();
-        while (true) {
+        while (isRunning) {
             // 计算每一帧的时间间隔
             
             // 等待一段时间，控制游戏速度
@@ -97,4 +97,8 @@ Player* GameLoop::getPlayer(){
 // 设置这个游戏循环中的Player
 void GameLoop::setPlayer(Player* player) {
    this->player = player;
+}
+
+void GameLoop::shutdown() {
+    this->isRunning = false;
 }

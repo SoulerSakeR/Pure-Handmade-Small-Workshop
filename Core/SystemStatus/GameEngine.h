@@ -6,8 +6,9 @@
 #include <Core/ThreadPool/ThreadPool.h>
 #include <Core/UI/HierarchyWidget.h>
 
-class ResourceMgr;
 
+class ResourceMgr;
+class GameLoop;
 
 /// @brief game engine singleton
 class GameEngine
@@ -39,6 +40,7 @@ public:
 				std::cout << a << " " << b << std::endl;
 	}
 	ThreadPool pool;
+	GameLoop* gameLoop;
 private:
 
 	GameEngine();

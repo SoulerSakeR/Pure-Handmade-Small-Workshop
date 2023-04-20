@@ -16,8 +16,9 @@
 #include "Core/ThreadPool/ThreadPool.h"
 #include "Core/Utils/PHPath.h"
 #include "Core/Utils/Event.h"
+#include "Core/GameLogic/GameLoop.h"
 
-
+class GameLoop;
 
 int main(int argc, char *argv[])
 { 
@@ -43,5 +44,10 @@ int main(int argc, char *argv[])
     MainWindow w;
     GameEngine::get_instance().initialize(&w);
     w.show();
+
+    QObject::connect(&a, &QCoreApplication::aboutToQuit, []() {
+        GameEngine::get_instance().gameLoop->shutdown();
+        });
+
     return a.exec();
 }
