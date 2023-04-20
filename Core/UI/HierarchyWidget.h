@@ -8,7 +8,7 @@
 
 class HierarchyWidget : public QTreeWidget
 {
-    friend class HierachyItem;
+    friend class HierarchyItem;
     Q_OBJECT
 signals:
     void gameObjectSelected(GameObject* gameobj);
@@ -18,17 +18,19 @@ public:
     void addGameObject(GameObject* gameobj,GameObject* parent = nullptr,InsertMode insertMode = INSIDE);
 
     void mouseMoveEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
 
     void initContextMenu();
     void refreshGameObject();
-   // void mouseReleaseEvent(QMouseEvent* event) override;
+    
 
     QMenu* contextMenu;
     GameObject* selectedGameObject;
     ComponentsDockWidget* componentsDockWidget;
     std::unordered_map<GameObject*, HierarchyItem*> gameobj_item_map;
-    // MainWindow* ui;
-    //void insertItem(QTreeWidgetItem* oldItem, QTreeWidgetItem* newItem);
+    // RenderWindow* ui;
+    void insertItem(QTreeWidgetItem* oldItem, QTreeWidgetItem* newItem);
 
 public slots:
     void showContextMenu(const QPoint& pos);

@@ -89,6 +89,81 @@ void Scene::insertGameObject(GameObject& value,GameObject* target,InsertMode ins
 	}
 }
 
+void Scene::insertExistGameObject(GameObject* gameObject, GameObject* target, InsertMode insertMode)
+{
+	//remove from old parent
+	if (gameObject->isRootGameObject())
+	{
+		auto it = find(rootGameObjs.begin(), rootGameObjs.end(), gameObject);
+		rootGameObjs.erase(it);
+	}
+	else
+	{
+		auto& vec = gameObject->transform->parent->children;
+		auto it = find(vec.begin(), vec.end(), gameObject->transform);
+		vec.erase(it);
+	}
+
+	//add to new parent
+	if (target->isRootGameObject())
+	{
+		gameObject->transform->parent = nullptr;
+		switch (insertMode)
+		{
+		case BEFORE:
+		{
+			auto it = find(rootGameObjs.begin(), rootGameObjs.end(), target);
+			rootGameObjs.insert(it, gameObject);
+			break;
+		}			
+		case AFTER:
+		{
+			auto it = find(rootGameObjs.begin(), rootGameObjs.end(), target);
+			rootGameObjs.insert(++it, gameObject);
+			break;
+		}
+		case INSIDE:
+		{
+			target->transform->children.push_back(gameObject->transform);
+			gameObject->transform->parent = target->transform;
+			break;
+		}			
+		default:
+			break;
+		}
+	}
+	else
+	{
+		gameObject->transform->parent = target->transform->parent;
+		switch (insertMode)
+		{
+		case BEFORE:
+		{
+			auto& vec = target->transform->parent->children;
+			auto it = find(vec.begin(), vec.end(), target->transform);
+			vec.insert(it, gameObject->transform);
+			break;
+		}
+		case AFTER:
+		{
+			auto& vec = target->transform->parent->children;
+			auto it = find(vec.begin(), vec.end(), target->transform);
+			vec.insert(++it, gameObject->transform);
+			break;
+		}
+		case INSIDE:
+		{
+			target->transform->children.push_back(gameObject->transform);
+			gameObject->transform->parent = target->transform;
+			break;
+		}
+		default:
+			Debug::logError("insertMode is not valid");
+			break;
+		}
+	}
+}
+
 
 void Scene::addGameObject(GameObject *newObject)
 {

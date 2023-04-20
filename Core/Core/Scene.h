@@ -23,6 +23,8 @@ public:
     //method
     Result<void*> renameGameObject(GameObject* gameObject, std::string newName);
     void insertGameObject(GameObject& value, GameObject* target=nullptr,InsertMode insertMode = INSIDE);
+
+    void insertExistGameObject(GameObject* gameObject, GameObject* target, InsertMode insertMode);
     
     void removeGameObject(GameObject* gameObject);
     void removeGameObject(int id);

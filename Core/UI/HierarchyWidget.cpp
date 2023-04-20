@@ -5,6 +5,7 @@
 #include <QMimeData>
 #include <QDrag>
 #include "Core/SystemStatus/GameEngine.h"
+#include <Core/ResourceManagement/SceneMgr.h>
 
 void HierarchyWidget::onSelectionChanged()
 {
@@ -128,60 +129,35 @@ void HierarchyWidget::initContextMenu()
 	connect(this, &HierarchyWidget::customContextMenuRequested, this, &HierarchyWidget::showContextMenu);
 }
 
-//
-//void HierarchyWidget::insertItem(QTreeWidgetItem* oldItem, QTreeWidgetItem* newItem)
-//{
-//	if (newItem->parent() == nullptr) {
-//		// 新的项目是根节点
-//		if (oldItem->parent() != nullptr) {// 老的不是根节点
-//			QTreeWidgetItem* parentItem = oldItem->parent(); // 获取老节点的父亲节点
-//			parentItem->insertChild(newItem->indexOfChild(oldItem), oldItem); // 将老节点插入到新节点上面
-//		}
-//		else {//老的是根节点
-//			QTreeWidget* treeWidget = newItem->treeWidget();
-//			int index = treeWidget->indexOfTopLevelItem(newItem);
-//			treeWidget->insertTopLevelItem(index, oldItem);
-//			treeWidget->takeTopLevelItem(index + 1);
-//		}
-//	}
-//	else {
-//		if (newItem->parent() != nullptr) { // newItem不是根节点
-//			if (oldItem->parent() != nullptr) { // oldItem不是根节点
-//				if (oldItem->parent() == newItem->parent()) { // 在同一分支
-//					int newIndex = newItem->parent()->indexOfChild(newItem);
-//					int oldIndex = oldItem->parent()->indexOfChild(oldItem);
-//					if (newIndex > oldIndex) {
-//						newIndex--;
-//					}
-//					newItem->parent()->insertChild(newIndex, oldItem);
-//					oldItem->parent()->removeChild(oldItem);
-//				}
-//				else { // 不在同一分支
-//					int newIndex = newItem->parent()->indexOfChild(newItem);
-//					newItem->parent()->insertChild(newIndex, oldItem);
-//					oldItem->parent()->removeChild(oldItem);
-//				}
-//			}
-//			else { // oldItem是根节点
-//				int newIndex = newItem->indexOfChild(newItem);
-//				newItem->insertChild(newIndex, oldItem);
-//				oldItem->treeWidget()->takeTopLevelItem(oldItem->treeWidget()->indexOfTopLevelItem(oldItem));
-//			}
-//		}
-//		else { // newItem是根节点
-//			if (oldItem->parent() != nullptr) { // oldItem不是根节点
-//				int newIndex = newItem->indexOfChild(newItem);
-//				newItem->insertChild(newIndex, oldItem);
-//				oldItem->parent()->removeChild(oldItem);
-//			}
-//			else { // oldItem是根节点
-//				int newIndex = newItem->treeWidget()->indexOfTopLevelItem(newItem);
-//				newItem->treeWidget()->insertTopLevelItem(newIndex, oldItem);
-//				oldItem->treeWidget()->takeTopLevelItem(oldItem->treeWidget()->indexOfTopLevelItem(oldItem));
-//			}
-//		}
-//	}
-//}
+
+void HierarchyWidget::insertItem(QTreeWidgetItem* oldItem, QTreeWidgetItem* newItem)
+{
+	if (auto scene = GameEngine::get_instance().getCurrentScene();scene != nullptr)
+		scene->insertExistGameObject(((HierarchyItem*)oldItem)->gameObject, ((HierarchyItem*)newItem)->gameObject, BEFORE);
+	// 将老节点从老的父亲节点上面移除
+	if (auto oldParent = oldItem->parent();oldParent != nullptr)
+	{
+		auto index = oldParent->indexOfChild(oldItem);
+		oldParent->takeChild(index);
+	}
+	else
+	{
+		auto index = indexOfTopLevelItem(oldItem);
+		takeTopLevelItem(index);
+	}
+
+	// 将老节点插入到新节点上面
+	// 新的项目是根节点
+	if (newItem->parent() == nullptr) 
+	{
+		auto index = indexOfTopLevelItem(newItem);
+		insertTopLevelItem(index, oldItem); // 将老节点插入到新节点上面
+	}
+	else { //新的不是根节点
+		auto index = newItem->parent()->indexOfChild(newItem);
+		newItem->parent()->insertChild(index, oldItem);
+	}
+}
 
 void HierarchyWidget::refreshGameObject()
 {
@@ -193,20 +169,41 @@ void HierarchyWidget::refreshGameObject()
 }
 
 
-//void HierarchyWidget::mouseReleaseEvent(QMouseEvent* event)
-//{
-//	if (dragMode)// 拖拽状态成立
-//	{
-//		QTreeWidgetItem* curentItem = itemAt(event->pos());
-//		if (curentItem)
-//			insertItem(draggedItem, curentItem);//插入到当前项的上面
-//		dragMode = false;
-//	}
-//}
+void HierarchyWidget::mouseReleaseEvent(QMouseEvent* event)
+{
+	if (dragMode)// 拖拽状态成立
+	{
+		QTreeWidgetItem* item = itemAt(event->pos());
+		if (item != nullptr&& item!=draggedItem)
+		{
+			Debug::log("drag item is " + ((HierarchyItem*)draggedItem)->gameObject->get_name() + "  current item is " + item->text(0).toStdString());
+			insertItem(draggedItem, item);
+		}
+		dragMode = false;
+	}
+}
+
+void HierarchyWidget::mousePressEvent(QMouseEvent* event)
+{
+	QTreeWidget::mousePressEvent(event);
+	if (event->buttons() & Qt::LeftButton)
+	{
+		auto item = itemAt(event->pos());
+		if (item != nullptr)
+		{
+			setCurrentItem(item);
+		}
+		else
+		{
+			setCurrentItem(nullptr);
+		}
+	}
+}
 
 HierarchyWidget::HierarchyWidget(QWidget* parent):QTreeWidget(parent)
 {
 	gameobj_item_map = std::unordered_map<GameObject*, HierarchyItem*>();
+	dragMode = false;
 	connect(this, SIGNAL(itemSelectionChanged()),this, SLOT(onSelectionChanged()));	
 }
 
@@ -275,14 +272,13 @@ void HierarchyWidget::addGameObject(GameObject* gameobj, GameObject* parent, Ins
 
 void HierarchyWidget::mouseMoveEvent(QMouseEvent* event)
 {// 按下左键开始进入拖拽
-	if (event->buttons() & Qt::LeftButton)
+	if (event->buttons() & Qt::LeftButton && !dragMode)
 	{
 		draggedItem = currentItem();
 		if (draggedItem == nullptr)
 			return;
-		bool dragMode = true;
+		dragMode = true;
 	}
-	QTreeWidget::mouseMoveEvent(event);
 }
 
 void HierarchyWidget::showContextMenu(const QPoint& pos)
