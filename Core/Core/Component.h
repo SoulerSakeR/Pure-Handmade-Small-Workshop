@@ -46,6 +46,6 @@ public:
 
 protected:
 	bool enabled;
-	virtual void serialize(PHString&) = 0;
-	virtual void deserialize(std::stringstream& ss) = 0;
+	virtual void serialize(PHString& str);
+	virtual void deserialize(std::stringstream& ss);
 };

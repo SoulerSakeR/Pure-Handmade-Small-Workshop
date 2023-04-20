@@ -22,6 +22,10 @@ public:
 	// Inherited via Component
 	virtual void set_property(Property* property, void* value) override;
 	virtual void reset() override;
+
+	virtual void serialize(PHString&) override;
+	virtual void deserialize(std::stringstream& ss) override;
+
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices; 
 	Color32 color;

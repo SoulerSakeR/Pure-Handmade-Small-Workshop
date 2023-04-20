@@ -38,15 +38,14 @@ void Text::set_text(const std::string& text)
 void Text::serialize(PHString& str)
 {
 	str.appendLine(to_string((int)componentType));
+	IBoxResizable::serialize(str);
 	str.appendLine(text);
-	str.appendLine(size.tostring());
 }
 
 void Text::deserialize(std::stringstream& ss)
 {
+	IBoxResizable::deserialize(ss);
 	string line;
 	getline(ss, line);
 	text = line;
-	getline(ss, line);
-	set_size(Vector2D::fromString(line));
 }

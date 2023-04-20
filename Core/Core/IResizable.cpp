@@ -94,3 +94,17 @@ bool IBoxResizable::isHovered(Vector2D screenPos)
 	}
 	return false;
 }
+
+void IBoxResizable::serialize(PHString& str)
+{
+	IRenderable::serialize(str);
+	str.appendLine(size.tostring());
+}
+
+void IBoxResizable::deserialize(std::stringstream& ss)
+{
+	IRenderable::deserialize(ss);
+	string line;
+	getline(ss, line);
+	set_size(Vector2D::fromString(line));
+}

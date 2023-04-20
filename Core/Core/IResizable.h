@@ -26,6 +26,10 @@ public:
 	std::vector<Vertex> operatorVertices;
 	std::vector<unsigned int> borderIndices;
 protected:
+	// inherited from Component
+	virtual void serialize(PHString&) override;
+	virtual void deserialize(std::stringstream& ss) override;
+
 	Vector2D size;
 };
 

@@ -111,9 +111,9 @@ Camera::Camera(GameObject* gameObj,float viewWidth):IBoxResizable(gameObj)
 	view_width = viewWidth;
 	is_main_camera_ = false;
 	is_overlay_ = false;
-	properties.emplace("view_width",new Property("view width", &(this->view_width), Property::FLOAT,this));
-	properties.emplace("is_main_camera",new Property("is main camera", &(this->is_main_camera_), Property::BOOL,this));
-	properties.emplace("is _overlay_",new Property("is overlay", &(this->is_overlay_), Property::BOOL,this));
+	properties.emplace("view width",new Property("view width", &(this->view_width), Property::FLOAT,this));
+	properties.emplace("is main camera",new Property("is main camera", &(this->is_main_camera_), Property::BOOL,this));
+	properties.emplace("is overlay",new Property("is overlay", &(this->is_overlay_), Property::BOOL,this));
 	if (SceneMgr::get_instance().get_current_scene() != nullptr)
 	{
 		auto& cameras = SceneMgr::get_instance().cameras;
@@ -135,12 +135,15 @@ Camera::~Camera()
 void Camera::serialize(PHString& str)
 {
 	str.appendLine(std::to_string((int)componentType));
+	IBoxResizable::serialize(str);
 	str.appendLine(std::to_string(view_width));
 	str.appendLine(std::to_string(is_main_camera_));
+	str.appendLine(std::to_string(is_overlay_));
 }
 
 void Camera::deserialize(std::stringstream& ss)
 {
+	IBoxResizable::deserialize(ss);
 	std::string s;
 	std::getline(ss, s);
 	view_width = std::stof(s);
@@ -148,6 +151,8 @@ void Camera::deserialize(std::stringstream& ss)
 	is_main_camera_ = std::stoi(s);
 	if (is_main_camera_)
 		SceneMgr::get_instance().set_main_camera(*this);
+	std::getline(ss, s);
+	is_overlay_ = std::stoi(s);
 	if (SceneMgr::get_instance().get_current_scene() != nullptr)
 	{
 		auto& cameras = SceneMgr::get_instance().cameras;

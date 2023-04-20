@@ -74,3 +74,17 @@ void IRenderable::reset()
 		vertices.clear();
 	}
 }
+
+void IRenderable::serialize(PHString& str)
+{
+	Component::serialize(str);
+	str.appendLine(color.toString());
+}
+
+void IRenderable::deserialize(std::stringstream& ss)
+{
+	Component::deserialize(ss);
+	std::string line;
+	std::getline(ss, line);
+	color = Color32(line);
+}

@@ -29,15 +29,14 @@ void BoxCollider::set_property(Property* property, void* value)
 void BoxCollider::serialize(PHString& str)
 {
 	str.appendLine(to_string((int)componentType));
-	str.appendLine(size.tostring());
+	IBoxResizable::serialize(str);
 	str.appendLine(to_string(is_trigger_));
 }
 
 void BoxCollider::deserialize(std::stringstream& ss)
 {
+	IBoxResizable::deserialize(ss);
 	string s;
-	getline(ss, s);
-	size = Vector2D::fromString(s);
 	getline(ss, s);
 	is_trigger_ = stoi(s);
 }

@@ -49,8 +49,8 @@ Image::Image(GameObject* gameObj, const std::string& imgPath,Vector2D size):IBox
 void Image::serialize(PHString& str)
 {
 	str.appendLine(to_string((int)componentType));
+	IBoxResizable::serialize(str);
 	str.appendLine(imgPath);
-	str.appendLine(size.tostring());
 }
 
 
@@ -71,11 +71,10 @@ void Image::set_property(Property* property, void* value)
 
 void Image::deserialize(std::stringstream& ss)
 {
+	IBoxResizable::deserialize(ss);
 	string s;
 	getline(ss, s);
 	set_imgPath(s);
-	getline(ss, s);
-	size = Vector2D::fromString(s);
 }
 
 void Image::reset()

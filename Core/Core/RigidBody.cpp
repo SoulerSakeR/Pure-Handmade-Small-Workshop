@@ -58,6 +58,7 @@ void RigidBody::set_friction_ratio(float value)
 void RigidBody::serialize(PHString& str)
 {
 	str.appendLine(to_string((int)componentType));
+	Component::serialize(str);
 	str.appendLine(to_string( mass));
 	str.appendLine(velocity.tostring());
 	str.appendLine(acceleration.tostring());

@@ -1,5 +1,7 @@
 #include "Component.h"
 
+using namespace std;
+
 void Component::set_enabled(bool value)
 {
 	enabled = value;
@@ -43,4 +45,16 @@ std::string Component::getName(ComponentType type)
 		return "Unknown";
 		break;
 	}
+}
+
+void Component::serialize(PHString& str)
+{
+	str.appendLine(to_string(enabled));
+}
+
+void Component::deserialize(std::stringstream& ss)
+{
+	string s;
+	getline(ss, s);
+	enabled = stoi(s);
 }
