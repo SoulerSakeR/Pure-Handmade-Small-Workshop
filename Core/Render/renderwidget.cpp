@@ -522,6 +522,9 @@ void RenderWidget::renderText(Text* text, Camera* textCamera, bool visBorder)
 
 void RenderWidget::renderCameraBorder(Camera* target, Camera* renderCamera, bool visBorder)
 {
+	if(!visBorder)
+		return;
+
 	float cameraWidth = target->get_view_width();
 	// 换算opengl宽高比
 	float aspect = static_cast<float>(width()) / static_cast<float>(height());
@@ -724,6 +727,7 @@ void RenderWidget::renderFbo()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glActiveTexture(GL_TEXTURE0);
+	
 	if (!isGameWidget)
 		renderScene(mCamera);
 	else
@@ -735,6 +739,7 @@ void RenderWidget::renderFbo()
 	/*
 	if (frameCount % 200 == 0)
 	{
+		QString filePath = "E:/GroupProject/github/Pure-Handmade-Small-Workshop/output/imageFbo.png";
 		// 将渲染结果保存到 QImage 中
 		QImage image = fbo->toImage();
 		if (image.save(filePath, "PNG")) {
@@ -745,6 +750,7 @@ void RenderWidget::renderFbo()
 		}
 	}
 	*/
+	
 
 	fbo->release();
 }
@@ -770,8 +776,26 @@ void RenderWidget::renderFboOverlay()
 		{
 			renderScene(camera);
 		}
-		fboOverlay->release();
+		
 	}
+
+	fboOverlay->release();
+
+	/*
+	if (frameCount % 200 == 0)
+	{
+		QString filePath = "E:/GroupProject/github/Pure-Handmade-Small-Workshop/output/imageFboOverlay.png";
+		// 将渲染结果保存到 QImage 中
+		QImage image = fbo->toImage();
+		if (image.save(filePath, "PNG")) {
+			qDebug() << "Image saved successfully!";
+		}
+		else {
+			qDebug() << "Error saving image!";
+		}
+	}
+	*/
+
 }
 
 void RenderWidget::mixTexture()
@@ -826,10 +850,12 @@ void RenderWidget::mixTexture()
 	textureShaderProgram->setUniformValue("texture1", 1);
 	textureShaderProgram->setUniformValue("texture2", 2);
 
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, fbo->texture());
+	
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, fboOverlay->texture());
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, fbo->texture());
 
 	//enable alpha blending
 	glEnable(GL_BLEND);
