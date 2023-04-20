@@ -56,26 +56,31 @@ void RenderWidget::setWirefame(bool wireframe)
 
 void RenderWidget::renderGameobject(GameObject* gameobj, Camera* camera)
 {
+	bool visBorder = gameobj == getSelectedGameObject();
+
+
+	
 	if (camera == mCamera) // edit mode, render all components
 	{
 		if (auto img = gameobj->getComponent<Image>(); img != nullptr && img->get_enabled())
 		{
-			renderImage(img, camera);
+			renderImage(img, camera, visBorder);
 		}
 		if (auto boxCollider = gameobj->getComponent<BoxCollider>(); boxCollider != nullptr && boxCollider->get_enabled())
 		{
-			renderBoxCollider(boxCollider, camera);
+			renderBoxCollider(boxCollider, camera, visBorder);
 		}
 
 		if (auto text = gameobj->getComponent<Text>(); text != nullptr && text->get_enabled())
 		{
-			renderText(text, camera);
+			renderText(text, camera, visBorder);
 		}
 
+		
 		// camera border
-		if (auto target = gameobj->getComponent<Camera>(); camera != nullptr && camera->get_enabled())
+		if (auto target = gameobj->getComponent<Camera>(); target != nullptr && target->get_enabled())
 		{
-			renderCameraBorder(target, camera);
+			renderCameraBorder(target, camera, visBorder);
 		}
 		
 	}
@@ -83,12 +88,12 @@ void RenderWidget::renderGameobject(GameObject* gameobj, Camera* camera)
 	{
 		if (auto img = gameobj->getComponent<Image>(); img != nullptr && img->get_enabled())
 		{
-			renderImage(img, camera);
+			renderImage(img, camera, false);
 		}
 
 		if (auto text = gameobj->getComponent<Text>(); text != nullptr && text->get_enabled())
 		{
-			renderText(text, camera);
+			renderText(text, camera, false);
 		}
 
 	}
@@ -98,8 +103,11 @@ void RenderWidget::renderGameobject(GameObject* gameobj, Camera* camera)
 	// renderText();
 }
 
-void RenderWidget::renderBoxCollider(BoxCollider* box, Camera* boxColliderCamera)
+void RenderWidget::renderBoxCollider(BoxCollider* box, Camera* boxColliderCamera, bool visBorder)
 {
+	
+	if(!visBorder) 
+		return;	
 	if (box->vao == nullptr)
 	{
 		box->vao = new QOpenGLVertexArrayObject;
@@ -168,7 +176,7 @@ void RenderWidget::renderBoxCollider(BoxCollider* box, Camera* boxColliderCamera
 	box->vao->release();
 }
 
-void RenderWidget::renderImage(Image* img, Camera* imageCamera)
+void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 {
 	//bind vao if exist
 	if (img->vao == nullptr)
@@ -254,7 +262,7 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera)
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	img->ibo->release();
 	
-	if (imageCamera == mCamera)
+	if (imageCamera == mCamera && visBorder == true)
 	{
 		//draw border
 		if (img->borderIbo == nullptr)
@@ -280,7 +288,7 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera)
 		img->texture->release();
 }
 
-void RenderWidget::renderText(Text* text, Camera* textCamera)
+void RenderWidget::renderText(Text* text, Camera* textCamera, bool visBorder)
 {
 
 	// 获取纹理
@@ -408,7 +416,7 @@ void RenderWidget::renderText(Text* text, Camera* textCamera)
 	text->ibo->release();
 	
 	
-	if (textCamera == mCamera)
+	if (textCamera == mCamera && visBorder == true)
 	{
 		//draw border
 		if (text->borderIbo == nullptr)
@@ -440,9 +448,17 @@ void RenderWidget::renderText(Text* text, Camera* textCamera)
 
 // render camera border
 
-void RenderWidget::renderCameraBorder(Camera* target, Camera* renderCamera)
+void RenderWidget::renderCameraBorder(Camera* target, Camera* renderCamera, bool visBorder)
 {
-	/*
+	float cameraWidth = target->get_view_width();
+	// 换算opengl宽高比
+	float aspect = static_cast<float>(width()) / static_cast<float>(height());
+	// 计算camera的高
+	float cameraHeight = cameraWidth / aspect;
+	target->set_size(Vector2D(cameraWidth, cameraHeight));
+
+
+
 	if (target->vao == nullptr)
 	{
 		target->vao = new QOpenGLVertexArrayObject;
@@ -452,26 +468,22 @@ void RenderWidget::renderCameraBorder(Camera* target, Camera* renderCamera)
 		target->vbo->create();
 		target->vbo->bind();
 		target->vbo->allocate(target->vertices.data(), static_cast<int>(target->vertices.size() * sizeof(Vertex)));
-		target->ibo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
-		target->ibo->create();
-		target->ibo->bind();
-		target->ibo->allocate(target->indices.data(), static_cast<int>(target->indices.size() * sizeof(unsigned int)));
+		target->borderIbo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+		target->borderIbo->create();
+		target->borderIbo->bind();
+		target->borderIbo->allocate(target->borderIndices.data(), static_cast<int>(target->borderIndices.size() * sizeof(unsigned int)));
+		
 		cameraBorderShaderProgram->bind();
 		GLint posLocation = cameraBorderShaderProgram->attributeLocation("aPos");
-		GLint colorLocation = cameraBorderShaderProgram->attributeLocation("aColor");
-
+		
 		GLsizei stride = sizeof(Vertex);
 		//-----------------position--------------------//
 		//告知显卡如何解析缓冲里的属性值
 		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
 		//开启VAO管理的第一个属性值
 		glEnableVertexAttribArray(posLocation);
-		if (colorLocation)
-		{
-			//------------------Texture-----------------------//
-			glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
-			glEnableVertexAttribArray(colorLocation);
-		}
+
+		
 		target->vao->release();
 		target->vbo->release();
 		target->vbo->destroy();
@@ -479,7 +491,25 @@ void RenderWidget::renderCameraBorder(Camera* target, Camera* renderCamera)
 		target->vbo = nullptr;
 		
 	}
-	*/
+
+	auto matrix = renderCamera->CalculateProjectionMulViewMatrix();
+	auto transform = target->gameObject->transform;
+	matrix.translate(transform->getWorldPosition().toQVector3D());
+	matrix.rotate(transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
+	matrix.scale(transform->getWorldScale().toQVector3D(1.0f));
+
+	target->vao->bind();
+	cameraBorderShaderProgram->bind();
+	cameraBorderShaderProgram->setUniformValue("MVPMatrix", matrix);
+	cameraBorderShaderProgram->setUniformValue("color", target->color.red(), target->color.green(), target->color.blue(), target->color.alpha());
+	
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glLineWidth(3.0f);
+	
+	glDrawElements(GL_LINES, static_cast<GLsizei>(sizeof(unsigned int) * target->borderIndices.size()), GL_UNSIGNED_INT, 0);
+
+	target->vao->release();
 
 }
 
@@ -782,8 +812,8 @@ void RenderWidget::createCameraBorderProgram()
 	bool success;
 	cameraBorderShaderProgram = std::make_unique<QOpenGLShaderProgram>();
 	cameraBorderShaderProgram->create();
-	cameraBorderShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, QString::fromStdString(source_path + "\\shaders\\cameraBorderShader.vert"));
-	cameraBorderShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\cameraBorderShader.frag"));
+	cameraBorderShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, QString::fromStdString(source_path + "\\shaders\\cameraBorderShaders.vert"));
+	cameraBorderShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\cameraBorderShaders.frag"));
 	success = cameraBorderShaderProgram->link();
 	if (!success)
 		qDebug() << "ERR:" << cameraBorderShaderProgram->log();
@@ -911,6 +941,11 @@ void RenderWidget::wheelEvent(QWheelEvent* event)
 void RenderWidget::contextMenuEvent(QContextMenuEvent* event)
 {
 	event->accept();
+}
+
+GameObject* RenderWidget::getSelectedGameObject()
+{
+	return hierarchyWidget->selectedGameObject;
 }
 
 

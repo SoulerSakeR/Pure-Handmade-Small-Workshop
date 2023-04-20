@@ -22,6 +22,7 @@ RenderWindow::RenderWindow(QWidget *parent)
     , ui(new Ui::RenderWindow)
 {
     ui->setupUi(this);
+    ui->sceneWidget->hierarchyWidget = ui->hierarchy;
     // ui->hierarchy->ui = this;
     RenderWidget::sceneWidget = ui->sceneWidget;
     RenderWidget::gameWidget = ui->gameWidget;

@@ -15,7 +15,7 @@
 #include <Core/Core/Text.h>
 #include <QOpenGLFramebufferObject>
 #include <Core/Core/Camera.h>
-
+#include <Core/UI/HierarchyWidget.h>
 
 
 class RenderWidget : public QOpenGLWidget,public QOpenGLFunctions_3_3_Core
@@ -34,13 +34,14 @@ public:
 
     static RenderWidget& getSceneWidget(); 
     static RenderWidget& getGameWidget();
+    HierarchyWidget* hierarchyWidget;
   
     void renderScene(Camera* camera);
     void renderGameobject(GameObject* gameobj, Camera* camera);
-    void renderBoxCollider(BoxCollider* boxCollider, Camera* boxColliderCamera);
-    void renderImage(Image* image, Camera* imageCamera);
-    void renderText(Text* text, Camera* textCamera);
-    void renderCameraBorder(Camera* target, Camera* camera);
+    void renderBoxCollider(BoxCollider* boxCollider, Camera* boxColliderCamera, bool visBorder);
+    void renderImage(Image* image, Camera* imageCamera, bool visBorder);
+    void renderText(Text* text, Camera* textCamera, bool visBorder);
+    void renderCameraBorder(Camera* target, Camera* camera, bool visBorder);
     void renderFbo();
     void renderFboOverlay();
     void mixTexture();
@@ -52,6 +53,8 @@ public:
     void mousePressEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
     void contextMenuEvent(QContextMenuEvent* event) override;
+
+    GameObject* getSelectedGameObject();
 
     float moveSpeed;
     QPoint lastPos; // mouse location
@@ -74,6 +77,8 @@ private:
 
     static RenderWidget* sceneWidget;
     static RenderWidget* gameWidget;
+
+    
 
     std::unordered_map<std::string, QOpenGLTexture*>textures;
     
