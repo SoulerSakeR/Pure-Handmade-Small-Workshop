@@ -27,8 +27,19 @@ void Image::set_imgPath(const std::string& imgPath,bool refreshUI)
 			texture = nullptr;
 		}
 		set_size(Vector2D(img->width(), img->height()));
-	}	
-	onPropertyChange(properties["imgPath"]);
+	}
+	else
+	{
+		delete img;
+		img = nullptr;
+		if (texture != nullptr)
+		{
+			texture->destroy();
+			delete texture;
+			texture = nullptr;
+		}
+	}
+	onPropertyChange(properties["img path"]);
 }
 
 QImage* Image::get_img()
@@ -43,7 +54,7 @@ Image::Image(GameObject* gameObj, const std::string& imgPath,Vector2D size):IBox
 	this->size = size;
 	img = nullptr;
 	componentType = IMAGE;
-	properties.emplace("imgPath", new Property("imgPath", &(this->imgPath), Property::STRING,this));
+	properties.emplace("img path", new Property("img path", &(this->imgPath), Property::STRING,this));
 }
 
 void Image::serialize(PHString& str)
@@ -57,7 +68,7 @@ void Image::serialize(PHString& str)
 void Image::set_property(Property* property, void* value)
 {
 	IBoxResizable::set_property(property, value);
-	if (property->get_name() == "imgPath")
+	if (property->get_name() == "img path")
 	{
 		set_imgPath(*(string*)value,false);
 	}

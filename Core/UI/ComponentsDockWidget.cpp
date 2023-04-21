@@ -119,19 +119,19 @@ void ComponentsDockWidget::refresh()
 	
 	auto layout = new QGridLayout(groupBox);
 	layout->addWidget(new QLabel("name"), 0, 0);
-	auto lineEdit = new QLineEdit(selected_gameobject->name.c_str(),groupBox);
+	auto lineEdit = new QLineEdit(selected_gameobject->get_name().c_str(), groupBox);
 	layout->addWidget(lineEdit,0,1);
 	connect(lineEdit, &QLineEdit::editingFinished, [=]()
 	{
 		if (auto result = selected_gameobject->set_name(lineEdit->text().toStdString());!result.result)
 		{
-			lineEdit->setText(selected_gameobject->name.c_str());
+			lineEdit->setText(selected_gameobject->get_name().c_str());
 			lineEdit->selectAll();
 			Debug::warningBox(this, result.message);
 		}			
 		else
 		{
-			selected_gameobject->name = lineEdit->text().toStdString();
+			selected_gameobject->get_name() = lineEdit->text().toStdString();
 			hierarchy->refreshGameObject();
 		}
 	});

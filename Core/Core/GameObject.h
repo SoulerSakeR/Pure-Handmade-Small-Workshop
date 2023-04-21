@@ -13,38 +13,52 @@ class GameObject :
 public:
     //field
     bool isActive; //当前游戏对象的激活状态 需要绑定
-    std::string name; //名字 需要绑定
     Transform* transform; //游戏对象的transform组件 需要绑定
-    std::vector<Component*> components; //游戏对象的所有组件 需要绑定
-
+    std::vector<Component*> components; //游戏对象的所有组件
     //constructor
     GameObject(std::string name="",bool withTransform=true);   
 
-    //method
-    int getID(); //需要绑定
-    Result<void*> set_name(const std::string& name); //需要绑定
-    std::string get_tag(); //需要绑定
-    void set_tag(const std::string& tag); //需要绑定
-    std::string get_name();
-    Component* addComponent(Component::ComponentType type); 
+    //getters and setters
+    int getID();                                                                                            //需要绑定
+
+    std::string get_tag();                                                                             //需要绑定
+    void set_tag(const std::string& tag);                                                    //需要绑定
+
+    std::string get_name();                                                                         //需要绑定
+    Result<void*> set_name(const std::string& name);                            //需要绑定
+
+    //methods
+    Component* addComponent(Component::ComponentType type);   
     template <typename T>
     T* addComponent(); //需要绑定
+
     template <typename T>
     T* getComponent(); //需要绑定
     template <typename T>
     std::vector<T*> getComponents(); //需要绑定
     Component* getComponent(Component::ComponentType type);
+
     void removeComponent(Component* component); //需要绑定
     bool isRootGameObject(); //需要绑定
     void destroy(); //需要绑定
+    GameObject* clone(const std::string newName,GameObject* parent=nullptr); //需要绑定
 
-private:  
+    GameObject* find(const std::string& name); //需要绑定
+    std::vector<GameObject*> findTag(const std::string& tag); //需要绑定
+
+protected:  
     ~GameObject();
+    GameObject(const GameObject&) = delete;
+    GameObject& operator=(const GameObject&) = delete;
+
+    // Inherited via ISerializable
     void serialize(PHString& str) override;
-    void deserialize(std::stringstream& ss) override;   
+    void deserialize(std::stringstream& ss) override;
+
     static int idCount; //id计数器
     int id; //唯一id
     std::string tag;
+    std::string name;
 };
 
 /// <summary>

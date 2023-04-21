@@ -105,7 +105,7 @@ void HierarchyWidget::initContextMenu()
 	connect(copyBtn, &QAction::triggered, [=]() {
 		if (selectedItems().size() == 1)
 		{
-			//TODO: copy
+			needToBeCopiedGameObject = ((HierarchyItem*)selectedItems()[0])->gameObject;
 		}
 	});
 	QAction* pasteBtn = new QAction("paste", this);
@@ -113,7 +113,11 @@ void HierarchyWidget::initContextMenu()
 	connect(pasteBtn, &QAction::triggered, [=]() {
 		if (selectedItems().size() == 1)
 		{
-			//TODO: paste
+			auto item = (HierarchyItem*)selectedItems()[0];
+			if(needToBeCopiedGameObject == nullptr)
+				return;
+			auto gameobj = needToBeCopiedGameObject->clone(needToBeCopiedGameObject->get_name() + "_copy",item->gameObject);
+			item->addChild(new HierarchyItem(gameobj,this));
 		}
 	});
 	QAction* deleteBtn = new QAction("delete", this);
@@ -164,7 +168,7 @@ void HierarchyWidget::refreshGameObject()
 	if (selectedGameObject != nullptr)
 	{
 		auto item = gameobj_item_map[selectedGameObject];
-		item->setText(0, QString::fromStdString(selectedGameObject->name));
+		item->setText(0, QString::fromStdString(selectedGameObject->get_name()));
 	}
 }
 

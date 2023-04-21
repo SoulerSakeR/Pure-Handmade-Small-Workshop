@@ -42,6 +42,31 @@ Scene* SceneMgr::get_current_scene()
 	return current_scene;
 }
 
+bool SceneMgr::hasCurrentScene()
+{
+	return current_scene != nullptr;
+}
+
+GameObject* SceneMgr::findGameObjectByName(const std::string name)
+{
+	auto it = nameToGameObjects.find(name);
+	if (it != nameToGameObjects.end()&& it->second.size()>0)
+	{
+		return it->second[0];
+	}
+	return nullptr;
+}
+
+std::vector<GameObject*> SceneMgr::findGameObjectsByTag(const std::string tag)
+{
+	auto it = tagToGameObjects.find(tag);
+	if (it != tagToGameObjects.end())
+	{
+		return it->second;
+	}
+	return vector<GameObject*>();
+}
+
 void SceneMgr::addScene(const std::string& relativePath)
 {
 	scenes.push_back(relativePath);

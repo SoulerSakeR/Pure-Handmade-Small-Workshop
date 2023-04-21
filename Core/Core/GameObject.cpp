@@ -89,7 +89,7 @@ void GameObject::deserialize(std::stringstream& ss)
         {
             id = stoi(s.substr(11, s.size() - 1));
             getline(ss, s);
-            name = s;
+            set_name(s);
             getline(ss, s);
             isActive = (bool)stoi(s);
             getline(ss, s);
@@ -135,7 +135,7 @@ void GameObject::deserialize(std::stringstream& ss)
 GameObject::GameObject(string name,bool withTransform)
 {
     id = idCount + 1;
-    this->name = name+"_"+to_string(id);
+    this->name = name;
     tag = "Untagged";
     isActive = true;
     // TODO: 随机生成uuid   
@@ -249,6 +249,43 @@ void GameObject::destroy()
 {
     GameEngine::get_instance().deleteGameObject(this);
     delete this;
+}
+
+GameObject* GameObject::clone(const std::string newName, GameObject* parent)
+{
+    if(newName == name)
+    {
+		Debug::log("Can not clone game object with same name");
+		return nullptr;
+	}
+    GameObject* result = new GameObject(newName, false);
+    result->name = newName;
+    result->tag = tag;
+    result->isActive = isActive;
+    stringstream ss;
+    for (auto component : components)
+    {
+        ss.clear();		
+        PHString str;
+        component->serialize(str);
+        ss << str.str();
+        string line;
+        getline(ss, line);
+        Component* newComponent = result->addComponent(component->componentType);
+		newComponent->deserialize(ss);
+	}
+    SceneMgr::get_instance().current_scene->insertGameObject(*result,parent,INSIDE);
+    return result;
+}
+
+GameObject* GameObject::find(const std::string& name)
+{
+    return SceneMgr::get_instance().findGameObjectByName(name);
+}
+
+std::vector<GameObject*> GameObject::findTag(const std::string& tag)
+{
+    return SceneMgr::get_instance().findGameObjectsByTag(tag);
 }
 
 

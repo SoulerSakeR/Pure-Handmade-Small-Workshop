@@ -15,6 +15,9 @@ public:
 
 	Camera* get_main_camera();
 	Scene* get_current_scene();
+	bool hasCurrentScene();
+	GameObject* findGameObjectByName(const std::string name);
+	std::vector<GameObject*> findGameObjectsByTag(const std::string tag);
 	void addScene(const std::string& relativePath);
 	void set_main_camera(Camera& camera);
 	Scene* loadScene(int index);

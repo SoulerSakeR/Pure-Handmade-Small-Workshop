@@ -41,5 +41,6 @@ private:
 private:    
     QPoint startPos;
     QTreeWidgetItem* draggedItem;
+    GameObject* needToBeCopiedGameObject;
 };
 

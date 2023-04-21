@@ -3,7 +3,7 @@
 
 HierarchyItem::HierarchyItem(GameObject* gameObject, HierarchyWidget* tree) :gameObject(gameObject), tree(tree)
 {
-	setText(0, QString::fromStdString(gameObject->name));
+	setText(0, QString::fromStdString(gameObject->get_name()));
 	auto& map = tree->gameobj_item_map;
 	map.emplace(gameObject, this);
 	for (auto transform : gameObject->transform->children)
