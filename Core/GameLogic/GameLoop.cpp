@@ -37,8 +37,8 @@ void GameLoop::updateScene(RenderWidget* sceneWidget, RenderWidget* gameWidget) 
             }
             starttime = system_clock::now();
             sceneWidget->update();
-            //gameWidget->update();
 
+            //gameWidget->update();//到时候删掉
             updateGame(gameWidget);
             endtime = system_clock::now();
             //std::cout << "end_time：" << end_time << "\tstart_time" << start_time << std::endl;
@@ -84,6 +84,24 @@ void GameLoop::updateGame(RenderWidget* gameWidget) {
         // 等待一段时间，控制游戏速度
         endtime = system_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endtime - starttime);
+
+
+        //while (isRunning) {
+        //    // 计算每一帧的时间间隔
+
+        //    // 等待一段时间，控制游戏速度
+        //    endtime = system_clock::now();
+        //    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endtime - starttime);
+        //    if (duration.count() < 10) {
+        //        continue;//Sleep(1 - elapsed_time);
+        //    }
+        //    starttime = system_clock::now();
+
+        //    //gameWidget->update();//到时候删掉
+        //    endtime = system_clock::now();
+        //    //std::cout << "end_time：" << end_time << "\tstart_time" << start_time << std::endl;
+        //}
+
 
         //游戏帧率100
         starttime = system_clock::now();
