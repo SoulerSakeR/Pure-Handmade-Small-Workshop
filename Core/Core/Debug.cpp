@@ -7,12 +7,18 @@
 const std::string& infoPrefix = "[info] ";
 const std::string& errorPrefix = "[error] ";
 
-void Debug::log(const std::string& info)
+Debug::Debug(bool isInfo, bool isError)
+{
+	this->isInfo = isInfo;
+	this->isError = isError;
+}
+
+Debug Debug::log(const std::string& info)
 {	
+	if (info.empty())
+		return Debug();
 #ifndef NDEBUG 
 	std::string text = info;
-	if (text.back() != '\n')
-		text.append("\n");
 #ifdef LOG_TO_CONSOLE	
 	Log2Console(text);
 #endif // LOG_TO_CONSOLE
@@ -25,21 +31,38 @@ void Debug::log(const std::string& info)
 	
 }
 
-
-
-void Debug::logError(const std::string& errorInfo)
+Debug Debug::logError(const std::string& error)
 {
-	log(errorPrefix + errorInfo);
+	if(error.empty())
+		return Debug(false,true);
+	log(errorPrefix + error);
 }
 
-void Debug::logInfo(const std::string& info)
+Debug Debug::logInfo(const std::string& info)
 {
+	if(info.empty())
+		return Debug(true,false);
 	log(infoPrefix + info);
 }
 
 void Debug::warningBox(QWidget* parent, const std::string& info)
 {
 	QMessageBox::warning(parent, QString::fromStdString("Warning"), QString::fromStdString(info), QMessageBox::Ok);
+}
+
+Debug& Debug::operator<<(const std::string& info)
+{
+	if (usePrefix)
+	{
+		if (isError)
+			logError(info);
+		else if (isInfo)
+			logInfo(info);
+		usePrefix = false;
+	}
+	else
+		log(info);
+	return *this;
 }
 
 LPWSTR Debug::string2Lpwstr(const std::string& str)
@@ -63,5 +86,4 @@ void Debug::Log2OutputWindow(const std::string& text)
 	OutputDebugString(str);
 	delete str;
 }
-
 
