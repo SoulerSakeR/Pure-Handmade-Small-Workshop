@@ -1,65 +1,32 @@
-/* 设置主窗口背景颜色 */
-QWidget {
-    background-color: #333333;
+QMainWindow
+{
+     background-color: #404040;
+     border-top:2px;
+     border-bottom:2px;
+     border-left:2px;
+     border-right:2px;
 }
-
-/* 设置标签颜色 */
-QLabel {
-    color: #ffffff;
+ 
+QLineEdit 
+{
+     background-color: #404040; 
+     border: 1px solid black;
+     border-radius:5;
+     font:14px;
 }
-
-/* 设置文本框颜色 */
-QLineEdit {
-    background-color: #ffffff;
-    color: #111111;
+ 
+QLabel
+{
+     background-color: #404040; 
+     font:14px;
+     color: white;
 }
-
-/* 设置按钮颜色 */
-QPushButton {
-    background-color: #666666;
-    color: #ffffff;
+ 
+QPushButton
+{
+    color:green;    
+    font:18px, "微软雅黑";
+    background-color:rgb(0,223,223);
+    border-radius:10px;
 }
-
-/* 设置下拉框颜色 */
-QComboBox {
-    background-color: #ffffff;
-    color: #000000;
-}
-
-/* 设置列表颜色 */
-QListWidget {
-    background-color: #ffffff;
-    color: #000000;
-}
-
-/* 设置滚动条颜色 */
-QScrollBar {
-    background-color: #666666;
-}
-
-/* 设置滚动条的按钮颜色 */
-QScrollBar::sub-page {
-    background-color: #333333;
-}
-
-/* 设置滚动条的滑块颜色 */
-QScrollBar::handle {
-    background-color: #666666;
-}
-
-/* 设置菜单颜色 */
-QMenu {
-    background-color: #333333;
-    color: #ffffff;
-}
-
-/* 设置菜单项颜色 */
-QMenu::item {
-    background-color: #333333;
-    color: #ffffff;
-}
-
-/* 设置菜单项被选中时的颜色 */
-QMenu::item:selected {
-    background-color: #666666;
-}
+ 

@@ -26,16 +26,16 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     QApplication a(argc, argv);
 
-    // 加载样式表文件
-    /*QFile file("./style.qss");
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QTextStream stream(&file);
-        a.setStyleSheet(stream.readAll());
-        file.close();
-    }
-    else {
-        qDebug() << "Failed to load stylesheet file!";
-    }*/
+    //// 加载样式表文件
+    //QFile file("./style.qss");
+    //if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    //    QTextStream stream(&file);
+    //    a.setStyleSheet(stream.readAll());
+    //    file.close();
+    //}
+    //else {
+    //    qDebug() << "Failed to load stylesheet file!";
+    //}
 
     auto flag = a.testAttribute(Qt::AA_ShareOpenGLContexts);
 
