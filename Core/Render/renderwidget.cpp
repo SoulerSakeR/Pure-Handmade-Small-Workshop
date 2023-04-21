@@ -1047,11 +1047,51 @@ void RenderWidget::mouseReleaseEvent(QMouseEvent* event)
 
 void RenderWidget::mouseDoubleClickEvent(QMouseEvent* event)
 {
+	/*
+	auto scene = SceneMgr::get_instance().get_current_scene();
+	if (scene == nullptr || scene->getRootGameObjs().size() == 0 || mCamera == nullptr)
+		return;
+	for (auto& pair : scene->getAllGameObjsByDepth())
+	{
+		if (pair.second->isActive)
+			renderGameobject(pair.second, camera);
+	}
+
+	auto transform = img->gameObject->transform;
+	matrix.translate(transform->getWorldPosition().toQVector3D());
+	matrix.rotate(transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
+	matrix.scale(transform->getWorldScale().toQVector3D(1.0f));
+
+
+	*/
+
+
 	if (event->button() == Qt::LeftButton)
 	{
-		doubleClickPos = event->pos();
-		qDebug() << "Double clicked at position: " << doubleClickPos.x() << ", " << doubleClickPos.y();
+		Vector2D pos = Vector2D(event->localPos().x(), size().height() - event->localPos().y());
+		
+		/*
+		Debug::log("\n""mouse position:" + pos.tostring());
+		if (SceneMgr::get_instance().get_main_camera() != nullptr)
+			Debug::log("\n""camera position:" + mCamera->screenToWorld(pos).tostring());
+		*/	
+
+		auto selectedGameObjects = hitRay(pos);
+
+		if (selectedGameObjects.size() == 0)
+		{
+			hierarchyWidget->setCurrentItem(nullptr);
+			return;
+		}
+		
+		auto gameObject = selectedGameObjects[0];
+
+		hierarchyWidget->setCurrentItem(hierarchyWidget->gameobj_item_map[gameObject]);
+
 	}
+
+	
+
 
 }
 
@@ -1085,9 +1125,47 @@ void RenderWidget::contextMenuEvent(QContextMenuEvent* event)
 	event->accept();
 }
 
+std::vector<GameObject*> RenderWidget::hitRay(Vector2D screenPos)
+{
+	std::vector<GameObject*> selectedGameObjects;
+
+	auto cameraPos = mCamera->screenToWorld(screenPos);
+
+	for (auto& gameObject : SceneMgr::get_instance().get_current_scene()->getAllGameObjs())
+	{
+		QMatrix4x4 matrix;
+		auto transform = gameObject.second->transform;
+		matrix.translate(transform->getWorldPosition().toQVector3D());
+		matrix.rotate(transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
+		matrix.scale(transform->getWorldScale().toQVector3D(1.0f));
+
+		Vector2D center = Vector2D(0.f, 0.f);
+		if (auto box = gameObject.second->getComponent<IBoxResizable>(); box != nullptr)
+		{
+			auto leftX = box->vertices[2].position[0];
+			auto rightX = box->vertices[0].position[0];
+
+			auto topY = box->vertices[0].position[1];
+			auto bottomY = box->vertices[2].position[1];
+
+			leftX = (matrix * QVector4D(leftX, 0.f, 0.f, 1.f)).toVector2DAffine().x();
+			rightX = (matrix * QVector4D(rightX, 0.f, 0.f, 1.f)).toVector2DAffine().x();
+			topY = (matrix * QVector4D(0.f, topY, 0.f, 1.f)).toVector2DAffine().y();
+			bottomY = (matrix * QVector4D(0.f, bottomY, 0.f, 1.f)).toVector2DAffine().y();
+
+			if (cameraPos.x >= leftX && cameraPos.x <= rightX && cameraPos.y >= bottomY && cameraPos.y <= topY)
+			{
+				selectedGameObjects.push_back(gameObject.second);
+			}
+		}
+	}
+	return selectedGameObjects;
+
+}
+
 GameObject* RenderWidget::getSelectedGameObject()
 {
-	return hierarchyWidget->selectedGameObject;
+	return hierarchyWidget->selectedGameObject;	
 }
 
 

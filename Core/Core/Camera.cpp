@@ -47,7 +47,7 @@ QMatrix4x4 Camera::CalculateProjectionMulViewMatrix()
 	return result;
 }
 
-Vector2D Camera::screenToWorld(Vector2D screenPos)
+Vector2D Camera::screenToWorld(Vector2D screenPos) // camera rotaion todo
 {
 	Vector2D res = GameEngine::get_instance().get_resolution();
 	auto ratio = view_width /res.x ;
@@ -57,7 +57,7 @@ Vector2D Camera::screenToWorld(Vector2D screenPos)
 	return origin2leftBottom + leftBottom2point;
 }
 
-Vector2D Camera::WorldToScreen(Vector2D worldPos)
+Vector2D Camera::WorldToScreen(Vector2D worldPos) // bug
 {
 	auto matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
 	matrix.translate(worldPos.toQVector3D());

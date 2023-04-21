@@ -55,6 +55,8 @@ public:
     void mouseDoubleClickEvent(QMouseEvent* event) override;
     void contextMenuEvent(QContextMenuEvent* event) override;
 
+    std::vector<GameObject*> hitRay(Vector2D screenPos);
+
     GameObject* getSelectedGameObject();
 
     float moveSpeed;
