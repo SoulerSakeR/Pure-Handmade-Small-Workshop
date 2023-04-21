@@ -1024,11 +1024,16 @@ void RenderWidget::mouseMoveEvent(QMouseEvent* event)
 void RenderWidget::mousePressEvent(QMouseEvent* event)
 {
 	
-
 	if (event->button() == Qt::RightButton)
 	{
 		lastPos = event->pos();
 		
+	}
+
+	if (event->button() == Qt::LeftButton)
+	{
+		lastPos = event->pos();
+
 	}
 }
 
@@ -1039,6 +1044,17 @@ void RenderWidget::mouseReleaseEvent(QMouseEvent* event)
 		event->ignore();
 	}
 }
+
+void RenderWidget::mouseDoubleClickEvent(QMouseEvent* event)
+{
+	if (event->button() == Qt::LeftButton)
+	{
+		doubleClickPos = event->pos();
+		qDebug() << "Double clicked at position: " << doubleClickPos.x() << ", " << doubleClickPos.y();
+	}
+
+}
+
 
 
 
