@@ -45,7 +45,7 @@ public:
         //输出数据信息-测试用
     
 
-    void update(float deltaTime, RenderWidget* sceneWidget, RenderWidget* gameWidget);
+    void updateGame(RenderWidget* gameWidget);
         // 游戏逻辑更新函数，每帧调用一次
         //updatePlayer(deltaTime);
         //updateScene(Rwg);

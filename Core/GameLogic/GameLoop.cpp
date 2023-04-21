@@ -23,8 +23,7 @@ void GameLoop::updateScene(RenderWidget* sceneWidget, RenderWidget* gameWidget) 
         // 获取场景信息(光夫哥)并且进行渲染（敬哥）
         // ...       
             // 游戏循环
-        DWORD start_time = GetTickCount();
-        DWORD end_time = GetTickCount();
+
         auto starttime= system_clock::now();
         auto endtime = system_clock::now();
         while (isRunning) {
@@ -38,7 +37,9 @@ void GameLoop::updateScene(RenderWidget* sceneWidget, RenderWidget* gameWidget) 
             }
             starttime = system_clock::now();
             sceneWidget->update();
-            gameWidget->update();
+            //gameWidget->update();
+
+            updateGame(gameWidget);
             endtime = system_clock::now();
             //std::cout << "end_time：" << end_time << "\tstart_time" << start_time << std::endl;
         }
@@ -74,19 +75,38 @@ void updateScripts(float deltaTime) {
 */
 
 
-void GameLoop::update(float deltaTime, RenderWidget* sceneWidget, RenderWidget* gameWidget) {
+void GameLoop::updateGame(RenderWidget* gameWidget) {
 
+    auto starttime = system_clock::now();
+    auto endtime = system_clock::now();
+        // 计算每一帧的时间间隔
 
+        // 等待一段时间，控制游戏速度
+        endtime = system_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endtime - starttime);
+
+        //游戏帧率100
+        starttime = system_clock::now();
+
+        gameWidget->update();
+
+        endtime = system_clock::now();
+        //std::cout << "end_time：" << end_time << "\tstart_time" << start_time << std::endl;
+
+    /*
     lua.open_libraries(sol::lib::base);// 打开所需的Lua库void GameLoop::update(float deltaTime, RenderWidget* Rwg) {
 
     // 预加载脚本文件
     preloadScriptFiles();
 
+    
         // 游戏逻辑更新函数，每帧调用一次
         updatePlayer(deltaTime);
         updateScene(sceneWidget, gameWidget);
         updateGameState(deltaTime);
         printDataInfo(deltaTime);
+    */
+
     }
 
 // 获得这个Player的指针
