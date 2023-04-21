@@ -169,6 +169,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 绑定 QListWidget 的 customContextMenuRequested 信号与 MainWindow 的 showContextMenu 槽函数
     QObject::connect(this, &QListWidget::customContextMenuRequested, this, &MainWindow::showContextMenu);
+
+    // 点击播放后切换到game选项卡
+    connect(ui->pushButton, &QPushButton::clicked, [=]() {
+        ui->tabWidget->setCurrentIndex(1);
+        });
 }
 
 MainWindow::~MainWindow()
