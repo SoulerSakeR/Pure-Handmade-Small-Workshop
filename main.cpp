@@ -22,23 +22,21 @@ class GameLoop;
 
 int main(int argc, char *argv[])
 { 
-    
-
-    //std::chrono::time_point<std::chrono::system_clock> start, end;
-    //start = std::chrono::system_clock::now();
-
-    //WaveFunctionCollapse::read_config_file("samples.xml");
-
-    //end = std::chrono::system_clock::now();
-    //auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-    //std::cout << "All samples done in " << elapsed_ms << "ms.\n";
-
-	//WaveFunctionCollapse::run_overlapping("samples/Flowers.png", "wfc_results/", 256, 32, 3, true, true, true, 2, 1);
-
-
     QLoggingCategory::setFilterRules(QStringLiteral("qt.gui.imageio=false")); // 关闭图片格式警告
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     QApplication a(argc, argv);
+
+    // 加载样式表文件
+    /*QFile file("./style.qss");
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream stream(&file);
+        a.setStyleSheet(stream.readAll());
+        file.close();
+    }
+    else {
+        qDebug() << "Failed to load stylesheet file!";
+    }*/
+
     auto flag = a.testAttribute(Qt::AA_ShareOpenGLContexts);
 
     MainWindow w;

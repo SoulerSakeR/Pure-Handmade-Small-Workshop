@@ -25,7 +25,6 @@ CreateProjectDialog::CreateProjectDialog(QWidget* parent)
     setLayout(layout);
 }
 
-
 QString CreateProjectDialog::getProjectName() const
 {
     return m_projectNameLineEdit->text();
@@ -42,6 +41,7 @@ void CreateProjectDialog::browseProjectLocation()
     if (!directory.isEmpty())
         m_projectLocationLineEdit->setText(directory);
 }
+
 void CreateProjectDialog::createProject()
 {
     GameEngine::get_instance().creatGameProject(getProjectName().toStdString(), getProjectLocation().toStdString());
