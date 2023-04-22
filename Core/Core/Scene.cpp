@@ -25,7 +25,7 @@ Result<void*> Scene::renameGameObject(GameObject* gameObject, std::string newNam
 	if (gameObject == nullptr)
 		return Result<void*>(false,"gameObject is nullptr");
 	
-	// 移除旧名字的引用
+	// Removing references to old names
 	SceneMgr::get_instance().nameToGameObjects_remove(gameObject->get_name(), gameObject);
 	if (auto it = allGameObjsByName.find(gameObject->name); it != allGameObjsByName.end())
 	{
@@ -37,7 +37,7 @@ Result<void*> Scene::renameGameObject(GameObject* gameObject, std::string newNam
 		}
 	}
 
-	// 添加新名字的引用
+	// Adding a reference to a new name
 	if (auto it = allGameObjsByName.find(newName); it != allGameObjsByName.end())
 	{
 		it->second.push_back(gameObject);
