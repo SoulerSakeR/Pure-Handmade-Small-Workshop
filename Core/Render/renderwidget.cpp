@@ -1117,7 +1117,8 @@ void RenderWidget::mouseDoubleClickEvent(QMouseEvent* event)
 		
 		auto gameObject = selectedGameObjects[0];
 
-		hierarchyWidget->setCurrentItem(hierarchyWidget->gameobj_item_map[gameObject]);
+		if(gameObject->getComponent<Camera>()==nullptr)
+			hierarchyWidget->setCurrentItem(hierarchyWidget->gameobj_item_map[gameObject]);
 
 	}
 
