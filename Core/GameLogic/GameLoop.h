@@ -32,7 +32,7 @@ public:
         // TODO:更新Player的位置
 
 
-    void updateScene(RenderWidget* sceneWidget, RenderWidget* gameWidget);
+    void updateScene(RenderWidget* aWidget);
         // 更新游戏引擎中的场景信息-（已完成？）
 
 

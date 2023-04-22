@@ -31,8 +31,10 @@ bool GameProject::openScene(int index)
 		currentScene = SceneMgr::get_instance().loadScene(index);
 		GameEngine::get_instance().refreshHierarchy();
 		GameEngine::get_instance().gameLoop = new GameLoop();
-		auto loop = std::bind(&GameLoop::updateScene, GameEngine::get_instance().gameLoop, &RenderWidget::getSceneWidget(), &RenderWidget::getGameWidget());
-		GameEngine::get_instance().pool.enqueue(loop);
+		auto renderLoop = std::bind(&GameLoop::updateScene, GameEngine::get_instance().gameLoop, &RenderWidget::getSceneWidget());
+		GameEngine::get_instance().pool.enqueue(renderLoop);
+		auto gameLoop = std::bind(&GameLoop::updateScene, GameEngine::get_instance().gameLoop, &RenderWidget::getGameWidget());
+		GameEngine::get_instance().pool.enqueue(gameLoop);
 		return true;
 	}	
 }
@@ -47,8 +49,10 @@ bool GameProject::openScene(const std::string& name)
 			currentScene = SceneMgr::get_instance().loadScene(path.getNewPath());
 			GameEngine::get_instance().refreshHierarchy();
 			GameEngine::get_instance().gameLoop = new GameLoop();
-			auto loop = std::bind(&GameLoop::updateScene, GameEngine::get_instance().gameLoop, &RenderWidget::getSceneWidget(), &RenderWidget::getGameWidget());
-			GameEngine::get_instance().pool.enqueue(loop);
+			auto renderLoop = std::bind(&GameLoop::updateScene, GameEngine::get_instance().gameLoop, &RenderWidget::getSceneWidget());
+			GameEngine::get_instance().pool.enqueue(renderLoop);
+			auto gameLoop = std::bind(&GameLoop::updateScene, GameEngine::get_instance().gameLoop, &RenderWidget::getGameWidget());
+			GameEngine::get_instance().pool.enqueue(gameLoop);
 			return true;
 		}
 	}
@@ -60,8 +64,10 @@ bool GameProject::openScene(Scene* scene)
 {
 	GameEngine::get_instance().refreshHierarchy();
 	GameEngine::get_instance().gameLoop = new GameLoop();
-	auto loop = std::bind(&GameLoop::updateScene, GameEngine::get_instance().gameLoop, &RenderWidget::getSceneWidget(), &RenderWidget::getGameWidget());
-	GameEngine::get_instance().pool.enqueue(loop);
+	auto renderLoop = std::bind(&GameLoop::updateScene, GameEngine::get_instance().gameLoop, &RenderWidget::getSceneWidget());
+	GameEngine::get_instance().pool.enqueue(renderLoop);
+	auto gameLoop = std::bind(&GameLoop::updateScene, GameEngine::get_instance().gameLoop, &RenderWidget::getGameWidget());
+	GameEngine::get_instance().pool.enqueue(gameLoop);
 	return true;
 }
 
@@ -90,8 +96,10 @@ bool GameProject::importScene(const std::string& path)
 {
 	currentScene = SceneMgr::get_instance().loadScene(path);
 	GameEngine::get_instance().refreshHierarchy();
-	auto loop = std::bind(&GameLoop::updateScene, new GameLoop(), &RenderWidget::getSceneWidget(), &RenderWidget::getGameWidget());
-	GameEngine::get_instance().pool.enqueue(loop);
+	auto renderLoop = std::bind(&GameLoop::updateScene, GameEngine::get_instance().gameLoop, &RenderWidget::getSceneWidget());
+	GameEngine::get_instance().pool.enqueue(renderLoop);
+	auto gameLoop = std::bind(&GameLoop::updateScene, GameEngine::get_instance().gameLoop, &RenderWidget::getGameWidget());
+	GameEngine::get_instance().pool.enqueue(gameLoop);
 	return true;
 }
 

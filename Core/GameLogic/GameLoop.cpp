@@ -18,7 +18,7 @@ void GameLoop::updatePlayer(float deltaTime) {
 
     }
 
-void GameLoop::updateScene(RenderWidget* sceneWidget, RenderWidget* gameWidget) {
+void GameLoop::updateScene(RenderWidget* aWidget) {
         // 更新场景信息-需要和光夫哥和敬哥对接
         // 获取场景信息(光夫哥)并且进行渲染（敬哥）
         // ...       
@@ -35,11 +35,10 @@ void GameLoop::updateScene(RenderWidget* sceneWidget, RenderWidget* gameWidget) 
             if (duration.count() < 10) {
                 continue;//Sleep(1 - elapsed_time);
             }
-            starttime = system_clock::now();
-            sceneWidget->update();
-
-            //gameWidget->update();//到时候删掉
-            updateGame(gameWidget);
+            starttime = system_clock::now();           
+            if(aWidget->isGameWidget)
+                 updateGame(aWidget);
+            aWidget->update();
             endtime = system_clock::now();
             //std::cout << "end_time：" << end_time << "\tstart_time" << start_time << std::endl;
         }
