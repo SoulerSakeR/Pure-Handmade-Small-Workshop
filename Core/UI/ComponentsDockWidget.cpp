@@ -34,7 +34,6 @@ void clearLayout(QLayout* layout)
 
 		if (QSpacerItem* spaerItem = item->spacerItem())
 			layout->removeItem(spaerItem);
-
 		delete item;
 	}
 }

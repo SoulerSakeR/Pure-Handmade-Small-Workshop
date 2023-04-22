@@ -16,12 +16,16 @@
 #include <QMessageBox>
 #include "Core/UI/AddSceneDialog.h"
 #include "Core/GameLogic/GameLoop.h"
+#include "RenderSettingDialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    // 初始化菜单栏
+    initMenuBar();
 
     // 将 sceneWidget 中的 hierarchyWidget 指针指向 ui->hierarchy
     ui->sceneWidget->hierarchyWidget = ui->hierarchy;
@@ -145,11 +149,11 @@ MainWindow::MainWindow(QWidget *parent)
         {
             auto item = (HierarchyItem*)(ui->hierarchy->selectedItems()[0]);
             auto parent = item->gameObject;
-            auto& gameobj = GameEngine::get_instance().addGameObject("Image", parent, Component::IMAGE,INSIDE);
+            GameEngine::get_instance().addGameObject("Image", parent, Component::IMAGE,INSIDE);
         }
         else
         {
-            auto& gameobj = GameEngine::get_instance().addGameObject("Image", nullptr, Component::IMAGE);
+            GameEngine::get_instance().addGameObject("Image", nullptr, Component::IMAGE);
         }
         
     });
@@ -351,5 +355,24 @@ void MainWindow::closeEvent(QCloseEvent* event)
             event->ignore();
         }
     }
+}
+
+void MainWindow::initMenuSettings()
+{
+    connect(ui->actionRenderSetting, &QAction::triggered, [=]()
+    {
+        if (GameEngine::get_instance().gameProject == nullptr)
+        {
+			Debug::warningBox(this,"Please create a project first!");
+			return;
+		}
+        RenderSettingDialog* renderSettingDialog = new RenderSettingDialog(this);
+		renderSettingDialog->show();
+    });
+}
+
+void MainWindow::initMenuBar()
+{
+    initMenuSettings();
 }
 

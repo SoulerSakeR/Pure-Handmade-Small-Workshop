@@ -625,11 +625,21 @@ void RenderWidget::renderScene(Camera* camera)
 	auto scene = SceneMgr::get_instance().get_current_scene();
 	if ( scene == nullptr || scene->getRootGameObjs().size() == 0 || mCamera == nullptr)
 		return;
+	for (auto& layer : SceneMgr::get_instance().get_render_setting()->render_order_map)
+	{
+		for (auto& obj : layer.second)
+		{
+			if (obj->isActive)
+				renderGameobject(obj, camera);
+		}
+	}
+	/*
 	for (auto& pair : scene->getAllGameObjsByDepth())
 	{
 		if (pair.second->isActive)
 			renderGameobject(pair.second, camera);
 	}
+	*/
 }
 
 
@@ -688,6 +698,14 @@ void RenderWidget::paintGL()
 	renderFbo();
 	renderFboOverlay();
 	mixTexture();
+
+	//update scene render order
+	if (auto renderSetting = SceneMgr::get_instance().get_render_setting();renderSetting != nullptr && renderSetting->refresh_later)
+	{
+		renderSetting->refreshAll();
+		renderSetting->refresh_later = false;
+	}
+
 	if(widgetChanged)
 		widgetChanged = false;
 }
@@ -1114,17 +1132,35 @@ void RenderWidget::mouseDoubleClickEvent(QMouseEvent* event)
 			hierarchyWidget->setCurrentItem(nullptr);
 			return;
 		}
-		
-		auto gameObject = selectedGameObjects[0];
-
-		if(gameObject->getComponent<Camera>()==nullptr)
+		GameObject* gameObject = nullptr;
+		int layer = 0;
+		int index = 0;
+		for (auto obj : selectedGameObjects)
+		{
+			if (auto renderer = obj->getComponent<Renderer>();obj->getComponent<Camera>() == nullptr &&  renderer!=nullptr)
+			{
+				if (auto order = renderer->get_render_layer();order > layer)
+				{
+					layer = order;
+					index = renderer->get_render_order();
+					gameObject = obj;
+					
+				}
+				else if (renderer->get_render_layer() == layer)
+				{
+					if (auto order = renderer->get_render_order();order > index)
+					{
+						gameObject = obj;
+						index = order;
+					}
+				}
+			}
+		}
+		if (gameObject != nullptr)
 			hierarchyWidget->setCurrentItem(hierarchyWidget->gameobj_item_map[gameObject]);
-
+		else
+			hierarchyWidget->setCurrentItem(nullptr);
 	}
-
-	
-
-
 }
 
 

@@ -32,6 +32,8 @@ protected:
     void closeEvent(QCloseEvent* event) override;
 
 private:
+    void initMenuSettings();
+    void initMenuBar();
     Ui::MainWindow *ui;
     QFileSystemModel* fileModel;
 };

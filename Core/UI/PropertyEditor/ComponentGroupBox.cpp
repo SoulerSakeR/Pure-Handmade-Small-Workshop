@@ -8,6 +8,7 @@
 #include "Vector2DLineEdit.h"
 #include "DeleteComponentButton.h"
 #include "ColorPaletteWidget.h"
+#include "LayerComboBox.h"
 
 ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGroupBox(parent), component(component)
 {
@@ -84,6 +85,17 @@ ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGr
 			widget->Object_Property_map[ColorPaletteWidegt] = property;
 			widget->property_Object_map[property] = ColorPaletteWidegt;
 			connect(ColorPaletteWidegt, &ColorPaletteWidget::colorChanged, widget, &ComponentsDockWidget::onColorChanged);
+			break;
+		}
+		case Property::COMBO_BOX:
+		{
+			auto comboBox = new LayerComboBox();
+			comboBox->setCurrentIndex(property->get_data<int>());
+			layout->addWidget(comboBox, row, 1);
+			widget->Object_Property_map[comboBox] = property;
+			widget->property_Object_map[property] = comboBox;
+			connect(comboBox, &QComboBox::currentIndexChanged, widget, &ComponentsDockWidget::onIntChanged);
+			break;
 		}
 		}
 		row++;

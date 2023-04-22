@@ -14,7 +14,7 @@ const std::string sceneExtensionName = ".scene";
 const std::string gameProjectPrefix = "GameProject:";
 const std::string gameProjectPostfix = "GameProject:";
 const std::string scenePrefix = "Scene:";
-const std::string sceneProjectPostfix = "SceneEnd:";
+const std::string SCENE_POSTFIX = "SceneEnd";
 
 GameProject::GameProject(const string& name,const string& path, bool initDefaultScene):name(name), path(path)
 {
@@ -154,7 +154,7 @@ void GameProject::deserializeTest(std::stringstream& ss, const std::string** sce
 						scenes.push_back(scene);
 					}
 				}
-			} while (ss.good() && s != sceneProjectPostfix);
+			} while (ss.good() && s != SCENE_POSTFIX);
 		}
 	} while (ss.good() && s != gameProjectPostfix);
 }
@@ -162,6 +162,7 @@ void GameProject::deserializeTest(std::stringstream& ss, const std::string** sce
 
 void GameProject::deserialize(std::stringstream& ss)
 {
+	bool skipLine = false;
 	string s;
 	do 
 	{
@@ -172,7 +173,7 @@ void GameProject::deserialize(std::stringstream& ss)
 			name = s.substr(index + gameProjectPrefix.size(), s.size() - 1);
 			getline(ss, s);
 			path = s;
-			do
+			do //deserialize scenes
 			{
 				getline(ss, s);
 				auto index = s.find(scenePrefix);
@@ -186,7 +187,36 @@ void GameProject::deserialize(std::stringstream& ss)
 						SceneMgr::get_instance().addScene(s);
 					}
 				}
-			} while (ss.good() && s != sceneProjectPostfix);
+				else if(s != SCENE_POSTFIX)
+				{
+					skipLine = true;
+					Debug::logError() << "Can not find scene saved\n";
+					break;
+				}
+			} while (ss.good() && s != SCENE_POSTFIX);
+
+			do //deserialize render settings
+			{
+				if (skipLine) {
+					skipLine = false;					
+				}else{
+					getline(ss, s);
+				}
+				auto index = s.find(RENDER_SETTING_PREFIX);
+				if (index != string::npos)
+				{
+					render_setting = new RenderSetting();
+					render_setting->deserialize(ss);
+					break;
+				}
+				else if (s != RENDER_SETTING_POSTFIX)
+				{
+					skipLine = true;
+					render_setting = RenderSetting::getDefaultSetting();
+					Debug::logError() << "Can not find render setting saved!\n";
+					break;
+				}
+			} while (ss.good() && s!=RENDER_SETTING_POSTFIX);
 		}
 	} while (ss.good()&&s!=gameProjectPostfix);	
 }
@@ -225,5 +255,6 @@ void GameProject::serialize(PHString& result)
 		result.appendLine(scenePath);
 	}
 	result.appendLine("SceneEnd");
+	render_setting->serialize(result);
 	result.appendLine("GameProjectEnd");
 }

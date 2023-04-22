@@ -76,6 +76,23 @@ void HierarchyWidget::initContextMenu()
 			if (selectedGameObject != nullptr)
 			{
 				selectedGameObject->addComponent((Component::ComponentType)i);
+				switch (i)
+				{
+				case Component::IMAGE:
+					selectedGameObject->addComponent<Renderer>();
+					break;
+				case Component::CAMERA:
+					selectedGameObject->addComponent<Renderer>();
+					break;
+				case Component::BOX_COLLIDER:
+					selectedGameObject->addComponent<Renderer>();
+					break;
+				case Component::TEXT:
+					selectedGameObject->addComponent<Renderer>();
+					break;
+				default:
+					break;
+				}
 				componentsDockWidget->refresh();
 			}
 		});

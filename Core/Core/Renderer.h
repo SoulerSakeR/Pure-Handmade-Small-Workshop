@@ -3,6 +3,7 @@
 
 class Renderer : public Component
 {
+	friend class RenderSetting;
 public:
 	Renderer(GameObject* gameObject);
 	~Renderer();
@@ -12,13 +13,13 @@ public:
 
 	// getters and setters
 	int get_render_order();
-	void set_render_order(int order);
+	//void set_render_order(int order);
+	int get_render_layer();
+	void set_render_layer(int layer);
 protected:
-	void set_render_order_directly(int order);
 	// Inherited via Component
 	void serialize(PHString&) override;
 	void deserialize(std::stringstream& ss) override;
-
-	int render_order;
+	int render_layer;
 };
 

@@ -17,6 +17,7 @@ GameEngine* GameEngine::instance = nullptr;
 GameEngine::GameEngine():pool(4)
 {
 	gameLoop = nullptr;
+	gameProject = nullptr;
 }
 
 /// @brief get singleton instance, if it is not exists, create one 
@@ -32,13 +33,13 @@ GameEngine& GameEngine::get_instance()
 /// @return value that indicates the process was completed or not.
 bool GameEngine::initialize(MainWindow* window)
 {
-	Debug::log("Engine initializing");
+	Debug::logInfo()<< "Engine initializing\n";
 	srand((unsigned)time(NULL));
 	gameProject = nullptr;
 	this->window = window;
 	std::filesystem::path current_path = std::filesystem::current_path();
 	rootPath = current_path.string();
-	Debug::log("Engine initialized");
+	Debug::logInfo() << "Engine initialized\n";
     return true;
 }
 
@@ -85,6 +86,8 @@ GameProject& GameEngine::creatGameProject(const string& name,const string& path)
 	}		
 	GameProject* game = new GameProject(name, new_path.getNewPath());
 	gameProject = game;
+	gameProject->render_setting = RenderSetting::getDefaultSetting();
+	SceneMgr::get_instance().render_setting = gameProject->render_setting;
 	game->openScene(gameProject->creatNewScene());
 	return *game;
 }
@@ -133,6 +136,7 @@ bool GameEngine::openGameProject(const string& path)
 	GameProject* gp = new GameProject("","",false);
 	gp->deserialize(ss);
 	this->gameProject = gp;
+	SceneMgr::get_instance().render_setting = this->gameProject->render_setting;
 	gp->openScene(0);
 	return true;
 }
@@ -168,11 +172,17 @@ GameObject& GameEngine::addGameObject(const string& name, GameObject* const pare
 		break;
 	case Component::IMAGE:
 		gameObject->addComponent<Image>()->set_imgPath("\\Resources\\0028.png");
+		gameObject->addComponent<Renderer>();
 		break;
 	case Component::CAMERA:
 		gameObject->addComponent<Camera>();
+		gameObject->addComponent<Renderer>();
 		break;
 	case Component::SCRIPT:
+		break;
+	case Component::BOX_COLLIDER:
+		gameObject->addComponent<BoxCollider>();
+		gameObject -> addComponent<Renderer>();
 		break;
 	default:
 		break;

@@ -67,6 +67,27 @@ std::vector<GameObject*> SceneMgr::findGameObjectsByTag(const std::string tag)
 	return vector<GameObject*>();
 }
 
+void SceneMgr::registerRenderer(Renderer* renderer)
+{
+	if (render_setting != nullptr)
+		render_setting->registerRenderer(renderer);
+	else
+		Debug::logError()<< "RenderSetting is null\n";
+}
+
+void SceneMgr::unregisterRenderer(Renderer* renderer)
+{
+	if (render_setting != nullptr)
+		render_setting->unregisterRenderer(renderer);
+	else
+		Debug::logError() << "RenderSetting is null\n";
+}
+
+RenderSetting* SceneMgr::get_render_setting() const
+{
+	return render_setting;
+}
+
 void SceneMgr::addScene(const std::string& relativePath)
 {
 	scenes.push_back(relativePath);

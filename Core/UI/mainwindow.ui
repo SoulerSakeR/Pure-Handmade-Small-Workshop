@@ -199,10 +199,17 @@
     </property>
     <addaction name="actionwfc"/>
    </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionRenderSetting"/>
+   </widget>
    <addaction name="menu_file"/>
    <addaction name="menu_gameobject"/>
    <addaction name="menu_component"/>
    <addaction name="menu"/>
+   <addaction name="menuSettings"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="ComponentsDockWidget" name="dockWidget_components">
@@ -321,6 +328,17 @@
    </property>
    <property name="iconText">
     <string>wfc</string>
+   </property>
+  </action>
+  <action name="actionRenderSetting">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Render</string>
    </property>
   </action>
   <zorder>dockWidget_components</zorder>
