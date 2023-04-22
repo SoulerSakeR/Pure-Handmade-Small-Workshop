@@ -995,6 +995,11 @@ QOpenGLTexture *RenderWidget::genTextTexture(int width, int height, const QStrin
 
 void RenderWidget::mouseMoveEvent(QMouseEvent* event)
 {
+	
+	if (!SceneMgr::get_instance().hasCurrentScene() || isGameWidget)
+		return;
+
+
 	Vector2D Pos = Vector2D(event->localPos().x(),size().height() - event->localPos().y());
 	//Debug::log("mouse position: " + pos.tostring());
 	//if(SceneMgr::get_instance().get_main_camera()!=nullptr)
@@ -1002,7 +1007,7 @@ void RenderWidget::mouseMoveEvent(QMouseEvent* event)
 
 	if (event->buttons() & Qt::LeftButton) 
 	{
-		if(!moveObjectMode)
+		if (!moveObjectMode)
 			return;
 		
 		QPoint diff = event->pos() - lastMovePos;
@@ -1018,16 +1023,14 @@ void RenderWidget::mouseMoveEvent(QMouseEvent* event)
 	}
 	else if (event->buttons() & Qt::RightButton)
 	{
-		if(!moveCameraMode)
+		if (!moveCameraMode)
 			return;
 
 		QPoint diff = event->pos() - lastPos;
 
 		float ratio = mCamera->get_view_width() / size().width();
 		
-
 		Vector2D diff2 = Vector2D(-diff.x(), diff.y()) * ratio;
-
 
 		mCameraObject->transform->translate(diff2);
 		lastPos = event->pos();
@@ -1039,7 +1042,7 @@ void RenderWidget::mouseMoveEvent(QMouseEvent* event)
 
 void RenderWidget::mousePressEvent(QMouseEvent* event)
 {
-	if (!SceneMgr::get_instance().hasCurrentScene())
+	if (!SceneMgr::get_instance().hasCurrentScene() || isGameWidget)
 		return;
 
 	if (event->button() == Qt::RightButton)
@@ -1074,7 +1077,7 @@ void RenderWidget::mousePressEvent(QMouseEvent* event)
 
 void RenderWidget::mouseReleaseEvent(QMouseEvent* event)
 {
-	if (!SceneMgr::get_instance().hasCurrentScene())
+	if (!SceneMgr::get_instance().hasCurrentScene() || isGameWidget)
 		return;
 
 	if (event->button() == Qt::LeftButton)
@@ -1091,7 +1094,7 @@ void RenderWidget::mouseReleaseEvent(QMouseEvent* event)
 
 void RenderWidget::mouseDoubleClickEvent(QMouseEvent* event)
 {
-	if (!SceneMgr::get_instance().hasCurrentScene())
+	if (!SceneMgr::get_instance().hasCurrentScene()||isGameWidget)
 		return;
 
 	if (event->button() == Qt::LeftButton)
@@ -1128,6 +1131,8 @@ void RenderWidget::mouseDoubleClickEvent(QMouseEvent* event)
 
 void RenderWidget::keyPressEvent(QKeyEvent* event)
 {
+	if (!SceneMgr::get_instance().hasCurrentScene() || isGameWidget)
+		return;
 	switch (event->key()) {
     
     case Qt::Key_W: mCameraObject->transform->translate(Vector2D(0.f,1.f));break;
@@ -1142,6 +1147,9 @@ void RenderWidget::keyPressEvent(QKeyEvent* event)
 
 void RenderWidget::wheelEvent(QWheelEvent* event)
 {
+	if (!SceneMgr::get_instance().hasCurrentScene() || isGameWidget)
+		return;
+
 	if (event->angleDelta().y() > 0)
 		mCamera->set_view_width(mCamera->get_view_width() * 0.9f);
 	else
