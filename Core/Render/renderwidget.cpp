@@ -1000,11 +1000,27 @@ void RenderWidget::mouseMoveEvent(QMouseEvent* event)
 	//if(SceneMgr::get_instance().get_main_camera()!=nullptr)
 		//Debug::log("camera position: "+SceneMgr::get_instance().get_main_camera()->screenToWorld(pos).tostring());
 
-	if (event->buttons() & Qt::LeftButton) {
+	if (event->buttons() & Qt::LeftButton) 
+	{
+		if(!moveObjectMode)
+			return;
+		
+		QPoint diff = event->pos() - lastMovePos;
+		float ratio = mCamera->get_view_width() / size().width();
+		Vector2D diff2 = Vector2D(diff.x(), -diff.y()) * ratio;
+
+		auto selectedGameObject = getSelectedGameObject();
+
+		selectedGameObject->transform->translate(diff2);
+		lastMovePos = event->pos();
+		update();
 
 	}
 	else if (event->buttons() & Qt::RightButton)
 	{
+		if(!moveCameraMode)
+			return;
+
 		QPoint diff = event->pos() - lastPos;
 
 		float ratio = mCamera->get_view_width() / size().width();
@@ -1023,48 +1039,60 @@ void RenderWidget::mouseMoveEvent(QMouseEvent* event)
 
 void RenderWidget::mousePressEvent(QMouseEvent* event)
 {
-	
+	if (!SceneMgr::get_instance().hasCurrentScene())
+		return;
+
 	if (event->button() == Qt::RightButton)
 	{
+		if (!SceneMgr::get_instance().hasCurrentScene())
+			return;
 		lastPos = event->pos();
-		
+		moveCameraMode = true;
 	}
 
 	if (event->button() == Qt::LeftButton)
 	{
-		lastPos = event->pos();
+		if(!SceneMgr::get_instance().hasCurrentScene())
+			return;
+		
+		lastMovePos = event->pos();
+
+		Vector2D pos = Vector2D(event->localPos().x(), size().height() - event->localPos().y());
+		auto selectedGameObjects = hitRay(pos);
+
+		auto it = std::find(selectedGameObjects.begin(), selectedGameObjects.end(), getSelectedGameObject());
+		
+		if (it != selectedGameObjects.end())
+		{
+			selectedGameObjects.erase(it);
+			moveObjectMode = true;
+		}
+			
 
 	}
 }
 
 void RenderWidget::mouseReleaseEvent(QMouseEvent* event)
 {
+	if (!SceneMgr::get_instance().hasCurrentScene())
+		return;
+
+	if (event->button() == Qt::LeftButton)
+	{
+		moveObjectMode = false;
+	}
+	
 	if (event->button() == Qt::RightButton)
 	{
-		event->ignore();
+		moveCameraMode = false;
 	}
+
 }
 
 void RenderWidget::mouseDoubleClickEvent(QMouseEvent* event)
 {
-	/*
-	auto scene = SceneMgr::get_instance().get_current_scene();
-	if (scene == nullptr || scene->getRootGameObjs().size() == 0 || mCamera == nullptr)
+	if (!SceneMgr::get_instance().hasCurrentScene())
 		return;
-	for (auto& pair : scene->getAllGameObjsByDepth())
-	{
-		if (pair.second->isActive)
-			renderGameobject(pair.second, camera);
-	}
-
-	auto transform = img->gameObject->transform;
-	matrix.translate(transform->getWorldPosition().toQVector3D());
-	matrix.rotate(transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
-	matrix.scale(transform->getWorldScale().toQVector3D(1.0f));
-
-
-	*/
-
 
 	if (event->button() == Qt::LeftButton)
 	{

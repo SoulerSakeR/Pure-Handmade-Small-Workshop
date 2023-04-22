@@ -56,7 +56,7 @@ Transform* Transform::translate(Vector2D value)
 	localPosition = localPosition + value;
 	if (GameEngine::get_instance().getSelectedGameObject() == gameObject)
 	{
-		GameEngine::get_instance().onPropertyChange(properties[0]);
+		GameEngine::get_instance().onPropertyChange(properties["localPosition"]);
 	}
 	return this;
 }

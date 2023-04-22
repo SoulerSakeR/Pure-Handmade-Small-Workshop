@@ -62,10 +62,13 @@ public:
     float moveSpeed;
     QPoint lastPos; // mouse location
     QPoint doubleClickPos; // mouse location
+    QPoint lastMovePos; // object move last location
 
     static QOpenGLContext* sharedContext;
     bool editMode = true;
     bool isGameWidget = false;
+    bool moveObjectMode = false;
+    bool moveCameraMode = false;
     static bool widgetChanged;
 
 protected:
