@@ -695,7 +695,7 @@ void RenderWidget::resizeGL(int w, int h)
 void RenderWidget::paintGL()
 {
 	frameCount++;
-	renderFbo();
+	renderFbo();	
 	renderFboOverlay();
 	mixTexture();
 
@@ -788,14 +788,19 @@ void RenderWidget::renderFboOverlay()
 
 	auto& cameras = SceneMgr::get_instance().cameras;
 
-	for (auto camera : cameras)
+	if (isGameWidget)
 	{
-		if (camera->get_enabled() && camera->gameObject->isActive && camera->is_overlay())
+		for (auto camera : cameras)
 		{
-			renderScene(camera);
+			if (camera->get_enabled() && camera->gameObject->isActive && camera->is_overlay())
+			{
+				renderScene(camera);
+			}
+
 		}
-		
 	}
+
+	
 
 	fboOverlay->release();
 
@@ -871,7 +876,7 @@ void RenderWidget::mixTexture()
 	
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, fboOverlay->texture());
-
+	
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, fbo->texture());
 

@@ -24,8 +24,8 @@ Result<void*> Scene::renameGameObject(GameObject* gameObject, std::string newNam
 {
 	if (gameObject == nullptr)
 		return Result<void*>(false,"gameObject is nullptr");
-	if(auto it = allGameObjsByName.find(newName); it != allGameObjsByName.end())
-		return Result<void*>(false,"name already exists");
+	
+	// 移除旧名字的引用
 	SceneMgr::get_instance().nameToGameObjects_remove(gameObject->get_name(), gameObject);
 	if (auto it = allGameObjsByName.find(gameObject->name); it != allGameObjsByName.end())
 	{
@@ -36,6 +36,17 @@ Result<void*> Scene::renameGameObject(GameObject* gameObject, std::string newNam
 			vec.erase(it2);
 		}
 	}
+
+	// 添加新名字的引用
+	if (auto it = allGameObjsByName.find(newName); it != allGameObjsByName.end())
+	{
+		it->second.push_back(gameObject);
+		gameObject->name = newName;
+		SceneMgr::get_instance().nameToGameObjects_add(newName, gameObject);
+		return Result<void*>();
+	}
+		
+	
 	allGameObjsByName[newName] = vector<GameObject*>();
 	allGameObjsByName[newName].push_back(gameObject);
 	gameObject->name = newName;
