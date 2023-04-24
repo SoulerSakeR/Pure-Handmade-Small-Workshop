@@ -203,6 +203,82 @@ MainWindow::MainWindow(QWidget *parent)
         ui->pushButton_2->setEnabled(false);
         GameEngine::get_instance().gameLoop->setPlayingStatus(false);
         });
+
+    // 实现Window菜单控制Hierarchy
+    connect(ui->actionHierarchy, &QAction::triggered, this, [=]() {
+        if (ui->dockWidget_hierarchy->isVisible()) {
+            ui->dockWidget_hierarchy->hide();
+            ui->actionHierarchy->setChecked(false);
+        }
+        else {
+            ui->dockWidget_hierarchy->show();
+            ui->actionHierarchy->setChecked(true);
+        }
+        });
+
+    // 关闭Hierarchy窗口时取消勾选Window菜单中的选项
+    connect(ui->dockWidget_hierarchy, &QDockWidget::visibilityChanged, this, [=](bool visible) {
+        if (!visible) {
+            ui->actionHierarchy->setChecked(false);
+        }
+        });
+
+    // 实现Window菜单控制Resource Manager
+    connect(ui->actionResorce_Manager, &QAction::triggered, this, [=]() {
+        if (ui->dockWidget_resourceManager->isVisible()) {
+            ui->dockWidget_resourceManager->hide();
+            ui->actionResorce_Manager->setChecked(false);
+        }
+        else {
+            ui->dockWidget_resourceManager->show();
+            ui->actionResorce_Manager->setChecked(true);
+        }
+        });
+
+    // 关闭Resource Manager窗口时取消勾选Window菜单中的选项
+    connect(ui->dockWidget_resourceManager, &QDockWidget::visibilityChanged, this, [=](bool visible) {
+        if (!visible) {
+            ui->actionResorce_Manager->setChecked(false);
+        }
+        });
+
+    // 实现Window菜单控制Console
+    connect(ui->actionConsole, &QAction::triggered, this, [=]() {
+        if (ui->dockWidget_console->isVisible()) {
+            ui->dockWidget_console->hide();
+            ui->actionConsole->setChecked(false);
+        }
+        else {
+            ui->dockWidget_console->show();
+            ui->actionConsole->setChecked(true);
+        }
+        });
+
+    // 关闭Console窗口时取消勾选Window菜单中的选项
+    connect(ui->dockWidget_console, &QDockWidget::visibilityChanged, this, [=](bool visible) {
+        if (!visible) {
+            ui->actionConsole->setChecked(false);
+        }
+        });
+
+    // 实现Window菜单控制Component
+    connect(ui->actionComponents, &QAction::triggered, this, [=]() {
+        if (ui->dockWidget_components->isVisible()) {
+            ui->dockWidget_components->hide();
+            ui->actionComponents->setChecked(false);
+        }
+        else {
+            ui->dockWidget_components->show();
+            ui->actionComponents->setChecked(true);
+        }
+        });
+
+    // 关闭Component窗口时取消勾选Window菜单中的选项
+    connect(ui->dockWidget_components, &QDockWidget::visibilityChanged, this, [=](bool visible) {
+        if (!visible) {
+            ui->actionComponents->setChecked(false);
+        }
+        });
 }
 
 MainWindow::~MainWindow()

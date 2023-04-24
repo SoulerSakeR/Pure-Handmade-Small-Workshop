@@ -247,7 +247,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget">
+  <widget class="QDockWidget" name="dockWidget_console">
    <property name="minimumSize">
     <size>
      <width>89</width>
@@ -280,7 +280,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_2">
+  <widget class="QDockWidget" name="dockWidget_hierarchy">
    <property name="windowTitle">
     <string>Hierarchy</string>
    </property>
@@ -319,7 +319,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_3">
+  <widget class="QDockWidget" name="dockWidget_resourceManager">
    <property name="windowTitle">
     <string>Resource Manager</string>
    </property>
@@ -424,12 +424,18 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Hierarchy</string>
    </property>
   </action>
   <action name="actionResorce_Manager">
    <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
     <bool>true</bool>
    </property>
    <property name="text">
@@ -440,12 +446,18 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Console</string>
    </property>
   </action>
   <action name="actionComponents">
    <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
     <bool>true</bool>
    </property>
    <property name="text">
