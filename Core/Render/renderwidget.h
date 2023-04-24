@@ -142,7 +142,7 @@ private:
     std::unique_ptr<QOpenGLBuffer> textBuffer;
     std::unique_ptr<QOpenGLTexture> *textTexture;
     
-    QOpenGLTexture* mTexture;
+    QOpenGLTexture* mTexture = nullptr;
 
     QMatrix4x4 mProjMatrix;
     GLuint mPosAttr;

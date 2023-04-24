@@ -360,7 +360,13 @@ void RenderWidget::renderText(Text* text, Camera* textCamera, bool visBorder)
 
 	// 创建QColor对象color为text.color
 	QColor color(text->color.r, text->color.g, text->color.b, text->color.a);
-
+	if (mTexture != nullptr)
+	{
+		mTexture->release();
+		mTexture->destroy();
+		delete mTexture;
+		mTexture = nullptr;
+	}
 	mTexture = genTextTexture(width, height, data, 60, color);
 
 	if (widgetChanged)
