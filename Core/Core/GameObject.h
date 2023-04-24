@@ -43,8 +43,8 @@ public:
     void destroy(); //需要绑定
     GameObject* clone(const std::string newName,GameObject* parent=nullptr); //需要绑定
 
-    GameObject* find(const std::string& name); //需要绑定
-    std::vector<GameObject*> findTag(const std::string& tag); //需要绑定
+    static GameObject* find(const std::string& name); //需要绑定
+    static std::vector<GameObject*> findTag(const std::string& tag); //需要绑定
 
 protected:  
     ~GameObject();

@@ -105,6 +105,9 @@ void GameLoop::updateGame(RenderWidget* gameWidget) {
         //游戏帧率100
         starttime = system_clock::now();
 
+        auto temp = GameObject::findTag("Player");
+        Player::playerInputDetection(0.0f);
+
         gameWidget->update();
 
         endtime = system_clock::now();

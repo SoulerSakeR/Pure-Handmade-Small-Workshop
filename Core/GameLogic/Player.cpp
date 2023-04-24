@@ -103,7 +103,7 @@ void Player::updatePlayerInfo(float deltaTime) {
 char Player::playerInputDetection(float deltaTime) {
 
 	// 按下W
-	if (InputDetection::GetKey(0x57) && InputDetection::GetKeyDown(0x57)) {
+	if (InputDetection::GetKeyDown(0x57)) {
 		std::cout << "You pressed down 'W'" << std::endl;
 		return 'w';
 	}
@@ -115,7 +115,7 @@ char Player::playerInputDetection(float deltaTime) {
 	}
 
 	// 按下A
-	if (InputDetection::GetKey(0x41) && InputDetection::GetKeyDown(0x41)) {
+	if (InputDetection::GetKeyDown(0x41)) {
 		std::cout << "You pressed down 'A'" << std::endl;
 		return 'a';
 	}
@@ -127,7 +127,7 @@ char Player::playerInputDetection(float deltaTime) {
 	}
 
 	// 按下S
-	if (InputDetection::GetKey(0x53) && InputDetection::GetKeyDown(0x53)) {
+	if (InputDetection::GetKeyDown(0x53)) {
 		std::cout << "You pressed down 'S'" << std::endl;
 		return 's';
 	}
@@ -139,7 +139,7 @@ char Player::playerInputDetection(float deltaTime) {
 	}
 
 	// 按下D
-	if (InputDetection::GetKey(0x44) && InputDetection::GetKeyDown(0x44)) {
+	if (InputDetection::GetKeyDown(0x44)) {
 		std::cout << "You pressed down 'D'" << std::endl;
 		return 'd';
 	}
