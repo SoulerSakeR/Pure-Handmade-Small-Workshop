@@ -253,10 +253,10 @@ void GameObject::destroy()
 
 GameObject* GameObject::clone(const std::string newName, GameObject* parent)
 {
-    if(newName == name)
+    string new_name = newName;
+    if(new_name == name && new_name.find("_clone") != string::npos)
     {
-		Debug::log("Can not clone game object with same name");
-		return nullptr;
+        new_name.append("_clone");
 	}
     GameObject* result = new GameObject(newName, false);
     result->name = newName;
@@ -273,6 +273,10 @@ GameObject* GameObject::clone(const std::string newName, GameObject* parent)
         getline(ss, line);
         Component* newComponent = result->addComponent(component->componentType);
 		newComponent->deserialize(ss);
+	}
+    for (auto child : transform->children)
+    {
+		child->gameObject->clone(child->gameObject->name,result);
 	}
     SceneMgr::get_instance().current_scene->insertGameObject(*result,parent,INSIDE);
     return result;

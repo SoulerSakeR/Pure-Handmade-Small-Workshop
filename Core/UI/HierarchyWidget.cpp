@@ -133,7 +133,7 @@ void HierarchyWidget::initContextMenu()
 			auto item = (HierarchyItem*)selectedItems()[0];
 			if(needToBeCopiedGameObject == nullptr)
 				return;
-			auto gameobj = needToBeCopiedGameObject->clone(needToBeCopiedGameObject->get_name() + "_copy",item->gameObject);
+			auto gameobj = needToBeCopiedGameObject->clone(needToBeCopiedGameObject->get_name(),item->gameObject);
 			item->addChild(new HierarchyItem(gameobj,this));
 		}
 	});
@@ -217,6 +217,20 @@ void HierarchyWidget::mousePressEvent(QMouseEvent* event)
 		else
 		{
 			setCurrentItem(nullptr);
+		}
+	}
+}
+
+void HierarchyWidget::mouseDoubleClickEvent(QMouseEvent* event)
+{
+	if (event->buttons() & Qt::LeftButton)
+	{
+		auto item = itemAt(event->pos());
+		if (item != nullptr)
+		{
+			if(currentItem()!=item)
+				setCurrentItem(item);
+			RenderWidget::getSceneWidget().lookAt(((HierarchyItem*)item)->gameObject);
 		}
 	}
 }

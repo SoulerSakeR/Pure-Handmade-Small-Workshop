@@ -11,6 +11,7 @@ SceneMgr::SceneMgr()
 {
 	main_camera = nullptr;
 	current_scene = nullptr;
+	render_setting = nullptr;
 	scenes = vector<string>();
 	cameras = vector<Camera*>();
 	nameToGameObjects = unordered_map<string, vector<GameObject*>>();

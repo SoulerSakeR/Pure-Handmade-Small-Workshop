@@ -1241,6 +1241,12 @@ std::vector<GameObject*> RenderWidget::hitRay(Vector2D screenPos)
 
 }
 
+void RenderWidget::lookAt(GameObject* target)
+{
+	if(mCamera !=nullptr)
+		mCamera->lookAt(target->transform->getWorldPosition());
+}
+
 GameObject* RenderWidget::getSelectedGameObject()
 {
 	return hierarchyWidget->selectedGameObject;	

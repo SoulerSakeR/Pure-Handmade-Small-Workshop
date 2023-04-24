@@ -64,6 +64,13 @@ Vector2D Camera::WorldToScreen(Vector2D worldPos) // bug
 	return Vector2D((matrix * QVector4D(0.f,0.f,0.f,1.f)).toVector3DAffine().toVector2D());
 }
 
+void Camera::lookAt(Vector2D worldPos)
+{
+	Vector2D cameraPos = gameObject->transform->getWorldPosition();
+	Vector2D dir = worldPos - cameraPos;
+	gameObject->transform->translate(dir);
+}
+
 void Camera::set_property(Property* property, void* value)
 {
 	IBoxResizable::set_property(property, value);

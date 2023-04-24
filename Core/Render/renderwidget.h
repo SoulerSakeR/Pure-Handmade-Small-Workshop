@@ -56,6 +56,7 @@ public:
     void contextMenuEvent(QContextMenuEvent* event) override;
 
     std::vector<GameObject*> hitRay(Vector2D screenPos);
+    void lookAt(GameObject* target);
 
     GameObject* getSelectedGameObject();
 

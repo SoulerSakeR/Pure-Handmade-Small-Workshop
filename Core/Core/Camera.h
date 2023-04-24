@@ -22,6 +22,7 @@ public:
     QMatrix4x4 CalculateProjectionMulViewMatrix();
     Vector2D screenToWorld(Vector2D screenPos);
     Vector2D WorldToScreen(Vector2D worldPos);
+    void lookAt(Vector2D worldPos);
 
     void set_property(Property* property, void* value) override;
     void reset() override;
