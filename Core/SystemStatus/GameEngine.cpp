@@ -93,8 +93,7 @@ GameProject& GameEngine::creatGameProject(const string& name,const string& path)
 }
 Vector2D GameEngine::get_resolution()
 {
-	auto rect = RenderWidget::getSceneWidget().rect();
-	return Vector2D(rect.width(), rect.height());
+	return SceneMgr::get_instance().get_render_setting()->getCurrentResolution();
 }
 void GameEngine::set_resolution(const Vector2D& resolution)
 {

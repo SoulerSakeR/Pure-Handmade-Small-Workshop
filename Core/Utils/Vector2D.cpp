@@ -82,9 +82,22 @@ string Vector2D::tostring()
 	return result;
 }
 
+std::string Vector2D::tostringInt()
+{
+	std::string result = std::to_string((int)x);
+	result.append(",");
+	result.append(std::to_string((int)y));
+	return result;
+}
+
 QString Vector2D::toQString()
 {
 	return QString::fromStdString(tostring());
+}
+
+QString Vector2D::toQStringInt()
+{
+	return QString::fromStdString(tostringInt());
 }
 
 QVector3D Vector2D::toQVector3D(float z)

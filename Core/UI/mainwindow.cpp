@@ -35,10 +35,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->sceneWidget->isGameWidget = false;
     // 设置 gameWidget 的 isGameWidget 为 true
     ui->gameWidget->isGameWidget = true;
+    
 
     // 绑定 RenderWidget 中的 sceneWidget 和 gameWidget 指针
     RenderWidget::sceneWidget = ui->sceneWidget;
     RenderWidget::gameWidget = ui->gameWidget;
+    RenderWidget::currentWidget = ui->sceneWidget;
 
     // 将 hierarchy 指针指向 GameEngine 的 hierarchy，为后面操作 GameObject 做准备
     GameEngine::get_instance().hierarchy = ui->hierarchy;
@@ -48,9 +50,7 @@ MainWindow::MainWindow(QWidget *parent)
     consoleTextEdit->setReadOnly(true);// 只读
     
     // 当 tab 切换时，将 widgetChanged 置为 true
-    connect(ui->tabWidget, &QTabWidget::currentChanged, [=](int index) {
-        ui->sceneWidget->widgetChanged = true;
-        });
+    connect(ui->tabWidget, &QTabWidget::currentChanged,&RenderWidget::on_widgetChanged);
 
     // 将 componentsDockWidget 指向 dockWidget_components
     ui->hierarchy->componentsDockWidget = ui->dockWidget_components;

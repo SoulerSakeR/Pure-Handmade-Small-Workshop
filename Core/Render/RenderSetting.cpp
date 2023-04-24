@@ -188,6 +188,16 @@ Vector2D RenderSetting::getCurrentResolution() const
 void RenderSetting::setCurrentResolution(const Vector2D& value)
 {
 	current_resolution = value;
+	RenderWidget::getCurrentWidget().resetResolution();
+}
+
+bool RenderSetting::isAutoFit() const
+{
+	if (current_resolution == Vector2D(0.f, 0.f))
+	{
+		return true;
+	}
+	return false;
 }
 
 

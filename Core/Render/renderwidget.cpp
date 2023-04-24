@@ -12,6 +12,7 @@
 
 RenderWidget* RenderWidget::sceneWidget= nullptr;
 RenderWidget* RenderWidget::gameWidget = nullptr;
+RenderWidget* RenderWidget::currentWidget = nullptr;
 QOpenGLContext* RenderWidget::sharedContext = nullptr;
 
 bool RenderWidget::widgetChanged = false;
@@ -532,8 +533,10 @@ void RenderWidget::renderCameraBorder(Camera* target, Camera* renderCamera, bool
 		return;
 
 	float cameraWidth = target->get_view_width();
+	Vector2D ratio = GameEngine::get_instance().get_resolution();
 	// 换算opengl宽高比
-	float aspect = static_cast<float>(width()) / static_cast<float>(height());
+	//float aspect = static_cast<float>(width()) / static_cast<float>(height());
+	float aspect = static_cast<float>(ratio.x) / static_cast<float>(ratio.y);
 	// 计算camera的高
 	float cameraHeight = cameraWidth / aspect;
 	target->set_size(Vector2D(cameraWidth, cameraHeight));
@@ -677,29 +680,26 @@ void RenderWidget::initializeGL()
 	textBuffer = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
 }
 
+void RenderWidget::resetResolution()
+{
+	resetFBO();
+}
+
 void RenderWidget::resizeGL(int w, int h)
 {
 	Q_UNUSED(w); Q_UNUSED(h);
-	glViewport(0, 0, w, h);
-	
-	if (fbo != nullptr)
-	{
-		fbo->release();
-		delete fbo;
-		fbo = nullptr;
-	}
-
-	if (fboOverlay != nullptr)
-	{
-		fboOverlay->release();
-		delete fboOverlay;
-		fboOverlay = nullptr;
-	}
-
+	glViewport(0, 0, w, h);	
+	resetFBO();
 }
 
 void RenderWidget::paintGL()
 {
+	if (!SceneMgr::get_instance().hasCurrentScene())
+		return;
+
+	glClearColor(0.f, 0.f, 0.f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	frameCount++;
 	renderFbo();	
 	renderFboOverlay();
@@ -737,18 +737,28 @@ RenderWidget& RenderWidget::getGameWidget()
 	return *gameWidget;
 }
 
+RenderWidget& RenderWidget::getCurrentWidget()
+{
+	return *currentWidget;
+}
+
 void RenderWidget::renderFbo() 
 {
 	if (fbo == nullptr)
 	{
 		// 创建一个 FBO，大小为窗口大小乘以设备像素比
 		qreal dpr = qApp->primaryScreen()->devicePixelRatio();
-		QSize scaledSize = size() * dpr;
+		auto res = GameEngine::get_instance().get_resolution();
+
+		//设定分辨率就无需再次缩放
+		QSize scaledSize = QSize(res.x, res.y);//*dpr;
+		Debug::logInfo() << "FBO size: " << scaledSize.width()<<","<<scaledSize.height()<<"\n";
 		fbo = new QOpenGLFramebufferObject(scaledSize);
 	}
 	fbo->bind();
-	glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, fbo->width(), fbo->height());
 
 	glActiveTexture(GL_TEXTURE0);
 	
@@ -786,11 +796,16 @@ void RenderWidget::renderFboOverlay()
 	{
 		// 创建一个 FBO，大小为窗口大小乘以设备像素比
 		qreal dpr = qApp->primaryScreen()->devicePixelRatio();
-		QSize scaledSize = size() * dpr;
+
+		//设定分辨率就无需再次缩放
+		auto res = GameEngine::get_instance().get_resolution();
+		QSize scaledSize = QSize(res.x, res.y);//*dpr;
 		fboOverlay = new QOpenGLFramebufferObject(scaledSize);
 	}
 	fboOverlay->bind();
+	glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, fboOverlay->width(), fboOverlay->height());
 
 	auto& cameras = SceneMgr::get_instance().cameras;
 
@@ -894,13 +909,31 @@ void RenderWidget::mixTexture()
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+	glClearColor(0.f, 0.f, 0.f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	int width = this->width();
+	int height = this->height();
+	qreal dpr = qApp->primaryScreen()->devicePixelRatio();
+	width = width * dpr;
+	height = height * dpr;
+	auto res = GameEngine::get_instance().get_resolution();
+	float ratio = res.x / res.y;
+	if (width > height * ratio)
+	{
+		auto newWidth = height * ratio;
+		glViewport((width - newWidth) / 2, 0, newWidth, height);
+	}
+	else
+	{
+		auto newHeight = width / ratio;
+		glViewport(0, (height - newHeight) / 2, width, newHeight);
+	}
+
 	//draw
 	glDrawElements(GL_TRIANGLES, sizeof(unsigned int) * 6, GL_UNSIGNED_INT, 0);
 
 	vaoTexture->release();
-
-	
-
 	return;
 }
 
@@ -977,6 +1010,21 @@ void RenderWidget::createCameraBorderProgram()
 void RenderWidget::messageLogHandler(const QOpenGLDebugMessage& debugMessage)
 {
 	qDebug() << debugMessage.message();
+}
+
+void RenderWidget::on_widgetChanged(int index)
+{
+	widgetChanged = true;
+	if (index == 0)
+	{
+		currentWidget = sceneWidget;
+		Debug::logInfo() << "widget changed, current widget is scene\n";
+	}		
+	else
+	{
+		currentWidget = gameWidget;
+			Debug::logInfo() << "widget changed, current widget is game\n";
+	}	
 }
 
 // text render 
@@ -1251,6 +1299,23 @@ void RenderWidget::lookAt(GameObject* target)
 {
 	if(mCamera !=nullptr)
 		mCamera->lookAt(target->transform->getWorldPosition());
+}
+
+void RenderWidget::resetFBO()
+{
+	if (fbo != nullptr)
+	{
+		fbo->release();
+		delete fbo;
+		fbo = nullptr;
+	}
+
+	if (fboOverlay != nullptr)
+	{
+		fboOverlay->release();
+		delete fboOverlay;
+		fboOverlay = nullptr;
+	}
 }
 
 GameObject* RenderWidget::getSelectedGameObject()

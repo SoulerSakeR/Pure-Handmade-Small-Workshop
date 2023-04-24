@@ -35,6 +35,7 @@ void RenderSettingDialog::initRenderLayer()
 			gridLayout->addWidget(new QLabel(QString::fromStdString(layer.second)), row, 0);
 			gridLayout->addWidget(new QLabel(QString::number(layer.first)), row, 1);
 			auto addButton = new QPushButton("Add");
+			addButton->setAutoDefault(false);
 			gridLayout->addWidget(addButton, row, 2);
 			connect(addButton, &QPushButton::clicked, [=]()
 			{
@@ -44,6 +45,7 @@ void RenderSettingDialog::initRenderLayer()
 				auto lineEdit2 = new QLineEdit("0");
 				gridLayout->addWidget(lineEdit2, row, 1);
 				QPushButton* saveButton = new QPushButton("Save");
+				saveButton->setAutoDefault(false);
 				gridLayout->addWidget(saveButton, row, 2);
 				connect(saveButton, &QPushButton::clicked, [=]()
 				{
@@ -56,6 +58,7 @@ void RenderSettingDialog::initRenderLayer()
 					gridLayout->removeWidget(saveButton);
 					saveButton->deleteLater();
 					QPushButton* deleteButton = new QPushButton("Delete");
+					deleteButton ->setAutoDefault(false);
 					gridLayout->addWidget(deleteButton, row, 2);
 					connect(deleteButton, &QPushButton::clicked, [=]()
 					{
@@ -77,6 +80,7 @@ void RenderSettingDialog::initRenderLayer()
 			auto lineEdit2 = new QLineEdit(QString::number(layer.first));
 			gridLayout->addWidget(lineEdit2, row, 1);
 			QPushButton* deleteButton = new QPushButton("Delete");
+			deleteButton->setAutoDefault(false);
 			gridLayout->addWidget(deleteButton, row, 2);
 			connect(deleteButton, &QPushButton::clicked, [=]()
 			{
@@ -101,7 +105,11 @@ void RenderSettingDialog::initRenderResolution()
 	int row = 0;
 	gridLayout->addWidget(new QLabel("Current Resolution: "), row, 0);
 	auto lineEdit = new Vector2DLineEdit();
-	lineEdit->setText(GameEngine::get_instance().get_resolution().toQString());
+	auto vec2D = GameEngine::get_instance().get_resolution();
+	if(SceneMgr::get_instance().get_render_setting()->isAutoFit())
+		lineEdit->setText(vec2D.toQStringInt() + "     (auto-fit)");
+	else
+		lineEdit->setText(vec2D.toQStringInt());
 	gridLayout->addWidget(lineEdit, row, 1);
 	connect(lineEdit, &Vector2DLineEdit::Vector2DChanged, [=](Vector2D vec)
 	{

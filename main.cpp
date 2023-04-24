@@ -23,7 +23,7 @@ class GameLoop;
 int main(int argc, char *argv[])
 { 
     QLoggingCategory::setFilterRules(QStringLiteral("qt.gui.imageio=false")); // 关闭图片格式警告
-    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+    //QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     QApplication a(argc, argv);
 
     //// 加载样式表文件

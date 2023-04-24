@@ -24,7 +24,9 @@ public:
 
 	Vector2D& Scale(const Vector2D& scale);
 	std::string tostring();
+	std::string tostringInt();
 	QString toQString();
+	QString toQStringInt();
 	QVector3D toQVector3D(float z = 0.f);
 	QVector2D toQVector2D();
 }; 

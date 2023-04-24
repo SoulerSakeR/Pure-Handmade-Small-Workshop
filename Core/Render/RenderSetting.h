@@ -28,6 +28,7 @@ public:
 	const std::map<int, std::string>& get_render_layers() const;
 	Vector2D getCurrentResolution() const;
 	void setCurrentResolution(const Vector2D& value);
+	bool isAutoFit() const;
 
 	static RenderSetting* getDefaultSetting();
 	bool addRenderLayer(int order,const std::string& name);

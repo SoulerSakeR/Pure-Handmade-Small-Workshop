@@ -34,6 +34,8 @@ public:
 
     static RenderWidget& getSceneWidget(); 
     static RenderWidget& getGameWidget();
+    static RenderWidget& getCurrentWidget();
+
     HierarchyWidget* hierarchyWidget;
   
     void renderScene(Camera* camera);
@@ -57,6 +59,8 @@ public:
 
     std::vector<GameObject*> hitRay(Vector2D screenPos);
     void lookAt(GameObject* target);
+    void resetResolution();
+    void resetFBO();
 
     GameObject* getSelectedGameObject();
 
@@ -71,6 +75,7 @@ public:
     bool moveObjectMode = false;
     bool moveCameraMode = false;
     static bool widgetChanged;
+    static RenderWidget* currentWidget;
 
 protected:
     virtual void initializeGL();
@@ -83,6 +88,7 @@ public slots:
 
     void on_timeout();
     void messageLogHandler(const QOpenGLDebugMessage &debugMessage);
+    static void on_widgetChanged(int index);
 
 private:
 
