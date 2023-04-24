@@ -20,11 +20,18 @@ void RenderSetting::serialize(PHString& str)
 		str.append("\n");
 	}
 	str.appendLine(RENDER_LAYER_POSTFIX);
+	str.appendLine(RENDER_RESOLUTION_PREFIX);
+	str.appendLine(current_resolution.tostring());
+	str.appendLine(RENDER_RESOLUTION_POSTFIX);
+	str.appendLine(RENDER_SETTING_POSTFIX);
 }
 
 void RenderSetting::deserialize(std::stringstream& ss)
 {
 	string s;
+	bool skipLine = false;
+
+	// deserialze render layers
 	do
 	{
 		getline(ss, s);
@@ -44,7 +51,34 @@ void RenderSetting::deserialize(std::stringstream& ss)
 				}
 			}
 		}
+		else if (s != RENDER_LAYER_POSTFIX)
+		{
+			skipLine = true;
+			Debug::logError() << "RenderSetting::deserialize: No such prefix found :"<<RENDER_LAYER_PREFIX<<"\n";
+		}			
 	} while (ss.good()&&s!=RENDER_LAYER_POSTFIX);
+
+	// deserialze render resolution
+	do
+	{
+		if(skipLine)
+			skipLine = false;
+		else
+			getline(ss, s);
+		auto index = s.find(RENDER_RESOLUTION_PREFIX);
+		if (index != string::npos)
+		{
+			getline(ss, s);
+			current_resolution = Vector2D::fromString(s);
+		}
+		else if (s != RENDER_RESOLUTION_POSTFIX)
+		{
+			skipLine = true;
+			current_resolution = Vector2D(0.f, 0.f);
+			Debug::logError() << "RenderSetting::deserialize: No such prefix found :" << RENDER_RESOLUTION_PREFIX << "\n";
+			break;
+		}
+	} while (ss.good() && s != RENDER_RESOLUTION_POSTFIX);
 }
 
 void RenderSetting::registerRenderer(Renderer* renderer)
@@ -141,10 +175,27 @@ const std::map<int, std::string>& RenderSetting::get_render_layers() const
 	return render_layers;
 }
 
+Vector2D RenderSetting::getCurrentResolution() const
+{
+	if (current_resolution == Vector2D(0.f, 0.f))
+	{
+		auto size = RenderWidget::getSceneWidget().size();
+		return Vector2D(size.width(), size.height());
+	}
+	return current_resolution;
+}
+
+void RenderSetting::setCurrentResolution(const Vector2D& value)
+{
+	current_resolution = value;
+}
+
+
 RenderSetting* RenderSetting::getDefaultSetting()
 {
 	auto setting = new RenderSetting();
 	setting->addRenderLayer(0, "Default");
+	setting->current_resolution = Vector2D(0,0);
 	return setting;
 }
 
@@ -163,12 +214,13 @@ bool RenderSetting::addRenderLayer(int order,const std::string& name)
 	}
 }
 
+
 bool RenderSetting::removeRenderLayer(int order)
 {
 	auto it = render_layers.find(order);
 	if (it == render_layers.end())
 	{
-		Debug::logError() << "No such layer found: "<<to_string(order)<< "\n";
+		Debug::logError() << "No such layer found: "<< order ;
 		return false;
 	}
 	else

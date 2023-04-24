@@ -27,12 +27,19 @@ Vector2D& Vector2D::operator=(const Vector2D& b)
 	return *this;
 }
 
+bool Vector2D::operator!=(const Vector2D& b) const
+{
+	if (x != b.x || y != b.y)
+		return true;
+	return false;
+}
+
 Vector2D Vector2D::operator*(float b)
 {
 	return Vector2D(x * b, y * b);
 }
 
-bool Vector2D::operator==(const Vector2D& b)
+bool Vector2D::operator==(const Vector2D& b) const
 {
 	return x == b.x && y == b.y;
 }
@@ -55,6 +62,11 @@ const Vector2D Vector2D::fromString(const std::string& src)
 	return Vector2D(x, y);
 }
 
+const Vector2D Vector2D::fromQString(const QString& src)
+{
+	return fromString(src.toStdString());
+}
+
 Vector2D& Vector2D::Scale(const Vector2D& scale)
 {
 	x = x * scale.x;
@@ -68,6 +80,11 @@ string Vector2D::tostring()
 	result.append(",");
 	result.append(std::to_string(y));
 	return result;
+}
+
+QString Vector2D::toQString()
+{
+	return QString::fromStdString(tostring());
 }
 
 QVector3D Vector2D::toQVector3D(float z)

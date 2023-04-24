@@ -21,6 +21,7 @@ public:
 	GameProject* getCurrentGameProject();
 	GameProject& creatGameProject(const std::string& name,const std::string& path); //创建新项目
 	Vector2D get_resolution();
+	void set_resolution(const Vector2D& resolution);
 	void refreshHierarchy();	
 	bool needToRefeshUI(GameObject* gameobj);
 #ifdef TEST

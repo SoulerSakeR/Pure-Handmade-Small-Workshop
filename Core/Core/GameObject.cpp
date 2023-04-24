@@ -225,7 +225,7 @@ void GameObject::removeComponent(Component* component)
 {
     if (component->componentType == Component::TRANSFORM)
     {
-        Debug::log("Can not remove transform component");
+        Debug::logWarning()<<"Can not remove transform component\n";
         return;
     }
     for (int i = 0;i < components.size();i++)

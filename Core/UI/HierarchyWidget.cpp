@@ -190,6 +190,7 @@ void HierarchyWidget::refreshGameObject()
 }
 
 
+
 void HierarchyWidget::mouseReleaseEvent(QMouseEvent* event)
 {
 	if (dragMode)// 拖拽状态成立
@@ -197,7 +198,7 @@ void HierarchyWidget::mouseReleaseEvent(QMouseEvent* event)
 		QTreeWidgetItem* item = itemAt(event->pos());
 		if (item != nullptr&& item!=draggedItem)
 		{
-			Debug::log("drag item is " + ((HierarchyItem*)draggedItem)->gameObject->get_name() + "  current item is " + item->text(0).toStdString());
+			Debug::logInfo() << "drag item is " << ((HierarchyItem*)draggedItem)->gameObject->get_name() << "  current item is " << item->text(0) <<"\n";
 			insertItem(draggedItem, item);
 		}
 		dragMode = false;

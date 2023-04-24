@@ -8,6 +8,8 @@ class RenderSettingDialog : public QDialog
 public:
 	RenderSettingDialog(QWidget* parent = nullptr);
 
-	virtual void closeEvent(QCloseEvent* event) override;
+protected:
+	void initRenderLayer();
+	void initRenderResolution();
 };
 

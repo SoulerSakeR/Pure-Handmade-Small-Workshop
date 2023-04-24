@@ -96,6 +96,10 @@ Vector2D GameEngine::get_resolution()
 	auto rect = RenderWidget::getSceneWidget().rect();
 	return Vector2D(rect.width(), rect.height());
 }
+void GameEngine::set_resolution(const Vector2D& resolution)
+{
+	SceneMgr::get_instance().render_setting->setCurrentResolution(resolution);
+}
 void GameEngine::refreshHierarchy()
 {
 	window->refreshHierachy();
@@ -131,6 +135,7 @@ MainWindow* GameEngine::getWindow()
 /// @return value that indicates whether the process was completedf
 bool GameEngine::openGameProject(const string& path)
 {
+	Debug::logInfo()<< "openGameProject:" << path << "\n";
 	const string& gameProject = IO::readText(path);
 	stringstream ss(gameProject);
 	GameProject* gp = new GameProject("","",false);
@@ -158,7 +163,7 @@ bool GameEngine::saveGameProject()
 /// @return the pointer of new game object
 GameObject& GameEngine::addGameObject(const string& name, GameObject* const parent,Component::ComponentType type,InsertMode insertMode)
 {
-	Debug::log("addGameObject:" + name);
+	Debug::logInfo()<< "addGameObject:" << name << "\n";
 	GameObject* gameObject = new GameObject(name);
     if(parent == nullptr)
 		GameEngine::get_instance().gameProject->currentScene->insertGameObject(*gameObject);

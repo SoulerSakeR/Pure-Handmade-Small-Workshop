@@ -231,7 +231,7 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 				img->texture->create();
 				bool flag = img->texture->isCreated();
 				if(!flag)
-					Debug::log("texture create failed");
+					Debug::logError()<< "texture create failed\n" ;
 			}		
 		}
 		imageShaderProgram->bind();

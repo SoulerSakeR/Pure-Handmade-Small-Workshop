@@ -170,6 +170,7 @@ void GameProject::deserializeTest(std::stringstream& ss, const std::string** sce
 
 void GameProject::deserialize(std::stringstream& ss)
 {
+	Debug::logInfo()<<"Deserialing gameProject \n";
 	bool skipLine = false;
 	string s;
 	do 
@@ -181,6 +182,8 @@ void GameProject::deserialize(std::stringstream& ss)
 			name = s.substr(index + gameProjectPrefix.size(), s.size() - 1);
 			getline(ss, s);
 			path = s;
+
+			Debug::logInfo() << "Deserialing scenes paths \n";
 			do //deserialize scenes
 			{
 				getline(ss, s);
@@ -198,7 +201,7 @@ void GameProject::deserialize(std::stringstream& ss)
 				else if(s != SCENE_POSTFIX)
 				{
 					skipLine = true;
-					Debug::logError() << "Can not find scene saved\n";
+					Debug::logError() << "Can not find scene saved \n";
 					break;
 				}
 			} while (ss.good() && s != SCENE_POSTFIX);
@@ -221,12 +224,13 @@ void GameProject::deserialize(std::stringstream& ss)
 				{
 					skipLine = true;
 					render_setting = RenderSetting::getDefaultSetting();
-					Debug::logError() << "Can not find render setting saved!\n";
+					Debug::logError() << "Can not find render setting saved! \n";
 					break;
 				}
 			} while (ss.good() && s!=RENDER_SETTING_POSTFIX);
 		}
 	} while (ss.good()&&s!=gameProjectPostfix);	
+	Debug::logInfo() << "Deserialing gameProject finished \n";
 }
 
 bool GameProject::saveCurrentScene()

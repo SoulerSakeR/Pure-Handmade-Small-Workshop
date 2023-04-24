@@ -322,6 +322,7 @@ Scene* Scene::loadFromText(const std::string& text)
 
 Scene* Scene::loadFromPath(std::string path,Scene* scene)
 {
+	Debug::logInfo()<<"load scene from path:"<<path <<"\n";
 	if(scene==nullptr)
 		scene = new Scene();
 	stringstream ss(IO::readText(path));

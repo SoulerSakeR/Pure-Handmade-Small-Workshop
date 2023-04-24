@@ -5,12 +5,25 @@
 #include <QGridLayout>
 #include "Core/ResourceManagement/SceneMgr.h"
 #include <QPushButton>
+#include "Core/UI/PropertyEditor/Vector2DLineEdit.h"
+#include "Core/SystemStatus/GameEngine.h"
 
 RenderSettingDialog::RenderSettingDialog(QWidget* parent):QDialog(parent)
 {
 	QVBoxLayout *layout = new QVBoxLayout(this);
-	QGroupBox* groupbox = new QGroupBox("Render Layer",this);
-	layout->addWidget(groupbox);
+
+	// Render Layer
+	initRenderLayer();
+
+	// Render Resolution
+	initRenderResolution();
+}
+
+
+void RenderSettingDialog::initRenderLayer()
+{
+	QGroupBox* groupbox = new QGroupBox("Render Layer", this);
+	this->layout()->addWidget(groupbox);
 	QGridLayout* gridLayout = new QGridLayout(groupbox);
 	gridLayout->addWidget(new QLabel("Layer Name"), 0, 0);
 	gridLayout->addWidget(new QLabel("Layer Order"), 0, 1);
@@ -22,7 +35,7 @@ RenderSettingDialog::RenderSettingDialog(QWidget* parent):QDialog(parent)
 			gridLayout->addWidget(new QLabel(QString::fromStdString(layer.second)), row, 0);
 			gridLayout->addWidget(new QLabel(QString::number(layer.first)), row, 1);
 			auto addButton = new QPushButton("Add");
-			gridLayout->addWidget(addButton,row,2);
+			gridLayout->addWidget(addButton, row, 2);
 			connect(addButton, &QPushButton::clicked, [=]()
 			{
 				int row = gridLayout->rowCount();
@@ -50,13 +63,13 @@ RenderSettingDialog::RenderSettingDialog(QWidget* parent):QDialog(parent)
 						gridLayout->removeWidget(deleteButton);
 						gridLayout->removeWidget(lineEdit);
 						gridLayout->removeWidget(lineEdit2);
-						deleteButton->deleteLater();
-						lineEdit->deleteLater();
-						lineEdit2->deleteLater();
+						//deleteButton->deleteLater();
+						//lineEdit->deleteLater();
+						//lineEdit2->deleteLater();
 					});
 				});
 			});
-		}		
+		}
 		else
 		{
 			auto lineEdit = new QLineEdit(QString::fromStdString(layer.second));
@@ -64,24 +77,34 @@ RenderSettingDialog::RenderSettingDialog(QWidget* parent):QDialog(parent)
 			auto lineEdit2 = new QLineEdit(QString::number(layer.first));
 			gridLayout->addWidget(lineEdit2, row, 1);
 			QPushButton* deleteButton = new QPushButton("Delete");
-			gridLayout->addWidget(deleteButton,row,2);
+			gridLayout->addWidget(deleteButton, row, 2);
 			connect(deleteButton, &QPushButton::clicked, [=]()
 			{
 				SceneMgr::get_instance().get_render_setting()->removeRenderLayer(lineEdit2->text().toInt());
 				gridLayout->removeWidget(deleteButton);
 				gridLayout->removeWidget(lineEdit);
 				gridLayout->removeWidget(lineEdit2);
-				deleteButton->deleteLater();
-				lineEdit->deleteLater();
-				lineEdit2->deleteLater();
+				//deleteButton->deleteLater();
+				//lineEdit->deleteLater();
+				//lineEdit2->deleteLater();
 			});
 		}
 		++row;
 	}
 }
 
-void RenderSettingDialog::closeEvent(QCloseEvent* event)
+void RenderSettingDialog::initRenderResolution()
 {
-	this->destroy();
-	QDialog::closeEvent(event);
+	QGroupBox* groupbox = new QGroupBox("Render Resolution", this);
+	this->layout()->addWidget(groupbox);
+	QGridLayout* gridLayout = new QGridLayout(groupbox);
+	int row = 0;
+	gridLayout->addWidget(new QLabel("Current Resolution: "), row, 0);
+	auto lineEdit = new Vector2DLineEdit();
+	lineEdit->setText(GameEngine::get_instance().get_resolution().toQString());
+	gridLayout->addWidget(lineEdit, row, 1);
+	connect(lineEdit, &Vector2DLineEdit::Vector2DChanged, [=](Vector2D vec)
+	{
+		GameEngine::get_instance().set_resolution(vec);
+	});
 }
