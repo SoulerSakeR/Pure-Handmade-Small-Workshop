@@ -6,6 +6,15 @@ QMainWindow
      border-left:2px;
      border-right:2px;
 }
+
+QMainWindow
+{
+     background-color: #404040;
+     border-top:2px;
+     border-bottom:2px;
+     border-left:2px;
+     border-right:2px;
+}
  
 QLineEdit 
 {

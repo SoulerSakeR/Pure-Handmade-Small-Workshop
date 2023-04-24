@@ -89,10 +89,17 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionopenProject,&QAction::triggered,[=](){
         // 文件对话框  参数1 父亲 参数2 标题 参数3 默认打开路径 参数4 过滤文件格式
         QString FileAdress = QFileDialog::getOpenFileName(this,"打开项目","",QString("game project file (*.gameProject)"));// 可以重载第四个参数，意义是筛选文件类型  "(*.txt)"
-        GameEngine::get_instance().openGameProject(FileAdress.toStdString());
-        // 获取上级目录
-        QString parentDir = QFileInfo(FileAdress).dir().absolutePath();
-        setupFileSystemTreeView(parentDir);
+        if (!FileAdress.isEmpty()) {
+            GameEngine::get_instance().openGameProject(FileAdress.toStdString());
+            // 获取上级目录
+            QString parentDir = QFileInfo(FileAdress).dir().absolutePath();
+            setupFileSystemTreeView(parentDir);
+        }
+        else {
+            // 用户未选择文件
+            QMessageBox::warning(this, "警告", "未选择文件！");
+            return;
+        }
     });
 
     // 绑定 保存项目 按钮的触发事件
