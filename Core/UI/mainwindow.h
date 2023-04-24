@@ -5,6 +5,7 @@
 #include "Core/Render/common.h"
 #include <QLineEdit>
 #include <QFileSystemModel>
+#include <QPlainTextEdit>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -27,14 +28,18 @@ public:
     void showContextMenu(const QPoint&);
     void onTreeviewRightClick(const QPoint& pos);
     void onListItemDoubleClicked();
+    static QPlainTextEdit* getConsoleTextEdit();
+
 
 protected:
     void closeEvent(QCloseEvent* event) override;
 
 private:
+    static MainWindow* mainwindow;
     void initMenuSettings();
     void initMenuBar();
     Ui::MainWindow *ui;
     QFileSystemModel* fileModel;
+    QPlainTextEdit* consoleTextEdit;
 };
 #endif // RENDERWINDOW_H

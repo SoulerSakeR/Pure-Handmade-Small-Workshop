@@ -18,12 +18,15 @@
 #include "Core/GameLogic/GameLoop.h"
 #include "RenderSettingDialog.h"
 
+MainWindow* MainWindow::mainwindow = nullptr;
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
+    mainwindow = this;
     // 初始化菜单栏
     initMenuBar();
 
@@ -40,6 +43,10 @@ MainWindow::MainWindow(QWidget *parent)
     // 将 hierarchy 指针指向 GameEngine 的 hierarchy，为后面操作 GameObject 做准备
     GameEngine::get_instance().hierarchy = ui->hierarchy;
 
+    // 初始化控制台信息组件
+    consoleTextEdit = ui->consoleTextEdit;
+    consoleTextEdit->setReadOnly(true);// 只读
+    
     // 当 tab 切换时，将 widgetChanged 置为 true
     connect(ui->tabWidget, &QTabWidget::currentChanged, [=](int index) {
         ui->sceneWidget->widgetChanged = true;
@@ -393,4 +400,8 @@ void MainWindow::initMenuBar()
 {
     initMenuSettings();
 }
-
+// 返回consoleTextEdit以供调用
+QPlainTextEdit* MainWindow::getConsoleTextEdit()
+{
+    return mainwindow->consoleTextEdit;
+}
