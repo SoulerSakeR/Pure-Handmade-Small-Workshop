@@ -36,7 +36,7 @@ void GameLoop::updateScene(RenderWidget* aWidget) {
                 continue;//Sleep(1 - elapsed_time);
             }
             starttime = system_clock::now();           
-            if(aWidget->isGameWidget)
+            if(isPlaying&&aWidget->isGameWidget)
                  updateGame(aWidget);
             aWidget->update();
             endtime = system_clock::now();
@@ -109,7 +109,6 @@ void GameLoop::updateGame(RenderWidget* gameWidget) {
         Player::playerInputDetection(0.0f);
 
         gameWidget->update();
-
         endtime = system_clock::now();
         //std::cout << "end_time：" << end_time << "\tstart_time" << start_time << std::endl;
 
@@ -141,4 +140,8 @@ void GameLoop::setPlayer(Player* player) {
 
 void GameLoop::shutdown() {
     this->isRunning = false;
+}
+
+void GameLoop::setPlayingStatus(bool flag) {
+    this->isPlaying = flag;
 }
