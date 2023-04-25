@@ -5,6 +5,7 @@
 #include <Core/UI/mainwindow.h>
 #include <Core/ThreadPool/ThreadPool.h>
 #include <Core/UI/HierarchyWidget.h>
+#include <Core/UI/GameWindow.h>
 
 
 class ResourceMgr;
@@ -14,6 +15,7 @@ class GameLoop;
 class GameEngine
 {
 	friend class MainWindow;
+	friend class GameWindow;
 public:	
 	//method
 	static GameEngine& get_instance();	
@@ -35,6 +37,7 @@ public:
 	const std::string& getRootPath();
 	std::string getGamePath();	
 	bool initialize(MainWindow* window);
+	bool initializeGame(GameWindow* window); // add by jz
 	GameObject* getSelectedGameObject();
 	void onPropertyChange(Property* property);
 	void test(int a, int b) {
@@ -51,6 +54,7 @@ private:
 	
 	void renderLoop();
 	MainWindow* window;
+	GameWindow* gameWindow; // add by jz
 	HierarchyWidget* hierarchy;
 	static GameEngine* instance ; //游戏引擎实例		
 	std::string rootPath;

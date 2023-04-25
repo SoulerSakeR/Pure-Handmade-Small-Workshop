@@ -17,6 +17,7 @@
 #include "Core/Utils/PHPath.h"
 #include "Core/Utils/Event.h"
 #include "Core/GameLogic/GameLoop.h"
+#include "core/UI/GameWindow.h"
 
 class GameLoop;
 
@@ -30,6 +31,9 @@ void showMainWindow()
 
 void showGameWindow() {
     // Todo
+    GameWindow* gameWindow = new GameWindow;
+    GameEngine::get_instance().initializeGame(gameWindow);
+    gameWindow->show();
 }
 int main(int argc, char *argv[])
 { 
@@ -64,6 +68,9 @@ int main(int argc, char *argv[])
         else if (value == 1) {
             // 进入游戏界面
             std::cout << "Game Start" << std::endl;
+           
+            QMetaObject::invokeMethod(qApp, &showGameWindow, Qt::QueuedConnection);
+            
         }
         else {
             std::cerr << "Invalid value in config file." << std::endl;

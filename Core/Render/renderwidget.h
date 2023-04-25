@@ -22,6 +22,7 @@ class RenderWidget : public QOpenGLWidget,public QOpenGLFunctions_3_3_Core
 {
     Q_OBJECT
     friend class MainWindow;
+    friend class GameWindow;
 public:
     enum Shape { None, Rect, Circle, Triangle };
     explicit RenderWidget(QWidget *parent = nullptr);

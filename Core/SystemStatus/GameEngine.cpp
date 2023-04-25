@@ -43,6 +43,19 @@ bool GameEngine::initialize(MainWindow* window)
     return true;
 }
 
+// add by jz
+bool GameEngine::initializeGame (GameWindow* window)
+{
+	Debug::logInfo() << "Game initializing\n";
+	srand((unsigned)time(NULL));
+	gameProject = nullptr;
+	this->gameWindow = window;
+	std::filesystem::path current_path = std::filesystem::current_path();
+	rootPath = current_path.string();
+	Debug::logInfo() << "Game initialized\n";
+	return true;
+}
+
 GameObject* GameEngine::getSelectedGameObject()
 {
 	if (ComponentsDockWidget::get_instance() != nullptr)
