@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 
     auto flag = a.testAttribute(Qt::AA_ShareOpenGLContexts);
 
-
+    int ret = 0;
     std::ifstream file("config.txt");
     int value = 0;
     if (file >> value) {
@@ -63,6 +63,12 @@ int main(int argc, char *argv[])
             // 进入引擎界面
             QMetaObject::invokeMethod(qApp, &showMainWindow, Qt::QueuedConnection);
             std::cout << "Engine Start" << std::endl;
+            // 等待程序结束并释放资源
+            ret = a.exec();
+
+            // 释放 MainWindow 对象的内存
+            MainWindow* w = GameEngine::get_instance().getWindow();
+            delete w;
 
         }
         else if (value == 1) {
@@ -70,6 +76,12 @@ int main(int argc, char *argv[])
             std::cout << "Game Start" << std::endl;
            
             QMetaObject::invokeMethod(qApp, &showGameWindow, Qt::QueuedConnection);
+
+            // 等待程序结束并释放资源
+            ret = a.exec();
+
+            GameWindow* g = GameEngine::get_instance().getGameWindow();
+            delete g;
             
         }
         else {
@@ -80,12 +92,8 @@ int main(int argc, char *argv[])
         std::cerr << "Failed to read config file." << std::endl;
     }
 
-    // 等待程序结束并释放资源
-    int ret = a.exec();
+    
 
-    // 释放 MainWindow 对象的内存
-    MainWindow* w = GameEngine::get_instance().getWindow();
-    delete w;
-
+   
     return ret;
 }

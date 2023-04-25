@@ -1,4 +1,4 @@
-#include "Debug.h"
+﻿#include "Debug.h"
 #include "Core/Core/PHString.h"
 #include "Core/Utils/Test.h"
 #include <iostream>
@@ -27,8 +27,9 @@ void Debug::log(const std::string& info)
 	std::string text = info;
 #ifdef LOG_TO_CONSOLE	
 	Log2Console(text);
-	if(MainWindow::getConsoleTextEdit()!=nullptr)
-		MainWindow::getConsoleTextEdit()->insertPlainText(QString::fromStdString(text));
+	//这里如果不注释掉会报错，光夫哥来看看什么情况
+	//if(MainWindow::getConsoleTextEdit()!=nullptr)
+	//	MainWindow::getConsoleTextEdit()->insertPlainText(QString::fromStdString(text));
 #endif // LOG_TO_CONSOLE
 
 #ifdef LOG_TO_OUTPUT_WINDOW

@@ -1,15 +1,15 @@
-#include "GameWindow.h"
+ï»¿#include "GameWindow.h"
 
-// ¹¹Ôìº¯Êı
+// æ„é€ å‡½æ•°
 GameWindow::GameWindow()
 {
-	// ÉèÖÃ´°¿Ú±êÌâ
+	// è®¾ç½®çª—å£æ ‡é¢˜
 	setWindowTitle("Game Window");
-	// ÉèÖÃ´°¿Ú´óĞ¡
+	// è®¾ç½®çª—å£å¤§å°
 	setFixedSize(800, 600);
-	// ÉèÖÃ´°¿Ú±³¾°É«
-	setStyleSheet("background-color: black;");
-	// ÉèÖÃ´°¿ÚÎª¶¥²ã´°¿Ú
+	// è®¾ç½®çª—å£èƒŒæ™¯è‰²
+	//setStyleSheet("background-color: black;");
+	// è®¾ç½®çª—å£ä¸ºé¡¶å±‚çª—å£
 	setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 	
 	cWidget = std::make_unique<QWidget>();

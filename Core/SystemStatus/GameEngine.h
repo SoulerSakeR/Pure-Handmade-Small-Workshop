@@ -30,6 +30,7 @@ public:
 	bool openGameProjectTest(const std::string& project,const std::string** scenes); //打开已有项目
 #endif // TEST
 	MainWindow* getWindow();
+	GameWindow* getGameWindow();// add by syj
 	bool openGameProject(const std::string& path); //打开已有项目
 	bool saveGameProject(); //保存当前项目
 	GameObject& addGameObject(const std::string& name = "GameObject", GameObject* const parent = nullptr,Component::ComponentType type = Component::UNKNOWN,InsertMode insertMode = INSIDE);
@@ -53,8 +54,8 @@ private:
 	};
 	
 	void renderLoop();
-	MainWindow* window;
-	GameWindow* gameWindow; // add by jz
+	MainWindow* window = nullptr;
+	GameWindow* gameWindow = nullptr; // add by jz
 	HierarchyWidget* hierarchy;
 	static GameEngine* instance ; //游戏引擎实例		
 	std::string rootPath;

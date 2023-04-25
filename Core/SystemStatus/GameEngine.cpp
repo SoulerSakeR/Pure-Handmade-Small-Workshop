@@ -142,6 +142,10 @@ MainWindow* GameEngine::getWindow()
 	return window;
 }
 
+GameWindow* GameEngine::getGameWindow()
+{
+	return gameWindow;
+}
 /// @brief open exist gameProject
 /// @param path the obsolute path of .gameProject file
 /// @return value that indicates whether the process was completedf
