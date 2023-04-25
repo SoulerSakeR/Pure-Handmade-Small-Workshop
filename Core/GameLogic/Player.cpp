@@ -104,49 +104,49 @@ char Player::playerInputDetection(float deltaTime) {
 
 	// 按下W
 	if (InputDetection::GetKeyDown(0x57)) {
-		std::cout << "You pressed down 'W'" << std::endl;
+	//	std::cout << "You pressed down 'W'" << std::endl;
 		return 'w';
 	}
 
 	// 放开W
 	if (InputDetection::GetKeyUp(0x57)) {
-		std::cout << "You realeased 'W'" << std::endl;
+	//	std::cout << "You realeased 'W'" << std::endl;
 		return 'r';
 	}
 
 	// 按下A
 	if (InputDetection::GetKeyDown(0x41)) {
-		std::cout << "You pressed down 'A'" << std::endl;
+	//	std::cout << "You pressed down 'A'" << std::endl;
 		return 'a';
 	}
 
 	// 放开A
 	if (InputDetection::GetKeyUp(0x41)) {
-		std::cout << "You released 'A'" << std::endl;
+	//	std::cout << "You released 'A'" << std::endl;
 		return 'r';
 	}
 
 	// 按下S
 	if (InputDetection::GetKeyDown(0x53)) {
-		std::cout << "You pressed down 'S'" << std::endl;
+	//	std::cout << "You pressed down 'S'" << std::endl;
 		return 's';
 	}
 
 	// 放开S
 	if (InputDetection::GetKeyUp(0x53)) {
-		std::cout << "You released 'S'" << std::endl;
+	//	std::cout << "You released 'S'" << std::endl;
 		return 'r';
 	}
 
 	// 按下D
 	if (InputDetection::GetKeyDown(0x44)) {
-		std::cout << "You pressed down 'D'" << std::endl;
+	//	std::cout << "You pressed down 'D'" << std::endl;
 		return 'd';
 	}
 
 	// 放开D
 	if (InputDetection::GetKeyUp(0x44)) {
-		std::cout << "You released 'D'" << std::endl;
+	//	std::cout << "You released 'D'" << std::endl;
 		return 'r';
 	}
 

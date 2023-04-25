@@ -7,9 +7,10 @@
 
 class Player {
 public:
-    Player(float posX, float posY) // 构造函数，初始化位置信息
+    Player(GameObject* gameObj,float posX, float posY) // 构造函数，初始化位置信息
         // 现在暂时
         : //绑定某个游戏项目
+        gameObject(gameObj),
         m_position(0.0f, 0.0f),
         m_velocity(0.0f, 0.0f)
     {}

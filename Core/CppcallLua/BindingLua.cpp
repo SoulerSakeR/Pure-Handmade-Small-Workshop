@@ -5,6 +5,11 @@
 #include "Core/Core/GameObject.h"
 #include "Core/Core/Transform.h"
 #include "Core/Core/Text.h"
+#include "Core/Core/Image.h"
+#include "Core/Core/Camera.h"
+#include "Core/Core/Script.h"
+#include "Core/Core/BoxCollider.h"
+#include "Core/Core/Renderer.h"
 #include "Core/Core/RigidBody.h"
 
 #include "Core/Utils/Vector2D.h"
@@ -45,15 +50,15 @@ void bindAllClasses(sol::state& lua) {
     //  GameObject
     // 绑定 ComponentType 枚举
     lua.new_enum("ComponentType",
-        "UNKNOWN", ComponentType::UNKNOWN,
-        "TRANSFORM", ComponentType::TRANSFORM,
-        "IMAGE", ComponentType::IMAGE,
-        "CAMERA", ComponentType::CAMERA,
-        "SCRIPT", ComponentType::SCRIPT,
-        "RIGID_BODY", ComponentType::RIGID_BODY,
-        "BOX_COLLIDER", ComponentType::BOX_COLLIDER,
-        "TEXT", ComponentType::TEXT,
-        "RENDERER", ComponentType::RENDERER);
+        "UNKNOWN", Component::ComponentType::UNKNOWN,
+        "TRANSFORM", Component::ComponentType::TRANSFORM,
+        "IMAGE", Component::ComponentType::IMAGE,
+        "CAMERA", Component::ComponentType::CAMERA,
+        "SCRIPT", Component::ComponentType::SCRIPT,
+        "RIGID_BODY", Component::ComponentType::RIGID_BODY,
+        "BOX_COLLIDER", Component::ComponentType::BOX_COLLIDER,
+        "TEXT", Component::ComponentType::TEXT,
+        "RENDERER", Component::ComponentType::RENDERER);
 
     // 绑定 GameObject 类
     lua.new_usertype<GameObject>("GameObject",
@@ -62,29 +67,29 @@ void bindAllClasses(sol::state& lua) {
 
         // 属性
         "isActive", &GameObject::isActive,
-        "name", sol::property(&GameObject::name, &GameObject::set_name),
+        "name", sol::property(&GameObject::get_name, &GameObject::set_name),
         "transform", &GameObject::transform,
 
         // 方法
         "getID", &GameObject::getID,
         "addComponent", sol::overload(
-            [](GameObject& obj, ComponentType type) { return obj.addComponent(type); },
+            [](GameObject& obj, Component::ComponentType type) { return obj.addComponent(type); },
             [](GameObject& obj) { return obj.template addComponent<Transform>(); },
             [](GameObject& obj) { return obj.template addComponent<Image>(); },
             [](GameObject& obj) { return obj.template addComponent<Camera>(); },
             [](GameObject& obj) { return obj.template addComponent<Script>(); },
-            [](GameObject& obj) { return obj.template addComponent<Rigidbody>(); },
+            [](GameObject& obj) { return obj.template addComponent<RigidBody>(); },
             [](GameObject& obj) { return obj.template addComponent<BoxCollider>(); },
             [](GameObject& obj) { return obj.template addComponent<Text>(); },
             [](GameObject& obj) { return obj.template addComponent<Renderer>(); }
         ),
         "getComponent", sol::overload(
-            [](GameObject& obj, ComponentType type) { return obj.getComponent(type); },
+            [](GameObject& obj, Component::ComponentType type) { return obj.getComponent(type); },
             [](GameObject& obj) { return obj.template getComponent<Transform>(); },
             [](GameObject& obj) { return obj.template getComponent<Image>(); },
             [](GameObject& obj) { return obj.template getComponent<Camera>(); },
             [](GameObject& obj) { return obj.template getComponent<Script>(); },
-            [](GameObject& obj) { return obj.template getComponent<Rigidbody>(); },
+            [](GameObject& obj) { return obj.template getComponent<RigidBody>(); },
             [](GameObject& obj) { return obj.template getComponent<BoxCollider>(); },
             [](GameObject& obj) { return obj.template getComponent<Text>(); },
             [](GameObject& obj) { return obj.template getComponent<Renderer>(); }
@@ -94,7 +99,7 @@ void bindAllClasses(sol::state& lua) {
             [](GameObject& obj) { return obj.template getComponents<Image>(); },
             [](GameObject& obj) { return obj.template getComponents<Camera>(); },
             [](GameObject& obj) { return obj.template getComponents<Script>(); },
-            [](GameObject& obj) { return obj.template getComponents<Rigidbody>(); },
+            [](GameObject& obj) { return obj.template getComponents<RigidBody>(); },
             [](GameObject& obj) { return obj.template getComponents<BoxCollider>(); },
             [](GameObject& obj) { return obj.template getComponents<Text>(); },
             [](GameObject& obj) { return obj.template getComponents<Renderer>(); }

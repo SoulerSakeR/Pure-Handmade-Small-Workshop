@@ -19,30 +19,30 @@ void GameLoop::updatePlayer(float deltaTime) {
     }
 
 void GameLoop::updateScene(RenderWidget* aWidget) {
-        // 更新场景信息-需要和光夫哥和敬哥对接
-        // 获取场景信息(光夫哥)并且进行渲染（敬哥）
-        // ...       
-            // 游戏循环
+    // 更新场景信息-需要和光夫哥和敬哥对接
+    // 获取场景信息(光夫哥)并且进行渲染（敬哥）
+    // ...       
+        // 游戏循环
 
-        auto starttime= system_clock::now();
-        auto endtime = system_clock::now();
-        while (isRunning) {
-            // 计算每一帧的时间间隔
-            
-            // 等待一段时间，控制游戏速度
-            endtime = system_clock::now();
-            auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endtime - starttime);
-            if (duration.count() < 10) {
-                continue;//Sleep(1 - elapsed_time);
-            }
-            starttime = system_clock::now();           
-            if(isPlaying&&aWidget->isGameWidget)
-                 updateGame(aWidget);
-            aWidget->update();
-            endtime = system_clock::now();
-            //std::cout << "end_time：" << end_time << "\tstart_time" << start_time << std::endl;
+    auto starttime = system_clock::now();
+    auto endtime = system_clock::now();
+    while (isRunning) {
+        // 计算每一帧的时间间隔
+
+        // 等待一段时间，控制游戏速度
+        endtime = system_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endtime - starttime);
+        if (duration.count() < 10) {
+            continue;//Sleep(1 - elapsed_time);
         }
+        starttime = system_clock::now();
+        if (isPlaying && aWidget->isGameWidget)
+            updateGame(aWidget);
+        aWidget->update();
+        endtime = system_clock::now();
+        //std::cout << "end_time：" << end_time << "\tstart_time" << start_time << std::endl;
     }
+}
 
 
 void GameLoop::updateGameState(float deltaTime) {
@@ -59,19 +59,19 @@ void preloadScriptFiles() {
         updateFunctions[script->get_name()] = lua["update"];
     }
 }
-/*
+
 //更新游戏逻辑（指调用lua脚本的update函数）  东哥，你看这个函数应该放到什么地方？这个要循环调用
 void updateScripts(float deltaTime) {
     for (GameObject* gameObject : gameObjects) {
-        std::vector<Script*> scripts = gameObject->getComponent<Script>();
+        std::vector<Script*> scripts = gameObject->getComponents<Script>();
         for (Script* script : scripts) {
-            std::string gameObjectName = gameObject->name;
+            std::string gameObjectName = gameObject->get_name();
             lua[gameObjectName] = gameObject;
             updateFunctions[script->get_name()](deltaTime);
         }
     }
 }
-*/
+
 
 
 void GameLoop::updateGame(RenderWidget* gameWidget) {
@@ -102,13 +102,49 @@ void GameLoop::updateGame(RenderWidget* gameWidget) {
         //}
 
 
-        //游戏帧率100
+        // 游戏帧率100
         starttime = system_clock::now();
 
+        // 获取第一个tag为Player的GameObj
         auto temp = GameObject::findTag("Player");
-        Player::playerInputDetection(0.0f);
 
+        // 给第一个tag为Player的GameObj链接为Player类
+        Player player(temp[0],0.0f,0.0f);
+
+        char key = Player::playerInputDetection(0.0f);
+        char state = 'r';
+            switch (key) {
+            case 'a':
+                std::cout << "a" << std::endl;
+                temp[0]->transform->translate(Vector2D(-50.0f, 0.0f));
+                break;
+
+            case 'w':
+                std::cout << "w" << std::endl;
+                temp[0]->transform->translate(Vector2D(0.0f, 50.0f));
+                break;
+
+            case 'd':
+                std::cout << "d" << std::endl;
+                temp[0]->transform->translate(Vector2D(50.0f, .0f));
+                break;
+
+            case 's':
+                std::cout << "s" << std::endl;
+                temp[0]->transform->translate(Vector2D(0.0f, -50.0f));
+                break;
+
+            case 'r':
+                std::cout << "release" << std::endl;
+                temp[0]->transform->translate(Vector2D(0.0f, 0.0f));
+                break;
+            default:
+                temp[0]->transform->translate(Vector2D(0.0f, 0.0f));
+            }
+            std::cout << temp[0]->transform->getWorldPosition().x;
+            std::cout << "," << temp[0]->transform->getWorldPosition().y << std::endl;
         gameWidget->update();
+        
         endtime = system_clock::now();
         //std::cout << "end_time：" << end_time << "\tstart_time" << start_time << std::endl;
 
