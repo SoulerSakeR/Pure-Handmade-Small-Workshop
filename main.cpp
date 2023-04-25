@@ -20,8 +20,20 @@
 
 class GameLoop;
 
+void showMainWindow()
+{
+    MainWindow* w = new MainWindow;
+    GameEngine::get_instance().initialize(w);
+    w->show();
+
+}
+
+void showGameWindow() {
+    // Todo
+}
 int main(int argc, char *argv[])
 { 
+
     QLoggingCategory::setFilterRules(QStringLiteral("qt.gui.imageio=false")); // 关闭图片格式警告
     //QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     QApplication a(argc, argv);
@@ -39,9 +51,34 @@ int main(int argc, char *argv[])
 
     auto flag = a.testAttribute(Qt::AA_ShareOpenGLContexts);
 
-    MainWindow w;
-    GameEngine::get_instance().initialize(&w);
-    w.show();
 
-    return a.exec();
+    std::ifstream file("config.txt");
+    int value = 0;
+    if (file >> value) {
+        if (value == 0) {
+            // 进入引擎界面
+            QMetaObject::invokeMethod(qApp, &showMainWindow, Qt::QueuedConnection);
+            std::cout << "Engine Start" << std::endl;
+
+        }
+        else if (value == 1) {
+            // 进入游戏界面
+            std::cout << "Game Start" << std::endl;
+        }
+        else {
+            std::cerr << "Invalid value in config file." << std::endl;
+        }
+    }
+    else {
+        std::cerr << "Failed to read config file." << std::endl;
+    }
+
+    // 等待程序结束并释放资源
+    int ret = a.exec();
+
+    // 释放 MainWindow 对象的内存
+    MainWindow* w = GameEngine::get_instance().getWindow();
+    delete w;
+
+    return ret;
 }
