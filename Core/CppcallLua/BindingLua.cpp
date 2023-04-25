@@ -40,9 +40,13 @@ void bindAllClasses(sol::state& lua) {
     */
 
     // Debug
+    /*
+    
+    */
     lua.new_usertype<Debug>("Debug",
         // ¾²Ì¬³ÉÔ±º¯Êý
-        "log", &Debug::log,
+        "log", &Debug::logInfo,
+        "logWarning", &Debug::logWarning,
         "logError", &Debug::logError
         );
 
