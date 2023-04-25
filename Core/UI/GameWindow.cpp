@@ -6,14 +6,17 @@ GameWindow::GameWindow()
 	// 设置窗口标题
 	setWindowTitle("Game Window");
 	// 设置窗口大小
-	setFixedSize(800, 600);
+	//setFixedSize(1920, 1080);
 	// 设置窗口背景色
 	//setStyleSheet("background-color: black;");
-	// 设置窗口为顶层窗口
-	setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+	
 	
 	cWidget = std::make_unique<QWidget>();
 	setCentralWidget(cWidget.get());
 
+	auto layout = new QVBoxLayout(cWidget.get());
+
 	renderWidget = std::make_unique<RenderWidget>(this);
+	layout->addWidget(renderWidget.get());
+
 }
