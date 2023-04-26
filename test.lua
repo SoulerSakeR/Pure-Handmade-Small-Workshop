@@ -7,6 +7,7 @@ update = function()
         print("button w up")
     end
     if(InputDetection.getKeyDown(0x41))then
+        this.transform:translate1(-50,0)
         print("button a down")
     end
     if(InputDetection.getKeyUp(0x41))then
@@ -21,6 +22,7 @@ update = function()
         print("button s up")
     end
     if(InputDetection.getKeyDown(0x44))then
+        this.transform:translate1(50,0)
         print("button d down")
     end
     if(InputDetection.getKeyUp(0x44))then

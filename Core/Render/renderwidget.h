@@ -166,7 +166,7 @@ private:
     Camera*  mCamera;
 
     
-
+    GLenum glCheckError_(const char* file, int line);
 };
 
 #endif // RENDERWIDGET_H

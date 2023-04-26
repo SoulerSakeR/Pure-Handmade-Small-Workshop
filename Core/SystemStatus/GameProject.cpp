@@ -37,6 +37,7 @@ bool GameProject::openScene(int index)
 		GameEngine::get_instance().pool.enqueue(gameLoop);
 		return true;
 	}	
+	return false;
 }
 
 bool GameProject::openScene(const std::string& name)

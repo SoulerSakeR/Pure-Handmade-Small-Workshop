@@ -9,6 +9,7 @@
 #include "DeleteComponentButton.h"
 #include "ColorPaletteWidget.h"
 #include "LayerComboBox.h"
+#include "TextureSelectorWidget.h"
 
 ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGroupBox(parent), component(component)
 {
@@ -96,6 +97,13 @@ ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGr
 			widget->property_Object_map[property] = comboBox;
 			connect(comboBox, &QComboBox::currentIndexChanged, widget, &ComponentsDockWidget::onIntChanged);
 			break;
+		}
+		case Property::TEXTURE2D:
+		{
+			auto texture2D = new TextureSelectorWidget(this,property);
+			layout->addWidget(texture2D, row, 1);
+			widget->Object_Property_map[texture2D] = property;
+			widget->property_Object_map[property] = texture2D;
 		}
 		}
 		row++;

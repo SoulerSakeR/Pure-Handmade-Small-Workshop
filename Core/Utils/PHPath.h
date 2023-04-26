@@ -24,7 +24,7 @@ public:
 			isFile = true;
 		}
 	}
-	PHPath combinePath(const std::string& path);
+	[[nodiscard]] PHPath combinePath(const std::string& path);
 	std::string getFileType();
 	std::string getFileName(bool withExtension = true);
 	std::string getNewPath();

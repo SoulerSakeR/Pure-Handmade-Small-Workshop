@@ -1,4 +1,29 @@
 #include "IO.h"
+#include "Core/Core/Debug.h"
+#include "Core/Utils/PHPath.h"
+#include <qdir.h>
+
+std::vector<std::string> IO::getFilesInDirectory(const std::string& directoryPath,bool includeSubDir)
+{
+    std::vector<std::string> result;
+    QDir directory = QDir(QString::fromStdString(directoryPath));
+    // 遍历目录中所有文件
+    for (const auto& fileInfo : directory.entryInfoList(QDir::Files))
+    {
+        result.push_back(fileInfo.absoluteFilePath().toStdString());
+    }
+
+    // 遍历目录中所有子目录
+    if(includeSubDir)
+    for (const auto& subDir : directory.entryList(QDir::Dirs | QDir::NoDotAndDotDot))
+    {
+        for (auto& s : getFilesInDirectory(PHPath(directoryPath).combinePath(subDir.toStdString()).getNewPath())) // 递归遍历子目录
+        {
+            result.push_back(s);
+        }
+    }
+    return result;
+}
 
 bool IO::createPathIfNotExists(const std::string& directory)
 {
@@ -159,6 +184,11 @@ QString IO::loadTextAsset(QString path)
     QString displayString;
     QFile file(path);
      file.open(QIODevice::ReadOnly | QIODevice::Text);
+     if (file.isOpen() == false)
+     {
+		 Debug::logWarning()<<"File not found: "<<path<<"\n";
+         return "";
+	 }
      QTextStream in(&file);
      QString line = in.readLine();
 

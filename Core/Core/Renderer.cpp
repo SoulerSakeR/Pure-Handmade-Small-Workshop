@@ -43,6 +43,7 @@ int Renderer::get_render_order()
 			return i;
 		}
 	}
+	Debug::logError()<<"Renderer::get_render_order() dont match renderer in vec\n";
 }
 
 

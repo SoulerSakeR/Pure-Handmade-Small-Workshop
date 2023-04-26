@@ -28,8 +28,8 @@ void Debug::log(const std::string& info)
 #ifdef LOG_TO_CONSOLE	
 	Log2Console(text);
 	//这里如果不注释掉会报错，光夫哥来看看什么情况
-	//if(MainWindow::getConsoleTextEdit()!=nullptr)
-	//	MainWindow::getConsoleTextEdit()->insertPlainText(QString::fromStdString(text));
+	if(MainWindow::getConsoleTextEdit()!=nullptr)
+		MainWindow::getConsoleTextEdit()->insertPlainText(QString::fromStdString(text));
 #endif // LOG_TO_CONSOLE
 
 #ifdef LOG_TO_OUTPUT_WINDOW

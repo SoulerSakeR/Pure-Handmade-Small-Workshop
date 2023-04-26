@@ -58,14 +58,60 @@ public:
 class Texture2D: public ISerializable
 {
 public:
-   Texture2D(const std::string& path);
-   
+   static Texture2D* loadFromPath(const std::string& absolutePath);
+   static Texture2D* loadFromName(const std::string& name);
+   static bool isExist(const std::string& name);
+
+   //getter and setter
+   std::string get_name() const;
+   bool set_name(const std::string& name);
+
+   std::string get_path() const;
+   bool set_path(const std::string& path);
+
+   std::string get_img_path() const;
+   bool set_img_path(const std::string& path);
+
+   QOpenGLTexture* get_texture() const;
+   bool set_texture(const std::string& absolutePath);
+   bool set_texture(QOpenGLTexture* texture);
+
+   bool get_mipmap() const;
+   bool set_mipmap(bool mipmap);
+
+   int get_minification_filter() const;
+   bool set_minification_filter(int filter);
+
+   int get_magnification_filter() const;
+   bool set_magnification_filter(int filter);
+
+   int get_wrap_mode() const;
+   bool set_wrap_mode(int mode);
+
+   void save();
+   bool isNull() const;
+   void reset_texture();
+
+   typedef Texture2D customType;
    // Inherited via ISerializable
    virtual void serialize(PHString& str) override;
    virtual void deserialize(std::stringstream& ss) override;
+
+   const std::string EXTENSION = ".texture";
+
 private:
+    Texture2D();
+    Texture2D(const Texture2D& other) = delete;
+    Texture2D& operator=(const Texture2D& other) = delete;
     QOpenGLTexture* texture;
-    std::string path;    
     std::string name;
+    std::string path;
+    std::string img_path;       
+    bool mipmap;
+    int minification_filter;
+    int magnification_filter;
+    int wrap_mode;
+
+    friend class ResourceMgr;
 };
 #endif // TEXTURE2D_H

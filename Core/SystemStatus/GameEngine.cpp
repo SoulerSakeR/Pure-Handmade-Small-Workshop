@@ -9,6 +9,7 @@
 #include <Core/Utils/PHPath.h>
 #include <Core/Core/Image.h>
 #include <Core/UI/ComponentsDockWidget.h>
+#include "Core/ResourceManagement/ResourceMgr.h"
 
 using namespace std;
 
@@ -158,6 +159,7 @@ bool GameEngine::openGameProject(const string& path)
 	gp->deserialize(ss);
 	this->gameProject = gp;
 	SceneMgr::get_instance().render_setting = this->gameProject->render_setting;
+	ResourceMgr::get_instance().loadAllAssets();
 	gp->openScene(0);
 	return true;
 }
@@ -192,7 +194,7 @@ GameObject& GameEngine::addGameObject(const string& name, GameObject* const pare
 	case Component::TRANSFORM:
 		break;
 	case Component::IMAGE:
-		gameObject->addComponent<Image>()->set_imgPath("\\Resources\\0028.png");
+		gameObject->addComponent<Image>();
 		gameObject->addComponent<Renderer>();
 		break;
 	case Component::CAMERA:

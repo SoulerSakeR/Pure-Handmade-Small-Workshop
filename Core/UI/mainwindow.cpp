@@ -17,6 +17,8 @@
 #include "Core/UI/AddSceneDialog.h"
 #include "Core/GameLogic/GameLoop.h"
 #include "RenderSettingDialog.h"
+#include "Core/ResourceManagement/ResourceMgr.h"
+#include "TextureEditorDialog.h"
 
 MainWindow* MainWindow::mainwindow = nullptr;
 
@@ -312,7 +314,7 @@ void MainWindow::setupFileSystemTreeView(const QString& parentDir)
     fileModel = new QFileSystemModel(ui->treeView);
     fileModel->setRootPath(parentDir);
     QStringList filters;
-    filters << "*.scene" << "*.png";
+    filters << "*.scene" << "*.png"<<"*.texture"<<"*.gameProject";
     fileModel->setNameFilters(filters);
     fileModel->setNameFilterDisables(false);
 
@@ -332,11 +334,13 @@ void MainWindow::onTreeviewRightClick(const QPoint& pos) {
         auto openAction = menu.addAction("Open");
         auto createMenu = menu.addMenu("Create");
         auto addSceneAction = createMenu->addAction("New Scene");
+        auto addTextureAction = createMenu->addAction("New Texture2D");
         auto importExistSceneAction = menu.addAction("Import Exist Scene");
         auto deleteSceneAction = menu.addAction("Delete Scene");
         // 将QAction与槽函数绑定
         connect(openAction, &QAction::triggered, this, &MainWindow::open);
         connect(addSceneAction, &QAction::triggered, this, &MainWindow::addScene);
+        connect(addTextureAction, &QAction::triggered, this, &MainWindow::addTexture);
         connect(deleteSceneAction, &QAction::triggered, this, &MainWindow::deleteScene);
         connect(importExistSceneAction, &QAction::triggered, this, &MainWindow::importScene);
         menu.exec(ui->treeView->viewport()->mapToGlobal(pos));
@@ -365,6 +369,12 @@ void MainWindow::open()
     {
         GameEngine::get_instance().getCurrentGameProject()->openScene(path.getFileName(false));
     }
+    else if(path.getFileType() == ".texture")
+    {
+        auto texture = ResourceMgr::get_instance().loadFromName<Texture2D>(path.getFileName(false));
+        auto dialog = new TextureEditorDialog(texture, this);
+        dialog->exec();
+    }
     else
     {
         QDesktopServices::openUrl(QUrl::fromLocalFile(currentPath));
@@ -377,6 +387,17 @@ void MainWindow::addScene()
     // 获取当前选择的项
     QDialog* createSceneDialog = new AddSceneDialog(this);
     createSceneDialog->show();
+}
+
+void MainWindow::addTexture()
+{
+	// 具体的代码，传入文件地址
+	// 获取当前选择的项
+	/*QDialog* createTextureDialog = new AddTextureDialog(this);
+	createTextureDialog->show();*/
+    auto res = ResourceMgr::get_instance().CreatNewTexture2D("UnNamed_Texture","");
+    auto dialog =new TextureEditorDialog(res, this);
+    dialog->exec();
 }
 // 删除需要确认   标记完善一下***************************************************
 bool deleteFile(const QString& filePath)

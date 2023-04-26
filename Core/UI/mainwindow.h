@@ -23,6 +23,7 @@ public:
     void setupFileSystemTreeView(const QString& parentDir);
     void open();
     void addScene();
+    void addTexture();
     void deleteScene();  
     void importScene();
     void showContextMenu(const QPoint&);

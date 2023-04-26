@@ -10,6 +10,8 @@
 #include <qopenglframebufferobject.h>
 #include <qapplication.h>
 
+#define glCheckError() glCheckError_(__FILE__, __LINE__)
+
 RenderWidget* RenderWidget::sceneWidget= nullptr;
 RenderWidget* RenderWidget::gameWidget = nullptr;
 RenderWidget* RenderWidget::currentWidget = nullptr;
@@ -18,6 +20,44 @@ QOpenGLContext* RenderWidget::sharedContext = nullptr;
 bool RenderWidget::widgetChanged = false;
 std::string source_path;
 static int count = 0;
+
+
+GLenum RenderWidget::glCheckError_(const char* file, int line) {
+	GLenum errorCode;
+	while ((errorCode = glGetError()) != GL_NO_ERROR) {
+		std::string error;
+		switch (errorCode) {
+		case GL_INVALID_ENUM:
+			error = "INVALID_ENUM";
+			break;
+		case GL_INVALID_VALUE:
+			error = "INVALID_VALUE";
+			break;
+		case GL_INVALID_OPERATION:
+			error = "INVALID_OPERATION";
+			break;
+			//case GL_STACK_OVERFLOW:
+			//  error = "STACK_OVERFLOW";
+			//  break;
+			//case GL_STACK_UNDERFLOW:
+			//  error = "STACK_UNDERFLOOR";
+			//  break;
+		case GL_OUT_OF_MEMORY:
+			error = "OUT_OF_MEMORY";
+			break;
+		case GL_INVALID_FRAMEBUFFER_OPERATION:
+			error = "INVALID_FRAMEBUFFER_OPERATION";
+			break;
+		}
+
+		std::cout << error << " | " << file << " (" << line << ") " << std::endl;
+	}
+
+	return errorCode;
+}
+
+
+
 
 RenderWidget::RenderWidget(QWidget* parent) : QOpenGLWidget(parent)
 {
@@ -224,6 +264,7 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 		img->ibo->create();
 		img->ibo->bind();
 		img->ibo->allocate(img->indices.data(), static_cast<int>(img->indices.size() * sizeof(unsigned int)));
+		/*
 		if (img->get_img() != nullptr)
 		{
 			if (img->texture == nullptr)
@@ -235,6 +276,7 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 					Debug::logError()<< "texture create failed\n" ;
 			}		
 		}
+		*/
 		imageShaderProgram->bind();
 		
 		GLint posLocation = imageShaderProgram->attributeLocation("aPos");
@@ -286,8 +328,10 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 	imageShaderProgram->setUniformValue("color", img->color.red(), img->color.green(), img->color.blue(), img->color.alpha());
 
 	//bind texture
-	if(img->texture!=nullptr)
-		img->texture->bind();
+	/*if(img->texture!=nullptr)
+		img->texture->bind();*/
+	if(img->isTextureValid())
+		img->get_texture()->bind();
 	img->ibo->bind();
 	//enable alpha blending
 	glEnable(GL_BLEND);
@@ -302,8 +346,10 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 	//draw texture
 	glDrawElements(GL_TRIANGLES, sizeof(unsigned int)*6, GL_UNSIGNED_INT, 0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	img->ibo->release();
-	
+
+	if (img->isTextureValid())
+		img->get_texture()->release();
+
 	if (imageCamera == mCamera && visBorder == true)
 	{
 		//draw border
@@ -326,8 +372,8 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 	}	
 	//release
 	img->vao->release();
-	if(img->texture!=nullptr)
-		img->texture->release();
+	/*if(img->texture!=nullptr)
+		img->texture->release();*/
 }
 
 void RenderWidget::renderText(Text* text, Camera* textCamera, bool visBorder)
@@ -493,7 +539,7 @@ void RenderWidget::renderText(Text* text, Camera* textCamera, bool visBorder)
 	glDrawElements(GL_TRIANGLES, sizeof(unsigned int) * 6, GL_UNSIGNED_INT, 0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	text->ibo->release();
-	
+	mTexture ->release();
 	
 	if (textCamera == mCamera && visBorder == true)
 	{
@@ -520,9 +566,6 @@ void RenderWidget::renderText(Text* text, Camera* textCamera, bool visBorder)
 	
 	//release
 	text->vao->release();
-	if(text->texture!=nullptr)
-		text->texture->release();
-
 }
 
 // render camera border
@@ -540,7 +583,7 @@ void RenderWidget::renderCameraBorder(Camera* target, Camera* renderCamera, bool
 	// 计算camera的高
 	float cameraHeight = cameraWidth / aspect;
 	target->set_size(Vector2D(cameraWidth, cameraHeight));
-
+	
 	if (widgetChanged)
 	{
 		if (target->vao != nullptr)
@@ -572,7 +615,7 @@ void RenderWidget::renderCameraBorder(Camera* target, Camera* renderCamera, bool
 			target->borderIbo = nullptr;
 		}
 	}
-
+	
 	if (target->vao == nullptr)
 	{
 		target->vao = new QOpenGLVertexArrayObject;
@@ -654,14 +697,28 @@ void RenderWidget::renderScene(Camera* camera)
 
 void RenderWidget::initializeGL()
 {
+	
+	/*QSurfaceFormat format;
+	format.setDepthBufferSize(24);
+	format.setStencilBufferSize(8);
+	format.setVersion(3, 3);
+	format.setProfile(QSurfaceFormat::CoreProfile);
+	format.setOption(QSurfaceFormat::DebugContext);
+	QOpenGLContext* context1 = new QOpenGLContext;
+	context1->setFormat(format);	
+	context1->setShareContext(QOpenGLContext::currentContext());
+	context1->create();
+	context1->makeCurrent(context()->surface());*/
+
+	 // Enable debug context
 	initializeOpenGLFunctions();
 	// debug info
-	/*
+	Debug::logInfo()<< context()->format().testOption(QSurfaceFormat::DebugContext);
 	logger = std::make_unique<QOpenGLDebugLogger>(this);
 	logger->initialize();
 	connect(logger.get(), &QOpenGLDebugLogger::messageLogged, this, &RenderWidget::messageLogHandler);
 	logger->startLogging();
-	*/
+	
 
 	source_path = GameEngine::get_instance().getRootPath();
 
@@ -704,7 +761,7 @@ void RenderWidget::paintGL()
 	renderFbo();	
 	renderFboOverlay();
 	mixTexture();
-
+	glCheckError();
 	//update scene render order
 	if (auto renderSetting = SceneMgr::get_instance().get_render_setting();renderSetting != nullptr && renderSetting->refresh_later)
 	{

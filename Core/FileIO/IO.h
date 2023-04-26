@@ -12,6 +12,7 @@
 class IO
 {
 public:
+    static std::vector<std::string> getFilesInDirectory(const std::string& directory,bool includeSubDir = false);
     static bool createPathIfNotExists(const std::string& directory);
     static bool createPathIfNotExists(const QString& directory);
     static bool write(QString content,QString path,int mode);

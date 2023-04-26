@@ -10,7 +10,7 @@ class Property
 public:
 	enum PropertyType
 	{
-		INT,FLOAT,STRING,BOOL,VECTOR2D,COLOR,COMBO_BOX
+		INT,FLOAT,STRING,BOOL,VECTOR2D,COLOR,COMBO_BOX,TEXTURE2D
 	};
 	
 	Property(const std::string& name, void* data,PropertyType type,Component* src);

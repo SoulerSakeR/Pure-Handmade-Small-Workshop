@@ -11,7 +11,7 @@ IRenderable::IRenderable(GameObject* gameobj) : Component(gameobj)
 	indices.clear();
 	properties.emplace("color", new Property("color", &color, Property::COLOR, this));
 	color = Color32{ 255,255,255,255 };
-	texture = nullptr;
+	texture2D = nullptr;
 }
 
 IRenderable::~IRenderable()
@@ -38,6 +38,19 @@ IRenderable::~IRenderable()
 	{
 		vertices.clear();
 	}
+}
+
+bool IRenderable::isTextureValid()
+{
+	if(texture2D!=nullptr&&texture2D->get_texture()!=nullptr)
+		return true;
+	return false;
+}
+
+QOpenGLTexture* IRenderable::get_texture()
+{
+	if(isTextureValid())
+		return texture2D->get_texture();
 }
 
 void IRenderable::set_property(Property* property, void* value)

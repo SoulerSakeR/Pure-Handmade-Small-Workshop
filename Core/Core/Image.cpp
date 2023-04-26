@@ -3,78 +3,48 @@
 #include "Core/FileIO/IO.h"
 #include "Core/SystemStatus/GameEngine.h"
 #include <Core/ResourceManagement/SceneMgr.h>
+#include "Core/ResourceManagement/ResourceMgr.h"
+
 using namespace std;
 
-const std::string& Image::get_imgPath()
+bool Image::set_texture2D(const std::string& name)
 {
-	return imgPath;
-}
-
-void Image::set_imgPath(const std::string& imgPath,bool refreshUI)
-{
-	this->imgPath = imgPath;
-	QString path = QString::fromStdString(GameEngine::get_instance().getRootPath() + imgPath);
-	if(img!=nullptr)
-		delete img;
-	img = new QImage(path);
-	if (!img->isNull())
+	if (name == "None")
 	{
-		img->convertToFormat(QImage::Format_RGBA8888);
-		if (texture != nullptr)
-		{
-			texture->destroy();
-			delete texture;
-			texture = nullptr;
-		}
-		set_size(Vector2D(img->width(), img->height()));
+		IRenderable::texture2D = nullptr;
+		this->texture2D = "None";
+		return true;
 	}
-	else
-	{
-		delete img;
-		img = nullptr;
-		if (texture != nullptr)
-		{
-			texture->destroy();
-			delete texture;
-			texture = nullptr;
-		}
-	}
-	onPropertyChange(properties["img path"]);
-}
-
-QImage* Image::get_img()
-{
-	return img;
+	IRenderable::texture2D = ResourceMgr::get_instance().loadFromName<Texture2D>(name);
+	this->texture2D = IRenderable::texture2D->get_name();
+	if (isTextureValid())
+		set_size(Vector2D(get_texture()->width(), get_texture()->height()));
+	return true;
 }
 
 
-Image::Image(GameObject* gameObj, const std::string& imgPath,Vector2D size):IBoxResizable(gameObj)
+
+Image::Image(GameObject* gameObj):IBoxResizable(gameObj)
 {
-	this->imgPath = imgPath;
-	this->size = size;
-	img = nullptr;
 	componentType = IMAGE;
-	properties.emplace("img path", new Property("img path", &(this->imgPath), Property::STRING,this));
+	texture2D = "None";
+	properties.emplace("texture2D", new Property("texture2D", &(this->texture2D), Property::TEXTURE2D, this));
 }
 
 void Image::serialize(PHString& str)
 {
 	str.appendLine(to_string((int)componentType));
 	IBoxResizable::serialize(str);
-	str.appendLine(imgPath);
+	str.appendLine(texture2D);
 }
 
 
 void Image::set_property(Property* property, void* value)
 {
 	IBoxResizable::set_property(property, value);
-	if (property->get_name() == "img path")
+	if (property->get_name() == "texture2D")
 	{
-		set_imgPath(*(string*)value,false);
-	}
-	else if (property->get_name() == "size")
-	{
-		set_size(*(Vector2D*)value);
+		set_texture2D(*(string*)value);
 	}
 }
 
@@ -85,12 +55,11 @@ void Image::deserialize(std::stringstream& ss)
 	IBoxResizable::deserialize(ss);
 	string s;
 	getline(ss, s);
-	set_imgPath(s);
+	set_texture2D(s);
 }
 
 void Image::reset()
 {
-	imgPath = "";
-	size = Vector2D::zero();
+
 }
 
