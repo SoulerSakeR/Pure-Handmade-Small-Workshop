@@ -34,6 +34,7 @@ GameEngine& GameEngine::get_instance()
 /// @return value that indicates the process was completed or not.
 bool GameEngine::initialize(MainWindow* window)
 {
+	this->inEditor = true;
 	Debug::logInfo()<< "Engine initializing\n";
 	srand((unsigned)time(NULL));
 	gameProject = nullptr;
@@ -47,6 +48,7 @@ bool GameEngine::initialize(MainWindow* window)
 // add by jz
 bool GameEngine::initializeGame (GameWindow* window)
 {
+	this->inEditor = false;
 	Debug::logInfo() << "Game initializing\n";
 	srand((unsigned)time(NULL));
 	gameProject = nullptr;
@@ -232,4 +234,9 @@ std::string GameEngine::getGamePath()
 	if (gameProject != nullptr)
 		return gameProject->path.getNewPath();
 	return nullptr;
+}
+
+bool GameEngine::getInEditor()
+{
+	return inEditor;
 }

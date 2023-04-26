@@ -44,6 +44,7 @@ public:
 	void test(int a, int b) {
 				std::cout << a << " " << b << std::endl;
 	}
+	bool getInEditor();
 	ThreadPool pool;
 	GameLoop* gameLoop;
 private:

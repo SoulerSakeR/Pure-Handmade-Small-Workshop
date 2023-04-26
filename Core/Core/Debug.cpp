@@ -4,6 +4,7 @@
 #include <iostream>
 #include "qmessagebox.h"
 #include "Core/UI/mainwindow.h"
+#include "Core/SystemStatus/GameEngine.h"
 
 const std::string& INFO_PREFIX = "[info] ";
 const std::string& ERROR_PREFIX = "[error] ";
@@ -27,9 +28,11 @@ void Debug::log(const std::string& info)
 	std::string text = info;
 #ifdef LOG_TO_CONSOLE	
 	Log2Console(text);
-	//这里如果不注释掉会报错，光夫哥来看看什么情况
-	if(MainWindow::getConsoleTextEdit()!=nullptr)
-		MainWindow::getConsoleTextEdit()->insertPlainText(QString::fromStdString(text));
+	if (GameEngine::get_instance().getInEditor()) {
+		if(MainWindow::getConsoleTextEdit()!=nullptr)
+			MainWindow::getConsoleTextEdit()->insertPlainText(QString::fromStdString(text));
+	}
+	
 #endif // LOG_TO_CONSOLE
 
 #ifdef LOG_TO_OUTPUT_WINDOW
