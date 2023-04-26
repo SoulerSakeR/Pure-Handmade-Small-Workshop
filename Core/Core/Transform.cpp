@@ -67,7 +67,7 @@ Transform* Transform::translate1(float x, float y)
 	localPosition.x = localPosition.x + x;
 	if (GameEngine::get_instance().getSelectedGameObject() == gameObject)
 	{
-		GameEngine::get_instance().onPropertyChange(properties["localPosition"]);
+		//GameEngine::get_instance().onPropertyChange(properties["localPosition"]);
 	}
 	return this;
 }

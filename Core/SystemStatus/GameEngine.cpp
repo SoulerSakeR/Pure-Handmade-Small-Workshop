@@ -136,7 +136,8 @@ void GameEngine::exportGame(const string& name, const string& path)
 	if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
 		QTextStream out(&file);
 		out << "1\n";
-		out << GameEngine::get_instance().getGamePath().c_str();
+		std::string wholePath = GameEngine::get_instance().getGamePath() + "/" + GameEngine::get_instance().getCurrentGameProject()->name+".gameProject";
+		out << wholePath.c_str();
 		file.close();
 	}
 
@@ -147,7 +148,8 @@ void GameEngine::exportGame(const string& name, const string& path)
 	if (file2.open(QIODevice::WriteOnly | QIODevice::Text)) {
 		QTextStream out(&file2);
 		out << "1\n";
-		out << GameEngine::get_instance().getGamePath().c_str();
+		std::string wholePath = GameEngine::get_instance().getGamePath() + "/" + GameEngine::get_instance().getCurrentGameProject()->name + ".gameProject";
+		out << wholePath.c_str();
 		file2.close();
 	}
 }
