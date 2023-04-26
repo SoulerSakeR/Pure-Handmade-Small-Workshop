@@ -13,6 +13,11 @@ class GameWindow : public QMainWindow
 	std::unique_ptr<RenderWidget> renderWidget;
 public:
 	GameWindow();
+	static GameWindow& get_instance();
+
+private:
+	static GameWindow* instance;
+	
 };
 
 

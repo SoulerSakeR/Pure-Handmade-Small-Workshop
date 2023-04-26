@@ -1297,6 +1297,28 @@ void RenderWidget::mouseDoubleClickEvent(QMouseEvent* event)
 
 void RenderWidget::keyPressEvent(QKeyEvent* event)
 {
+
+	if (event->key() == Qt::Key_Return && event->modifiers() == Qt::AltModifier)
+	{
+		if (isFullScreen)
+		{
+			GameWindow::get_instance().renderWidget->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
+			GameWindow::get_instance().renderWidget->showFullScreen();
+			isFullScreen = true;
+		}
+		else
+		{
+			GameWindow::get_instance().renderWidget->showNormal();
+			isFullScreen = false;
+		}
+	}
+	else
+	{
+		QWidget::keyPressEvent(event);
+	}
+
+
+
 	if (!SceneMgr::get_instance().hasCurrentScene() || isGameWidget || !GameEngine::get_instance().getInEditor())
 		return;
 	switch (event->key()) {

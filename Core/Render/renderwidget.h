@@ -16,6 +16,7 @@
 #include <QOpenGLFramebufferObject>
 #include <Core/Core/Camera.h>
 #include <Core/UI/HierarchyWidget.h>
+#include <Core/UI/GameWindow.h>
 
 
 class RenderWidget : public QOpenGLWidget,public QOpenGLFunctions_3_3_Core
@@ -75,6 +76,7 @@ public:
     bool isGameWidget = false;
     bool moveObjectMode = false;
     bool moveCameraMode = false;
+    bool isFullScreen = false;
     static bool widgetChanged;
     static RenderWidget* currentWidget;
 
