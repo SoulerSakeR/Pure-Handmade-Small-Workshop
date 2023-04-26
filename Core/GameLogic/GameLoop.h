@@ -41,6 +41,10 @@ public:
         // 比如玩家的位置
         // ...
 
+    void updateScripts(float deltaTime);
+
+    void preloadScriptFiles();
+
     void printDataInfo(float deltaTime);
         //输出数据信息-测试用
     
@@ -62,4 +66,5 @@ private:
    int gameTime; // 储存srand(GetTickCount())
    bool isRunning = true;
    bool isPlaying = false;
+   sol::state lua;
 };
