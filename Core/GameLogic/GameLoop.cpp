@@ -23,9 +23,9 @@ void GameLoop::updateScene(RenderWidget* aWidget) {
     // 获取场景信息(光夫哥)并且进行渲染（敬哥）
     // ...       
         // 游戏循环
-    //sol::state lua;
+    sol::state lua;
     lua.open_libraries(sol::lib::base);
-
+    lua.script_file("./input.lua");
     auto starttime = system_clock::now();
     auto endtime = system_clock::now();
     while (isRunning) {
