@@ -24,7 +24,8 @@ public:
     float getWorldRotation(); //获取世界旋转角度 需要绑定
     Vector2D getWorldScale(); //需要绑定
     Transform* translate(Vector2D value); //朝给定向量移动 需要绑定
-    
+    Transform* translate1(float x, float y);//朝给定xx移动
+
     Vector2D get_localPosition(); //获取本地坐标位置 需要绑定
     void set_localPosition(Vector2D value); //设置本地坐标位置 需要绑定
     float get_localRotation(); //获取本地旋转角度 需要绑定

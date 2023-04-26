@@ -131,7 +131,8 @@ void bindAllClasses(sol::state& lua) {
         "getWorldPosition", &Transform::getWorldPosition,
         "getWorldRotation", &Transform::getWorldRotation,
         "getWorldScale", &Transform::getWorldScale,
-        "translate", &Transform::translate);
+        "translate", &Transform::translate,
+        "translate1", &Transform::translate1);
 
 
     //Text

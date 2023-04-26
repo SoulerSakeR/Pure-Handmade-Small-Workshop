@@ -10,6 +10,7 @@
 #include "Core/Core/GameObject.h"
 #include "Core/Core/Script.h"
 #include "lib/sol/sol.hpp"
+#include "Core/CppcallLua/BindingLua.h"
 
 #include "Player.h"
 
@@ -41,15 +42,15 @@ public:
         // 比如玩家的位置
         // ...
 
-    void updateScripts(float deltaTime);
+    void updateScripts(float deltaTime, sol::state &lua);
 
-    void preloadScriptFiles();
+    void preloadScriptFiles(sol::state &lua);
 
     void printDataInfo(float deltaTime);
         //输出数据信息-测试用
     
 
-    void updateGame(RenderWidget* gameWidget);
+    void updateGame(RenderWidget* gameWidget,sol::state &lua,float dealtaTime);
         // 游戏逻辑更新函数，每帧调用一次
         //updatePlayer(deltaTime);
         //updateScene(Rwg);

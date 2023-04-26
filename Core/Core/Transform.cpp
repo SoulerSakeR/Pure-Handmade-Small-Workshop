@@ -61,6 +61,17 @@ Transform* Transform::translate(Vector2D value)
 	return this;
 }
 
+Transform* Transform::translate1(float x, float y)
+{
+	localPosition.y = localPosition.y + y;
+	localPosition.x = localPosition.x + x;
+	if (GameEngine::get_instance().getSelectedGameObject() == gameObject)
+	{
+		GameEngine::get_instance().onPropertyChange(properties["localPosition"]);
+	}
+	return this;
+}
+
 Vector2D Transform::get_localPosition()
 {
 	return localPosition;

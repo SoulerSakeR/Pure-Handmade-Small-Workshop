@@ -1,6 +1,8 @@
-print("Hello, world!")
 
-function update()
-print("1")
+
+update = function(x)
+
+
+print(x)
 
 end
