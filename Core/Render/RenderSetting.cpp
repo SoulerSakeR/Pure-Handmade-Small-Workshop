@@ -179,7 +179,7 @@ Vector2D RenderSetting::getCurrentResolution() const
 {
 	if (current_resolution == Vector2D(0.f, 0.f))
 	{
-		auto size = RenderWidget::getSceneWidget().size();
+		auto size = RenderWidget::currentWidget->size();
 		return Vector2D(size.width(), size.height());
 	}
 	return current_resolution;

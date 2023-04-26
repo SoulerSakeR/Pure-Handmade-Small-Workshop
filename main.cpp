@@ -58,7 +58,8 @@ int main(int argc, char *argv[])
     int ret = 0;
     std::ifstream file("config.txt");
     int value = 0;
-    if (file >> value) {
+    std::string path = "";
+    if (file >> value >> path) {
         if (value == 0) {
             // 进入引擎界面
             QMetaObject::invokeMethod(qApp, &showMainWindow, Qt::QueuedConnection);
@@ -74,7 +75,7 @@ int main(int argc, char *argv[])
         else if (value == 1) {
             // 进入游戏界面
             std::cout << "Game Start" << std::endl;
-           
+            GameEngine::get_instance().initGamePathForExport(path);
             QMetaObject::invokeMethod(qApp, &showGameWindow, Qt::QueuedConnection);
 
             // 等待程序结束并释放资源

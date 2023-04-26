@@ -146,6 +146,7 @@
     <addaction name="actioncreatProject"/>
     <addaction name="actionopenProject"/>
     <addaction name="actionsaveProject"/>
+    <addaction name="actionExport_current_project"/>
    </widget>
    <widget class="QMenu" name="menu_gameobject">
     <property name="title">
@@ -462,6 +463,11 @@
    </property>
    <property name="text">
     <string>Components</string>
+   </property>
+  </action>
+  <action name="actionExport_current_project">
+   <property name="text">
+    <string>Export current project</string>
    </property>
   </action>
   <zorder>dockWidget_components</zorder>

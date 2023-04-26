@@ -13,6 +13,7 @@
 #include "ComponentsDockWidget.h"
 #include "Core/UI/CreateProjectDialog.h"
 #include "Core/UI/WaveFunctionCollapseDialog.h"
+#include "Core/UI/ExportGameDialog.h"
 #include <QMessageBox>
 #include "Core/UI/AddSceneDialog.h"
 #include "Core/GameLogic/GameLoop.h"
@@ -279,6 +280,28 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->dockWidget_components, &QDockWidget::visibilityChanged, this, [=](bool visible) {
         if (!visible) {
             ui->actionComponents->setChecked(false);
+        }
+        });
+
+    // 实现项目导出功能
+    connect(ui->actionExport_current_project, &QAction::triggered, this, [=]() {
+        if (GameEngine::get_instance().gameProject != nullptr)
+        {
+            
+            QMessageBox::StandardButton button;
+            button = QMessageBox::question(this, tr("关闭"), QString(tr("导出前需要保存当前项目，是否保存项目？")), QMessageBox::Save | QMessageBox::Cancel, QMessageBox::Save);
+            if (button == QMessageBox::Save)
+            {
+                bool saveSuccess = GameEngine::get_instance().saveGameProject();
+                if (saveSuccess) {
+                    ExportGameDialog exportDialog(this);
+                    exportDialog.exec();
+                }
+            }
+        }
+        else
+        {
+            Debug::warningBox(this, "你还没有打开项目!");
         }
         });
 }

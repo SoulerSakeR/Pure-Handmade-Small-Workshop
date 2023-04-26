@@ -18,5 +18,5 @@ GameWindow::GameWindow()
 
 	renderWidget = std::make_unique<RenderWidget>(this);
 	layout->addWidget(renderWidget.get());
-
+	renderWidget->currentWidget = renderWidget.get();
 }

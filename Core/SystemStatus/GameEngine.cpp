@@ -56,6 +56,7 @@ bool GameEngine::initializeGame (GameWindow* window)
 	std::filesystem::path current_path = std::filesystem::current_path();
 	rootPath = current_path.string();
 	Debug::logInfo() << "Game initialized\n";
+	openGameProject(this->gamePathForGameExport);
 	return true;
 }
 
@@ -107,6 +108,48 @@ GameProject& GameEngine::creatGameProject(const string& name,const string& path)
 	game->openScene(gameProject->creatNewScene());
 	return *game;
 }
+void GameEngine::exportGame(const string& name, const string& path)
+{
+	QString fullPath = QString::fromStdString(path) + "/" + QString::fromStdString(name);
+
+	// 创建游戏路径
+	QDir dir(fullPath);
+	if (!dir.exists()) {
+		dir.mkpath(".");
+	}
+
+	// 复制编译好的游戏引擎到游戏路径下
+	QString sourceDir = "debug";
+	QStringList nameFilters;
+	nameFilters << "*.*";
+	QDir debugDir(sourceDir);
+	foreach(QString file, debugDir.entryList(nameFilters, QDir::Files)) {
+		QFile::copy(sourceDir + "/" + file, fullPath + "/" + file);
+	}
+
+	// 创建 config.txt
+	if (QFile::exists(fullPath + "/config.txt")) {
+		QFile::remove(fullPath + "/config.txt");
+	}
+	QFile file(fullPath + "/config.txt");
+	if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+		QTextStream out(&file);
+		out << "1\n";
+		out << GameEngine::get_instance().getGamePath().c_str();
+		file.close();
+	}
+
+	if (QFile::exists("config.txt")) {
+		QFile::remove("config.txt");
+	}
+	QFile file2("config.txt");
+	if (file2.open(QIODevice::WriteOnly | QIODevice::Text)) {
+		QTextStream out(&file2);
+		out << "1\n";
+		out << GameEngine::get_instance().getGamePath().c_str();
+		file2.close();
+	}
+}
 Vector2D GameEngine::get_resolution()
 {
 	return SceneMgr::get_instance().get_render_setting()->getCurrentResolution();
@@ -117,7 +160,8 @@ void GameEngine::set_resolution(const Vector2D& resolution)
 }
 void GameEngine::refreshHierarchy()
 {
-	window->refreshHierachy();
+	if(GameEngine::get_instance().getInEditor())
+		window->refreshHierachy();
 }
 bool GameEngine::needToRefeshUI(GameObject* gameobj)
 {
@@ -233,10 +277,15 @@ std::string GameEngine::getGamePath()
 {
 	if (gameProject != nullptr)
 		return gameProject->path.getNewPath();
-	return nullptr;
+	return "";
 }
 
 bool GameEngine::getInEditor()
 {
 	return inEditor;
+}
+
+void GameEngine::initGamePathForExport(const std::string& path)
+{
+	this->gamePathForGameExport = path;
 }

@@ -330,8 +330,13 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 	//bind texture
 	/*if(img->texture!=nullptr)
 		img->texture->bind();*/
-	if(img->isTextureValid())
+	if (img->isTextureValid())
+	{
+		img->get_texture()->create();
+		bool flag = img->get_texture()->isCreated();
 		img->get_texture()->bind();
+	}
+		
 	img->ibo->bind();
 	//enable alpha blending
 	glEnable(GL_BLEND);
@@ -819,7 +824,7 @@ void RenderWidget::renderFbo()
 
 	glActiveTexture(GL_TEXTURE0);
 	
-	if (!isGameWidget)
+	if (!isGameWidget && GameEngine::get_instance().getInEditor())
 		renderScene(mCamera);
 	else
 	{
