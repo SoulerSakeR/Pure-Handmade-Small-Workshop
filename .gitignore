@@ -453,3 +453,8 @@ compile_commands.json
 *_qmlcache.qrc
 *.vcxproj
 *.filters
+config.txt
+Test/Resources/UnNamed_Texture.texture
+Test/Scenes/ExampleScene.scene
+Test/Test.gameProject
+config.txt
