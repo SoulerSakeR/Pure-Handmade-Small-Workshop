@@ -10,6 +10,7 @@
 #include "ColorPaletteWidget.h"
 #include "LayerComboBox.h"
 #include "TextureSelectorWidget.h"
+#include "Core/ResourceManagement/SceneMgr.h"
 
 ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGroupBox(parent), component(component)
 {
@@ -91,7 +92,16 @@ ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGr
 		case Property::COMBO_BOX:
 		{
 			auto comboBox = new LayerComboBox();
-			comboBox->setCurrentIndex(property->get_data<int>());
+			int order = property->get_data<int>();
+			int index = 0;
+			for (auto& pair : SceneMgr::get_instance().get_render_setting()->get_render_layers())
+			{
+				if (pair.first == order)
+				{
+					comboBox->setCurrentIndex(index);
+				}
+				index++;
+			}
 			layout->addWidget(comboBox, row, 1);
 			widget->Object_Property_map[comboBox] = property;
 			widget->property_Object_map[property] = comboBox;

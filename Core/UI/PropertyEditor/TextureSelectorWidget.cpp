@@ -15,7 +15,7 @@ TextureSelectorWidget::TextureSelectorWidget(QWidget* parent, Property* property
 	else if (ResourceMgr::get_instance().isTextureExist(textureName))
 		textureLabel = new QLabel(QString::fromStdString(textureName));
 	else
-		textureLabel = new QLabel(QString::fromStdString(textureName).append("not found"));
+		textureLabel = new QLabel(QString::fromStdString(textureName).append("(not found)"));
 	layout->addWidget(textureLabel);
 	textureButton = new QPushButton("...");
 	textureButton->setFixedWidth(20);
@@ -26,7 +26,6 @@ TextureSelectorWidget::TextureSelectorWidget(QWidget* parent, Property* property
 TextureSelectorWidget::~TextureSelectorWidget()
 {
 	delete textureLabel;
-	disconnect(textureButton, &QPushButton::clicked, this, &TextureSelectorWidget::onButtonClicked);
 	delete textureButton;
 }
 

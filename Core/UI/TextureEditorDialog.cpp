@@ -7,6 +7,7 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include "Core/Core/Debug.h"
+#include "Core/SystemStatus/GameEngine.h"
 
 TextureEditorDialog::TextureEditorDialog(Texture2D* texture, QWidget* parent): QDialog(parent), texture(texture)
 {
@@ -27,7 +28,7 @@ TextureEditorDialog::TextureEditorDialog(Texture2D* texture, QWidget* parent): Q
 	layout->addWidget(fileButton, 1, 2);
 	connect(fileButton, &QPushButton::clicked, this, [texturePath]()
 	{
-		QString path = QFileDialog::getOpenFileName(nullptr, "Open Image", "", "Image Files (*.png *.jpg *.bmp)");
+		QString path = QFileDialog::getOpenFileName(nullptr, "Open Image", GameEngine::get_instance().getGamePath().c_str(), "Image Files (*.png *.jpg *.bmp)");
 		if (!path.isEmpty())
 		{
 			texturePath->setText(path);

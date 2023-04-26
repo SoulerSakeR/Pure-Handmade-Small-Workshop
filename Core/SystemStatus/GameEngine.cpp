@@ -35,6 +35,7 @@ GameEngine& GameEngine::get_instance()
 bool GameEngine::initialize(MainWindow* window)
 {
 	this->inEditor = true;
+	Debug::logLevel = Debug::LogLevel::INFO;
 	Debug::logInfo()<< "Engine initializing\n";
 	srand((unsigned)time(NULL));
 	gameProject = nullptr;
@@ -48,13 +49,17 @@ bool GameEngine::initialize(MainWindow* window)
 // add by jz
 bool GameEngine::initializeGame (GameWindow* window)
 {
+	// 
 	this->inEditor = false;
+	Debug::logLevel = Debug::LogLevel::WARNING;
 	Debug::logInfo() << "Game initializing\n";
 	srand((unsigned)time(NULL));
+
+	// initialize path
+	rootPath = std::filesystem::current_path().string();
+
 	gameProject = nullptr;
-	this->gameWindow = window;
-	std::filesystem::path current_path = std::filesystem::current_path();
-	rootPath = current_path.string();
+	this->gameWindow = window;	
 	window->show();
 	Debug::logInfo() << "Game initialized\n";
 	openGameProject(this->gamePathForGameExport);
@@ -291,4 +296,11 @@ bool GameEngine::getInEditor()
 void GameEngine::initGamePathForExport(const std::string& path)
 {
 	this->gamePathForGameExport = path;
+}
+
+bool GameEngine::needToSave()
+{
+	if(gameProject==nullptr)
+		return false;
+	return gameProject->isChanged();
 }

@@ -62,6 +62,11 @@ std::string Texture2D::get_name() const
 
 bool Texture2D::set_name(const std::string& name)
 {
+	if (name.empty())
+	{
+		Debug::warningBox(nullptr,"name can't be empty");
+		return false;
+	}
 	if(this->name==name)
 		return true;
 	if (ResourceMgr::get_instance().isTextureExist(name))

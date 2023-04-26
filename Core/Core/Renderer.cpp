@@ -24,7 +24,18 @@ void Renderer::set_property(Property* property, void* value)
 	Component::set_property(property, value);
 	if (property->get_name() == "render layer")
 	{
-		set_render_layer(*(int*)value);
+		int index = *(int*)value;
+		int i = 0;
+		for (auto& pair : SceneMgr::get_instance().get_render_setting()->render_layers)
+		{
+			if (i == index)
+			{
+				set_render_layer(pair.first);
+				return;
+			}
+			i++;
+		}
+		set_render_layer(index);
 	}
 }
 

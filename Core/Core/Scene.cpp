@@ -18,13 +18,14 @@ Scene::Scene(string name)
 	allGameObjsByName = unordered_map<std::string, std::vector<GameObject*>>();
 	allGameObjsByDepth = map<int, GameObject* >();
 	rootGameObjs = vector<GameObject*>();
+	is_changed = false;
 }
 
 Result<void*> Scene::renameGameObject(GameObject* gameObject, std::string newName)
 {
 	if (gameObject == nullptr)
 		return Result<void*>(false,"gameObject is nullptr");
-	
+	is_changed = true;
 	// Removing references to old names
 	SceneMgr::get_instance().nameToGameObjects_remove(gameObject->get_name(), gameObject);
 	if (auto it = allGameObjsByName.find(gameObject->name); it != allGameObjsByName.end())
@@ -56,6 +57,7 @@ Result<void*> Scene::renameGameObject(GameObject* gameObject, std::string newNam
 
 void Scene::insertGameObject(GameObject& value,GameObject* target,InsertMode insertMode)
 {
+	is_changed = true;
 	addGameObject(&value);
 	if (target == nullptr)
 	{
@@ -102,6 +104,7 @@ void Scene::insertGameObject(GameObject& value,GameObject* target,InsertMode ins
 
 void Scene::insertExistGameObject(GameObject* gameObject, GameObject* target, InsertMode insertMode)
 {
+	is_changed = true;
 	//remove from old parent
 	if (gameObject->isRootGameObject())
 	{
@@ -178,6 +181,7 @@ void Scene::insertExistGameObject(GameObject* gameObject, GameObject* target, In
 
 void Scene::addGameObject(GameObject *newObject)
 {
+	is_changed = true;
 	allGameObjsByID.insert(pair<int,GameObject*>(newObject->getID(), newObject));
 	auto it = allGameObjsByName.find(newObject->name);
 	if (it != allGameObjsByName.end())
@@ -191,6 +195,7 @@ void Scene::addGameObject(GameObject *newObject)
 
 void Scene::addGameObjectWithChildren(GameObject* newObject)
 {
+	is_changed = true;
 	allGameObjsByID.insert(pair<int, GameObject*>(newObject->getID(), newObject));
 	if(newObject->getComponent<Renderer>()!=nullptr)
 		allGameObjsByDepth[newObject->getComponent<Renderer>()->get_render_order()] = newObject;
@@ -210,12 +215,19 @@ void Scene::addGameObjectWithChildren(GameObject* newObject)
 
 void Scene::initRootGameObject(GameObject* rootObject)
 {
+	is_changed = true;
 	rootGameObjs.push_back(rootObject);
 	addGameObjectWithChildren(rootObject);
 }
 
+void Scene::onGameObjectPropertyChangedHandle(GameObject gameobj)
+{
+	is_changed = true;
+}
+
 void Scene::removeGameObject(GameObject* gameObject)
 {
+	is_changed = true;
 	if (gameObject->isRootGameObject())
 	{
 		for (auto it = rootGameObjs.begin();it < rootGameObjs.end();it++)
@@ -234,6 +246,7 @@ void Scene::removeGameObject(GameObject* gameObject)
 
 void Scene::removeGameObjectWithChildren(GameObject* gameObject)
 {
+	is_changed = true;
 	auto it = allGameObjsByName.find(gameObject->name);
 	if (gameObject->getComponent<Renderer>() != nullptr)
 		allGameObjsByDepth.erase(gameObject->getComponent<Renderer>()->get_render_order());
@@ -254,6 +267,7 @@ void Scene::removeGameObjectWithChildren(GameObject* gameObject)
 
 void Scene::removeGameObject(int id)
 {
+	is_changed = true;
 	std::unordered_map<int,GameObject*>::iterator it = allGameObjsByID.find(id);
 	if (it != allGameObjsByID.end())
 	{
@@ -327,5 +341,8 @@ Scene* Scene::loadFromPath(std::string path,Scene* scene)
 		scene = new Scene();
 	stringstream ss(IO::readText(path));
 	scene->deserialize(ss);
+	scene->is_changed = false;
 	return scene;
 }
+
+

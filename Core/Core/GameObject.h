@@ -39,9 +39,11 @@ public:
     Component* getComponent(Component::ComponentType type);
 
     void removeComponent(Component* component); //需要绑定
-    bool isRootGameObject(); //需要绑定
+    bool isRootGameObject() const; //需要绑定
     void destroy(); //需要绑定
     GameObject* clone(const std::string newName,GameObject* parent=nullptr); //需要绑定
+
+    void onComponentPropertyChangedHandler(Property* property); //需要绑定
 
     static GameObject* find(const std::string& name); //需要绑定
     static std::vector<GameObject*> findTag(const std::string& tag); //需要绑定
@@ -59,6 +61,7 @@ protected:
     int id; //唯一id
     std::string tag;
     std::string name;
+    Event<void, Property*> onPropertyChanged;
 };
 
 /// <summary>
@@ -80,6 +83,7 @@ inline T* GameObject::addComponent()
                 transform = (Transform*)result;
             result->gameObject = this;
             components.push_back(result);
+            result->onPropertyChange.registerFunc(&GameObject::onComponentPropertyChangedHandler, this);
         }
         return result;
     }

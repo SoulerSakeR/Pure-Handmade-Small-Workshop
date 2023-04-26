@@ -740,9 +740,6 @@ void RenderWidget::initializeGL()
 	createCameraBorderProgram();
 	
 	textBuffer = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
-
-	if(!GameEngine::get_instance().getInEditor())
-		ResourceMgr::get_instance().loadAllAssets();
 }
 
 void RenderWidget::resetResolution()

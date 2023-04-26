@@ -8,6 +8,7 @@ RenderSetting::RenderSetting()
 {
 	render_order_map = std::map<int, std::vector<GameObject*>>();
 	render_layers = std::map<int, std::string>();
+	is_changed = false;
 }
 
 void RenderSetting::serialize(PHString& str)
@@ -24,6 +25,7 @@ void RenderSetting::serialize(PHString& str)
 	str.appendLine(current_resolution.tostring());
 	str.appendLine(RENDER_RESOLUTION_POSTFIX);
 	str.appendLine(RENDER_SETTING_POSTFIX);
+	is_changed = false;
 }
 
 void RenderSetting::deserialize(std::stringstream& ss)
@@ -79,6 +81,7 @@ void RenderSetting::deserialize(std::stringstream& ss)
 			break;
 		}
 	} while (ss.good() && s != RENDER_RESOLUTION_POSTFIX);
+	is_changed = false;
 }
 
 void RenderSetting::registerRenderer(Renderer* renderer)
@@ -188,6 +191,7 @@ Vector2D RenderSetting::getCurrentResolution() const
 void RenderSetting::setCurrentResolution(const Vector2D& value)
 {
 	current_resolution = value;
+	is_changed = true;
 	RenderWidget::getCurrentWidget().resetResolution();
 }
 
@@ -216,6 +220,7 @@ bool RenderSetting::addRenderLayer(int order,const std::string& name)
 	{
 		render_layers.emplace(order, name);
 		render_order_map.emplace(order, std::vector<GameObject*>());
+		is_changed = true;
 		return true;
 	}
 	else
@@ -238,6 +243,7 @@ bool RenderSetting::removeRenderLayer(int order)
 		reset2Default(order);
 		render_layers.erase(it);
 		render_order_map.erase(order);
+		is_changed = true;
 		return true;
 	}
 }

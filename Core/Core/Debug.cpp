@@ -5,10 +5,12 @@
 #include "qmessagebox.h"
 #include "Core/UI/mainwindow.h"
 #include "Core/SystemStatus/GameEngine.h"
+#include "Core/FileIO/IO.h"
 
 const std::string& INFO_PREFIX = "[info] ";
 const std::string& ERROR_PREFIX = "[error] ";
 const std::string& WARNING_PREFIX = "[warning] ";
+Debug::LogLevel Debug::logLevel = LogLevel::WARNING;
 
 Debug::Debug(LogLevel level):level(level)
 {
@@ -19,35 +21,34 @@ Debug Debug::logWarning(const std::string& info)
 {
 	if (info.empty())
 		return Debug(LogLevel::WARNING);
-	log(WARNING_PREFIX + info);
+	log(WARNING_PREFIX + info, LogLevel::WARNING);
 }
 
-void Debug::log(const std::string& info)
+void Debug::log(const std::string& info,LogLevel level)
 {	
-#ifndef NDEBUG 
 	std::string text = info;
-#ifdef LOG_TO_CONSOLE	
-	Log2Console(text);
-	if (GameEngine::get_instance().getInEditor()) {
-		if(MainWindow::getConsoleTextEdit()!=nullptr)
-			MainWindow::getConsoleTextEdit()->insertPlainText(QString::fromStdString(text));
-	}
+#ifndef NDEBUG 
 	
+#ifdef LOG_TO_CONSOLE
+	if (logLevel <= level)
+	{
+		Log2Console(text);
+		if (GameEngine::get_instance().getInEditor()) {
+			if (MainWindow::getConsoleTextEdit() != nullptr)
+				MainWindow::getConsoleTextEdit()->insertPlainText(QString::fromStdString(text));
+		}
+	}	
 #endif // LOG_TO_CONSOLE
 
-#ifdef LOG_TO_OUTPUT_WINDOW
-	Log2OutputWindow(text);
-#endif // LOG_TO_OUTPUT_WINDOW
-
 #endif // NDEBUG
-	
+	log2File(text);
 }
 
 Debug Debug::logError(const std::string& error)
 {
 	if(error.empty())
 		return Debug(LogLevel::ERROR_);
-	log(ERROR_PREFIX + error);
+	log(ERROR_PREFIX + error, LogLevel::ERROR_);
 }
 
 Debug Debug::logInfo(const std::string& info)
@@ -64,14 +65,9 @@ void Debug::warningBox(QWidget* parent, const std::string& info)
 
 Debug& Debug::operator<<(const char* info)
 {
-	return operator<<(std::string(info));
-}
-
-Debug& Debug::operator<<(const std::string& info)
-{
 	if (usePrefix)
 	{
-		if(level==LogLevel::ERROR_)
+		if (level == LogLevel::ERROR_)
 			logError(info);
 		else if (level == LogLevel::INFO)
 			logInfo(info);
@@ -81,6 +77,24 @@ Debug& Debug::operator<<(const std::string& info)
 	}
 	else
 		log(info);
+	return *this;
+}
+
+Debug& Debug::operator<<(const std::string& info)
+{
+	std::string text = '\"'+ info+'\"';
+	if (usePrefix)
+	{
+		if(level==LogLevel::ERROR_)
+			logError(text);
+		else if (level == LogLevel::INFO)
+			logInfo(text);
+		else if (level == LogLevel::WARNING)
+			logWarning(text);
+		usePrefix = false;
+	}
+	else
+		log(text);
 	return *this;
 }
 
@@ -117,6 +131,11 @@ LPWSTR Debug::string2Lpwstr(const std::string& str)
 void Debug::Log2Console(const std::string& info)
 {
 	std::cout << info;
+}
+
+void Debug::log2File(const std::string& info)
+{
+	IO::write(info, PHPath(GameEngine::get_instance().getRootPath()).combinePath("Debug.log").getNewPath(), 2);
 }
 
 void Debug::Log2OutputWindow(const std::string& text)

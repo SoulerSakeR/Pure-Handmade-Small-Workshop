@@ -20,6 +20,7 @@ public:
 	bool openScene(Scene* scene);
 	void deleteScene(const std::string name);
 	bool importScene(const std::string& path);
+	bool isChanged();
 	bool save();
 	Scene* creatNewScene(const std::string& name = "ExampleScene");
 
@@ -32,6 +33,7 @@ public:
 private:
 	bool saveCurrentScene();
 	void serialize(PHString&);
+	bool is_changed;
 
 	RenderSetting* render_setting;
 };

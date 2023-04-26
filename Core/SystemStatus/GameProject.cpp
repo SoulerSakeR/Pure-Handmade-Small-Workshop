@@ -20,6 +20,8 @@ GameProject::GameProject(const string& name,const string& path, bool initDefault
 {
 	this->scenes = vector<string>();
 	currentScene = nullptr;
+	render_setting = nullptr;
+	is_changed = false;
 }
 
 bool GameProject::openScene(int index)
@@ -41,8 +43,8 @@ bool GameProject::openScene(int index)
 			auto exportGameLoop = std::bind(&GameLoop::updateScene, GameEngine::get_instance().gameLoop, RenderWidget::currentWidget);
 			GameEngine::get_instance().pool.enqueue(exportGameLoop);
 		}
-
-		
+		is_changed = false;
+		render_setting->is_changed = false;
 		return true;
 	}	
 	return false;
@@ -103,11 +105,13 @@ void GameProject::deleteScene(const std::string name)
 			if (it != scenes.end())
 			{
 				scenes.erase(it);
+				is_changed = true;
 			}
 			it = std::find(SceneMgr::get_instance().scenes.begin(), SceneMgr::get_instance().scenes.end(), path.getNewPath());
 			if(it != SceneMgr::get_instance().scenes.end())
 			{
 				SceneMgr::get_instance().scenes.erase(it);
+				is_changed = true;
 			}
 		}
 	}
@@ -121,7 +125,13 @@ bool GameProject::importScene(const std::string& path)
 	GameEngine::get_instance().pool.enqueue(renderLoop);
 	auto gameLoop = std::bind(&GameLoop::updateScene, GameEngine::get_instance().gameLoop, &RenderWidget::getGameWidget());
 	GameEngine::get_instance().pool.enqueue(gameLoop);
+	is_changed = true;
 	return true;
+}
+
+bool GameProject::isChanged()
+{
+	return is_changed || currentScene->isChanged() || render_setting->isChanged();
 }
 
 bool GameProject::save()
@@ -131,6 +141,7 @@ bool GameProject::save()
 	PHString content = PHString("");
 	serialize(content);	
 	IO::write(content.str(), path.combinePath(name + ".gameProject").getNewPath(), 1);
+	is_changed = false;
     return true;
 }
 
@@ -143,6 +154,7 @@ Scene* GameProject::creatNewScene(const std::string& name)
 	scenes.push_back(scene->name);
 	SceneMgr::get_instance().addScene("\\Scenes\\" + name + sceneExtensionName);
 	SceneMgr::get_instance().current_scene = scene;
+	is_changed = true;
 	return scene;
 }
 
@@ -262,6 +274,7 @@ bool GameProject::saveCurrentScene()
 	currentScene->serialize(scene);
 	string fileName = currentScene->name + sceneExtensionName;
 	IO::createPathIfNotExists(path.combinePath("Scenes").getNewPath());
+	currentScene->is_changed = false;
 	return IO::write(scene.str(), path.combinePath("Scenes").combinePath(fileName).getNewPath(), 1);
 }
 

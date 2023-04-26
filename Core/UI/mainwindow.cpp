@@ -418,7 +418,7 @@ void MainWindow::addTexture()
 	// 获取当前选择的项
 	/*QDialog* createTextureDialog = new AddTextureDialog(this);
 	createTextureDialog->show();*/
-    auto res = ResourceMgr::get_instance().CreatNewTexture2D("UnNamed_Texture","");
+    auto res = ResourceMgr::get_instance().CreatNewTexture2D("","");
     auto dialog =new TextureEditorDialog(res, this);
     dialog->exec();
 }
@@ -478,7 +478,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
     {
          QMainWindow::closeEvent(event);
     }
-    else
+    else if(GameEngine::get_instance().needToSave())
     {
         QMessageBox::StandardButton button;
         button = QMessageBox::question(this, tr("关闭"), QString(tr("是否保存项目？")), QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, QMessageBox::Save);
@@ -499,6 +499,11 @@ void MainWindow::closeEvent(QCloseEvent* event)
         {
             event->ignore();
         }
+    }
+    else
+    {
+		GameEngine::get_instance().gameLoop->shutdown();
+		QMainWindow::closeEvent(event);
     }
 }
 

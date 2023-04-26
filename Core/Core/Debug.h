@@ -22,10 +22,12 @@ public:
 	virtual Debug& operator<<(int info);
 	virtual Debug& operator<<(float info);
 	virtual Debug& operator<<(Vector2D info);
+	static LogLevel logLevel;
 protected:
 	static void Log2Console(const std::string& info);
+	static void log2File(const std::string& info);
 	static void Log2OutputWindow(const std::string& str);
-	static void log(const std::string& mes = ""); //需要绑定
+	static void log(const std::string& mes = "",LogLevel level = LogLevel::INFO);
 	static LPWSTR string2Lpwstr(const std::string& str);
 	LogLevel level;
 	bool usePrefix = true;

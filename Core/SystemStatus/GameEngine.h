@@ -47,6 +47,7 @@ public:
 	}
 	bool getInEditor();
 	void initGamePathForExport(const std::string& path);
+	bool needToSave();
 	ThreadPool pool;
 	GameLoop* gameLoop;
 private:

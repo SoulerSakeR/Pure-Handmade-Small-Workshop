@@ -28,6 +28,9 @@ public:
     
     void removeGameObject(GameObject* gameObject);
     void removeGameObject(int id);
+
+    bool isChanged() const { return is_changed; }
+
     void serialize(PHString&) override;
     void deserialize(std::stringstream& ss) override;
     const std::unordered_map<int, GameObject*> getAllGameObjs();
@@ -43,11 +46,16 @@ private:
     std::unordered_map<std::string, std::vector<GameObject*>> allGameObjsByName;
     std::map<int, GameObject*> allGameObjsByDepth;
     std::vector<GameObject*> rootGameObjs; //当前场景下的根GameObject
+    bool is_changed;
 
     void addGameObject(GameObject* newObject);
     void addGameObjectWithChildren(GameObject* newObject);
     void removeGameObjectWithChildren(GameObject* gameObject);
     void initRootGameObject(GameObject* rootObject);
 
+    void onGameObjectPropertyChangedHandle(GameObject gameobj);
+
+    friend class GameObject;
+    friend class GameProject;
 };
 

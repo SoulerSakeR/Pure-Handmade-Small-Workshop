@@ -16,7 +16,10 @@ bool Image::set_texture2D(const std::string& name)
 		return true;
 	}
 	IRenderable::texture2D = ResourceMgr::get_instance().loadFromName<Texture2D>(name);
-	this->texture2D = IRenderable::texture2D->get_name();
+	if(IRenderable::texture2D != nullptr)
+		this->texture2D = IRenderable::texture2D->get_name();
+	else
+		this->texture2D = name;
 	if (isTextureValid())
 		set_size(Vector2D(get_texture()->width(), get_texture()->height()));
 	return true;

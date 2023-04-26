@@ -29,6 +29,7 @@ public:
 	Vector2D getCurrentResolution() const;
 	void setCurrentResolution(const Vector2D& value);
 	bool isAutoFit() const;
+	bool isChanged() const { return is_changed; }
 
 	static RenderSetting* getDefaultSetting();
 	bool addRenderLayer(int order,const std::string& name);
@@ -49,8 +50,10 @@ private:
 
 
 	bool refresh_later = false;
+	bool is_changed = false;
 
 	friend class RenderWidget;
 	friend class Renderer;
+	friend class GameProject;
 };
 

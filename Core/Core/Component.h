@@ -37,6 +37,7 @@ public:
 	virtual bool get_enabled() { return enabled; }
 	virtual void reset() = 0;
 	virtual void set_property(Property* property, void* value);
+
 	static std::string getName(ComponentType type);
 	
 	GameObject* gameObject;

@@ -41,6 +41,7 @@ void GameObject::set_tag(const std::string& tag)
     {
         SceneMgr::get_instance().tagToGameObjects_remove(this->tag, this);
     }
+    SceneMgr::get_instance().get_current_scene()->is_changed = true;
     this->tag = tag;
     if (SceneMgr::get_instance().get_current_scene() != nullptr)
     {
@@ -207,6 +208,7 @@ Component* GameObject::addComponent(Component::ComponentType type)
     {
         result->gameObject = this;
         components.push_back(result);
+        result->onPropertyChange.registerFunc(&GameObject::onComponentPropertyChangedHandler, this);
     }      
     return result;
 }
@@ -240,7 +242,7 @@ void GameObject::removeComponent(Component* component)
 }
 
 
-bool GameObject::isRootGameObject()
+bool GameObject::isRootGameObject() const
 {
     return transform->parent == nullptr;
 }
@@ -280,6 +282,12 @@ GameObject* GameObject::clone(const std::string newName, GameObject* parent)
 	}
     SceneMgr::get_instance().current_scene->insertGameObject(*result,parent,INSIDE);
     return result;
+}
+
+void GameObject::onComponentPropertyChangedHandler(Property* property)
+{
+    SceneMgr::get_instance().get_current_scene()->is_changed = true;
+    onPropertyChanged(property);
 }
 
 GameObject* GameObject::find(const std::string& name)

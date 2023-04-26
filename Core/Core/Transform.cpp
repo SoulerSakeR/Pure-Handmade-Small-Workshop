@@ -54,10 +54,7 @@ Vector2D Transform::getWorldScale()
 Transform* Transform::translate(Vector2D value)
 {
 	localPosition = localPosition + value;
-	if (GameEngine::get_instance().getSelectedGameObject() == gameObject)
-	{
-		GameEngine::get_instance().onPropertyChange(properties["localPosition"]);
-	}
+	onPropertyChange(properties["localPosition"]);
 	return this;
 }
 
@@ -65,10 +62,7 @@ Transform* Transform::translate1(float x, float y)
 {
 	localPosition.y = localPosition.y + y;
 	localPosition.x = localPosition.x + x;
-	if (GameEngine::get_instance().getSelectedGameObject() == gameObject)
-	{
-		//GameEngine::get_instance().onPropertyChange(properties["localPosition"]);
-	}
+	onPropertyChange(properties["localPosition"]);
 	return this;
 }
 
@@ -92,10 +86,7 @@ void Transform::set_localPosition(Vector2D value)
 	if(localPosition == value)
 		return;
 	localPosition = value;
-	if (GameEngine::get_instance().needToRefeshUI(gameObject))
-	{
-		GameEngine::get_instance().onPropertyChange(properties["localPosition"]);
-	}
+	onPropertyChange(properties["localPosition"]);
 }
 
 void Transform::set_localRotation(float value)
@@ -104,12 +95,6 @@ void Transform::set_localRotation(float value)
 		return;
 	localRotation = value;
 	onPropertyChange(properties["localRotation"]);
-	/*
-	if (GameEngine::get_instance().needToRefeshUI(gameObject))
-	{
-		GameEngine::get_instance().onPropertyChange(properties["localRotation"]);
-	}
-	*/
 }
 
 void Transform::set_localScale(Vector2D value)
@@ -117,10 +102,7 @@ void Transform::set_localScale(Vector2D value)
 	if (localScale == value)
 		return;
 	localScale = value;
-	if (GameEngine::get_instance().needToRefeshUI(gameObject))
-	{
-		GameEngine::get_instance().onPropertyChange(properties["localScale"]);
-	}
+	onPropertyChange(properties["localScale"]);
 }
 
 
