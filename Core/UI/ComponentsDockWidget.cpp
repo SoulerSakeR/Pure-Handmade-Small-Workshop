@@ -99,7 +99,8 @@ void ComponentsDockWidget::onPropertyChanged(Property* property)
 		else if (property->type == Property::VECTOR2D)
 		{
 			auto lineEdit = (QLineEdit*)object;
-			lineEdit->setText(QString::fromStdString(property->get_data<Vector2D>().tostring()));
+			auto str = property->get_data<Vector2D>().tostring();
+			lineEdit->setText(QString::fromStdString(str));
 		}
 	}
 	else

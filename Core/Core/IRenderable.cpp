@@ -51,6 +51,7 @@ QOpenGLTexture* IRenderable::get_texture()
 {
 	if(isTextureValid())
 		return texture2D->get_texture();
+	return nullptr;
 }
 
 void IRenderable::set_property(Property* property, void* value)

@@ -14,6 +14,7 @@ public:
 
 	Result<void*> initialize();
 	void loadAllAssets();
+	void clear();
 
 	Texture2D* CreatNewTexture2D(const std::string name, const std::string path);
 

@@ -37,9 +37,18 @@ void ResourceMgr::loadAllAssets()
 	}
 }
 
+void ResourceMgr::clear()
+{
+	for (auto& texture : texture_assets)
+	{
+		delete texture.second;
+	}
+	texture_assets.clear();
+}
+
 Texture2D* ResourceMgr::CreatNewTexture2D(const std::string name, const std::string path)
 {
-	if(name!="")
+	if(name!="UnNamed_Texture")
 	if (texture_assets.find(name) != texture_assets.end())
 	{
 		Debug::logWarning() << "Texture2D with name " << name << " already exist\n";

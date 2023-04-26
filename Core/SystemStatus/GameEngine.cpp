@@ -55,6 +55,7 @@ bool GameEngine::initializeGame (GameWindow* window)
 	this->gameWindow = window;
 	std::filesystem::path current_path = std::filesystem::current_path();
 	rootPath = current_path.string();
+	window->show();
 	Debug::logInfo() << "Game initialized\n";
 	openGameProject(this->gamePathForGameExport);
 	return true;

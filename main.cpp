@@ -33,7 +33,6 @@ void showGameWindow() {
     // Todo
     GameWindow* gameWindow = new GameWindow;
     GameEngine::get_instance().initializeGame(gameWindow);
-    gameWindow->show();
 }
 int main(int argc, char *argv[])
 { 

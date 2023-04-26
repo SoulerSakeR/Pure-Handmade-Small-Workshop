@@ -9,6 +9,7 @@
 #include "qevent.h"
 #include <qopenglframebufferobject.h>
 #include <qapplication.h>
+#include <Core/ResourceManagement/ResourceMgr.h>
 
 #define glCheckError() glCheckError_(__FILE__, __LINE__)
 
@@ -188,7 +189,7 @@ void RenderWidget::renderBoxCollider(BoxCollider* box, Camera* boxColliderCamera
 	
 	//calculate the MVP matrix
 	QMatrix4x4 matrix;
-	if (editMode)
+	if (GameEngine::get_instance().getInEditor() && !isGameWidget)
 	{
 		matrix = mCamera->CalculateProjectionMulViewMatrix();
 	}
@@ -308,7 +309,7 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 	img->vao->bind();
 	//calculate the MVP matrix
 	QMatrix4x4 matrix;
-	if (editMode)
+	if (GameEngine::get_instance().getInEditor()&& !isGameWidget)
 	{
 		 matrix = mCamera->CalculateProjectionMulViewMatrix();
 	}
@@ -355,7 +356,7 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 	if (img->isTextureValid())
 		img->get_texture()->release();
 
-	if (imageCamera == mCamera && visBorder == true)
+	if (visBorder == true)
 	{
 		//draw border
 		if (img->borderIbo == nullptr)
@@ -503,7 +504,7 @@ void RenderWidget::renderText(Text* text, Camera* textCamera, bool visBorder)
 
 	//calculate the MVP matrix
 	QMatrix4x4 matrix;
-	if (editMode)
+	if (GameEngine::get_instance().getInEditor() && !isGameWidget)
 	{
 		matrix = mCamera->CalculateProjectionMulViewMatrix();
 	}
@@ -718,7 +719,6 @@ void RenderWidget::initializeGL()
 	 // Enable debug context
 	initializeOpenGLFunctions();
 	// debug info
-	Debug::logInfo()<< context()->format().testOption(QSurfaceFormat::DebugContext);
 	logger = std::make_unique<QOpenGLDebugLogger>(this);
 	logger->initialize();
 	connect(logger.get(), &QOpenGLDebugLogger::messageLogged, this, &RenderWidget::messageLogHandler);
@@ -740,6 +740,9 @@ void RenderWidget::initializeGL()
 	createCameraBorderProgram();
 	
 	textBuffer = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
+
+	if(!GameEngine::get_instance().getInEditor())
+		ResourceMgr::get_instance().loadAllAssets();
 }
 
 void RenderWidget::resetResolution()
@@ -832,20 +835,20 @@ void RenderWidget::renderFbo()
 			renderScene(camera);
 	}
 
-	/*
-	if (frameCount % 200 == 0)
-	{
-		QString filePath = "E:/GroupProject/github/Pure-Handmade-Small-Workshop/output/imageFbo.png";
-		// 将渲染结果保存到 QImage 中
-		QImage image = fbo->toImage();
-		if (image.save(filePath, "PNG")) {
-			qDebug() << "Image saved successfully!";
-		}
-		else {
-			qDebug() << "Error saving image!";
-		}
-	}
-	*/
+	
+	//if (frameCount % 200 == 0)
+	//{
+	//	QString filePath = "E:/Pictures/imageFbo.png";
+	//	// 将渲染结果保存到 QImage 中
+	//	QImage image = fbo->toImage();
+	//	if (image.save(filePath, "PNG")) {
+	//		qDebug() << "Image saved successfully!";
+	//	}
+	//	else {
+	//		qDebug() << "Error saving image!";
+	//	}
+	//}
+	
 	
 
 	fbo->release();
@@ -920,39 +923,44 @@ void RenderWidget::mixTexture()
 		0, 3, 2, // first triangle
 		0, 2, 1 // second triangle
 	};
+	if (!vaoTexture)
+	{
+		vaoTexture = std::make_unique<QOpenGLVertexArrayObject>();
+		vaoTexture->create();
+		vaoTexture->bind();
 
-	vaoTexture = std::make_unique<QOpenGLVertexArrayObject>();
-	vaoTexture->create();
+		vboTexture = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
+		vboTexture->create();
+		vboTexture->bind();
+		vboTexture->allocate(vertices, sizeof(vertices));
+
+		iboTexture = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::IndexBuffer);
+		iboTexture->create();
+		iboTexture->bind();
+		iboTexture->allocate(indices, sizeof(indices));
+
+		textureShaderProgram->bind();
+		GLint posLocation = textureShaderProgram->attributeLocation("aPos");
+		GLint textureLocation = textureShaderProgram->attributeLocation("aTexCoord");
+
+		auto stride = 5 * sizeof(float);
+		//-----------------position--------------------//
+		//告知显卡如何解析缓冲里的属性值
+		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+		//开启VAO管理的第一个属性值
+		glEnableVertexAttribArray(posLocation);
+
+		if (textureLocation)
+		{
+			//------------------Texture-----------------------//		
+			glVertexAttribPointer(textureLocation, 2, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+			glEnableVertexAttribArray(textureLocation);
+		}
+		vaoTexture->release();
+	}
 	vaoTexture->bind();
 
-	vboTexture = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
-	vboTexture->create();
-	vboTexture->bind();
-	vboTexture->allocate(vertices, sizeof(vertices));
-
-	iboTexture = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::IndexBuffer);
-	iboTexture->create();
-	iboTexture->bind();
-	iboTexture->allocate(indices, sizeof(indices));
-
 	textureShaderProgram->bind();
-	GLint posLocation = textureShaderProgram->attributeLocation("aPos");
-	GLint textureLocation = textureShaderProgram->attributeLocation("aTexCoord");
-
-	auto stride = 5 * sizeof(float);
-	//-----------------position--------------------//
-	//告知显卡如何解析缓冲里的属性值
-	glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
-	//开启VAO管理的第一个属性值
-	glEnableVertexAttribArray(posLocation);
-
-	if (textureLocation)
-	{
-		//------------------Texture-----------------------//		
-		glVertexAttribPointer(textureLocation, 2, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
-		glEnableVertexAttribArray(textureLocation);
-	}
-
 	textureShaderProgram->setUniformValue("texture1", 1);
 	textureShaderProgram->setUniformValue("texture2", 2);
 
@@ -1135,7 +1143,7 @@ QOpenGLTexture *RenderWidget::genTextTexture(int width, int height, const QStrin
 void RenderWidget::mouseMoveEvent(QMouseEvent* event)
 {
 	
-	if (!SceneMgr::get_instance().hasCurrentScene() || isGameWidget)
+	if (!SceneMgr::get_instance().hasCurrentScene() || isGameWidget || !GameEngine::get_instance().getInEditor())
 		return;
 
 
@@ -1181,7 +1189,7 @@ void RenderWidget::mouseMoveEvent(QMouseEvent* event)
 
 void RenderWidget::mousePressEvent(QMouseEvent* event)
 {
-	if (!SceneMgr::get_instance().hasCurrentScene() || isGameWidget)
+	if (!SceneMgr::get_instance().hasCurrentScene() || isGameWidget || !GameEngine::get_instance().getInEditor())
 		return;
 
 	if (event->button() == Qt::RightButton)
@@ -1216,7 +1224,7 @@ void RenderWidget::mousePressEvent(QMouseEvent* event)
 
 void RenderWidget::mouseReleaseEvent(QMouseEvent* event)
 {
-	if (!SceneMgr::get_instance().hasCurrentScene() || isGameWidget)
+	if (!SceneMgr::get_instance().hasCurrentScene() || isGameWidget || !GameEngine::get_instance().getInEditor())
 		return;
 
 	if (event->button() == Qt::LeftButton)
@@ -1233,7 +1241,7 @@ void RenderWidget::mouseReleaseEvent(QMouseEvent* event)
 
 void RenderWidget::mouseDoubleClickEvent(QMouseEvent* event)
 {
-	if (!SceneMgr::get_instance().hasCurrentScene()||isGameWidget)
+	if (!SceneMgr::get_instance().hasCurrentScene()||isGameWidget||!GameEngine::get_instance().getInEditor())
 		return;
 
 	if (event->button() == Qt::LeftButton)
@@ -1289,7 +1297,7 @@ void RenderWidget::mouseDoubleClickEvent(QMouseEvent* event)
 
 void RenderWidget::keyPressEvent(QKeyEvent* event)
 {
-	if (!SceneMgr::get_instance().hasCurrentScene() || isGameWidget)
+	if (!SceneMgr::get_instance().hasCurrentScene() || isGameWidget || !GameEngine::get_instance().getInEditor())
 		return;
 	switch (event->key()) {
     
@@ -1305,7 +1313,7 @@ void RenderWidget::keyPressEvent(QKeyEvent* event)
 
 void RenderWidget::wheelEvent(QWheelEvent* event)
 {
-	if (!SceneMgr::get_instance().hasCurrentScene() || isGameWidget)
+	if (!SceneMgr::get_instance().hasCurrentScene() || isGameWidget || !GameEngine::get_instance().getInEditor())
 		return;
 
 	if (event->angleDelta().y() > 0)

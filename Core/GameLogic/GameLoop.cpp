@@ -39,12 +39,13 @@ void GameLoop::updateScene(RenderWidget* aWidget) {
             continue;//Sleep(1 - elapsed_time);
         }
         starttime = system_clock::now();
-        if (isPlaying && aWidget->isGameWidget)
+        if (isPlaying && aWidget->isGameWidget || !GameEngine::get_instance().getInEditor())
             updateGame(aWidget,lua,duration.count());
         aWidget->update();
         endtime = system_clock::now();
         //std::cout << "end_time：" << end_time << "\tstart_time" << start_time << std::endl;
     }
+    updateFunctions.clear();
 }
 
 
@@ -112,7 +113,7 @@ void GameLoop::updateGame(RenderWidget* gameWidget,sol::state &lua,float deltaTi
         }
            
 
-        gameWidget->update();
+        //gameWidget->update();
         preloadScriptFiles(lua);
         updateScripts(deltaTime, lua);
 

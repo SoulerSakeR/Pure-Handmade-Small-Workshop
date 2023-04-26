@@ -109,6 +109,8 @@ QOpenGLTexture* Texture2D::get_texture() const
 bool Texture2D::set_texture(const std::string& absolutePath)
 {
 	QImage image(QString::fromStdString(absolutePath));
+	auto w = image.width();
+	auto h = image.height();
 	if (image.isNull())
 	{
 		Debug::logWarning()<< "Texture2D with name " << name << " load image failed, image path: \""<<absolutePath<<"\"\n";
@@ -116,6 +118,8 @@ bool Texture2D::set_texture(const std::string& absolutePath)
 	}		
 	reset_texture();
 	texture = new QOpenGLTexture(image.mirrored().convertToFormat(QImage::Format_RGBA8888));
+	w = texture->width();
+	h = texture->height();
 	return true;
 }
 
