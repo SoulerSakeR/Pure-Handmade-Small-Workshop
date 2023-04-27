@@ -89,7 +89,15 @@ int main(int argc, char *argv[])
         }
     }
     else {
-        std::cerr << "Failed to read config file." << std::endl;
+        // 进入引擎界面
+        QMetaObject::invokeMethod(qApp, &showMainWindow, Qt::QueuedConnection);
+        std::cout << "Engine Start" << std::endl;
+        // 等待程序结束并释放资源
+        ret = a.exec();
+
+        // 释放 MainWindow 对象的内存
+        MainWindow* w = GameEngine::get_instance().getWindow();
+        delete w;
     }
 
     

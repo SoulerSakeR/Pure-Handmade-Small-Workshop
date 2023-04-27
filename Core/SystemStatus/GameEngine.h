@@ -6,6 +6,7 @@
 #include <Core/ThreadPool/ThreadPool.h>
 #include <Core/UI/HierarchyWidget.h>
 #include <Core/UI/GameWindow.h>
+#include "Core/Utils/PHPath.h"
 #include <QTimer>
 
 
@@ -24,7 +25,7 @@ public:
 	Scene* const  getCurrentScene();
 	GameProject* getCurrentGameProject();
 	GameProject& creatGameProject(const std::string& name,const std::string& path); //创建新项目
-	void exportGame(const std::string& name, const std::string& path);
+	int exportGame(const std::string& name, const std::string& path);
 	Vector2D get_resolution();
 	void set_resolution(const Vector2D& resolution);
 	void refreshHierarchy();	

@@ -117,23 +117,119 @@ GameProject& GameEngine::creatGameProject(const string& name,const string& path)
 	game->openScene(gameProject->creatNewScene());
 	return *game;
 }
-void GameEngine::exportGame(const string& name, const string& path)
+int GameEngine::exportGame(const string& name, const string& path)
 {
 	QString fullPath = QString::fromStdString(path) + "/" + QString::fromStdString(name);
 
 	// 创建游戏路径
-	QDir dir(fullPath);
-	if (!dir.exists()) {
-		dir.mkpath(".");
+	QDir destDir(fullPath);
+	if (!destDir.exists()) {
+		destDir.mkpath(".");
+	}
+	else {
+		return 1;
 	}
 
-	// 复制编译好的游戏引擎到游戏路径下
-	QString sourceDir = "debug";
-	QStringList nameFilters;
-	nameFilters << "*.*";
-	QDir debugDir(sourceDir);
-	foreach(QString file, debugDir.entryList(nameFilters, QDir::Files)) {
-		QFile::copy(sourceDir + "/" + file, fullPath + "/" + file);
+	QDir shadersDir("shaders");
+	if (!destDir.exists("shaders")) {
+		destDir.mkdir("shaders");
+	}
+	// 获取shaders目录下所有文件
+	QStringList shadersFiles = shadersDir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot);
+
+	// 复制文件到目标目录
+	for (const auto& file : shadersFiles)
+	{
+		// 获取源文件路径
+		QString srcPath = shadersDir.absoluteFilePath(file);
+
+		// 获取目标文件路径
+		QString destPath = destDir.absoluteFilePath("shaders/" + file);
+
+		// 复制文件
+		QFile::copy(srcPath, destPath);
+	}
+	
+	// 复制iconengines
+	QDir iconenginesDir("Engine/iconengines");
+	if (!destDir.exists("iconengines")) {
+		destDir.mkdir("iconengines");
+	}
+	QStringList iconenginesFiles = iconenginesDir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot);
+
+	for (const auto& file : iconenginesFiles)
+	{
+		QString srcPath = iconenginesDir.absoluteFilePath(file);
+		QString destPath = destDir.absoluteFilePath("iconengines/" + file);
+		QFile::copy(srcPath, destPath);
+	}
+
+	//复制imageformats
+	QDir imageformatsDir("Engine/imageformats");
+	if (!destDir.exists("imageformats")) {
+		destDir.mkdir("imageformats");
+	}
+	QStringList imageformatsFiles = imageformatsDir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot);
+
+	for (const auto& file : imageformatsFiles)
+	{
+		QString srcPath = imageformatsDir.absoluteFilePath(file);
+		QString destPath = destDir.absoluteFilePath("imageformats/" + file);
+		QFile::copy(srcPath, destPath);
+	}
+
+	//复制platforms
+	QDir platformsDir("Engine/platforms");
+	if (!destDir.exists("platforms")) {
+		destDir.mkdir("platforms");
+	}
+	QStringList platformsFiles = platformsDir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot);
+
+	for (const auto& file : platformsFiles)
+	{
+		QString srcPath = platformsDir.absoluteFilePath(file);
+		QString destPath = destDir.absoluteFilePath("platforms/" + file);
+		QFile::copy(srcPath, destPath);
+	}
+
+	//复制styles
+	QDir stylesDir("Engine/styles");
+	if (!destDir.exists("styles")) {
+		destDir.mkdir("styles");
+	}
+	QStringList stylesFiles = stylesDir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot);
+
+	for (const auto& file : stylesFiles)
+	{
+		QString srcPath = stylesDir.absoluteFilePath(file);
+		QString destPath = destDir.absoluteFilePath("styles/" + file);
+		QFile::copy(srcPath, destPath);
+	}
+
+	//复制translations
+	QDir translationsDir("Engine/translations");
+	if (!destDir.exists("translations")) {
+		destDir.mkdir("translations");
+	}
+	QStringList translationsFiles = translationsDir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot);
+
+	for (const auto& file : translationsFiles)
+	{
+		QString srcPath = translationsDir.absoluteFilePath(file);
+		QString destPath = destDir.absoluteFilePath("translations/" + file);
+		QFile::copy(srcPath, destPath);
+	}
+
+	//复制Engine
+	QDir engineDir("Engine");
+
+	QStringList engineFiles = engineDir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot);
+
+	for (const auto& file : engineFiles)
+	{
+		QString srcPath = engineDir.absoluteFilePath(file);
+		QString destPath = destDir.absoluteFilePath(file);
+		QFile::copy(srcPath, destPath);
 	}
 
 	// 创建 config.txt
@@ -149,17 +245,6 @@ void GameEngine::exportGame(const string& name, const string& path)
 		file.close();
 	}
 
-	if (QFile::exists("config.txt")) {
-		QFile::remove("config.txt");
-	}
-	QFile file2("config.txt");
-	if (file2.open(QIODevice::WriteOnly | QIODevice::Text)) {
-		QTextStream out(&file2);
-		out << "1\n";
-		std::string wholePath = GameEngine::get_instance().getGamePath() + "/" + GameEngine::get_instance().getCurrentGameProject()->name + ".gameProject";
-		out << wholePath.c_str();
-		file2.close();
-	}
 }
 Vector2D GameEngine::get_resolution()
 {

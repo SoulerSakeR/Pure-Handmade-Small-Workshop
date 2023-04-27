@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <string>
-
+#include <qdir.h>
+#include <qstring.h>
 class PHPath
 {
 public:
@@ -31,6 +32,7 @@ public:
 	std::string getOldPath();
 	std::string getFileDir(); //获取文件目录，如果文件在根目录下则返回根目录
 	bool getIsFile();
+	static void copyDir(const QString& srcPath, const QString& dstPath);
 
 private:
 

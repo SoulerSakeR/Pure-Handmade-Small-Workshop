@@ -1,5 +1,6 @@
 ﻿#include "PHPath.h"
 
+
 std::string PHPath::getNewPath() {
 	return newPath;
 }
@@ -64,5 +65,27 @@ std::string PHPath::getFileDir(){
 	}
 	else {
 		return ".";
+	}
+}
+
+void PHPath::copyDir(const QString& srcPath, const QString& dstPath)
+{
+	QDir dstDir(dstPath);
+	if (!dstDir.exists()) {
+		dstDir.mkpath(".");
+	}
+
+	QDir srcDir(srcPath);
+	srcDir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot);
+	for (auto& entry : srcDir.entryList())
+	{
+		QString dstFilePath = dstDir.absoluteFilePath(entry);
+		if (QFileInfo(srcDir.absoluteFilePath(entry)).isDir()) {
+			QDir(dstFilePath).mkpath(".");
+			copyDir(srcDir.absoluteFilePath(entry), dstFilePath);
+		}
+		else {
+			QFile::copy(srcDir.absoluteFilePath(entry), dstFilePath);
+		}
 	}
 }
