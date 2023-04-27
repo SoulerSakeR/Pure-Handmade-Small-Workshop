@@ -34,6 +34,7 @@ bool GameProject::openScene(int index)
 		GameEngine::get_instance().refreshHierarchy();
 		GameEngine::get_instance().gameLoop = new GameLoop();
 		if (GameEngine::get_instance().getInEditor()) {
+			//RenderWidget::getCurrentWidget().startRendering();
 			auto renderLoop = std::bind(&GameLoop::updateScene, GameEngine::get_instance().gameLoop, &RenderWidget::getSceneWidget());
 			GameEngine::get_instance().pool.enqueue(renderLoop);
 			auto gameLoop = std::bind(&GameLoop::updateScene, GameEngine::get_instance().gameLoop, &RenderWidget::getGameWidget());

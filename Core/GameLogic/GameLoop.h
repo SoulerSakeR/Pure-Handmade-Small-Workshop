@@ -6,7 +6,6 @@
 #include <conio.h>
 #include <Windows.h>
 #include <Core/SystemStatus/GameEngine.h>
-#include <Core/Render/renderwidget.h>
 #include "Core/Core/GameObject.h"
 #include "Core/Core/Script.h"
 #include "lib/sol/sol.hpp"
@@ -14,11 +13,18 @@
 
 #include "Player.h"
 
+class RenderWidget;
 
 class GameLoop {
+    friend class GameEngine;
 public:
-    GameLoop() {}
-    ~GameLoop() {}
+    GameLoop() { lua = new sol::state();
+    bindAllClasses(*lua);
+    }
+    ~GameLoop() {
+        updateFunctions.clear();
+        delete lua; 
+    }
 
     //void gameLoop(GameProject* gamePrj);
 
@@ -35,6 +41,8 @@ public:
 
     void updateScene(RenderWidget* aWidget);
         // 更新游戏引擎中的场景信息-（已完成？）
+
+    void updateRender(RenderWidget* aWidget);
 
 
     void updateGameState(float deltaTime);
@@ -66,6 +74,11 @@ private:
    
    int gameTime; // 储存srand(GetTickCount())
    bool isRunning = true;
+   bool isClosed = false;
    bool isPlaying = false;
-   sol::state lua;
+   sol::state* lua;
+   std::vector<GameObject*> gameObjects;
+   std::vector<Script*> allScripts;
+   //sol::state lua;
+   std::unordered_map<std::string, sol::protected_function> updateFunctions;
 };

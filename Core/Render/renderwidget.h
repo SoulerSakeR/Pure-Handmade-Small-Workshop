@@ -18,6 +18,8 @@
 #include <Core/UI/HierarchyWidget.h>
 #include <Core/UI/GameWindow.h>
 
+class GameLoop;
+
 
 class RenderWidget : public QOpenGLWidget,public QOpenGLFunctions_3_3_Core
 {
@@ -79,6 +81,10 @@ public:
     bool isFullScreen = false;
     static bool widgetChanged;
     static RenderWidget* currentWidget;
+
+    GameLoop* gameLoop;
+    void startRendering();
+    void renderingLoop();
 
 protected:
     virtual void initializeGL();

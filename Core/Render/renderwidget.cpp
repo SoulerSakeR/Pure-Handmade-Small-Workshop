@@ -10,6 +10,7 @@
 #include <qopenglframebufferobject.h>
 #include <qapplication.h>
 #include <Core/ResourceManagement/ResourceMgr.h>
+#include "Core/GameLogic/GameLoop.h"
 
 #define glCheckError() glCheckError_(__FILE__, __LINE__)
 
@@ -740,6 +741,11 @@ void RenderWidget::initializeGL()
 	createCameraBorderProgram();
 	
 	textBuffer = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
+	timer.setInterval(10);
+	connect(&timer, &QTimer::timeout, []()
+	{
+		RenderWidget::currentWidget->renderingLoop();
+	});
 }
 
 void RenderWidget::resetResolution()
@@ -1077,6 +1083,17 @@ void RenderWidget::createCameraBorderProgram()
 void RenderWidget::messageLogHandler(const QOpenGLDebugMessage& debugMessage)
 {
 	qDebug() << debugMessage.message();
+}
+
+void RenderWidget::startRendering()
+{
+	timer.start();
+	gameLoop = new GameLoop();
+}
+
+void RenderWidget::renderingLoop()
+{
+	gameLoop->updateRender(this);
 }
 
 void RenderWidget::on_widgetChanged(int index)

@@ -10,6 +10,7 @@
 #include <Core/Core/Image.h>
 #include <Core/UI/ComponentsDockWidget.h>
 #include "Core/ResourceManagement/ResourceMgr.h"
+#include "Core/GameLogic/GameLoop.h"
 
 using namespace std;
 
@@ -76,7 +77,14 @@ void GameEngine::onPropertyChange(Property* property)
 
 void GameEngine::renderLoop()
 {
+	RenderWidget::getCurrentWidget().update();
+}
 
+bool GameEngine::readyToClose()
+{
+	if(gameLoop->isClosed)
+		return true;
+	return false;
 }
 
 Scene* const  GameEngine::getCurrentScene()

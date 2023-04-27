@@ -197,6 +197,7 @@ MainWindow::MainWindow(QWidget *parent)
         ui->pushButton->setEnabled(false);
         ui->pushButton_2->setEnabled(true);
         GameEngine::get_instance().gameLoop->setPlayingStatus(true);
+        //RenderWidget::getCurrentWidget().startRendering();
         });
 
     // 点击停止
@@ -487,12 +488,20 @@ void MainWindow::closeEvent(QCloseEvent* event)
             bool saveSuccess = GameEngine::get_instance().saveGameProject();
             if (saveSuccess) {
                 GameEngine::get_instance().gameLoop->shutdown();
+                while (GameEngine::get_instance().readyToClose())
+                {
+                    // 等待关闭
+                }
                 QMainWindow::closeEvent(event);
             }
         }
         else if (button == QMessageBox::Discard)
         {
             GameEngine::get_instance().gameLoop->shutdown();
+            while (GameEngine::get_instance().readyToClose())
+            {
+                // 等待关闭
+            }
             QMainWindow::closeEvent(event);
         }
         else
@@ -503,6 +512,10 @@ void MainWindow::closeEvent(QCloseEvent* event)
     else
     {
 		GameEngine::get_instance().gameLoop->shutdown();
+        while (GameEngine::get_instance().readyToClose())
+        {
+            // 等待关闭
+        }
 		QMainWindow::closeEvent(event);
     }
 }

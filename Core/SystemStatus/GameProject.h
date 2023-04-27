@@ -35,6 +35,7 @@ private:
 	void serialize(PHString&);
 	bool is_changed;
 
+
 	RenderSetting* render_setting;
 };
 

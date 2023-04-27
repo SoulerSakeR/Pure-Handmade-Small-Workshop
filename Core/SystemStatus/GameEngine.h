@@ -6,6 +6,7 @@
 #include <Core/ThreadPool/ThreadPool.h>
 #include <Core/UI/HierarchyWidget.h>
 #include <Core/UI/GameWindow.h>
+#include <QTimer>
 
 
 class ResourceMgr;
@@ -16,6 +17,7 @@ class GameEngine
 {
 	friend class MainWindow;
 	friend class GameWindow;
+	friend class GameProject;
 public:	
 	//method
 	static GameEngine& get_instance();	
@@ -48,6 +50,8 @@ public:
 	bool getInEditor();
 	void initGamePathForExport(const std::string& path);
 	bool needToSave();
+	void renderLoop();
+	bool readyToClose();
 	ThreadPool pool;
 	GameLoop* gameLoop;
 private:
@@ -57,7 +61,6 @@ private:
 		//TODO: 析构函数
 	};
 	
-	void renderLoop();
 	MainWindow* window = nullptr;
 	GameWindow* gameWindow = nullptr; // add by jz
 	HierarchyWidget* hierarchy;
@@ -67,5 +70,6 @@ private:
 	ResourceMgr* resourceMgr; //resource manager
 	bool inEditor;
 	std::string gamePathForGameExport = "";
+	QTimer* timer;
 };
 

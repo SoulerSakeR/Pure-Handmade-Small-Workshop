@@ -1,9 +1,6 @@
 ﻿#include "GameLoop.h"
 using std::chrono::system_clock;
-std::vector<GameObject*> gameObjects;
-std::vector<Script*> allScripts;
-//sol::state lua;
-std::unordered_map<std::string, sol::protected_function> updateFunctions;
+
 
 void GameLoop::updatePlayer(float deltaTime) {
         // 更新玩家状态-比如位置和执行动作
@@ -23,9 +20,8 @@ void GameLoop::updateScene(RenderWidget* aWidget) {
     // 获取场景信息(光夫哥)并且进行渲染（敬哥）
     // ...       
         // 游戏循环
-    sol::state lua;
     //lua.open_libraries(sol::lib::base);
-    bindAllClasses(lua);
+    // bindAllClasses(*lua);
     //lua.script_file("./input.lua");
     auto starttime = system_clock::now();
     auto endtime = system_clock::now();
@@ -40,12 +36,18 @@ void GameLoop::updateScene(RenderWidget* aWidget) {
         }
         starttime = system_clock::now();
         if (isPlaying && aWidget->isGameWidget || !GameEngine::get_instance().getInEditor())
-            updateGame(aWidget,lua,duration.count());
+            updateGame(aWidget,*lua,duration.count());
         aWidget->update();
         endtime = system_clock::now();
         //std::cout << "end_time：" << end_time << "\tstart_time" << start_time << std::endl;
     }
-    updateFunctions.clear();
+}
+
+void GameLoop::updateRender(RenderWidget* aWidget)
+{
+    if (aWidget->isGameWidget || !GameEngine::get_instance().getInEditor())
+        updateGame(aWidget, *lua, 0.f);
+    aWidget->update();
 }
 
 
@@ -74,12 +76,12 @@ void GameLoop::updateScripts(float deltaTime, sol::state &lua) {
             lua["this"] = gameObject;
             auto result = updateFunctions[script->get_name()](deltaTime);
 
-            //if (result.valid() == false) {
-            //    sol::error err = result;
-            //    std::cout << "----- RUN LUA ERROR ----" << std::endl;
-            //    std::cout << err.what() << std::endl;
-            //    std::cout << "------------------------" << std::endl;
-            //}
+            if (result.valid() == false) {
+                sol::error err = result;
+                std::cout << "----- RUN LUA ERROR ----" << std::endl;
+                std::cout << err.what() << std::endl;
+                std::cout << "------------------------" << std::endl;
+            }
 
         }
     }

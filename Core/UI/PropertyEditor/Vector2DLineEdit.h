@@ -7,8 +7,9 @@ class Vector2DLineEdit : public QLineEdit
 public:
 	Vector2DLineEdit(QWidget* parent = nullptr);
 signals:
-	void Vector2DChanged(Vector2D vec);
+	void Vector2DChanged(Vector2D vec);	
 public slots:
 	void onEditingFinished();
+	void setTextSafe(const QString& text);
 };
 
