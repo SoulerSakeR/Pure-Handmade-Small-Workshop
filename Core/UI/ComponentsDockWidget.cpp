@@ -100,7 +100,9 @@ void ComponentsDockWidget::onPropertyChanged(Property* property)
 		{
 			auto lineEdit = (QLineEdit*)object;
 			auto str = property->get_data<Vector2D>().tostring();
+			QSignalBlocker blocker(lineEdit);
 			lineEdit->setText(QString::fromStdString(str));
+			blocker.unblock();
 		}
 	}
 	else

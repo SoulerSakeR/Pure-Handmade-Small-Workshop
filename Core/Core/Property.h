@@ -18,7 +18,7 @@ public:
 	template<typename T>
 	T& get_data() const
 	{
-		return *(T*)(data);
+		return *static_cast<T*>(data);
 	}
 
 	/*template <typename T>

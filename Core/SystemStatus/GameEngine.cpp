@@ -17,6 +17,7 @@ GameEngine* GameEngine::instance = nullptr;
 
 GameEngine::GameEngine():pool(4)
 {
+	rootPath = std::filesystem::current_path().string();
 	gameLoop = nullptr;
 	gameProject = nullptr;
 }
@@ -40,8 +41,6 @@ bool GameEngine::initialize(MainWindow* window)
 	srand((unsigned)time(NULL));
 	gameProject = nullptr;
 	this->window = window;
-	std::filesystem::path current_path = std::filesystem::current_path();
-	rootPath = current_path.string();
 	Debug::logInfo() << "Engine initialized\n";
     return true;
 }
@@ -54,10 +53,6 @@ bool GameEngine::initializeGame (GameWindow* window)
 	Debug::logLevel = Debug::LogLevel::WARNING;
 	Debug::logInfo() << "Game initializing\n";
 	srand((unsigned)time(NULL));
-
-	// initialize path
-	rootPath = std::filesystem::current_path().string();
-
 	gameProject = nullptr;
 	this->gameWindow = window;	
 	window->show();

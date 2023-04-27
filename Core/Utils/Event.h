@@ -32,7 +32,7 @@ public:
 		for (auto& handle : handles)
 		{
 			std::function<RT(Args)>& f = handle.second;
-			return f(args);
+			f(args);
 		}
 	};
 	template <typename Func,typename Instance>
