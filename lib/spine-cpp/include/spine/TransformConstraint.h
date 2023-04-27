@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated September 24, 2021. Replaces all prior versions.
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2021, Esoteric Software LLC
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -36,66 +36,52 @@
 
 namespace spine {
 	class TransformConstraintData;
-
 	class Skeleton;
-
 	class Bone;
 
 	class SP_API TransformConstraint : public Updatable {
 		friend class Skeleton;
-
 		friend class TransformConstraintTimeline;
 
-	RTTI_DECL
+		RTTI_DECL
 
 	public:
-		TransformConstraint(TransformConstraintData &data, Skeleton &skeleton);
+		TransformConstraint(TransformConstraintData& data, Skeleton& skeleton);
+
+		void apply();
 
 		virtual void update();
 
 		virtual int getOrder();
 
-		TransformConstraintData &getData();
+		TransformConstraintData& getData();
 
-		Vector<Bone *> &getBones();
+		Vector<Bone*>& getBones();
 
-		Bone *getTarget();
+		Bone* getTarget();
+		void setTarget(Bone* inValue);
 
-		void setTarget(Bone *inValue);
+		float getRotateMix();
+		void setRotateMix(float inValue);
 
-		float getMixRotate();
+		float getTranslateMix();
+		void setTranslateMix(float inValue);
 
-		void setMixRotate(float inValue);
+		float getScaleMix();
+		void setScaleMix(float inValue);
 
-		float getMixX();
-
-		void setMixX(float inValue);
-
-		float getMixY();
-
-		void setMixY(float inValue);
-
-		float getMixScaleX();
-
-		void setMixScaleX(float inValue);
-
-		float getMixScaleY();
-
-		void setMixScaleY(float inValue);
-
-		float getMixShearY();
-
-		void setMixShearY(float inValue);
+		float getShearMix();
+		void setShearMix(float inValue);
 
 		bool isActive();
 
 		void setActive(bool inValue);
 
 	private:
-		TransformConstraintData &_data;
-		Vector<Bone *> _bones;
-		Bone *_target;
-		float _mixRotate, _mixX, _mixY, _mixScaleX, _mixScaleY, _mixShearY;
+		TransformConstraintData& _data;
+		Vector<Bone*> _bones;
+		Bone* _target;
+		float _rotateMix, _translateMix, _scaleMix, _shearMix;
 		bool _active;
 
 		void applyAbsoluteWorld();

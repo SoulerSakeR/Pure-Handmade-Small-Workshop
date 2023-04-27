@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated September 24, 2021. Replaces all prior versions.
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2021, Esoteric Software LLC
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -27,6 +27,10 @@
  * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
+#ifdef SPINE_UE4
+#include "SpinePluginPrivatePCH.h"
+#endif
+
 #include <spine/TransformConstraintData.h>
 
 #include <spine/BoneData.h>
@@ -34,25 +38,21 @@
 #include <assert.h>
 
 using namespace spine;
-
-RTTI_IMPL(TransformConstraintData, ConstraintData)
-
-TransformConstraintData::TransformConstraintData(const String &name) : ConstraintData(name),
-																	   _target(NULL),
-																	   _mixRotate(0),
-																	   _mixX(0),
-																	   _mixY(0),
-																	   _mixScaleX(0),
-																	   _mixScaleY(0),
-																	   _mixShearY(0),
-																	   _offsetRotation(0),
-																	   _offsetX(0),
-																	   _offsetY(0),
-																	   _offsetScaleX(0),
-																	   _offsetScaleY(0),
-																	   _offsetShearY(0),
-																	   _relative(false),
-																	   _local(false) {
+TransformConstraintData::TransformConstraintData(const String &name) :
+		ConstraintData(name),
+		_target(NULL),
+		_rotateMix(0),
+		_translateMix(0),
+		_scaleMix(0),
+		_shearMix(0),
+		_offsetRotation(0),
+		_offsetX(0),
+		_offsetY(0),
+		_offsetScaleX(0),
+		_offsetScaleY(0),
+		_offsetShearY(0),
+		_relative(false),
+		_local(false) {
 }
 
 Vector<BoneData *> &TransformConstraintData::getBones() {
@@ -63,28 +63,20 @@ BoneData *TransformConstraintData::getTarget() {
 	return _target;
 }
 
-float TransformConstraintData::getMixRotate() {
-	return _mixRotate;
+float TransformConstraintData::getRotateMix() {
+	return _rotateMix;
 }
 
-float TransformConstraintData::getMixX() {
-	return _mixX;
+float TransformConstraintData::getTranslateMix() {
+	return _translateMix;
 }
 
-float TransformConstraintData::getMixY() {
-	return _mixY;
+float TransformConstraintData::getScaleMix() {
+	return _scaleMix;
 }
 
-float TransformConstraintData::getMixScaleX() {
-	return _mixScaleX;
-}
-
-float TransformConstraintData::getMixScaleY() {
-	return _mixScaleY;
-}
-
-float TransformConstraintData::getMixShearY() {
-	return _mixShearY;
+float TransformConstraintData::getShearMix() {
+	return _shearMix;
 }
 
 float TransformConstraintData::getOffsetRotation() {
@@ -117,64 +109,4 @@ bool TransformConstraintData::isRelative() {
 
 bool TransformConstraintData::isLocal() {
 	return _local;
-}
-
-void TransformConstraintData::setTarget(BoneData *target) {
-	_target = target;
-}
-
-void TransformConstraintData::setMixRotate(float mixRotate) {
-	_mixRotate = mixRotate;
-}
-
-void TransformConstraintData::setMixX(float mixX) {
-	_mixX = mixX;
-}
-
-void TransformConstraintData::setMixY(float mixY) {
-	_mixY = mixY;
-}
-
-void TransformConstraintData::setMixScaleX(float mixScaleX) {
-	_mixScaleX = mixScaleX;
-}
-
-void TransformConstraintData::setMixScaleY(float mixScaleY) {
-	_mixScaleY = mixScaleY;
-}
-
-void TransformConstraintData::setMixShearY(float mixShearY) {
-	_mixShearY = mixShearY;
-}
-
-void TransformConstraintData::setOffsetRotation(float offsetRotation) {
-	_offsetRotation = offsetRotation;
-}
-
-void TransformConstraintData::setOffsetX(float offsetX) {
-	_offsetX = offsetX;
-}
-
-void TransformConstraintData::setOffsetY(float offsetY) {
-	_offsetY = offsetY;
-}
-
-void TransformConstraintData::setOffsetScaleX(float offsetScaleX) {
-	_offsetScaleX = offsetScaleX;
-}
-
-void TransformConstraintData::setOffsetScaleY(float offsetScaleY) {
-	_offsetScaleY = offsetScaleY;
-}
-
-void TransformConstraintData::setOffsetShearY(float offsetShearY) {
-	_offsetShearY = offsetShearY;
-}
-
-void TransformConstraintData::setRelative(bool isRelative) {
-	_relative = isRelative;
-}
-
-void TransformConstraintData::setLocal(bool isLocal) {
-	_local = isLocal;
 }

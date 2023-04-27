@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated September 24, 2021. Replaces all prior versions.
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2021, Esoteric Software LLC
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -35,103 +35,95 @@
 #include <spine/Color.h>
 
 namespace spine {
-	class SlotData;
+class SlotData;
 
-	class Bone;
+class Bone;
 
-	class Skeleton;
+class Skeleton;
 
-	class Attachment;
+class Attachment;
 
-	class SP_API Slot : public SpineObject {
-		friend class VertexAttachment;
+class SP_API Slot : public SpineObject {
+	friend class VertexAttachment;
 
-		friend class Skeleton;
+	friend class Skeleton;
 
-		friend class SkeletonBounds;
+	friend class SkeletonBounds;
 
-		friend class SkeletonClipping;
+	friend class SkeletonClipping;
 
-		friend class AttachmentTimeline;
+	friend class AttachmentTimeline;
 
-		friend class RGBATimeline;
+	friend class ColorTimeline;
 
-		friend class RGBTimeline;
+	friend class DeformTimeline;
 
-		friend class AlphaTimeline;
+	friend class DrawOrderTimeline;
 
-		friend class RGBA2Timeline;
+	friend class EventTimeline;
 
-		friend class RGB2Timeline;
+	friend class IkConstraintTimeline;
 
-		friend class DeformTimeline;
+	friend class PathConstraintMixTimeline;
 
-		friend class DrawOrderTimeline;
+	friend class PathConstraintPositionTimeline;
 
-		friend class EventTimeline;
+	friend class PathConstraintSpacingTimeline;
 
-		friend class IkConstraintTimeline;
+	friend class ScaleTimeline;
 
-		friend class PathConstraintMixTimeline;
+	friend class ShearTimeline;
 
-		friend class PathConstraintPositionTimeline;
+	friend class TransformConstraintTimeline;
 
-		friend class PathConstraintSpacingTimeline;
+	friend class TranslateTimeline;
 
-		friend class ScaleTimeline;
+	friend class TwoColorTimeline;
 
-		friend class ShearTimeline;
+public:
+	Slot(SlotData &data, Bone &bone);
 
-		friend class TransformConstraintTimeline;
+	void setToSetupPose();
 
-		friend class TranslateTimeline;
+	SlotData &getData();
 
-		friend class TwoColorTimeline;
+	Bone &getBone();
 
-	public:
-		Slot(SlotData &data, Bone &bone);
+	Skeleton &getSkeleton();
 
-		void setToSetupPose();
+	Color &getColor();
 
-		SlotData &getData();
+	Color &getDarkColor();
 
-		Bone &getBone();
+	bool hasDarkColor();
 
-		Skeleton &getSkeleton();
+	/// May be NULL.
+	Attachment *getAttachment();
 
-		Color &getColor();
+	void setAttachment(Attachment *inValue);
 
-		Color &getDarkColor();
+	int getAttachmentState();
 
-		bool hasDarkColor();
+	void setAttachmentState(int state);
 
-		/// May be NULL.
-		Attachment *getAttachment();
+	float getAttachmentTime();
 
-		void setAttachment(Attachment *inValue);
+	void setAttachmentTime(float inValue);
 
-		int getAttachmentState();
+	Vector<float> &getDeform();
 
-		void setAttachmentState(int state);
-
-		Vector<float> &getDeform();
-
-		int getSequenceIndex();
-
-		void setSequenceIndex(int index);
-
-	private:
-		SlotData &_data;
-		Bone &_bone;
-		Skeleton &_skeleton;
-		Color _color;
-		Color _darkColor;
-		bool _hasDarkColor;
-		Attachment *_attachment;
-		int _attachmentState;
-		int _sequenceIndex;
-		Vector<float> _deform;
-	};
+private:
+	SlotData &_data;
+	Bone &_bone;
+	Skeleton &_skeleton;
+	Color _color;
+	Color _darkColor;
+	bool _hasDarkColor;
+	Attachment *_attachment;
+	int _attachmentState;
+	float _attachmentTime;
+	Vector<float> _deform;
+};
 }
 
 #endif /* Spine_Slot_h */

@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated September 24, 2021. Replaces all prior versions.
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2021, Esoteric Software LLC
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -31,34 +31,28 @@
 #define Spine_ClippingAttachment_h
 
 #include <spine/VertexAttachment.h>
-#include <spine/Color.h>
 
 namespace spine {
 	class SlotData;
 
 	class SP_API ClippingAttachment : public VertexAttachment {
 		friend class SkeletonBinary;
-
 		friend class SkeletonJson;
 
 		friend class SkeletonClipping;
 
-	RTTI_DECL
+		RTTI_DECL
 
 	public:
-		explicit ClippingAttachment(const String &name);
+		explicit ClippingAttachment(const String& name);
 
-		SlotData *getEndSlot();
+		SlotData* getEndSlot();
+		void setEndSlot(SlotData* inValue);
 
-		void setEndSlot(SlotData *inValue);
-
-		Color &getColor();
-
-		virtual Attachment *copy();
+		virtual Attachment* copy();
 
 	private:
-		SlotData *_endSlot;
-		Color _color;
+		SlotData* _endSlot;
 	};
 }
 

@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated September 24, 2021. Replaces all prior versions.
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2021, Esoteric Software LLC
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -40,21 +40,18 @@ namespace spine {
 	/// An attachment with vertices that are transformed by one or more bones and can be deformed by a slot's vertices.
 	class SP_API VertexAttachment : public Attachment {
 		friend class SkeletonBinary;
-
 		friend class SkeletonJson;
-
 		friend class DeformTimeline;
 
-	RTTI_DECL
+		RTTI_DECL
 
 	public:
-		explicit VertexAttachment(const String &name);
+		explicit VertexAttachment(const String& name);
 
 		virtual ~VertexAttachment();
 
-		void computeWorldVertices(Slot &slot, float *worldVertices);
-
-		void computeWorldVertices(Slot &slot, Vector<float> &worldVertices);
+		void computeWorldVertices(Slot& slot, float* worldVertices);
+		void computeWorldVertices(Slot& slot, Vector<float>& worldVertices);
 
 		/// Transforms local vertices to world coordinates.
 		/// @param start The index of the first Vertices value to transform. Each vertex has 2 values, x and y.
@@ -62,34 +59,29 @@ namespace spine {
 		/// @param worldVertices The output world vertices. Must have a length greater than or equal to offset + count.
 		/// @param offset The worldVertices index to begin writing values.
 		/// @param stride The number of worldVertices entries between the value pairs written.
-		virtual void computeWorldVertices(Slot &slot, size_t start, size_t count, float *worldVertices, size_t offset,
-								  size_t stride = 2);
-
-		virtual void computeWorldVertices(Slot &slot, size_t start, size_t count, Vector<float> &worldVertices, size_t offset,
-								  size_t stride = 2);
+		void computeWorldVertices(Slot& slot, size_t start, size_t count, float* worldVertices, size_t offset, size_t stride = 2);
+		void computeWorldVertices(Slot& slot, size_t start, size_t count, Vector<float>& worldVertices, size_t offset, size_t stride = 2);
 
 		/// Gets a unique ID for this attachment.
 		int getId();
 
-		Vector<int> &getBones();
+		Vector<size_t>& getBones();
 
-		Vector<float> &getVertices();
+		Vector<float>& getVertices();
 
 		size_t getWorldVerticesLength();
-
 		void setWorldVerticesLength(size_t inValue);
 
-		Attachment * getTimelineAttachment();
+		VertexAttachment* getDeformAttachment();
+		void setDeformAttachment(VertexAttachment* attachment);
 
-		void setTimelineAttachment(Attachment *attachment);
-
-		void copyTo(VertexAttachment *other);
+		void copyTo(VertexAttachment* other);
 
 	protected:
-		Vector <int> _bones;
+		Vector<size_t> _bones;
 		Vector<float> _vertices;
 		size_t _worldVerticesLength;
-		Attachment *_timelineAttachment;
+		VertexAttachment* _deformAttachment;
 
 	private:
 		const int _id;

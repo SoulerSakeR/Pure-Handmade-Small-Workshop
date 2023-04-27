@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated September 24, 2021. Replaces all prior versions.
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2021, Esoteric Software LLC
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -35,27 +35,29 @@
 namespace spine {
 	class SP_API EventTimeline : public Timeline {
 		friend class SkeletonBinary;
-
 		friend class SkeletonJson;
 
-	RTTI_DECL
+		RTTI_DECL
 
 	public:
-		explicit EventTimeline(size_t frameCount);
+		explicit EventTimeline(int frameCount);
 
 		~EventTimeline();
 
-		virtual void
-		apply(Skeleton &skeleton, float lastTime, float time, Vector<Event *> *pEvents, float alpha, MixBlend blend,
-			  MixDirection direction);
+		virtual void apply(Skeleton& skeleton, float lastTime, float time, Vector<Event*>* pEvents, float alpha, MixBlend blend, MixDirection direction);
+
+		virtual int getPropertyId();
 
 		/// Sets the time and value of the specified keyframe.
-		void setFrame(size_t frame, Event *event);
+		void setFrame(size_t frameIndex, Event* event);
 
-		Vector<Event *> &getEvents();
+		const Vector<float>& getFrames();
+		Vector<Event*>& getEvents();
+		size_t getFrameCount();
 
 	private:
-		Vector<Event *> _events;
+		Vector<float> _frames;
+		Vector<Event*> _events;
 	};
 }
 

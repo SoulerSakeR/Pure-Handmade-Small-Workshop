@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated September 24, 2021. Replaces all prior versions.
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2021, Esoteric Software LLC
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -36,96 +36,87 @@
 #include <spine/MixDirection.h>
 #include <spine/SpineObject.h>
 #include <spine/SpineString.h>
-#include <spine/Property.h>
 
 namespace spine {
-	class Timeline;
+class Timeline;
 
-	class Skeleton;
+class Skeleton;
 
-	class Event;
+class Event;
 
-	class AnimationState;
+class SP_API Animation : public SpineObject {
+	friend class AnimationState;
 
-	class SP_API Animation : public SpineObject {
-		friend class AnimationState;
+	friend class TrackEntry;
 
-		friend class TrackEntry;
+	friend class AnimationStateData;
 
-		friend class AnimationStateData;
+	friend class AttachmentTimeline;
 
-		friend class AttachmentTimeline;
+	friend class ColorTimeline;
 
-		friend class RGBATimeline;
+	friend class DeformTimeline;
 
-		friend class RGBTimeline;
+	friend class DrawOrderTimeline;
 
-		friend class AlphaTimeline;
+	friend class EventTimeline;
 
-		friend class RGBA2Timeline;
+	friend class IkConstraintTimeline;
 
-		friend class RGB2Timeline;
+	friend class PathConstraintMixTimeline;
 
-		friend class DeformTimeline;
+	friend class PathConstraintPositionTimeline;
 
-		friend class DrawOrderTimeline;
+	friend class PathConstraintSpacingTimeline;
 
-		friend class EventTimeline;
+	friend class RotateTimeline;
 
-		friend class IkConstraintTimeline;
+	friend class ScaleTimeline;
 
-		friend class PathConstraintMixTimeline;
+	friend class ShearTimeline;
 
-		friend class PathConstraintPositionTimeline;
+	friend class TransformConstraintTimeline;
 
-		friend class PathConstraintSpacingTimeline;
+	friend class TranslateTimeline;
 
-		friend class RotateTimeline;
+	friend class TwoColorTimeline;
 
-		friend class ScaleTimeline;
+public:
+	Animation(const String &name, Vector<Timeline *> &timelines, float duration);
 
-		friend class ShearTimeline;
+	~Animation();
 
-		friend class TransformConstraintTimeline;
+	/// Applies all the animation's timelines to the specified skeleton.
+	/// See also Timeline::apply(Skeleton&, float, float, Vector, float, MixPose, MixDirection)
+	void apply(Skeleton &skeleton, float lastTime, float time, bool loop, Vector<Event *> *pEvents, float alpha,
+		MixBlend blend, MixDirection direction);
 
-		friend class TranslateTimeline;
+	const String &getName();
 
-		friend class TranslateXTimeline;
+	Vector<Timeline *> &getTimelines();
 
-		friend class TranslateYTimeline;
+	bool hasTimeline(int id);
 
-		friend class TwoColorTimeline;
+	float getDuration();
 
-	public:
-		Animation(const String &name, Vector<Timeline *> &timelines, float duration);
+	void setDuration(float inValue);
 
-		~Animation();
 
-		/// Applies all the animation's timelines to the specified skeleton.
-		/// See also Timeline::apply(Skeleton&, float, float, Vector, float, MixPose, MixDirection)
-		void apply(Skeleton &skeleton, float lastTime, float time, bool loop, Vector<Event *> *pEvents, float alpha,
-				   MixBlend blend, MixDirection direction);
 
-		const String &getName();
+private:
+	Vector<Timeline *> _timelines;
+	HashMap<int, bool> _timelineIds;
+	float _duration;
+	String _name;
 
-		Vector<Timeline *> &getTimelines();
+	/// @param target After the first and before the last entry.
+	static int binarySearch(Vector<float> &values, float target, int step);
 
-		bool hasTimeline(Vector<PropertyId> &ids);
+	/// @param target After the first and before the last entry.
+	static int binarySearch(Vector<float> &values, float target);
 
-		float getDuration();
-
-		void setDuration(float inValue);
-
-		/// @param target After the first and before the last entry.
-		static int search(Vector<float> &values, float target);
-
-		static int search(Vector<float> &values, float target, int step);
-	private:
-		Vector<Timeline *> _timelines;
-		HashMap<PropertyId, bool> _timelineIds;
-		float _duration;
-		String _name;
-	};
+	static int linearSearch(Vector<float> &values, float target, int step);
+};
 }
 
 #endif /* Spine_Animation_h */

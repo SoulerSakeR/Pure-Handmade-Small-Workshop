@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated September 24, 2021. Replaces all prior versions.
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2021, Esoteric Software LLC
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -27,10 +27,14 @@
  * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
+#ifdef SPINE_UE4
+#include "SpinePluginPrivatePCH.h"
+#endif
+
 #include <spine/SkeletonClipping.h>
 
-#include <spine/ClippingAttachment.h>
 #include <spine/Slot.h>
+#include <spine/ClippingAttachment.h>
 
 using namespace spine;
 
@@ -48,7 +52,7 @@ size_t SkeletonClipping::clipStart(Slot &slot, ClippingAttachment *clip) {
 
 	_clipAttachment = clip;
 
-	int n = (int) clip->getWorldVerticesLength();
+	int n = clip->getWorldVerticesLength();
 	_clippingPolygon.setSize(n, 0);
 	clip->computeWorldVertices(slot, 0, n, _clippingPolygon, 0, 2);
 	makeClockwise(_clippingPolygon);
@@ -82,13 +86,13 @@ void SkeletonClipping::clipEnd() {
 	_clippingPolygon.clear();
 }
 
-void SkeletonClipping::clipTriangles(Vector<float> &vertices, Vector<unsigned short> &triangles, Vector<float> &uvs,
-									 size_t stride) {
+void SkeletonClipping::clipTriangles(Vector<float> &vertices, Vector<unsigned short> &triangles, Vector<float> &uvs, size_t stride) {
 	clipTriangles(vertices.buffer(), triangles.buffer(), triangles.size(), uvs.buffer(), stride);
 }
 
 void SkeletonClipping::clipTriangles(float *vertices, unsigned short *triangles,
-									 size_t trianglesLength, float *uvs, size_t stride) {
+	size_t trianglesLength, float *uvs, size_t stride
+) {
 	Vector<float> &clipOutput = _clipOutput;
 	Vector<float> &clippedVertices = _clippedVertices;
 	Vector<unsigned short> &clippedTriangles = _clippedTriangles;
@@ -101,17 +105,17 @@ void SkeletonClipping::clipTriangles(float *vertices, unsigned short *triangles,
 	clippedTriangles.clear();
 
 	size_t i = 0;
-continue_outer:
+	continue_outer:
 	for (; i < trianglesLength; i += 3) {
-		int vertexOffset = triangles[i] * (int) stride;
+		int vertexOffset = triangles[i] * stride;
 		float x1 = vertices[vertexOffset], y1 = vertices[vertexOffset + 1];
 		float u1 = uvs[vertexOffset], v1 = uvs[vertexOffset + 1];
 
-		vertexOffset = triangles[i + 1] * (int) stride;
+		vertexOffset = triangles[i + 1] * stride;
 		float x2 = vertices[vertexOffset], y2 = vertices[vertexOffset + 1];
 		float u2 = uvs[vertexOffset], v2 = uvs[vertexOffset + 1];
 
-		vertexOffset = triangles[i + 2] * (int) stride;
+		vertexOffset = triangles[i + 2] * stride;
 		float x3 = vertices[vertexOffset], y3 = vertices[vertexOffset + 1];
 		float u3 = uvs[vertexOffset], v3 = uvs[vertexOffset + 1];
 
@@ -143,9 +147,9 @@ continue_outer:
 				clippedTriangles.setSize(s + 3 * (clipOutputCount - 2), 0);
 				clipOutputCount--;
 				for (size_t ii = 1; ii < clipOutputCount; ii++) {
-					clippedTriangles[s] = (unsigned short) (index);
-					clippedTriangles[s + 1] = (unsigned short) (index + ii);
-					clippedTriangles[s + 2] = (unsigned short) (index + ii + 1);
+					clippedTriangles[s] = (unsigned short)(index);
+					clippedTriangles[s + 1] = (unsigned short)(index + ii);
+					clippedTriangles[s + 2] = (unsigned short)(index + ii + 1);
 					s += 3;
 				}
 				index += clipOutputCount + 1;
@@ -168,9 +172,9 @@ continue_outer:
 
 				s = clippedTriangles.size();
 				clippedTriangles.setSize(s + 3, 0);
-				clippedTriangles[s] = (unsigned short) index;
-				clippedTriangles[s + 1] = (unsigned short) (index + 1);
-				clippedTriangles[s + 2] = (unsigned short) (index + 2);
+				clippedTriangles[s] = (unsigned short)index;
+				clippedTriangles[s + 1] = (unsigned short)(index + 1);
+				clippedTriangles[s + 2] = (unsigned short)(index + 2);
 				index += 3;
 				i += 3;
 				goto continue_outer;
@@ -196,7 +200,8 @@ Vector<float> &SkeletonClipping::getClippedUVs() {
 }
 
 bool SkeletonClipping::clip(float x1, float y1, float x2, float y2, float x3, float y3, Vector<float> *clippingArea,
-							Vector<float> *output) {
+	Vector<float> *output
+) {
 	Vector<float> *originalOutput = output;
 	bool clipped = false;
 
@@ -314,7 +319,7 @@ void SkeletonClipping::makeClockwise(Vector<float> &polygon) {
 
 	for (size_t i = 0, lastX = verticeslength - 2, n = verticeslength >> 1; i < n; i += 2) {
 		float x = polygon[i], y = polygon[i + 1];
-		int other = (int) (lastX - i);
+		int other = lastX - i;
 		polygon[i] = polygon[other];
 		polygon[i + 1] = polygon[other + 1];
 		polygon[other] = x;

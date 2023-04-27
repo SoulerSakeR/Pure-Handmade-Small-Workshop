@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated September 24, 2021. Replaces all prior versions.
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2021, Esoteric Software LLC
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -27,19 +27,21 @@
  * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
+#ifdef SPINE_UE4
+#include "SpinePluginPrivatePCH.h"
+#endif
+
 #include <spine/ConstraintData.h>
 
 using namespace spine;
 
-RTTI_IMPL_NOPARENT(ConstraintData)
-
-ConstraintData::ConstraintData(const String &name) : _name(name), _order(0), _skinRequired(false) {
+ConstraintData::ConstraintData(const String& name): _name(name), _order(0), _skinRequired(false) {
 }
 
 ConstraintData::~ConstraintData() {
 }
 
-const String &ConstraintData::getName() {
+const String& ConstraintData::getName() {
 	return _name;
 }
 

@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated September 24, 2021. Replaces all prior versions.
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2021, Esoteric Software LLC
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -40,86 +40,36 @@ namespace spine {
 
 	class SP_API TransformConstraintData : public ConstraintData {
 		friend class SkeletonBinary;
-
 		friend class SkeletonJson;
 
 		friend class TransformConstraint;
-
 		friend class Skeleton;
-
 		friend class TransformConstraintTimeline;
 
 	public:
-		RTTI_DECL
+		explicit TransformConstraintData(const String& name);
 
-		explicit TransformConstraintData(const String &name);
-
-		Vector<BoneData *> &getBones();
-
-		BoneData *getTarget();
-
-        void setTarget(BoneData *target);
-
-		float getMixRotate();
-
-        void setMixRotate(float mixRotate);
-
-		float getMixX();
-
-        void setMixX(float mixX);
-
-		float getMixY();
-
-        void setMixY(float mixY);
-
-		float getMixScaleX();
-
-        void setMixScaleX(float mixScaleX);
-
-		float getMixScaleY();
-
-        void setMixScaleY(float mixScaleY);
-
-		float getMixShearY();
-
-        void setMixShearY(float mixShearY);
+		Vector<BoneData*>& getBones();
+		BoneData* getTarget();
+		float getRotateMix();
+		float getTranslateMix();
+		float getScaleMix();
+		float getShearMix();
 
 		float getOffsetRotation();
-
-        void setOffsetRotation(float offsetRotation);
-
 		float getOffsetX();
-
-        void setOffsetX(float offsetX);
-
 		float getOffsetY();
-
-        void setOffsetY(float offsetY);
-
 		float getOffsetScaleX();
-
-        void setOffsetScaleX(float offsetScaleX);
-
 		float getOffsetScaleY();
-
-        void setOffsetScaleY(float offsetScaleY);
-
 		float getOffsetShearY();
 
-        void setOffsetShearY(float offsetShearY);
-
 		bool isRelative();
-
-        void setRelative(bool isRelative);
-
 		bool isLocal();
 
-        void setLocal(bool isLocal);
-
 	private:
-		Vector<BoneData *> _bones;
-		BoneData *_target;
-		float _mixRotate, _mixX, _mixY, _mixScaleX, _mixScaleY, _mixShearY;
+		Vector<BoneData*> _bones;
+		BoneData* _target;
+		float _rotateMix, _translateMix, _scaleMix, _shearMix;
 		float _offsetRotation, _offsetX, _offsetY, _offsetScaleX, _offsetScaleY, _offsetShearY;
 		bool _relative, _local;
 	};

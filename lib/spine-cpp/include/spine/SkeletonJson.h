@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated September 24, 2021. Replaces all prior versions.
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2021, Esoteric Software LLC
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -35,80 +35,57 @@
 #include <spine/SpineString.h>
 
 namespace spine {
-	class Timeline;
+class CurveTimeline;
 
-	class CurveTimeline;
+class VertexAttachment;
 
-	class CurveTimeline1;
+class Animation;
 
-	class CurveTimeline2;
+class Json;
 
-	class VertexAttachment;
+class SkeletonData;
 
-	class Animation;
+class Atlas;
 
-	class Json;
+class AttachmentLoader;
 
-	class SkeletonData;
+class LinkedMesh;
 
-	class Atlas;
+class String;
 
-	class AttachmentLoader;
+class SP_API SkeletonJson : public SpineObject {
+public:
+	explicit SkeletonJson(Atlas *atlas);
 
-	class LinkedMesh;
+	explicit SkeletonJson(AttachmentLoader *attachmentLoader, bool ownsLoader = false);
 
-	class String;
+	~SkeletonJson();
 
-	class Sequence;
+	SkeletonData *readSkeletonDataFile(const String &path);
 
-	class SP_API SkeletonJson : public SpineObject {
-	public:
-		explicit SkeletonJson(Atlas *atlas);
+	SkeletonData *readSkeletonData(const char *json);
 
-		explicit SkeletonJson(AttachmentLoader *attachmentLoader, bool ownsLoader = false);
+	void setScale(float scale) { _scale = scale; }
 
-		~SkeletonJson();
+	String &getError() { return _error; }
 
-		SkeletonData *readSkeletonDataFile(const String &path);
+private:
+	AttachmentLoader *_attachmentLoader;
+	Vector<LinkedMesh *> _linkedMeshes;
+	float _scale;
+	const bool _ownsLoader;
+	String _error;
 
-		SkeletonData *readSkeletonData(const char *json);
+	static float toColor(const char *value, size_t index);
 
-		void setScale(float scale) { _scale = scale; }
+	static void readCurve(Json *frame, CurveTimeline *timeline, size_t frameIndex);
 
-		String &getError() { return _error; }
+	Animation *readAnimation(Json *root, SkeletonData *skeletonData);
 
-	private:
-		AttachmentLoader *_attachmentLoader;
-		Vector<LinkedMesh *> _linkedMeshes;
-		float _scale;
-		const bool _ownsLoader;
-		String _error;
+	void readVertices(Json *attachmentMap, VertexAttachment *attachment, size_t verticesLength);
 
-		static Sequence *readSequence(Json *sequence);
-
-		static void
-		setBezier(CurveTimeline *timeline, int frame, int value, int bezier, float time1, float value1, float cx1,
-				  float cy1,
-				  float cx2, float cy2, float time2, float value2);
-
-		static int
-		readCurve(Json *curve, CurveTimeline *timeline, int bezier, int frame, int value, float time1, float time2,
-				  float value1, float value2, float scale);
-
-		static Timeline *readTimeline(Json *keyMap, CurveTimeline1 *timeline, float defaultValue, float scale);
-
-		static Timeline *
-		readTimeline(Json *keyMap, CurveTimeline2 *timeline, const char *name1, const char *name2, float defaultValue,
-					 float scale);
-
-		Animation *readAnimation(Json *root, SkeletonData *skeletonData);
-
-		void readVertices(Json *attachmentMap, VertexAttachment *attachment, size_t verticesLength);
-
-		void setError(Json *root, const String &value1, const String &value2);
-
-		int findSlotIndex(SkeletonData *skeletonData, const String &slotName, Vector<Timeline *> timelines);
-	};
+	void setError(Json *root, const String &value1, const String &value2);
+};
 }
 
 #endif /* Spine_SkeletonJson_h */

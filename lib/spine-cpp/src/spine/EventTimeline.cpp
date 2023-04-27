@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated September 24, 2021. Replaces all prior versions.
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2021, Esoteric Software LLC
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -27,17 +27,21 @@
  * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
+#ifdef SPINE_UE4
+#include "SpinePluginPrivatePCH.h"
+#endif
+
 #include <spine/EventTimeline.h>
 
-#include <spine/Event.h>
 #include <spine/Skeleton.h>
+#include <spine/Event.h>
 
 #include <spine/Animation.h>
-#include <spine/ContainerUtil.h>
-#include <spine/EventData.h>
-#include <spine/Property.h>
+#include <spine/TimelineType.h>
 #include <spine/Slot.h>
 #include <spine/SlotData.h>
+#include <spine/EventData.h>
+#include <spine/ContainerUtil.h>
 
 #include <float.h>
 
@@ -45,9 +49,8 @@ using namespace spine;
 
 RTTI_IMPL(EventTimeline, Timeline)
 
-EventTimeline::EventTimeline(size_t frameCount) : Timeline(frameCount, 1) {
-	PropertyId ids[] = {((PropertyId) Property_Event << 32)};
-	setPropertyIds(ids, 1);
+EventTimeline::EventTimeline(int frameCount) : Timeline() {
+	_frames.setSize(frameCount, 0);
 	_events.setSize(frameCount, NULL);
 }
 
@@ -56,7 +59,8 @@ EventTimeline::~EventTimeline() {
 }
 
 void EventTimeline::apply(Skeleton &skeleton, float lastTime, float time, Vector<Event *> *pEvents, float alpha,
-						  MixBlend blend, MixDirection direction) {
+	MixBlend blend, MixDirection direction
+) {
 	if (pEvents == NULL) return;
 
 	Vector<Event *> &events = *pEvents;
@@ -68,32 +72,40 @@ void EventTimeline::apply(Skeleton &skeleton, float lastTime, float time, Vector
 		apply(skeleton, lastTime, FLT_MAX, pEvents, alpha, blend, direction);
 		lastTime = -1.0f;
 	} else if (lastTime >= _frames[frameCount - 1]) {
-		// Last time is after last i.
+		// Last time is after last frame.
 		return;
 	}
 
-	if (time < _frames[0]) return;// Time is before first i.
+	if (time < _frames[0]) return; // Time is before first frame.
 
-	int i;
+	int frame;
 	if (lastTime < _frames[0]) {
-		i = 0;
+		frame = 0;
 	} else {
-		i = Animation::search(_frames, lastTime) + 1;
-		float frameTime = _frames[i];
-		while (i > 0) {
-			// Fire multiple events with the same i.
-			if (_frames[i - 1] != frameTime) break;
-			i--;
+		frame = Animation::binarySearch(_frames, lastTime);
+		float frameTime = _frames[frame];
+		while (frame > 0) {
+			// Fire multiple events with the same frame.
+			if (_frames[frame - 1] != frameTime) break;
+			frame--;
 		}
 	}
 
-	for (; (size_t) i < frameCount && time >= _frames[i]; i++)
-		events.add(_events[i]);
+	for (; (size_t)frame < frameCount && time >= _frames[frame]; ++frame)
+		events.add(_events[frame]);
 }
 
-void EventTimeline::setFrame(size_t frame, Event *event) {
-	_frames[frame] = event->getTime();
-	_events[frame] = event;
+int EventTimeline::getPropertyId() {
+	return ((int) TimelineType_Event << 24);
 }
+
+void EventTimeline::setFrame(size_t frameIndex, Event *event) {
+	_frames[frameIndex] = event->getTime();
+	_events[frameIndex] = event;
+}
+
+const Vector<float>& EventTimeline::getFrames() { return _frames; }
 
 Vector<Event *> &EventTimeline::getEvents() { return _events; }
+
+size_t EventTimeline::getFrameCount() { return _frames.size(); }
