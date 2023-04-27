@@ -231,7 +231,7 @@ int GameEngine::exportGame(const string& name, const string& path)
 		QString destPath = destDir.absoluteFilePath(file);
 		QFile::copy(srcPath, destPath);
 	}
-
+	std::rename((fullPath.toStdString() + "/PHEngine.exe").c_str(), (fullPath.toStdString() +"/"+ name + ".exe").c_str());
 	// 创建 config.txt
 	if (QFile::exists(fullPath + "/config.txt")) {
 		QFile::remove(fullPath + "/config.txt");
@@ -244,7 +244,7 @@ int GameEngine::exportGame(const string& name, const string& path)
 		out << wholePath.c_str();
 		file.close();
 	}
-
+	return 0;
 }
 Vector2D GameEngine::get_resolution()
 {
