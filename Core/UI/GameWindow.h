@@ -15,6 +15,11 @@ public:
 	GameWindow();
 	static GameWindow& get_instance();
 
+	void keyPressEvent(QKeyEvent* event) override;
+
+public slots:
+	void onResizeRenderWidget(bool isFullScreen);
+
 private:
 	static GameWindow* instance;
 	

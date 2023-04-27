@@ -1311,27 +1311,22 @@ void RenderWidget::mouseDoubleClickEvent(QMouseEvent* event)
 
 void RenderWidget::keyPressEvent(QKeyEvent* event)
 {
-
-	if (event->key() == Qt::Key_Return && event->modifiers() == Qt::AltModifier)
+	if (!GameEngine::get_instance().getInEditor())
 	{
-		if (!isFullScreen)
-		{
-			GameWindow::get_instance().renderWidget->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
-			GameWindow::get_instance().renderWidget->showFullScreen();
-			isFullScreen = true;
-		}
-		else
-		{
-			GameWindow::get_instance().renderWidget->showNormal();
-			isFullScreen = false;
+		if (event->key() == Qt::Key_Return && event->modifiers() == Qt::AltModifier) {
+
+			if (!isFullScreen)
+			{
+				emit resizeGameWindow(isFullScreen);
+				isFullScreen = true;
+			}
+			else
+			{
+				emit resizeGameWindow(isFullScreen);
+				isFullScreen = false;
+			}
 		}
 	}
-	else
-	{
-		QWidget::keyPressEvent(event);
-	}
-
-
 
 	if (!SceneMgr::get_instance().hasCurrentScene() || isGameWidget || !GameEngine::get_instance().getInEditor())
 		return;
@@ -1427,6 +1422,22 @@ void RenderWidget::resetFBO()
 GameObject* RenderWidget::getSelectedGameObject()
 {
 	return hierarchyWidget->selectedGameObject;	
+}
+
+void RenderWidget::setFullScreen(bool fullScreen)
+{
+	if (fullScreen) {
+		// 记录窗口化时的位置和大小
+		m_normalGeometry = geometry();
+		// 进入全屏模式
+		setWindowState(windowState() | Qt::WindowFullScreen);
+	}
+	else {
+		// 退出全屏模式
+		setWindowState(windowState() & ~Qt::WindowFullScreen);
+		// 恢复窗口化时的位置和大小
+		setGeometry(m_normalGeometry);
+	}
 }
 
 

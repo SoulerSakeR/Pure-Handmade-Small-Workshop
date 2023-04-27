@@ -61,6 +61,8 @@ public:
     void mouseDoubleClickEvent(QMouseEvent* event) override;
     void contextMenuEvent(QContextMenuEvent* event) override;
 
+    void setFullScreen(bool fullScreen);
+
     std::vector<GameObject*> hitRay(Vector2D screenPos);
     void lookAt(GameObject* target);
     void resetResolution();
@@ -78,9 +80,11 @@ public:
     bool isGameWidget = false;
     bool moveObjectMode = false;
     bool moveCameraMode = false;
-    bool isFullScreen = true;
+    bool isFullScreen = false;
     static bool widgetChanged;
     static RenderWidget* currentWidget;
+    
+    QRect m_normalGeometry; // record normal geometry
 
     GameLoop* gameLoop;
     void startRendering();
@@ -92,6 +96,7 @@ protected:
     virtual void paintGL();
 
 signals:
+    void resizeGameWindow(bool isFullScreen);
 
 public slots:
 
