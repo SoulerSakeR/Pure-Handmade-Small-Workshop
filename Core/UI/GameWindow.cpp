@@ -28,7 +28,7 @@ GameWindow::GameWindow()
 	// 设置renderWidget全屏显示
 	renderWidget->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
 	renderWidget->showFullScreen();
-
+	//renderWidget->showNormal();
 	
 
 

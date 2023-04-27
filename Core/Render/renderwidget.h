@@ -78,7 +78,7 @@ public:
     bool isGameWidget = false;
     bool moveObjectMode = false;
     bool moveCameraMode = false;
-    bool isFullScreen = false;
+    bool isFullScreen = true;
     static bool widgetChanged;
     static RenderWidget* currentWidget;
 

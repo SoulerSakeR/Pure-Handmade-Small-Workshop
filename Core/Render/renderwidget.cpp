@@ -1314,7 +1314,7 @@ void RenderWidget::keyPressEvent(QKeyEvent* event)
 
 	if (event->key() == Qt::Key_Return && event->modifiers() == Qt::AltModifier)
 	{
-		if (isFullScreen)
+		if (!isFullScreen)
 		{
 			GameWindow::get_instance().renderWidget->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
 			GameWindow::get_instance().renderWidget->showFullScreen();
