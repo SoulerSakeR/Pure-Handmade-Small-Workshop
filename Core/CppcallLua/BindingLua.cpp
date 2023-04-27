@@ -1,4 +1,4 @@
-#include "lib/sol/sol.hpp"
+ï»¿#include "lib/sol/sol.hpp"
 #include "Core/Input/InputDetection.h"
 
 #include "Core/Core/Debug.h"
@@ -28,7 +28,7 @@ void bindAllClasses(sol::state& lua) {
 
     //  InputDetection
     lua.new_usertype<InputDetection>("InputDetection",
-        // ¾²Ì¬³ÉÔ±º¯Êı
+        // é™æ€æˆå‘˜å‡½æ•°
         "getKey", &InputDetection::GetKey,
         "getKeyDown", &InputDetection::GetKeyDown,
         "getKeyUp", &InputDetection::GetKeyUp
@@ -44,7 +44,7 @@ void bindAllClasses(sol::state& lua) {
     
     */
     lua.new_usertype<Debug>("Debug",
-        // ¾²Ì¬³ÉÔ±º¯Êı
+        // é™æ€æˆå‘˜å‡½æ•°
         "log", &Debug::logInfo,
         "logWarning", &Debug::logWarning,
         "logError", &Debug::logError
@@ -52,7 +52,7 @@ void bindAllClasses(sol::state& lua) {
 
 
     //  GameObject
-    // °ó¶¨ ComponentType Ã¶¾Ù
+    // ç»‘å®š ComponentType æšä¸¾
     lua.new_enum("ComponentType",
         "UNKNOWN", Component::ComponentType::UNKNOWN,
         "TRANSFORM", Component::ComponentType::TRANSFORM,
@@ -64,17 +64,17 @@ void bindAllClasses(sol::state& lua) {
         "TEXT", Component::ComponentType::TEXT,
         "RENDERER", Component::ComponentType::RENDERER);
 
-    // °ó¶¨ GameObject Àà
+    // ç»‘å®š GameObject ç±»
     lua.new_usertype<GameObject>("GameObject",
-        // ¹¹Ôìº¯Êı
+        // æ„é€ å‡½æ•°
         sol::constructors<GameObject(std::string, bool)>(),
 
-        // ÊôĞÔ
+        // å±æ€§
         "isActive", &GameObject::isActive,
         "name", sol::property(&GameObject::get_name, &GameObject::set_name),
         "transform", &GameObject::transform,
 
-        // ·½·¨
+        // æ–¹æ³•
         "getID", &GameObject::getID,
         "addComponent", sol::overload(
             [](GameObject& obj, Component::ComponentType type) { return obj.addComponent(type); },
@@ -115,17 +115,17 @@ void bindAllClasses(sol::state& lua) {
 
     //  Transform
     lua.new_usertype<Transform>("Transform",
-        // ¹¹Ôìº¯Êı
+        // æ„é€ å‡½æ•°
         sol::constructors<Transform(GameObject*)>(),
 
-        // ÊôĞÔ
+        // å±æ€§
         "localPosition", sol::property(&Transform::get_localPosition, &Transform::set_localPosition),
         "localRotation", sol::property(&Transform::get_localRotation, &Transform::set_localRotation),
         "localScale", sol::property(&Transform::get_localScale, &Transform::set_localScale),
         "parent", &Transform::parent,
         "children", &Transform::children,
 
-        // ·½·¨
+        // æ–¹æ³•
         "reset", &Transform::reset,
         "set_property", &Transform::set_property,
         "getWorldPosition", &Transform::getWorldPosition,
@@ -137,13 +137,13 @@ void bindAllClasses(sol::state& lua) {
 
     //Text
     lua.new_usertype<Text>("Text",
-        // ¹¹Ôìº¯Êı
+        // æ„é€ å‡½æ•°
         sol::constructors<Text(GameObject*, const std::string&)>(),
 
-        // ÊôĞÔ
+        // å±æ€§
         "text", sol::property(&Text::get_text, &Text::set_text),
 
-        // ·½·¨
+        // æ–¹æ³•
         "reset", & Text::reset,
         "set_property", & Text::set_property);
 
@@ -177,7 +177,7 @@ void bindAllClasses(sol::state& lua) {
 //    lua.open_libraries(sol::lib::base, sol::lib::package);
 //
 //    lua.new_usertype<InputDetection>("InputDetection",
-//        // ¾²Ì¬³ÉÔ±º¯Êı
+//        // é™æ€æˆå‘˜å‡½æ•°
 //        "getKey", &InputDetection::GetKey,
 //        "getKeyDown", &InputDetection::GetKeyDown,
 //        "getKeyUp", &InputDetection::GetKeyUp
@@ -196,7 +196,7 @@ void bindAllClasses(sol::state& lua) {
 //    lua.open_libraries(sol::lib::base, sol::lib::package);
 //
 //    lua.new_usertype<Debug>("Debug",
-//        // ¾²Ì¬³ÉÔ±º¯Êı
+//        // é™æ€æˆå‘˜å‡½æ•°
 //        "log", &Debug::log,
 //        "logError", &Debug::logError
 //        );
@@ -208,16 +208,16 @@ void bindAllClasses(sol::state& lua) {
 //    lua.open_libraries(sol::lib::base, sol::lib::package);
 //
 //    lua.new_usertype<GameObject>("GameObject",
-//        // ¹¹Ôìº¯Êı
+//        // æ„é€ å‡½æ•°
 //        sol::constructors<GameObject(std::string, bool)>(),
 //
-//        // ³ÉÔ±±äÁ¿
+//        // æˆå‘˜å˜é‡
 //        "isActive", &GameObject::isActive,
 //        "name", &GameObject::name,
 //        "transform", &GameObject::transform,
 //        "components", &GameObject::components,
 //
-//        // ³ÉÔ±º¯Êı
+//        // æˆå‘˜å‡½æ•°
 //        "getID", &GameObject::getID,
 //        "isRootGameObject", &GameObject::isRootGameObject
 //        );
@@ -237,17 +237,17 @@ void bindAllClasses(sol::state& lua) {
 //    lua.open_libraries(sol::lib::base, sol::lib::package);
 //
 //    lua.new_usertype<Transform>("Transform",
-//        // ¹¹Ôìº¯Êı
+//        // æ„é€ å‡½æ•°
 //        sol::constructors<Transform(GameObject*)>(),
 //
-//        // ³ÉÔ±±äÁ¿
+//        // æˆå‘˜å˜é‡
 //        "localPosition", &Transform::localPosition,
 //        "localRotation", &Transform::localRotation,
 //        "localScale", &Transform::localScale,
 //        "children", &Transform::children,
 //        "parent", &Transform::parent,
 //
-//        // ³ÉÔ±º¯Êı
+//        // æˆå‘˜å‡½æ•°
 //        "getWorldPosition", &Transform::getWorldPosition,
 //        "getWorldRotation", &Transform::getWorldRotation,
 //        "getWorldScale", &Transform::getWorldScale,

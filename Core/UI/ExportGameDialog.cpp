@@ -44,6 +44,12 @@ void ExportGameDialog::browseExportLocation()
 
 void ExportGameDialog::exportGame()
 {
-    GameEngine::get_instance().exportGame(getGameName().toStdString(), getExportLocation().toStdString());
+    int result = GameEngine::get_instance().exportGame(getGameName().toStdString(), getExportLocation().toStdString());
+    if (result == 0) {
+        QMessageBox::information(this, tr("Export Successful"), tr("The game was exported successfully!"));
+    }
+    else {
+        QMessageBox::critical(this, tr("Export Failed"), tr("The game export failed. The directory already exists."));
+    }
     close();
 }
