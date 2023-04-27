@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated September 24, 2021. Replaces all prior versions.
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2021, Esoteric Software LLC
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -33,8 +33,6 @@
 #include <spine/Attachment.h>
 #include <spine/Vector.h>
 #include <spine/Color.h>
-#include <spine/Sequence.h>
-#include <spine/TextureRegion.h>
 
 #include <spine/HasRendererObject.h>
 
@@ -44,78 +42,70 @@ namespace spine {
 	class Bone;
 
 	/// Attachment that displays a texture region.
-	class SP_API RegionAttachment : public Attachment {
+	class SP_API RegionAttachment : public Attachment, public HasRendererObject {
 		friend class SkeletonBinary;
-
 		friend class SkeletonJson;
-
 		friend class AtlasAttachmentLoader;
 
-	RTTI_DECL
+		RTTI_DECL
 
 	public:
-		explicit RegionAttachment(const String &name);
+		explicit RegionAttachment(const String& name);
 
-		virtual ~RegionAttachment();
+		void updateOffset();
 
-		void updateRegion();
+		void setUVs(float u, float v, float u2, float v2, bool rotate);
 
 		/// Transforms the attachment's four vertices to world coordinates.
-		/// @param slot The parent slot.
+		/// @param bone The parent bone.
 		/// @param worldVertices The output world vertices. Must have a length greater than or equal to offset + 8.
 		/// @param offset The worldVertices index to begin writing values.
 		/// @param stride The number of worldVertices entries between the value pairs written.
-		void computeWorldVertices(Slot &slot, float *worldVertices, size_t offset, size_t stride = 2);
-
-		void computeWorldVertices(Slot &slot, Vector<float> &worldVertices, size_t offset, size_t stride = 2);
+		void computeWorldVertices(Bone& bone, float *worldVertices, size_t offset, size_t stride = 2);
+		void computeWorldVertices(Bone& bone, Vector<float>& worldVertices, size_t offset, size_t stride = 2);
 
 		float getX();
-
 		void setX(float inValue);
-
 		float getY();
-
 		void setY(float inValue);
-
 		float getRotation();
-
 		void setRotation(float inValue);
-
 		float getScaleX();
-
 		void setScaleX(float inValue);
-
 		float getScaleY();
-
 		void setScaleY(float inValue);
-
 		float getWidth();
-
 		void setWidth(float inValue);
-
 		float getHeight();
-
 		void setHeight(float inValue);
 
-		Color &getColor();
+		Color& getColor();
 
-		const String &getPath();
+		const String& getPath();
+		void setPath(const String& inValue);
 
-		void setPath(const String &inValue);
+		float getRegionOffsetX();
+		void setRegionOffsetX(float inValue);
 
-		TextureRegion *getRegion();
+		float getRegionOffsetY();
+		void setRegionOffsetY(float inValue);
 
-		void setRegion(TextureRegion *region);
+		float getRegionWidth();
+		void setRegionWidth(float inValue);
 
-		Sequence *getSequence();
+		float getRegionHeight();
+		void setRegionHeight(float inValue);
 
-		void setSequence(Sequence *sequence);
+		float getRegionOriginalWidth();
+		void setRegionOriginalWidth(float inValue);
 
-		Vector<float> &getOffset();
+		float getRegionOriginalHeight();
+		void setRegionOriginalHeight(float inValue);
 
-		Vector<float> &getUVs();
+		Vector<float>& getOffset();
+		Vector<float>& getUVs();
 
-		virtual Attachment *copy();
+		virtual Attachment* copy();
 
 	private:
 		static const int BLX;
@@ -128,12 +118,15 @@ namespace spine {
 		static const int BRY;
 
 		float _x, _y, _rotation, _scaleX, _scaleY, _width, _height;
+		float _regionOffsetX, _regionOffsetY, _regionWidth, _regionHeight, _regionOriginalWidth, _regionOriginalHeight;
 		Vector<float> _vertexOffset;
 		Vector<float> _uvs;
 		String _path;
+		float _regionU;
+		float _regionV;
+		float _regionU2;
+		float _regionV2;
 		Color _color;
-		TextureRegion *_region;
-		Sequence *_sequence;
 	};
 }
 

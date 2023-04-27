@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated September 24, 2021. Replaces all prior versions.
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2021, Esoteric Software LLC
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -27,14 +27,17 @@
  * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
+#ifdef SPINE_UE4
+#include "SpinePluginPrivatePCH.h"
+#endif
+
 #include <spine/PathAttachment.h>
 
 using namespace spine;
 
 RTTI_IMPL(PathAttachment, VertexAttachment)
 
-PathAttachment::PathAttachment(const String &name) : VertexAttachment(name), _closed(false), _constantSpeed(false),
-													 _color() {
+PathAttachment::PathAttachment(const String &name) : VertexAttachment(name), _closed(false), _constantSpeed(false) {
 }
 
 Vector<float> &PathAttachment::getLengths() {
@@ -57,12 +60,8 @@ void PathAttachment::setConstantSpeed(bool inValue) {
 	_constantSpeed = inValue;
 }
 
-Color &PathAttachment::getColor() {
-	return _color;
-}
-
-Attachment *PathAttachment::copy() {
-	PathAttachment *copy = new (__FILE__, __LINE__) PathAttachment(getName());
+Attachment* PathAttachment::copy() {
+	PathAttachment* copy = new (__FILE__, __LINE__) PathAttachment(getName());
 	copyTo(copy);
 	copy->_lengths.clearAndAddAll(_lengths);
 	copy->_closed = _closed;

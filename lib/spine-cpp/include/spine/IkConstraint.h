@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated September 24, 2021. Replaces all prior versions.
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2021, Esoteric Software LLC
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -35,82 +35,81 @@
 #include <spine/Vector.h>
 
 namespace spine {
-	class IkConstraintData;
+class IkConstraintData;
 
-	class Skeleton;
+class Skeleton;
 
-	class Bone;
+class Bone;
 
-	class SP_API IkConstraint : public Updatable {
-		friend class Skeleton;
+class SP_API IkConstraint : public Updatable {
+	friend class Skeleton;
 
-		friend class IkConstraintTimeline;
+	friend class IkConstraintTimeline;
 
-	RTTI_DECL
+RTTI_DECL
 
-	public:
-		/// Adjusts the bone rotation so the tip is as close to the target position as possible. The target is specified
-		/// in the world coordinate system.
-		static void
-		apply(Bone &bone, float targetX, float targetY, bool compress, bool stretch, bool uniform, float alpha);
+public:
+	/// Adjusts the bone rotation so the tip is as close to the target position as possible. The target is specified
+	/// in the world coordinate system.
+	static void apply(Bone &bone, float targetX, float targetY, bool compress, bool stretch, bool uniform, float alpha);
 
-		/// Adjusts the parent and child bone rotations so the tip of the child is as close to the target position as
-		/// possible. The target is specified in the world coordinate system.
-		/// @param child A direct descendant of the parent bone.
-		static void
-		apply(Bone &parent, Bone &child, float targetX, float targetY, int bendDir, bool stretch, bool uniform,
-			  float softness,
-			  float alpha);
+	/// Adjusts the parent and child bone rotations so the tip of the child is as close to the target position as
+	/// possible. The target is specified in the world coordinate system.
+	/// @param child A direct descendant of the parent bone.
+	static void apply(Bone &parent, Bone &child, float targetX, float targetY, int bendDir, bool stretch, float softness, float alpha);
 
-		IkConstraint(IkConstraintData &data, Skeleton &skeleton);
+	IkConstraint(IkConstraintData &data, Skeleton &skeleton);
 
-		virtual void update();
+	/// Applies the constraint to the constrained bones.
+	void apply();
 
-		virtual int getOrder();
+	virtual void update();
 
-		IkConstraintData &getData();
+	virtual int getOrder();
 
-		Vector<Bone *> &getBones();
+	IkConstraintData &getData();
 
-		Bone *getTarget();
+	Vector<Bone *> &getBones();
 
-		void setTarget(Bone *inValue);
+	Bone *getTarget();
 
-		int getBendDirection();
+	void setTarget(Bone *inValue);
 
-		void setBendDirection(int inValue);
+	int getBendDirection();
 
-		bool getCompress();
+	void setBendDirection(int inValue);
 
-		void setCompress(bool inValue);
+	bool getCompress();
 
-		bool getStretch();
+	void setCompress(bool inValue);
 
-		void setStretch(bool inValue);
+	bool getStretch();
 
-		float getMix();
+	void setStretch(bool inValue);
 
-		void setMix(float inValue);
+	float getMix();
 
-		float getSoftness();
+	void setMix(float inValue);
 
-		void setSoftness(float inValue);
+	float getSoftness();
 
-		bool isActive();
+	void setSoftness(float inValue);
 
-		void setActive(bool inValue);
+	bool isActive();
 
-	private:
-		IkConstraintData &_data;
-		Vector<Bone *> _bones;
-		int _bendDirection;
-		bool _compress;
-		bool _stretch;
-		float _mix;
-		float _softness;
-		Bone *_target;
-		bool _active;
-	};
+	void setActive(bool inValue);
+
+private:
+	IkConstraintData &_data;
+	Vector<Bone *> _bones;
+	int _bendDirection;
+	bool _compress;
+	bool _stretch;
+	float _mix;
+	float _softness;
+	Bone *_target;
+	bool _active;
+};
 }
 
 #endif /* Spine_IkConstraint_h */

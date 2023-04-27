@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated September 24, 2021. Replaces all prior versions.
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2021, Esoteric Software LLC
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -27,16 +27,20 @@
  * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
+#ifdef SPINE_UE4
+#include "SpinePluginPrivatePCH.h"
+#endif
+
 #include <spine/PathConstraint.h>
 
-#include <spine/Bone.h>
-#include <spine/PathAttachment.h>
 #include <spine/PathConstraintData.h>
 #include <spine/Skeleton.h>
+#include <spine/PathAttachment.h>
+#include <spine/Bone.h>
 #include <spine/Slot.h>
 
-#include <spine/BoneData.h>
 #include <spine/SlotData.h>
+#include <spine/BoneData.h>
 
 using namespace spine;
 
@@ -48,15 +52,15 @@ const int PathConstraint::BEFORE = -2;
 const int PathConstraint::AFTER = -3;
 
 PathConstraint::PathConstraint(PathConstraintData &data, Skeleton &skeleton) : Updatable(),
-																			   _data(data),
-																			   _target(skeleton.findSlot(
-																					   data.getTarget()->getName())),
-																			   _position(data.getPosition()),
-																			   _spacing(data.getSpacing()),
-																			   _mixRotate(data.getMixRotate()),
-																			   _mixX(data.getMixX()),
-																			   _mixY(data.getMixY()),
-																			   _active(false) {
+	_data(data),
+	_target(skeleton.findSlot(
+	data.getTarget()->getName())),
+	_position(data.getPosition()),
+	_spacing(data.getSpacing()),
+	_rotateMix(data.getRotateMix()),
+	_translateMix(data.getTranslateMix()),
+	_active(false)
+{
 	_bones.ensureCapacity(_data.getBones().size());
 	for (size_t i = 0; i < _data.getBones().size(); i++) {
 		BoneData *boneData = _data.getBones()[i];
@@ -66,95 +70,77 @@ PathConstraint::PathConstraint(PathConstraintData &data, Skeleton &skeleton) : U
 	_segments.setSize(10, 0);
 }
 
+void PathConstraint::apply() {
+	update();
+}
+
 void PathConstraint::update() {
 	Attachment *baseAttachment = _target->getAttachment();
 	if (baseAttachment == NULL || !baseAttachment->getRTTI().instanceOf(PathAttachment::rtti)) {
 		return;
 	}
+
 	PathAttachment *attachment = static_cast<PathAttachment *>(baseAttachment);
 
-	float mixRotate = _mixRotate, mixX = _mixX, mixY = _mixY;
-	if (mixRotate == 0 && mixX == 0 && mixY == 0) return;
+	float rotateMix = _rotateMix;
+	float translateMix = _translateMix;
+	bool translate = translateMix > 0;
+	bool rotate = rotateMix > 0;
+	if (!translate && !rotate) {
+		return;
+	}
 
 	PathConstraintData &data = _data;
-	bool tangents = data._rotateMode == RotateMode_Tangent, scale = data._rotateMode == RotateMode_ChainScale;
+	bool percentSpacing = data._spacingMode == SpacingMode_Percent;
+	RotateMode rotateMode = data._rotateMode;
+	bool tangents = rotateMode == RotateMode_Tangent, scale = rotateMode == RotateMode_ChainScale;
 	size_t boneCount = _bones.size();
 	size_t spacesCount = tangents ? boneCount : boneCount + 1;
 	_spaces.setSize(spacesCount, 0);
-	if (scale) _lengths.setSize(boneCount, 0);
 	float spacing = _spacing;
+	if (scale || !percentSpacing) {
+		if (scale) _lengths.setSize(boneCount, 0);
+		bool lengthSpacing = data._spacingMode == SpacingMode_Length;
 
-	switch (data._spacingMode) {
-		case SpacingMode_Percent: {
-			if (scale) {
-				for (size_t i = 0, n = spacesCount - 1; i < n; i++) {
-					Bone *boneP = _bones[i];
-					Bone &bone = *boneP;
-					float setupLength = bone._data.getLength();
-					if (setupLength < PathConstraint::EPSILON) {
-						_lengths[i] = 0;
-					} else {
-						float x = setupLength * bone._a, y = setupLength * bone._c;
-						_lengths[i] = MathUtil::sqrt(x * x + y * y);
-					}
-				}
-			}
-			for (size_t i = 1; i < spacesCount; ++i) {
-				_spaces[i] = spacing;
-			}
-			break;
-		}
-		case SpacingMode_Proportional: {
-			float sum = 0;
-			for (size_t i = 0, n = spacesCount - 1; i < n;) {
-				Bone *boneP = _bones[i];
-				Bone &bone = *boneP;
-				float setupLength = bone._data.getLength();
-				if (setupLength < PathConstraint::EPSILON) {
-					if (scale) _lengths[i] = 0;
-					_spaces[++i] = spacing;
-				} else {
+		for (size_t i = 0, n = spacesCount - 1; i < n;) {
+			Bone *boneP = _bones[i];
+			Bone &bone = *boneP;
+			float setupLength = bone._data.getLength();
+			if (setupLength < PathConstraint::EPSILON) {
+				if (scale) _lengths[i] = 0;
+				_spaces[++i] = 0;
+			} else if (percentSpacing) {
+				if (scale) {
 					float x = setupLength * bone._a, y = setupLength * bone._c;
 					float length = MathUtil::sqrt(x * x + y * y);
-					if (scale) _lengths[i] = length;
-					_spaces[++i] = length;
-					sum += length;
+					_lengths[i] = length;
 				}
-			}
-			if (sum > 0) {
-				sum = spacesCount / sum * spacing;
-				for (size_t i = 1; i < spacesCount; i++) {
-					_spaces[i] *= sum;
+				_spaces[++i] = spacing;
+			} else {
+				float x = setupLength * bone._a;
+				float y = setupLength * bone._c;
+				float length = MathUtil::sqrt(x * x + y * y);
+				if (scale) {
+					_lengths[i] = length;
 				}
+
+				_spaces[++i] = (lengthSpacing ? setupLength + spacing : spacing) * length / setupLength;
 			}
-			break;
 		}
-		default: {
-			bool lengthSpacing = data._spacingMode == SpacingMode_Length;
-			for (size_t i = 0, n = spacesCount - 1; i < n;) {
-				Bone *boneP = _bones[i];
-				Bone &bone = *boneP;
-				float setupLength = bone._data.getLength();
-				if (setupLength < PathConstraint::EPSILON) {
-					if (scale) _lengths[i] = 0;
-					_spaces[++i] = spacing;
-				} else {
-					float x = setupLength * bone._a, y = setupLength * bone._c;
-					float length = MathUtil::sqrt(x * x + y * y);
-					if (scale) _lengths[i] = length;
-					_spaces[++i] = (lengthSpacing ? setupLength + spacing : spacing) * length / setupLength;
-				}
-			}
+	} else {
+		for (size_t i = 1; i < spacesCount; ++i) {
+			_spaces[i] = spacing;
 		}
 	}
 
-	Vector<float> &positions = computeWorldPositions(*attachment, (int) spacesCount, tangents);
+	Vector<float>& positions = computeWorldPositions(*attachment, spacesCount, tangents,
+		data.getPositionMode() == PositionMode_Percent, percentSpacing);
 	float boneX = positions[0];
 	float boneY = positions[1];
 	float offsetRotation = data.getOffsetRotation();
 	bool tip;
 	if (offsetRotation == 0) {
-		tip = data._rotateMode == RotateMode_Chain;
+		tip = rotateMode == RotateMode_Chain;
 	} else {
 		tip = false;
 		Bone &p = _target->getBone();
@@ -164,8 +150,8 @@ void PathConstraint::update() {
 	for (size_t i = 0, p = 3; i < boneCount; i++, p += 3) {
 		Bone *boneP = _bones[i];
 		Bone &bone = *boneP;
-		bone._worldX += (boneX - bone._worldX) * mixX;
-		bone._worldY += (boneY - bone._worldY) * mixY;
+		bone._worldX += (boneX - bone._worldX) * translateMix;
+		bone._worldY += (boneY - bone._worldY) * translateMix;
 		float x = positions[p];
 		float y = positions[p + 1];
 		float dx = x - boneX;
@@ -173,7 +159,7 @@ void PathConstraint::update() {
 		if (scale) {
 			float length = _lengths[i];
 			if (length >= PathConstraint::EPSILON) {
-				float s = (MathUtil::sqrt(dx * dx + dy * dy) / length - 1) * mixRotate + 1;
+				float s = (MathUtil::sqrt(dx * dx + dy * dy) / length - 1) * rotateMix + 1;
 				bone._a *= s;
 				bone._c *= s;
 			}
@@ -182,7 +168,7 @@ void PathConstraint::update() {
 		boneX = x;
 		boneY = y;
 
-		if (mixRotate > 0) {
+		if (rotate) {
 			float a = bone._a, b = bone._b, c = bone._c, d = bone._d, r, cos, sin;
 			if (tangents)
 				r = positions[p - 1];
@@ -197,8 +183,8 @@ void PathConstraint::update() {
 				cos = MathUtil::cos(r);
 				sin = MathUtil::sin(r);
 				float length = bone._data.getLength();
-				boneX += (length * (cos * a - sin * c) - dx) * mixRotate;
-				boneY += (length * (sin * a + cos * c) - dy) * mixRotate;
+				boneX += (length * (cos * a - sin * c) - dx) * rotateMix;
+				boneY += (length * (sin * a + cos * c) - dy) * rotateMix;
 			} else
 				r += offsetRotation;
 
@@ -207,7 +193,7 @@ void PathConstraint::update() {
 			else if (r < -MathUtil::Pi)
 				r += MathUtil::Pi_2;
 
-			r *= mixRotate;
+			r *= rotateMix;
 			cos = MathUtil::cos(r);
 			sin = MathUtil::sin(r);
 			bone._a = cos * a - sin * c;
@@ -216,12 +202,12 @@ void PathConstraint::update() {
 			bone._d = sin * b + cos * d;
 		}
 
-		bone.updateAppliedTransform();
+		bone._appliedValid = false;
 	}
 }
 
 int PathConstraint::getOrder() {
-	return (int) _data.getOrder();
+	return _data.getOrder();
 }
 
 float PathConstraint::getPosition() {
@@ -240,28 +226,20 @@ void PathConstraint::setSpacing(float inValue) {
 	_spacing = inValue;
 }
 
-float PathConstraint::getMixRotate() {
-	return _mixRotate;
+float PathConstraint::getRotateMix() {
+	return _rotateMix;
 }
 
-void PathConstraint::setMixRotate(float inValue) {
-	_mixRotate = inValue;
+void PathConstraint::setRotateMix(float inValue) {
+	_rotateMix = inValue;
 }
 
-float PathConstraint::getMixX() {
-	return _mixX;
+float PathConstraint::getTranslateMix() {
+	return _translateMix;
 }
 
-void PathConstraint::setMixX(float inValue) {
-	_mixX = inValue;
-}
-
-float PathConstraint::getMixY() {
-	return _mixY;
-}
-
-void PathConstraint::setMixY(float inValue) {
-	_mixY = inValue;
+void PathConstraint::setTranslateMix(float inValue) {
+	_translateMix = inValue;
 }
 
 Vector<Bone *> &PathConstraint::getBones() {
@@ -280,15 +258,15 @@ PathConstraintData &PathConstraint::getData() {
 	return _data;
 }
 
-Vector<float> &
-PathConstraint::computeWorldPositions(PathAttachment &path, int spacesCount, bool tangents) {
+Vector<float>&
+PathConstraint::computeWorldPositions(PathAttachment &path, int spacesCount, bool tangents, bool percentPosition, bool percentSpacing) {
 	Slot &target = *_target;
 	float position = _position;
 	_positions.setSize(spacesCount * 3 + 2, 0);
 	Vector<float> &out = _positions;
 	Vector<float> &world = _world;
 	bool closed = path.isClosed();
-	int verticesLength = (int) path.getWorldVerticesLength();
+	int verticesLength = path.getWorldVerticesLength();
 	int curveCount = verticesLength / 6;
 	int prevCurve = NONE;
 
@@ -297,23 +275,16 @@ PathConstraint::computeWorldPositions(PathAttachment &path, int spacesCount, boo
 		Vector<float> &lengths = path.getLengths();
 		curveCount -= closed ? 1 : 2;
 		pathLength = lengths[curveCount];
-		if (_data._positionMode == PositionMode_Percent) position *= pathLength;
+		if (percentPosition) position *= pathLength;
 
-		float multiplier = 0;
-		switch (_data._spacingMode) {
-			case SpacingMode_Percent:
-				multiplier = pathLength;
-				break;
-			case SpacingMode_Proportional:
-				multiplier = pathLength / spacesCount;
-				break;
-			default:
-				multiplier = 1;
+		if (percentSpacing) {
+			for (int i = 1; i < spacesCount; ++i)
+				_spaces[i] *= pathLength;
 		}
 
 		world.setSize(8, 0);
 		for (int i = 0, o = 0, curve = 0; i < spacesCount; i++, o += 3) {
-			float space = _spaces[i] * multiplier;
+			float space = _spaces[i];
 			position += space;
 			float p = position;
 
@@ -365,7 +336,7 @@ PathConstraint::computeWorldPositions(PathAttachment &path, int spacesCount, boo
 			}
 
 			addCurvePosition(p, world[0], world[1], world[2], world[3], world[4], world[5], world[6], world[7],
-							 out, o, tangents || (i > 0 && space < EPSILON));
+				out, o, tangents || (i > 0 && space < EPSILON));
 		}
 		return out;
 	}
@@ -422,23 +393,19 @@ PathConstraint::computeWorldPositions(PathAttachment &path, int spacesCount, boo
 		y1 = y2;
 	}
 
-	if (_data._positionMode == PositionMode_Percent) position *= pathLength;
+	if (percentPosition)
+		position *= pathLength;
+	else
+		position *= pathLength / path.getLengths()[curveCount - 1];
 
-	float multiplier = 0;
-	switch (_data._spacingMode) {
-		case SpacingMode_Percent:
-			multiplier = pathLength;
-			break;
-		case SpacingMode_Proportional:
-			multiplier = pathLength / spacesCount;
-			break;
-		default:
-			multiplier = 1;
+	if (percentSpacing) {
+		for (int i = 1; i < spacesCount; ++i)
+			_spaces[i] *= pathLength;
 	}
 
 	float curveLength = 0;
 	for (int i = 0, o = 0, curve = 0, segment = 0; i < spacesCount; i++, o += 3) {
-		float space = _spaces[i] * multiplier;
+		float space = _spaces[i];
 		position += space;
 		float p = position;
 
@@ -522,7 +489,7 @@ PathConstraint::computeWorldPositions(PathAttachment &path, int spacesCount, boo
 			break;
 		}
 		addCurvePosition(p * 0.1f, x1, y1, cx1, cy1, cx2, cy2, x2, y2, out, o,
-						 tangents || (i > 0 && space < EPSILON));
+			tangents || (i > 0 && space < EPSILON));
 	}
 
 	return out;
@@ -551,7 +518,8 @@ void PathConstraint::addAfterPosition(float p, Vector<float> &temp, int i, Vecto
 }
 
 void PathConstraint::addCurvePosition(float p, float x1, float y1, float cx1, float cy1, float cx2, float cy2, float x2,
-									  float y2, Vector<float> &output, int o, bool tangents) {
+	float y2, Vector<float> &output, int o, bool tangents
+) {
 	if (p < EPSILON || MathUtil::isNan(p)) {
 		output[o] = x1;
 		output[o + 1] = y1;
@@ -568,8 +536,7 @@ void PathConstraint::addCurvePosition(float p, float x1, float y1, float cx1, fl
 		if (p < 0.001)
 			output[o + 2] = MathUtil::atan2(cy1 - y1, cx1 - x1);
 		else
-			output[o + 2] = MathUtil::atan2(y - (y1 * uu + cy1 * ut * 2 + cy2 * tt),
-											x - (x1 * uu + cx1 * ut * 2 + cx2 * tt));
+			output[o + 2] = MathUtil::atan2(y - (y1 * uu + cy1 * ut * 2 + cy2 * tt), x - (x1 * uu + cx1 * ut * 2 + cx2 * tt));
 	}
 }
 

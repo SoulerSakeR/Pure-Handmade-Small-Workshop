@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated September 24, 2021. Replaces all prior versions.
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2021, Esoteric Software LLC
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -36,9 +36,7 @@
 
 namespace spine {
 	class Skeleton;
-
 	class BoundingBoxAttachment;
-
 	class Polygon;
 
 	/// Collects each BoundingBoxAttachment that is visible and computes the world vertices for its polygon.
@@ -46,7 +44,6 @@ namespace spine {
 	class SP_API SkeletonBounds : public SpineObject {
 	public:
 		SkeletonBounds();
-
 		~SkeletonBounds();
 
 		/// Clears any previous polygons, finds all visible bounding box attachments,
@@ -56,7 +53,7 @@ namespace spine {
 		/// If true, the axis aligned bounding box containing all the polygons is computed.
 		/// If false, the SkeletonBounds AABB methods will always return true.
 		///
-		void update(Skeleton &skeleton, bool updateAabb);
+		void update(Skeleton& skeleton, bool updateAabb);
 
 		/// Returns true if the axis aligned bounding box contains the point.
 		bool aabbcontainsPoint(float x, float y);
@@ -68,40 +65,28 @@ namespace spine {
 		bool aabbIntersectsSkeleton(SkeletonBounds bounds);
 
 		/// Returns true if the polygon contains the point.
-		bool containsPoint(Polygon *polygon, float x, float y);
+		bool containsPoint(Polygon* polygon, float x, float y);
 
 		/// Returns the first bounding box attachment that contains the point, or NULL. When doing many checks, it is usually more
 		/// efficient to only call this method if {@link #aabbcontainsPoint(float, float)} returns true.
-		BoundingBoxAttachment *containsPoint(float x, float y);
+		BoundingBoxAttachment* containsPoint(float x, float y);
 
 		/// Returns the first bounding box attachment that contains the line segment, or NULL. When doing many checks, it is usually
 		/// more efficient to only call this method if {@link #aabbintersectsSegment(float, float, float, float)} returns true.
-		BoundingBoxAttachment *intersectsSegment(float x1, float y1, float x2, float y2);
+		BoundingBoxAttachment* intersectsSegment(float x1, float y1, float x2, float y2);
 
 		/// Returns true if the polygon contains the line segment.
-		bool intersectsSegment(Polygon *polygon, float x1, float y1, float x2, float y2);
+		bool intersectsSegment(Polygon* polygon, float x1, float y1, float x2, float y2);
 
-        /// Returns the polygon for the given bounding box attachment or null if no
-        /// polygon can be found for the attachment. Requires a call to update() first.
-		Polygon *getPolygon(BoundingBoxAttachment *attachment);
-
-        /// Returns the bounding box for the given polygon or null. Requires a call to update() first.
-        BoundingBoxAttachment * getBoundingBox(Polygon *polygon);
-
-        /// Returns all polygons or an empty vector. Requires a call to update() first.
-        Vector<Polygon *> &getPolygons();
-
-        /// Returns all bounding boxes. Requires a call to update() first.
-        Vector<BoundingBoxAttachment *> &getBoundingBoxes();
+		Polygon* getPolygon(BoundingBoxAttachment* attachment);
 
 		float getWidth();
-
 		float getHeight();
 
 	private:
-		Pool <Polygon> _polygonPool;
-		Vector<BoundingBoxAttachment *> _boundingBoxes;
-		Vector<Polygon *> _polygons;
+		Pool<Polygon> _polygonPool;
+		Vector<BoundingBoxAttachment*> _boundingBoxes;
+		Vector<Polygon*> _polygons;
 		float _minX, _minY, _maxX, _maxY;
 
 		void aabbCompute();

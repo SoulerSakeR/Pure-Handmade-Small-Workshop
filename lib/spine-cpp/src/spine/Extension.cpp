@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated September 24, 2021. Replaces all prior versions.
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2021, Esoteric Software LLC
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -26,6 +26,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
+
+#ifdef SPINE_UE4
+#include "SpinePluginPrivatePCH.h"
+#endif
 
 #include <spine/Extension.h>
 #include <spine/SpineString.h>
@@ -104,7 +108,6 @@ void DefaultSpineExtension::_free(void *mem, const char *file, int line) {
 }
 
 char *DefaultSpineExtension::_readFile(const String &path, int *length) {
-#ifndef __EMSCRIPTEN__
 	char *data;
 	FILE *file = fopen(path.buffer(), "rb");
 	if (!file) return 0;
@@ -118,9 +121,6 @@ char *DefaultSpineExtension::_readFile(const String &path, int *length) {
 	fclose(file);
 
 	return data;
-#else
-	return nullptr;
-#endif
 }
 
 DefaultSpineExtension::DefaultSpineExtension() : SpineExtension() {

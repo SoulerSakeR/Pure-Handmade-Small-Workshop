@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated September 24, 2021. Replaces all prior versions.
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2021, Esoteric Software LLC
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -37,32 +37,31 @@ namespace spine {
 
 	class SP_API PathConstraintMixTimeline : public CurveTimeline {
 		friend class SkeletonBinary;
-
 		friend class SkeletonJson;
 
-	RTTI_DECL
+		RTTI_DECL
 
 	public:
-		explicit PathConstraintMixTimeline(size_t frameCount, size_t bezierCount, int pathConstraintIndex);
+		static const int ENTRIES;
 
-		virtual void
-		apply(Skeleton &skeleton, float lastTime, float time, Vector<Event *> *pEvents, float alpha, MixBlend blend,
-			  MixDirection direction);
+		explicit PathConstraintMixTimeline(int frameCount);
 
-		/// Sets the time and mixes of the specified keyframe.
-		void setFrame(int frameIndex, float time, float mixRotate, float mixX, float mixY);
+		virtual void apply(Skeleton& skeleton, float lastTime, float time, Vector<Event*>* pEvents, float alpha, MixBlend blend, MixDirection direction);
 
-		int getPathConstraintIndex() { return _pathConstraintIndex; }
-
-		void setPathConstraintIndex(int inValue) { _pathConstraintIndex = inValue; }
+		virtual int getPropertyId();
 
 	private:
+		static const int PREV_TIME;
+		static const int PREV_ROTATE;
+		static const int PREV_TRANSLATE;
+		static const int ROTATE;
+		static const int TRANSLATE;
+
+		Vector<float> _frames;
 		int _pathConstraintIndex;
 
-		static const int ENTRIES = 4;
-		static const int ROTATE = 1;
-		static const int X = 2;
-		static const int Y = 2;
+		/// Sets the time and mixes of the specified keyframe.
+		void setFrame(int frameIndex, float time, float rotateMix, float translateMix);
 	};
 }
 

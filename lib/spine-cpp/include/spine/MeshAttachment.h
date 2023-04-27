@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated September 24, 2021. Replaces all prior versions.
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2021, Esoteric Software LLC
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -31,91 +31,112 @@
 #define Spine_MeshAttachment_h
 
 #include <spine/VertexAttachment.h>
-#include <spine/TextureRegion.h>
-#include <spine/Sequence.h>
 #include <spine/Vector.h>
 #include <spine/Color.h>
 #include <spine/HasRendererObject.h>
 
 namespace spine {
 	/// Attachment that displays a texture region using a mesh.
-	class SP_API MeshAttachment : public VertexAttachment {
+	class SP_API MeshAttachment : public VertexAttachment, public HasRendererObject {
 		friend class SkeletonBinary;
-
 		friend class SkeletonJson;
-
 		friend class AtlasAttachmentLoader;
 
-	RTTI_DECL
+		RTTI_DECL
 
 	public:
-		explicit MeshAttachment(const String &name);
+		explicit MeshAttachment(const String& name);
 
 		virtual ~MeshAttachment();
 
-		using VertexAttachment::computeWorldVertices;
-
-		virtual void computeWorldVertices(Slot &slot, size_t start, size_t count, float *worldVertices, size_t offset,
-		size_t stride = 2);
-
-		void updateRegion();
+		void updateUVs();
 
 		int getHullLength();
-
 		void setHullLength(int inValue);
 
-		Vector<float> &getRegionUVs();
+		Vector<float>& getRegionUVs();
 
-		/// The UV pair for each vertex, normalized within the entire texture. See also MeshAttachment::updateRegion
-		Vector<float> &getUVs();
+		/// The UV pair for each vertex, normalized within the entire texture. See also MeshAttachment::updateUVs
+		Vector<float>& getUVs();
 
-		Vector<unsigned short> &getTriangles();
+		Vector<unsigned short>& getTriangles();
 
-		Color &getColor();
+		Color& getColor();
 
-		const String &getPath();
+		const String& getPath();
+		void setPath(const String& inValue);
 
-		void setPath(const String &inValue);
+		float getRegionU();
+		void setRegionU(float inValue);
 
-		TextureRegion *getRegion();
+		float getRegionV();
+		void setRegionV(float inValue);
 
-		void setRegion(TextureRegion *region);
+		float getRegionU2();
+		void setRegionU2(float inValue);
 
-		Sequence *getSequence();
+		float getRegionV2();
+		void setRegionV2(float inValue);
 
-		void setSequence(Sequence *sequence);
+		bool getRegionRotate();
+		void setRegionRotate(bool inValue);
 
-		MeshAttachment *getParentMesh();
+		int getRegionDegrees();
+		void setRegionDegrees(int inValue);
 
-		void setParentMesh(MeshAttachment *inValue);
+		float getRegionOffsetX();
+		void setRegionOffsetX(float inValue);
+
+		// Pixels stripped from the bottom left, unrotated.
+		float getRegionOffsetY();
+		void setRegionOffsetY(float inValue);
+
+		float getRegionWidth();
+		void setRegionWidth(float inValue);
+
+		// Unrotated, stripped size.
+		float getRegionHeight();
+		void setRegionHeight(float inValue);
+
+		float getRegionOriginalWidth();
+		void setRegionOriginalWidth(float inValue);
+
+		// Unrotated, unstripped size.
+		float getRegionOriginalHeight();
+		void setRegionOriginalHeight(float inValue);
+
+		MeshAttachment* getParentMesh();
+		void setParentMesh(MeshAttachment* inValue);
 
 		// Nonessential.
-		Vector<unsigned short> &getEdges();
-
+		Vector<unsigned short>& getEdges();
 		float getWidth();
-
 		void setWidth(float inValue);
-
 		float getHeight();
-
 		void setHeight(float inValue);
 
-		virtual Attachment *copy();
+		virtual Attachment* copy();
 
-		MeshAttachment *newLinkedMesh();
+		MeshAttachment* newLinkedMesh();
 
 	private:
-		MeshAttachment *_parentMesh;
+		float _regionOffsetX, _regionOffsetY, _regionWidth, _regionHeight, _regionOriginalWidth, _regionOriginalHeight;
+		MeshAttachment* _parentMesh;
 		Vector<float> _uvs;
 		Vector<float> _regionUVs;
 		Vector<unsigned short> _triangles;
 		Vector<unsigned short> _edges;
 		String _path;
+		float _regionU;
+		float _regionV;
+		float _regionU2;
+		float _regionV2;
+		float _width;
+		float _height;
 		Color _color;
 		int _hullLength;
-		int _width, _height;
-		TextureRegion *_region;
-		Sequence *_sequence;
+		bool _regionRotate;
+		int _regionDegrees;
 	};
 }
 
