@@ -21,6 +21,8 @@ public:
     void set_property(Property* property, void* value) override; //设置属性
 
     Vector2D getWorldPosition(); //获取世界坐标位置 需要绑定
+    float getWorldPositionX();//获取世界坐标位置X 需要绑定
+    float getWorldPositionY();//获取世界坐标位置Y 需要绑定
     float getWorldRotation(); //获取世界旋转角度 需要绑定
     Vector2D getWorldScale(); //需要绑定
     Transform* translate(Vector2D value); //朝给定向量移动 需要绑定

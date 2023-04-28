@@ -129,6 +129,8 @@ void bindAllClasses(sol::state& lua) {
         "reset", &Transform::reset,
         "set_property", &Transform::set_property,
         "getWorldPosition", &Transform::getWorldPosition,
+        "getWorldPositionX", & Transform::getWorldPositionX,
+        "getWorldPositionY", & Transform::getWorldPositionY,
         "getWorldRotation", &Transform::getWorldRotation,
         "getWorldScale", &Transform::getWorldScale,
         "translate", &Transform::translate,

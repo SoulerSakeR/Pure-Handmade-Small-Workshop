@@ -37,6 +37,21 @@ Vector2D Transform::getWorldPosition()
 	return this->localPosition;
 }
 
+float Transform::getWorldPositionX()
+{
+	if (this->parent != nullptr)
+		return parent->getWorldPosition().x + this->localPosition.x;
+	return this->localPosition.x;
+}
+
+
+float Transform::getWorldPositionY()
+{
+	if (this->parent != nullptr)
+		return parent->getWorldPosition().y + this->localPosition.y;
+	return this->localPosition.y;
+}
+
 float Transform::getWorldRotation()
 {
 	if (parent != nullptr)
