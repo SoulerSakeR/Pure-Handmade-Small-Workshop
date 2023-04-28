@@ -4,6 +4,7 @@
 #include "Core/SystemStatus/GameEngine.h"
 #include "Core/Utils/PHPath.h"
 #include "Core/UI/TextureSelectorDialog.h"
+#include "SpineAnimationData.h"
 
 using std::string;
 
@@ -73,9 +74,11 @@ private:
 	static ResourceMgr* instance;
 	std::unordered_map<std::string,std::string> resourceNamePathMap;
 	std::unordered_map<std::string,Texture2D*> texture_assets;
+	std::unordered_map<std::string,SpineAnimationData*> spine_assets;
 	std::unordered_map<std::string, void*> resources;
 
 	friend class Texture2D;
+	friend class SpineAnimationData;
 	friend class TextureSelectorDialog;
 };
 

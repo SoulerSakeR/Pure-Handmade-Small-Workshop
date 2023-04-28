@@ -45,7 +45,7 @@ void bindAllClasses(sol::state& lua) {
     */
     lua.new_usertype<Debug>("Debug",
         // 静态成员函数
-        "log", &Debug::logInfo,
+        "logInfo", &Debug::logInfo,
         "logWarning", &Debug::logWarning,
         "logError", &Debug::logError
         );

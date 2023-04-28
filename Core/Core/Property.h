@@ -51,6 +51,7 @@ public:
 	{
 		if (auto it = properties.find(key);it != properties.end())
 			return it->second;
+		//TODO: throw exception
 	}
 	void emplace(const key& key, const value& value)
 	{

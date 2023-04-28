@@ -7,6 +7,7 @@ Script::Script(GameObject* gameObj, const std::string& name, const std::string& 
 	componentType = SCRIPT;
 	properties.emplace("name",new Property("name", &this->name,Property::STRING,this));
 	properties.emplace("path",new Property("path", &this->path,Property::STRING,this));
+	lua = nullptr;
 }
 
 void Script::reset()
@@ -47,6 +48,91 @@ std::string Script::get_path()
 void Script::set_path(const std::string& path)
 {
 	this->path = PHPath(path);
+}
+
+void Script::awake()
+{
+	(*lua)["awake"] = nullptr;
+	(*lua)["this"] = gameObject;
+	(*lua).script_file(path.getNewPath());
+	sol::protected_function f = (*lua)["awake"];
+	if (!f.valid())
+		return;
+	auto result = f();
+	if (!result.valid())
+	{
+		sol::error err = result;
+		Debug::logError() << "lua runtime error: " << name << " at " << path.getNewPath() << "in awake function\n";
+		Debug::logError() <<  err.what() << "\n";
+	}
+}
+
+void Script::start()
+{
+	(*lua)["start"] = nullptr;
+	(*lua)["this"] = gameObject;
+	(*lua).script_file(path.getNewPath());
+	sol::protected_function f = (*lua)["start"];
+	if (!f.valid())
+		return;
+	auto result = f();
+	if (!result.valid())
+	{
+		sol::error err = result;
+		Debug::logError() << "lua runtime error: " << name << " at " << path.getNewPath() << "in start function\n";
+		Debug::logError() << err.what() << "\n";
+	}
+}
+
+void Script::beforeUpdate()
+{
+	(*lua)["beforeUpdate"] = nullptr;
+	(*lua)["this"] = gameObject;
+	(*lua).script_file(path.getNewPath());
+	sol::protected_function f = (*lua)["beforeUpdate"];
+	if (!f.valid())
+		return;
+	auto result = f();
+	if (!result.valid())
+	{
+		sol::error err = result;
+		Debug::logError() << "lua runtime error: " << name << " at " << path.getNewPath() << "in beforeUpdate function\n";
+		Debug::logError() << err.what() << "\n";
+	}
+}
+
+void Script::update()
+{
+	(*lua)["update"] = nullptr;
+	(*lua)["this"] = gameObject;
+	(*lua).script_file(path.getNewPath());
+	sol::protected_function f = (*lua)["update"];
+	auto result = f();
+	if (!f.valid())
+		return;
+	if (!result.valid())
+	{
+		sol::error err = result;
+		Debug::logError() << "lua runtime error: " << name << " at " << path.getNewPath() << "in update function\n";
+		Debug::logError()  << err.what() << "\n";
+	}
+}
+
+void Script::afterUpdate()
+{
+	(*lua)["afterUpdate"] = nullptr;
+	(*lua)["this"] = gameObject;
+	(*lua).script_file(path.getNewPath());
+	sol::protected_function f = (*lua)["afterUpdate"];
+	auto result = f();
+	if (!f.valid())
+		return;
+	if (!result.valid())
+	{
+		sol::error err = result;
+		Debug::logError() << "lua runtime error: " << name << " at " << path.getNewPath() << "in afterUpdate function\n";
+		Debug::logError() << err.what() << "\n";
+	}
 }
 
 void Script::serialize(PHString& str)

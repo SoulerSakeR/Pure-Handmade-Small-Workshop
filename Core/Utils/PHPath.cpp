@@ -56,12 +56,12 @@ bool PHPath::getIsFile() {
 
 std::string PHPath::getFileDir(){
 	for (unsigned i = newPath.size(); i > 0; --i) {
-		if (newPath[i] == '/') {
+		if (newPath[i] == '\\') {
 			return std::string(newPath.begin(), newPath.begin() + i);
 		}
 	}
-	if (newPath[0] == '/') {
-		return "/";
+	if (newPath[0] == '\\') {
+		return "\\";
 	}
 	else {
 		return ".";

@@ -3,6 +3,7 @@
 #include <Core/SystemStatus/GameEngine.h>
 #include "ResourceMgr.h"
 #include "Core/FileIO/IO.h"
+#include "Core/Utils/PHPath.h"
 
 using namespace std;
 
@@ -14,6 +15,15 @@ Texture2D::Texture2D()
 	minification_filter = 0;
 	magnification_filter = 0;
 	wrap_mode = 0;
+}
+
+Texture2D::~Texture2D()
+{
+	if (texture != nullptr)
+	{
+		delete texture;
+	}
+	ResourceMgr::get_instance().texture_assets.erase(name);
 }
 
 Texture2D* Texture2D::loadFromPath(const std::string& absolutePath)
@@ -34,6 +44,26 @@ Texture2D* Texture2D::loadFromPath(const std::string& absolutePath)
 		return result;
 	}
 	return nullptr;
+}
+
+Texture2D* Texture2D::CreateTexture2D(const std::string& name, const std::string& img_path, bool mipmap, int minification_filter, int magnification_filter, int wrap_mode)
+{
+	Texture2D* result = new Texture2D();
+	if (result->set_name(name))
+	{
+		return nullptr;
+	}	
+	result->set_mipmap(mipmap);
+	result->set_minification_filter(minification_filter);
+	result->set_magnification_filter(magnification_filter);
+	result->set_wrap_mode(wrap_mode);
+	result->set_img_path(img_path);
+	return result;
+}
+
+Texture2D* Texture2D::loadFromImgPath(const std::string& absolutePath)
+{
+	return CreateTexture2D(PHPath(absolutePath).getFileName(false), absolutePath);
 }
 
 Texture2D* Texture2D::loadFromName(const std::string& name)
@@ -102,8 +132,7 @@ std::string Texture2D::get_img_path() const
 bool Texture2D::set_img_path(const std::string& path)
 {
 	this->img_path = path;
-	set_texture(path);
-	return true;
+	return set_texture(path);
 }
 
 QOpenGLTexture* Texture2D::get_texture() const
@@ -114,17 +143,19 @@ QOpenGLTexture* Texture2D::get_texture() const
 bool Texture2D::set_texture(const std::string& absolutePath)
 {
 	QImage image(QString::fromStdString(absolutePath));
-	auto w = image.width();
-	auto h = image.height();
 	if (image.isNull())
 	{
 		Debug::logWarning()<< "Texture2D with name " << name << " load image failed, image path: \""<<absolutePath<<"\"\n";
 		return false;
 	}		
 	reset_texture();
+	RenderWidget::getCurrentWidget().makeCurrent();
 	texture = new QOpenGLTexture(image.mirrored().convertToFormat(QImage::Format_RGBA8888));
-	w = texture->width();
-	h = texture->height();
+	texture->create();
+	RenderWidget::getCurrentWidget().doneCurrent();
+	Debug::logInfo() << "Texture2D " << name << " load image success, image path: " << absolutePath << "\n";
+	Debug::logInfo() << "Texture2D " << name << " width: " << texture->width() << " height: " << texture->height() << "\n";
+	//TODO: 设置纹理参数
 	return true;
 }
 
@@ -133,6 +164,20 @@ bool Texture2D::set_texture(QOpenGLTexture* texture)
 	reset_texture();
 	this->texture = texture;
 	return true;
+}
+
+int Texture2D::get_width() const
+{
+	if(texture!=nullptr)
+		return texture->width();
+	return 0;
+}
+
+int Texture2D::get_height() const
+{
+	if (texture != nullptr)
+		return texture->height();
+	return 0;
 }
 
 bool Texture2D::get_mipmap() const

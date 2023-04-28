@@ -87,8 +87,6 @@ public:
     QRect m_normalGeometry; // record normal geometry
 
     GameLoop* gameLoop;
-    void startRendering();
-    void renderingLoop();
 
 protected:
     virtual void initializeGL();

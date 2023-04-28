@@ -742,10 +742,6 @@ void RenderWidget::initializeGL()
 	
 	textBuffer = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
 	timer.setInterval(10);
-	connect(&timer, &QTimer::timeout, []()
-	{
-		RenderWidget::currentWidget->renderingLoop();
-	});
 }
 
 void RenderWidget::resetResolution()
@@ -1085,16 +1081,6 @@ void RenderWidget::messageLogHandler(const QOpenGLDebugMessage& debugMessage)
 	qDebug() << debugMessage.message();
 }
 
-void RenderWidget::startRendering()
-{
-	timer.start();
-	gameLoop = new GameLoop();
-}
-
-void RenderWidget::renderingLoop()
-{
-	gameLoop->updateRender(this);
-}
 
 void RenderWidget::on_widgetChanged(int index)
 {

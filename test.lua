@@ -1,3 +1,9 @@
+
+awake = function()
+    Debug.logInfo(this.name)
+end
+
+
 update = function()
     if(InputDetection.getKey(0x57))then
         this.transform.translate1(this.transform,0,1)

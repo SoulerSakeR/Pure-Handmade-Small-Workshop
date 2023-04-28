@@ -197,7 +197,13 @@ MainWindow::MainWindow(QWidget *parent)
         ui->pushButton->setEnabled(false);
         ui->pushButton_2->setEnabled(true);
         GameEngine::get_instance().gameLoop->setPlayingStatus(true);
-        //RenderWidget::getCurrentWidget().startRendering();
+        GameEngine::get_instance().gameLoop->shutdown();
+        while (!GameEngine::get_instance().gameLoop->isClosed)
+        {
+            // 等待Loop关闭
+        }
+        auto gameLoop = std::bind(&GameLoop::startGameLoop, GameEngine::get_instance().gameLoop);
+        GameEngine::get_instance().pool.enqueue(gameLoop);
         });
 
     // 点击停止
@@ -205,7 +211,14 @@ MainWindow::MainWindow(QWidget *parent)
         ui->tabWidget->setCurrentIndex(0);
         ui->pushButton->setEnabled(true);
         ui->pushButton_2->setEnabled(false);
+        GameEngine::get_instance().gameLoop->shutdown();
+        while (!GameEngine::get_instance().gameLoop->isClosed)
+        {
+            // 等待Loop关闭
+        }
         GameEngine::get_instance().gameLoop->setPlayingStatus(false);
+        auto renderLoop = std::bind(&GameLoop::startRenderLoop, GameEngine::get_instance().gameLoop);
+        GameEngine::get_instance().pool.enqueue(renderLoop);
         });
 
     // 实现Window菜单控制Hierarchy
@@ -488,7 +501,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
             bool saveSuccess = GameEngine::get_instance().saveGameProject();
             if (saveSuccess) {
                 GameEngine::get_instance().gameLoop->shutdown();
-                while (GameEngine::get_instance().readyToClose())
+                while (!GameEngine::get_instance().readyToClose())
                 {
                     // 等待关闭
                 }
@@ -498,7 +511,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
         else if (button == QMessageBox::Discard)
         {
             GameEngine::get_instance().gameLoop->shutdown();
-            while (GameEngine::get_instance().readyToClose())
+            while (!GameEngine::get_instance().readyToClose())
             {
                 // 等待关闭
             }
@@ -512,7 +525,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
     else
     {
 		GameEngine::get_instance().gameLoop->shutdown();
-        while (GameEngine::get_instance().readyToClose())
+        while (!GameEngine::get_instance().readyToClose())
         {
             // 等待关闭
         }

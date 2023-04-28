@@ -28,6 +28,9 @@ public:
 	const std::map<int, std::string>& get_render_layers() const;
 	Vector2D getCurrentResolution() const;
 	void setCurrentResolution(const Vector2D& value);
+	float get_target_frame_rate() const { return target_frame_rate; }
+	void set_target_frame_rate(float value) { target_frame_rate = value; }
+
 	bool isAutoFit() const;
 	bool isChanged() const { return is_changed; }
 
@@ -47,6 +50,7 @@ private:
 	//need to serialize
 	std::map<int, std::string> render_layers;
 	Vector2D current_resolution;
+	float target_frame_rate = 60.f;
 
 
 	bool refresh_later = false;

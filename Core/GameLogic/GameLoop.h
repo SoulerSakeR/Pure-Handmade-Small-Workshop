@@ -18,11 +18,10 @@ class RenderWidget;
 class GameLoop {
     friend class GameEngine;
 public:
-    GameLoop() { lua = new sol::state();
-    bindAllClasses(*lua);
+    GameLoop() { 
+        lua = nullptr;
     }
     ~GameLoop() {
-        updateFunctions.clear();
         delete lua; 
     }
 
@@ -31,18 +30,29 @@ public:
     Player* getPlayer();
     void setPlayer(Player* player);
 
+    void startGameLoop();
+    void startRenderLoop();
+
+    //spript update functions
+    void awake();
+    void start();
+    void beforeUpdate();
+    void update();
+    void afterUpdate();
+
+
     void updatePlayer(float deltaTime);
         // 更新玩家状态-比如位置和执行动作
          
         // TODO:更新Player的速度
         
         // TODO:更新Player的位置
-
+    
 
     void updateScene(RenderWidget* aWidget);
         // 更新游戏引擎中的场景信息-（已完成？）
 
-    void updateRender(RenderWidget* aWidget);
+    float updateRender();
 
 
     void updateGameState(float deltaTime);
@@ -68,17 +78,18 @@ public:
     void shutdown();
 
     void setPlayingStatus(bool flag);
+
+    bool isClosed = false;
 private:
    Player* player; //绑定一个Player.包括以下功能 
     //1.人物移动（TODO:输入检测） 2.设置人物移动速度 3.获取人物位置 4.设置人物状态 
    
    int gameTime; // 储存srand(GetTickCount())
    bool isRunning = true;
-   bool isClosed = false;
+   
    bool isPlaying = false;
-   sol::state* lua;
    std::vector<GameObject*> gameObjects;
    std::vector<Script*> allScripts;
-   //sol::state lua;
+   sol::state* lua;
    std::unordered_map<std::string, sol::protected_function> updateFunctions;
 };

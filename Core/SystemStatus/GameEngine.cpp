@@ -256,8 +256,8 @@ void GameEngine::set_resolution(const Vector2D& resolution)
 }
 void GameEngine::refreshHierarchy()
 {
-	if(GameEngine::get_instance().getInEditor())
-		window->refreshHierachy();
+	if (GameEngine::get_instance().getInEditor())
+		QMetaObject::invokeMethod(window, "refreshHierachy", Qt::QueuedConnection);
 }
 bool GameEngine::needToRefeshUI(GameObject* gameobj)
 {
@@ -301,8 +301,22 @@ bool GameEngine::openGameProject(const string& path)
 	gp->deserialize(ss);
 	this->gameProject = gp;
 	SceneMgr::get_instance().render_setting = this->gameProject->render_setting;
+	gameLoop = new GameLoop();
+	//initialize game resources
 	ResourceMgr::get_instance().loadAllAssets();
-	gp->openScene(0);
+	if (GameEngine::get_instance().getInEditor())
+	{
+		auto renderLoop = std::bind(&GameLoop::startRenderLoop, GameEngine::get_instance().gameLoop);
+		pool.enqueue(renderLoop);
+	}
+	else
+	{
+		auto gameLoop = std::bind(&GameLoop::startGameLoop, GameEngine::get_instance().gameLoop);
+		pool.enqueue(gameLoop);
+	}
+	
+	/*ResourceMgr::get_instance().loadAllAssets();
+	gp->openScene(0);*/
 	return true;
 }
 

@@ -22,6 +22,7 @@ GameProject::GameProject(const string& name,const string& path, bool initDefault
 	currentScene = nullptr;
 	render_setting = nullptr;
 	is_changed = false;
+	current_scene_index = 0;
 }
 
 bool GameProject::openScene(int index)
@@ -31,19 +32,20 @@ bool GameProject::openScene(int index)
 	if (index >= 0 && index < scenes.size())
 	{				
 		currentScene = SceneMgr::get_instance().loadScene(index);
+		current_scene_index = index;
 		GameEngine::get_instance().refreshHierarchy();
-		GameEngine::get_instance().gameLoop = new GameLoop();
-		if (GameEngine::get_instance().getInEditor()) {
-			//RenderWidget::getCurrentWidget().startRendering();
-			auto renderLoop = std::bind(&GameLoop::updateScene, GameEngine::get_instance().gameLoop, &RenderWidget::getSceneWidget());
-			GameEngine::get_instance().pool.enqueue(renderLoop);
-			auto gameLoop = std::bind(&GameLoop::updateScene, GameEngine::get_instance().gameLoop, &RenderWidget::getGameWidget());
-			GameEngine::get_instance().pool.enqueue(gameLoop);
-		}
-		else {
-			auto exportGameLoop = std::bind(&GameLoop::updateScene, GameEngine::get_instance().gameLoop, RenderWidget::currentWidget);
-			GameEngine::get_instance().pool.enqueue(exportGameLoop);
-		}
+		//GameEngine::get_instance().gameLoop = new GameLoop();
+		//if (GameEngine::get_instance().getInEditor()) {
+		//	//RenderWidget::getCurrentWidget().startRendering();
+		//	auto renderLoop = std::bind(&GameLoop::updateScene, GameEngine::get_instance().gameLoop, &RenderWidget::getSceneWidget());
+		//	GameEngine::get_instance().pool.enqueue(renderLoop);
+		//	auto gameLoop = std::bind(&GameLoop::updateScene, GameEngine::get_instance().gameLoop, &RenderWidget::getGameWidget());
+		//	GameEngine::get_instance().pool.enqueue(gameLoop);
+		//}
+		//else {
+		//	auto exportGameLoop = std::bind(&GameLoop::updateScene, GameEngine::get_instance().gameLoop, RenderWidget::currentWidget);
+		//	GameEngine::get_instance().pool.enqueue(exportGameLoop);
+		//}
 		is_changed = false;
 		render_setting->is_changed = false;
 		return true;
@@ -146,6 +148,7 @@ bool GameProject::save()
     return true;
 }
 
+
 Scene* GameProject::creatNewScene(const std::string& name)
 {
 	Scene* scene = new Scene(name);
@@ -216,7 +219,8 @@ void GameProject::deserialize(std::stringstream& ss)
 			name = s.substr(index + gameProjectPrefix.size(), s.size() - 1);
 			getline(ss, s);
 			path = s;
-
+			getline(ss, s);
+			current_scene_index = stoi(s);
 			Debug::logInfo() << "Deserialing scenes paths \n";
 			do //deserialize scenes
 			{
@@ -295,6 +299,7 @@ void GameProject::serialize(PHString& result)
 {
 	result.appendLine("GameProject:",name);
 	result.appendLine(path.getNewPath());
+	result.appendLine(to_string(current_scene_index));
 	result.appendLine("Scene:",to_string(scenes.size()));
 	for(int i=0;i<scenes.size();i++)
 	{

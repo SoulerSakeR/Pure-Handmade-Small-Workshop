@@ -1,8 +1,3 @@
-
-
-update = function(x)
-
-
-print(x)
-
+start = function()
+    print(this.name)
 end

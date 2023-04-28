@@ -41,6 +41,8 @@ std::string Component::getName(ComponentType type)
 			return "Text";
 	case RENDERER:
 		return "Renderer";
+	case SPINE_ANIMATOR:
+		return "Spine Animator";
 	default:
 		return "Unknown";
 		break;

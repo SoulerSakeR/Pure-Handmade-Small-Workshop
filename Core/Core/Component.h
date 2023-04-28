@@ -15,9 +15,9 @@ class Component : public ISerializable
 	friend class GameObject;
 	friend class ComponentsDockWidget;
 public:
-	enum ComponentType { UNKNOWN, TRANSFORM, IMAGE, CAMERA, SCRIPT, RIGID_BODY,BOX_COLLIDER,TEXT,RENDERER};
+	enum ComponentType { UNKNOWN, TRANSFORM, IMAGE, CAMERA, SCRIPT, RIGID_BODY,BOX_COLLIDER,TEXT,RENDERER,SPINE_ANIMATOR};
 	typedef ComponentType customType;
-	static const int componentTypeCount = 8;
+	static const int componentTypeCount = 9;
 	Event<void,Property*> onPropertyChange;
 	Component(GameObject* gameObj) {
 		gameObject = gameObj;

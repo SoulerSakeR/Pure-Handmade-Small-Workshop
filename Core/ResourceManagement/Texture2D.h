@@ -58,7 +58,10 @@ public:
 class Texture2D: public ISerializable
 {
 public:
+   virtual ~Texture2D();
    static Texture2D* loadFromPath(const std::string& absolutePath);
+   static Texture2D* CreateTexture2D(const std::string& name, const std::string& absolutePath, bool mipmap=true, int minification_filter=0, int magnification_filter=0, int wrap_mode = 0);
+   static Texture2D* loadFromImgPath(const std::string& absolutePath);
    static Texture2D* loadFromName(const std::string& name);
    static bool isExist(const std::string& name);
 
@@ -75,6 +78,9 @@ public:
    QOpenGLTexture* get_texture() const;
    bool set_texture(const std::string& absolutePath);
    bool set_texture(QOpenGLTexture* texture);
+
+   int get_width() const;
+   int get_height() const;
 
    bool get_mipmap() const;
    bool set_mipmap(bool mipmap);

@@ -23,6 +23,7 @@ public:
 	bool isChanged();
 	bool save();
 	Scene* creatNewScene(const std::string& name = "ExampleScene");
+	int get_current_scene_index() const {return current_scene_index<scenes.size()?current_scene_index:0;}
 
 	std::string name; //项目名称
 	PHPath path; //项目路径
@@ -34,7 +35,7 @@ private:
 	bool saveCurrentScene();
 	void serialize(PHString&);
 	bool is_changed;
-
+	int current_scene_index;
 
 	RenderSetting* render_setting;
 };

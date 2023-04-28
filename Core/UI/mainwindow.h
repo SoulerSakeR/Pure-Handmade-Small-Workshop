@@ -19,7 +19,6 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void resizeGL(QResizeEvent*);
-    void refreshHierachy();
     void setupFileSystemTreeView(const QString& parentDir);
     void open();
     void addScene();
@@ -31,6 +30,8 @@ public:
     void onListItemDoubleClicked();
     static QPlainTextEdit* getConsoleTextEdit();
 
+public slots:
+    void refreshHierachy();
 
 protected:
     void closeEvent(QCloseEvent* event) override;

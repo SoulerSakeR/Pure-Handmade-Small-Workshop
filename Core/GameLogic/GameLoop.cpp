@@ -1,4 +1,9 @@
 ﻿#include "GameLoop.h"
+#include "Core/ResourceManagement/ResourceMgr.h"
+#include "Core/ResourceManagement/SceneMgr.h"
+#include "Core/Utils/Time.h"
+#include "Core/Core/Script.h"
+
 using std::chrono::system_clock;
 
 
@@ -36,18 +41,19 @@ void GameLoop::updateScene(RenderWidget* aWidget) {
         }
         starttime = system_clock::now();
         if (isPlaying && aWidget->isGameWidget || !GameEngine::get_instance().getInEditor())
-            updateGame(aWidget,*lua,duration.count());
+            //updateGame(aWidget,*lua,duration.count());
         aWidget->update();
         endtime = system_clock::now();
         //std::cout << "end_time：" << end_time << "\tstart_time" << start_time << std::endl;
     }
 }
 
-void GameLoop::updateRender(RenderWidget* aWidget)
+float GameLoop::updateRender()
 {
-    if (aWidget->isGameWidget || !GameEngine::get_instance().getInEditor())
-        updateGame(aWidget, *lua, 0.f);
-    aWidget->update();
+    auto start = Time::now();
+    RenderWidget::getCurrentWidget().update();
+    auto end = Time::now();
+    return end - start;
 }
 
 
@@ -147,6 +153,179 @@ Player* GameLoop::getPlayer(){
 // 设置这个游戏循环中的Player
 void GameLoop::setPlayer(Player* player) {
    this->player = player;
+}
+
+void GameLoop::startGameLoop()
+{
+    //initialize game scene
+    auto gameProject = GameEngine::get_instance().getCurrentGameProject();
+    gameProject->openScene(gameProject->get_current_scene_index());
+    
+    //initialize lua
+    if (lua != nullptr)
+    {
+		delete lua;
+	}
+    lua = new sol::state();
+    lua->open_libraries(sol::lib::base);
+    bindAllClasses(*lua);
+    //call script function
+    awake();
+    start();
+
+    isRunning = true;
+    isClosed = false;
+    float deltaTime = 0.f;
+    while (isRunning)
+    {
+        auto start = Time::now();
+
+        //TODO: update physics
+
+        //update game logic
+        beforeUpdate();
+        update();
+        afterUpdate();
+
+        updateRender();
+
+        
+
+        auto end = Time::now();
+        auto frameTime = 1000.f / SceneMgr::get_instance().get_render_setting()->get_target_frame_rate() - deltaTime;
+        while (end - start < frameTime)
+        {
+            end = Time::now();
+        }
+        Time::deltaTime = end - start;
+        deltaTime = Time::deltaTime - frameTime;
+    }
+    isClosed = true;
+}
+
+void GameLoop::startRenderLoop()
+{
+    //initialize game scene
+    auto gameProject = GameEngine::get_instance().getCurrentGameProject();
+    gameProject->openScene(gameProject->get_current_scene_index());
+
+    isRunning = true;
+    isClosed = false;
+    float deltaTime = 0.f;
+    while (isRunning)
+    {
+        auto start = Time::now();
+        auto renderTime = updateRender();
+        auto end = Time::now();
+        auto frameTime =1000.f/ SceneMgr::get_instance().get_render_setting()->get_target_frame_rate() - deltaTime;
+        while(end - start <  frameTime )
+        {
+            end = Time::now();
+        }
+        Time::deltaTime = end - start;
+        deltaTime = Time::deltaTime - frameTime;
+    }
+    isClosed = true;
+}
+
+void GameLoop::awake()
+{
+    for (auto& pair : SceneMgr::get_instance().get_current_scene()->getAllGameObjs())
+    {
+        if (pair.second->isActive)
+            if (auto scripts = pair.second->getComponents<IScriptBehaviour>();scripts.size() > 0)
+            {
+                for (auto script : scripts)
+                {
+                    if (dynamic_cast<Component*>(script)->get_enabled())
+                    {
+                        if (auto s = dynamic_cast<Script*>(script);s != nullptr)
+                            s->lua = lua;
+                        script->awake();
+                    }
+                }
+            }
+    }
+}
+
+void GameLoop::start()
+{
+    for (auto& pair : SceneMgr::get_instance().get_current_scene()->getAllGameObjs())
+    {
+        if(pair.second->isActive)
+        if (auto scripts = pair.second->getComponents<IScriptBehaviour>();scripts.size() > 0)
+        {
+            for (auto script : scripts)
+            {
+                if (dynamic_cast<Component*>(script)->get_enabled())
+                {
+                    if (auto s = dynamic_cast<Script*>(script);s != nullptr)
+                        s->lua = lua;
+                    script->start();
+                }
+            }
+        }
+    }
+}
+
+void GameLoop::beforeUpdate()
+{
+    for (auto& pair : SceneMgr::get_instance().get_current_scene()->getAllGameObjs())
+    {
+        if (pair.second->isActive)
+            if (auto scripts = pair.second->getComponents<IScriptBehaviour>();scripts.size() > 0)
+            {
+                for (auto script : scripts)
+                {
+                    if (dynamic_cast<Component*>(script)->get_enabled())
+                    {
+                        if(auto s = dynamic_cast<Script*>(script);s!=nullptr)
+                            s->lua = lua;
+                        script->beforeUpdate();
+                    }                       
+                }
+            }
+    }
+}
+
+void GameLoop::update()
+{
+    for (auto& pair : SceneMgr::get_instance().get_current_scene()->getAllGameObjs())
+    {
+        if (pair.second->isActive)
+            if (auto scripts = pair.second->getComponents<IScriptBehaviour>();scripts.size() > 0)
+            {
+                for (auto script : scripts)
+                {
+                    if (dynamic_cast<Component*>(script)->get_enabled())
+                    {
+                        if (auto s = dynamic_cast<Script*>(script);s != nullptr)
+                            s->lua = lua;
+                        script->update();
+                    }
+                }
+            }
+    }
+}
+
+void GameLoop::afterUpdate()
+{
+    for (auto& pair : SceneMgr::get_instance().get_current_scene()->getAllGameObjs())
+    {
+        if (pair.second->isActive)
+            if (auto scripts = pair.second->getComponents<IScriptBehaviour>();scripts.size() > 0)
+            {
+                for (auto script : scripts)
+                {
+                    if (dynamic_cast<Component*>(script)->get_enabled())
+                    {
+                        if (auto s = dynamic_cast<Script*>(script);s != nullptr)
+                            s->lua = lua;
+                        script->afterUpdate();
+                    }
+                }
+            }
+    }
 }
 
 void GameLoop::shutdown() {

@@ -26,7 +26,6 @@ void showMainWindow()
     MainWindow* w = new MainWindow;
     GameEngine::get_instance().initialize(w);
     w->show();
-
 }
 
 void showGameWindow() {

@@ -19,9 +19,10 @@ Result<void*> ResourceMgr::initialize()
 
 void ResourceMgr::loadAllAssets()
 {
+	clear();
 	PHPath gamePath(GameEngine::get_instance().getGamePath());
 	PHPath absolutePath = gamePath.combinePath(assetPath);
-	auto files = IO::getFilesInDirectory(absolutePath.getNewPath());
+	auto files = IO::getFilesInDirectory(absolutePath.getNewPath(),true);
 	for (auto& filePath : files)
 	{
 		auto type = PHPath(filePath).getFileType();
@@ -34,6 +35,15 @@ void ResourceMgr::loadAllAssets()
 				Debug::logInfo() << "Texture2D loaded: " << texture->get_name() << "\n";
 			}				
 		}
+		else if(type ==".atlas")
+		{
+			auto spineData = loadFromPath<SpineAnimationData>(filePath,false);
+			if (spineData != nullptr)
+			{
+				spine_assets[spineData->get_name()] = spineData;
+				Debug::logInfo() << "SpineAnimationData loaded: " << spineData->get_name() << "\n";
+			}
+		}
 	}
 }
 
@@ -44,6 +54,11 @@ void ResourceMgr::clear()
 		delete texture.second;
 	}
 	texture_assets.clear();
+	for (auto& spine : spine_assets)
+	{
+		delete spine.second;
+	}
+	spine_assets.clear();
 }
 
 Texture2D* ResourceMgr::CreatNewTexture2D(const std::string name, const std::string path)

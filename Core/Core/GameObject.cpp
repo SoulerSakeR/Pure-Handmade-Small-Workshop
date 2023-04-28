@@ -8,6 +8,7 @@
 #include "Text.h"
 #include "Core/ResourceManagement/SceneMgr.h"
 #include "Renderer.h"
+#include "SpineAnimator.h"
 
 using namespace std;
 
@@ -200,6 +201,9 @@ Component* GameObject::addComponent(Component::ComponentType type)
 		break;
     case Component::RENDERER:
         result = new Renderer(this);
+		break;
+    case Component::SPINE_ANIMATOR:
+        result = new SpineAnimator(this);
 		break;
     default:
         break;
