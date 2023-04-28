@@ -42,6 +42,10 @@ void PhysicsEngine::update(float deltaTime) {
             // 如果两个物体
             if (checkCollision(obj1, obj2)) {
                 // TODO: 处理碰撞
+                //CollisonInfo info;
+                //info.firstObj = obj1;
+                //info.secondObj = obj2;
+                //collisonInfo.push_back(info);
             }
         }
     }

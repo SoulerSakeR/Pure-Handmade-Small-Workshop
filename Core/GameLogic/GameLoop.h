@@ -6,11 +6,9 @@
 #include <conio.h>
 #include <Windows.h>
 #include <Core/SystemStatus/GameEngine.h>
-#include "Core/Core/GameObject.h"
 #include "Core/Core/Script.h"
 #include "lib/sol/sol.hpp"
 #include "Core/CppcallLua/BindingLua.h"
-
 #include "Player.h"
 
 class RenderWidget;
@@ -36,6 +34,7 @@ public:
     //spript update functions
     void awake();
     void start();
+    void onCollide(const std::vector<CollisonInfo>&);
     void beforeUpdate();
     void update();
     void afterUpdate();

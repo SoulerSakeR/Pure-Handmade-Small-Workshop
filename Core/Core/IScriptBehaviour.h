@@ -2,6 +2,12 @@
 #include "Component.h"
 #include "lib/sol/sol.hpp"
 
+struct CollisonInfo
+{
+    GameObject* firstObj;
+    GameObject* secondObj;
+
+};
 class IScriptBehaviour 
 {
 public:
@@ -12,6 +18,9 @@ public:
 	// called when all objects are created (after awake)
 	virtual void start() {};
 	
+	// called before beforeupdate
+	virtual void onCollide(const std::vector<CollisonInfo>&) {};
+
 	// called before update
 	virtual void beforeUpdate() {};
 
@@ -20,5 +29,7 @@ public:
 
 	// called after update
 	virtual void afterUpdate() {};
+
+	
 };
 

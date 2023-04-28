@@ -1,14 +1,15 @@
 ﻿#ifndef PHYSICSENGINE_H
 #define PHYSICSENGINE_H
 
-#include "Core/Utils/Vector2D.h"
 #include "Core/Core/GameObject.h"
 #include "Core/Core/Transform.h"
 #include "Core/Core/RigidBody.h"
 #include "Core/Core/BoxCollider.h"
+#include "Core/Core/IScriptBehaviour.h"
 
 class PhysicsEngine {
 public:
+
     std::vector<GameObject*> objects;   // 存储所有物体的指针
 
     void AddObject(GameObject* object);     // 添加物体
@@ -23,7 +24,7 @@ public:
     RigidBody* getRigidBody(GameObject* object) { return object->getComponent<RigidBody>(); }
     BoxCollider* getBoxCollider(GameObject* object) { return object->getComponent<BoxCollider>(); }
 
-
+    std::vector<CollisonInfo> collisonInfo;
 };
 
 #endif

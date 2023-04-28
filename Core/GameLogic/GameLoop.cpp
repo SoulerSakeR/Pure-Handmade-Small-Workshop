@@ -2,7 +2,8 @@
 #include "Core/ResourceManagement/ResourceMgr.h"
 #include "Core/ResourceManagement/SceneMgr.h"
 #include "Core/Utils/Time.h"
-#include "Core/Core/Script.h"
+#include "Core/Physics/PhysicsEngine.h"
+
 
 using std::chrono::system_clock;
 
@@ -160,7 +161,13 @@ void GameLoop::startGameLoop()
     //initialize game scene
     auto gameProject = GameEngine::get_instance().getCurrentGameProject();
     gameProject->openScene(gameProject->get_current_scene_index());
-    
+
+    // initialize physics engine
+    auto physicsEngine = new PhysicsEngine();
+    for (auto& gameObj : GameEngine::get_instance().getCurrentScene()->getAllGameObjs()) {
+        physicsEngine->AddObject(gameObj.second);
+    }
+
     //initialize lua
     if (lua != nullptr)
     {
@@ -180,8 +187,9 @@ void GameLoop::startGameLoop()
     {
         auto start = Time::now();
 
-        //TODO: update physics
-
+        //update physics
+        physicsEngine->update(Time::deltaTime);
+        onCollide(physicsEngine->collisonInfo);
         //update game logic
         beforeUpdate();
         update();
@@ -267,7 +275,25 @@ void GameLoop::start()
         }
     }
 }
-
+void GameLoop::onCollide(const std::vector<CollisonInfo>& collisionInfo)
+{
+    for (auto& pair : SceneMgr::get_instance().get_current_scene()->getAllGameObjs())
+    {
+        if (pair.second->isActive)
+            if (auto scripts = pair.second->getComponents<IScriptBehaviour>(); scripts.size() > 0)
+            {
+                for (auto script : scripts)
+                {
+                    if (dynamic_cast<Component*>(script)->get_enabled())
+                    {
+                        if (auto s = dynamic_cast<Script*>(script); s != nullptr)
+                            s->lua = lua;
+                        script->onCollide(collisionInfo);
+                    }
+                }
+            }
+    }
+}
 void GameLoop::beforeUpdate()
 {
     for (auto& pair : SceneMgr::get_instance().get_current_scene()->getAllGameObjs())

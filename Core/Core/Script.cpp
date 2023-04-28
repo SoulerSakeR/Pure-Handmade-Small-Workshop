@@ -84,6 +84,23 @@ void Script::start()
 	}
 }
 
+void Script::onCollide(const std::vector<CollisonInfo>& collisionInfo)
+{
+	(*lua)["onCollide"] = nullptr;
+	(*lua)["this"] = gameObject;
+	(*lua).script_file(path.getNewPath());
+	sol::protected_function f = (*lua)["onCollide"];
+	if (!f.valid())
+		return;
+	auto result = f();
+	if (!result.valid())
+	{
+		sol::error err = result;
+		Debug::logError() << "lua runtime error: " << name << " at " << path.getNewPath() << "in onCollide function\n";
+		Debug::logError() << err.what() << "\n";
+	}
+}
+
 void Script::beforeUpdate()
 {
 	(*lua)["beforeUpdate"] = nullptr;
@@ -107,9 +124,9 @@ void Script::update()
 	(*lua)["this"] = gameObject;
 	(*lua).script_file(path.getNewPath());
 	sol::protected_function f = (*lua)["update"];
-	auto result = f();
 	if (!f.valid())
 		return;
+	auto result = f();
 	if (!result.valid())
 	{
 		sol::error err = result;
@@ -124,9 +141,9 @@ void Script::afterUpdate()
 	(*lua)["this"] = gameObject;
 	(*lua).script_file(path.getNewPath());
 	sol::protected_function f = (*lua)["afterUpdate"];
-	auto result = f();
 	if (!f.valid())
 		return;
+	auto result = f();
 	if (!result.valid())
 	{
 		sol::error err = result;

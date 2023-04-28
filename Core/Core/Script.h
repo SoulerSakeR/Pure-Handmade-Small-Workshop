@@ -20,6 +20,7 @@ public:
     // inherited via IScriptBehaviour
     void awake() override;
     void start() override;
+    void onCollide(const std::vector<CollisonInfo>&) override;
     void beforeUpdate() override;
     void update() override;
     void afterUpdate() override;
