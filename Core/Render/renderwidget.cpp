@@ -126,6 +126,11 @@ void RenderWidget::renderGameobject(GameObject* gameobj, Camera* camera)
 		{
 			renderCameraBorder(target, camera, visBorder);
 		}
+
+		if (auto target = gameobj->getComponent<SpineAnimator>();target != nullptr && target->get_enabled())
+		{
+			renderSpineAnimator(target, camera, visBorder);
+		}
 		
 	}
 	else // game mode, only render image and text
@@ -575,6 +580,12 @@ void RenderWidget::renderText(Text* text, Camera* textCamera, bool visBorder)
 	text->vao->release();
 }
 
+void RenderWidget::renderSpineAnimator(SpineAnimator* target, Camera* camera, bool visBorder)
+{
+
+	target->render(camera);
+}
+
 // render camera border
 
 void RenderWidget::renderCameraBorder(Camera* target, Camera* renderCamera, bool visBorder)
@@ -679,6 +690,68 @@ void RenderWidget::renderCameraBorder(Camera* target, Camera* renderCamera, bool
 
 	
 
+void RenderWidget::drawMesh(IRenderable* target, Camera* camera)
+{
+	auto vbo = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+	vbo->setUsagePattern(QOpenGLBuffer::DynamicDraw);
+	vbo->create();
+	vbo->bind();	
+	vbo->allocate(target->vertices.data(), static_cast<int>(target->vertices.size() * sizeof(Vertex)));
+	auto ibo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+	ibo->create();
+	ibo->bind();
+	ibo->allocate(target->indices.data(), static_cast<int>(target->indices.size() * sizeof(unsigned int)));
+	imageShaderProgram->bind();
+	
+	GLint posLocation = 0;
+	GLint texCoordLocation = 1;
+
+	GLsizei stride = sizeof(Vertex);
+	//-----------------position--------------------//
+	//告知显卡如何解析缓冲里的属性值
+	if (posLocation != -1)
+	{
+		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+		//开启VAO管理的第一个属性值
+		glEnableVertexAttribArray(posLocation);
+	}
+	//-----------------texcoord--------------------//
+	//告知显卡如何解析缓冲里的属性值
+	if (texCoordLocation != -1)
+	{
+		glVertexAttribPointer(texCoordLocation, 2, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+		//开启VAO管理的第二个属性值
+		glEnableVertexAttribArray(texCoordLocation);
+	}
+
+	// mvp matrix
+	if(camera == nullptr)
+		camera = mCamera;
+	auto matrix = camera->CalculateProjectionMulViewMatrix();
+	auto transform = target->gameObject->transform;
+	matrix.translate(transform->getWorldPosition().toQVector3D());
+	matrix.rotate(transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
+	matrix.scale(transform->getWorldScale().toQVector3D(1.0f));
+
+	imageShaderProgram->setUniformValue("MVPMatrix", matrix);
+	imageShaderProgram->setUniformValue("color", target->color.red(), target->color.green(), target->color.blue(), target->color.alpha());
+
+	//texture
+	if (target->isTextureValid())
+		target->get_texture()->bind();
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(sizeof(unsigned int) * target->indices.size()), GL_UNSIGNED_INT, 0);
+
+	//release
+	vbo->release();
+	ibo->release();
+	vbo->destroy();
+	ibo->destroy();
+	if (target->isTextureValid())
+		target->get_texture()->release();
+}
+
 void RenderWidget::renderScene(Camera* camera)
 {
 	auto scene = SceneMgr::get_instance().get_current_scene();
@@ -760,7 +833,7 @@ void RenderWidget::paintGL()
 {
 	if (!SceneMgr::get_instance().hasCurrentScene())
 		return;
-
+	isRendering = true;
 	glClearColor(0.f, 0.f, 0.f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -778,6 +851,7 @@ void RenderWidget::paintGL()
 
 	if(widgetChanged)
 		widgetChanged = false;
+	isRendering = false;
 }
 
 

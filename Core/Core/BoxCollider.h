@@ -7,6 +7,7 @@ class BoxCollider :  public IBoxResizable , public Collider
 {
 public:
 	BoxCollider(GameObject* gameObj);
+	virtual ~BoxCollider();
 
 	// Inherited via Component
 	void reset() override;

@@ -17,6 +17,7 @@
 #include <Core/Core/Camera.h>
 #include <Core/UI/HierarchyWidget.h>
 #include <Core/UI/GameWindow.h>
+#include "Core/Core/SpineAnimator.h"
 
 class GameLoop;
 
@@ -41,12 +42,15 @@ public:
     static RenderWidget& getCurrentWidget();
 
     HierarchyWidget* hierarchyWidget;
+
+    void drawMesh(IRenderable* target, Camera* camera);
   
     void renderScene(Camera* camera);
     void renderGameobject(GameObject* gameobj, Camera* camera);
     void renderBoxCollider(BoxCollider* boxCollider, Camera* boxColliderCamera, bool visBorder);
     void renderImage(Image* image, Camera* imageCamera, bool visBorder);
     void renderText(Text* text, Camera* textCamera, bool visBorder);
+    void renderSpineAnimator(SpineAnimator* spineAnimator, Camera* camera, bool visBorder);
     void renderCameraBorder(Camera* target, Camera* camera, bool visBorder);
     void renderFbo();
     void renderFboOverlay();
@@ -81,6 +85,7 @@ public:
     bool moveObjectMode = false;
     bool moveCameraMode = false;
     bool isFullScreen = false;
+    bool isRendering = false;
     static bool widgetChanged;
     static RenderWidget* currentWidget;
     

@@ -1,4 +1,8 @@
 ﻿#include "PhysicsEngine.h"
+#include "Core/Core/RigidBody.h"
+#include "Core/Core/BoxCollider.h"
+
+SINGLETON_IMPL(PhysicsEngine)
 
 void PhysicsEngine::AddObject(GameObject* object) {
     objects.push_back(object);

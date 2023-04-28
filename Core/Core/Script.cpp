@@ -1,4 +1,7 @@
 #include "Script.h"
+#include "GameObject.h"
+#include "Core/Core/Debug.h"
+#include "lib/sol/sol.hpp"
 
 using namespace std;
 

@@ -1,13 +1,8 @@
 #pragma once
-#include "Component.h"
-#include "lib/sol/sol.hpp"
+#include <vector>
 
-struct CollisonInfo
-{
-    GameObject* firstObj;
-    GameObject* secondObj;
+struct CollisonInfo;
 
-};
 class IScriptBehaviour 
 {
 public:
@@ -28,8 +23,6 @@ public:
 	virtual void update() {};
 
 	// called after update
-	virtual void afterUpdate() {};
-
-	
+	virtual void afterUpdate() {};	
 };
 

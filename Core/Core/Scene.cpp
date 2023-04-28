@@ -220,7 +220,7 @@ void Scene::initRootGameObject(GameObject* rootObject)
 	addGameObjectWithChildren(rootObject);
 }
 
-void Scene::onGameObjectPropertyChangedHandle(GameObject gameobj)
+void Scene::onGameObjectPropertyChangedHandle(GameObject* gameobj)
 {
 	is_changed = true;
 }
@@ -323,15 +323,7 @@ std::map<int, GameObject*>& Scene::getAllGameObjsByDepth()
 {
 	return allGameObjsByDepth;
 }
-#ifdef TEST
-Scene* Scene::loadFromText(const std::string& text)
-{
-	Scene* scene = new Scene();
-	stringstream ss(text);
-	scene->deserialize(ss);
-	return scene;
-}
-#endif // TEST
+
 
 
 Scene* Scene::loadFromPath(std::string path,Scene* scene)

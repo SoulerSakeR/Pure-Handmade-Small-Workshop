@@ -2,7 +2,12 @@
 #include "Component.h"
 #include "Core/Utils/PHPath.h"
 #include "IScriptBehaviour.h"
-#include "GameObject.h"
+
+namespace sol
+{
+	class state;
+}
+
 
 class Script : public Component , public IScriptBehaviour
 {

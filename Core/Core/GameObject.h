@@ -2,6 +2,7 @@
 
 #include "ISerializable.h"
 #include "Transform.h"
+#include "RigidBody.h"
 #include "Core/Utils/Utils.h"
 #include "Core/Utils/Result.h"
 #include "Core/Core/Debug.h"

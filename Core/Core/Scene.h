@@ -4,14 +4,14 @@
 #include <map>
 
 #include "ISerializable.h"
-#include "GameObject.h"
 #include "Core/Utils/Test.h"
 #include "Core/Utils/Result.h"
 
+class GameObject;
+
 enum InsertMode { BEFORE, AFTER, INSIDE };
 
-class Scene :
-    public ISerializable
+class Scene : public ISerializable
 {
 public:
     
@@ -23,24 +23,21 @@ public:
     //method
     Result<void*> renameGameObject(GameObject* gameObject, std::string newName);
     void insertGameObject(GameObject& value, GameObject* target=nullptr,InsertMode insertMode = INSIDE);
-
     void insertExistGameObject(GameObject* gameObject, GameObject* target, InsertMode insertMode);
     
     void removeGameObject(GameObject* gameObject);
     void removeGameObject(int id);
 
     bool isChanged() const { return is_changed; }
-
-    void serialize(PHString&) override;
-    void deserialize(std::stringstream& ss) override;
     const std::unordered_map<int, GameObject*> getAllGameObjs();
     const std::vector<GameObject*> getRootGameObjs();
     std::map<int, GameObject*>& getAllGameObjsByDepth();
-
-#ifdef TEST
-    static Scene* loadFromText(const std::string& text);
-#endif // TEST
     static Scene* loadFromPath(std::string path,Scene* scene = nullptr);
+
+    // inherited via ISerializable
+    void serialize(PHString&) override;
+    void deserialize(std::stringstream& ss) override;
+
 private:
     std::unordered_map<int,GameObject*> allGameObjsByID; //当前场景下所有的GameObject
     std::unordered_map<std::string, std::vector<GameObject*>> allGameObjsByName;
@@ -53,7 +50,7 @@ private:
     void removeGameObjectWithChildren(GameObject* gameObject);
     void initRootGameObject(GameObject* rootObject);
 
-    void onGameObjectPropertyChangedHandle(GameObject gameobj);
+    void onGameObjectPropertyChangedHandle(GameObject* gameobj);
 
     friend class GameObject;
     friend class GameProject;

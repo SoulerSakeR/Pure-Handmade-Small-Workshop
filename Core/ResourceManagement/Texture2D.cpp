@@ -49,7 +49,7 @@ Texture2D* Texture2D::loadFromPath(const std::string& absolutePath)
 Texture2D* Texture2D::CreateTexture2D(const std::string& name, const std::string& img_path, bool mipmap, int minification_filter, int magnification_filter, int wrap_mode)
 {
 	Texture2D* result = new Texture2D();
-	if (result->set_name(name))
+	if (!result->set_name(name))
 	{
 		return nullptr;
 	}	

@@ -1,6 +1,7 @@
 #include "BoxCollider.h"
 #include "Core/SystemStatus/GameEngine.h"
 #include "IResizable.h"
+#include "Core/Physics/PhysicsEngine.h"
 
 using namespace std;
 
@@ -8,6 +9,12 @@ BoxCollider::BoxCollider(GameObject* gameObj):IBoxResizable(gameObj)
 {
 	componentType = BOX_COLLIDER;
 	properties.emplace("is trigger", new Property("is trigger", &is_trigger_, Property::VECTOR2D, this));
+	PhysicsEngine::get_instance()->AddObject(gameObj);
+}
+
+BoxCollider::~BoxCollider()
+{
+	PhysicsEngine::get_instance()->RemoveObject(gameObject);
 }
 
 

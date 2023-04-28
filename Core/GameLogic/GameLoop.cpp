@@ -163,10 +163,8 @@ void GameLoop::startGameLoop()
     gameProject->openScene(gameProject->get_current_scene_index());
 
     // initialize physics engine
-    auto physicsEngine = new PhysicsEngine();
-    for (auto& gameObj : GameEngine::get_instance().getCurrentScene()->getAllGameObjs()) {
-        physicsEngine->AddObject(gameObj.second);
-    }
+    auto physicsEngine = PhysicsEngine::get_instance();
+    physicsEngine->clear();
 
     //initialize lua
     if (lua != nullptr)
@@ -176,6 +174,7 @@ void GameLoop::startGameLoop()
     lua = new sol::state();
     lua->open_libraries(sol::lib::base);
     bindAllClasses(*lua);
+
     //call script function
     awake();
     start();
