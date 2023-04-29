@@ -72,6 +72,7 @@ void bindAllClasses(sol::state& lua) {
         // 属性
         "isActive", &GameObject::isActive,
         "name", sol::property(&GameObject::get_name, &GameObject::set_name),
+        "tag", sol::property(&GameObject::get_tag, &GameObject::set_tag),
         "transform", &GameObject::transform,
 
         // 方法
@@ -110,7 +111,13 @@ void bindAllClasses(sol::state& lua) {
         ),
         "removeComponent", &GameObject::removeComponent,
         "isRootGameObject", &GameObject::isRootGameObject,
-        "destroy", &GameObject::destroy);
+        "destroy", &GameObject::destroy,
+        "clone", & GameObject::clone,
+        "onComponentPropertyChangedHandler", & GameObject::onComponentPropertyChangedHandler,
+        "find", & GameObject::find,
+        "findTag", & GameObject::findTag);
+
+
 
 
     //  Transform
@@ -158,6 +165,43 @@ void bindAllClasses(sol::state& lua) {
         "acceleration", sol::property(&RigidBody::get_acceleration, &RigidBody::set_acceleration),
         "friction_ratio", sol::property(&RigidBody::get_friction_ratio, &RigidBody::set_friction_ratio)
         );
+
+    /*
+        Utils
+    */
+
+    //Vector2D
+
+    lua.new_usertype<Vector2D>("Vector2D",
+        // 构造函数
+        sol::constructors<Vector2D(float, float)>(),
+
+        // 属性
+        "x", & Vector2D::x,
+        "y", & Vector2D::y,
+
+        // 方法
+        "tostring", & Vector2D::tostring,
+        "tostringInt", & Vector2D::tostringInt,
+        "toQString", & Vector2D::toQString,
+        "toQStringInt", & Vector2D::toQStringInt,
+        "toQVector3D", & Vector2D::toQVector3D,
+        "toQVector2D", & Vector2D::toQVector2D,
+
+        // 静态方法
+        "zero", & Vector2D::zero,
+        "one", & Vector2D::one,
+        "fromString", & Vector2D::fromString,
+        "fromQString", & Vector2D::fromQString,
+
+        // 运算符
+        sol::meta_function::addition, & Vector2D::operator+,
+        sol::meta_function::subtraction, & Vector2D::operator-,
+        sol::meta_function::multiplication, & Vector2D::operator*,
+        sol::meta_function::division, & Vector2D::operator/,
+        sol::meta_function::equal_to, & Vector2D::operator==,
+        sol::meta_function::not_equal_to, & Vector2D::operator!=
+        );
 }
 
 
@@ -166,95 +210,3 @@ void bindAllClasses(sol::state& lua) {
 
 
 
-
-
-
-
-/*
-    Input
-*/
-
-//  InputDetection
-//void InputDetectionLua(sol::state lua) {
-//    lua.open_libraries(sol::lib::base, sol::lib::package);
-//
-//    lua.new_usertype<InputDetection>("InputDetection",
-//        // 静态成员函数
-//        "getKey", &InputDetection::GetKey,
-//        "getKeyDown", &InputDetection::GetKeyDown,
-//        "getKeyUp", &InputDetection::GetKeyUp
-//        );
-//}
-
-
-
-
-/*
-    Core
-*/
-
-// Debug
-//void DebugLua(sol::state lua) {
-//    lua.open_libraries(sol::lib::base, sol::lib::package);
-//
-//    lua.new_usertype<Debug>("Debug",
-//        // 静态成员函数
-//        "log", &Debug::log,
-//        "logError", &Debug::logError
-//        );
-//
-//}
-
-//  GameObject
-//void GameObjectLua(sol::state lua) {
-//    lua.open_libraries(sol::lib::base, sol::lib::package);
-//
-//    lua.new_usertype<GameObject>("GameObject",
-//        // 构造函数
-//        sol::constructors<GameObject(std::string, bool)>(),
-//
-//        // 成员变量
-//        "isActive", &GameObject::isActive,
-//        "name", &GameObject::name,
-//        "transform", &GameObject::transform,
-//        "components", &GameObject::components,
-//
-//        // 成员函数
-//        "getID", &GameObject::getID,
-//        "isRootGameObject", &GameObject::isRootGameObject
-//        );
-//
-//    lua["GameObject"]["addComponent"] = [](GameObject& obj, ComponentType type) {
-//        return obj.addComponent(type);
-//    };
-//
-//    lua["GameObject"]["getComponent"] = [](GameObject& obj, ComponentType type) {
-//        return obj.getComponent(type);
-//    };
-//
-//}
-
-//  Transform
-//void TransformLua(sol::state lua) {
-//    lua.open_libraries(sol::lib::base, sol::lib::package);
-//
-//    lua.new_usertype<Transform>("Transform",
-//        // 构造函数
-//        sol::constructors<Transform(GameObject*)>(),
-//
-//        // 成员变量
-//        "localPosition", &Transform::localPosition,
-//        "localRotation", &Transform::localRotation,
-//        "localScale", &Transform::localScale,
-//        "children", &Transform::children,
-//        "parent", &Transform::parent,
-//
-//        // 成员函数
-//        "getWorldPosition", &Transform::getWorldPosition,
-//        "getWorldRotation", &Transform::getWorldRotation,
-//        "getWorldScale", &Transform::getWorldScale,
-//        "translate", &Transform::translate
-//        );
-//
-//
-//}
