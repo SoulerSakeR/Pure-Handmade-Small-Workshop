@@ -40,7 +40,7 @@ std::string Script::get_name()
 void Script::set_name(const std::string& name)
 {
 	this->name = name;
-	onPropertyChange(properties["name"]);
+	onPropertyChanged(properties["name"]);
 }
 
 std::string Script::get_path()

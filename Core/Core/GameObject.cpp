@@ -212,7 +212,7 @@ Component* GameObject::addComponent(Component::ComponentType type)
     {
         result->gameObject = this;
         components.push_back(result);
-        result->onPropertyChange.registerFunc(&GameObject::onComponentPropertyChangedHandler, this);
+        result->onPropertyChanged.registerFunc(&GameObject::onComponentPropertyChangedHandler, this);
     }      
     return result;
 }

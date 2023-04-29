@@ -69,7 +69,7 @@ Vector2D Transform::getWorldScale()
 Transform* Transform::translate(Vector2D value)
 {
 	localPosition = localPosition + value;
-	onPropertyChange(properties["localPosition"]);
+	onPropertyChanged(properties["localPosition"]);
 	return this;
 }
 
@@ -77,7 +77,7 @@ Transform* Transform::translate1(float x, float y)
 {
 	localPosition.y = localPosition.y + y;
 	localPosition.x = localPosition.x + x;
-	onPropertyChange(properties["localPosition"]);
+	onPropertyChanged(properties["localPosition"]);
 	return this;
 }
 
@@ -101,7 +101,7 @@ void Transform::set_localPosition(Vector2D value)
 	if(localPosition == value)
 		return;
 	localPosition = value;
-	onPropertyChange(properties["localPosition"]);
+	onPropertyChanged(properties["localPosition"]);
 }
 
 void Transform::set_localRotation(float value)
@@ -109,7 +109,7 @@ void Transform::set_localRotation(float value)
 	if (localRotation == value)
 		return;
 	localRotation = value;
-	onPropertyChange(properties["localRotation"]);
+	onPropertyChanged(properties["localRotation"]);
 }
 
 void Transform::set_localScale(Vector2D value)
@@ -117,7 +117,7 @@ void Transform::set_localScale(Vector2D value)
 	if (localScale == value)
 		return;
 	localScale = value;
-	onPropertyChange(properties["localScale"]);
+	onPropertyChanged(properties["localScale"]);
 }
 
 

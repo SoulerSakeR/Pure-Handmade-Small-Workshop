@@ -10,13 +10,8 @@ void main(){
 //    FragColor = vec4(TexCord,0,1);
 
     vec4 texColor = texture(textureWall, TexCord);
-    if(texColor.a<=0.1)
-    {
-        FragColor = texColor;
-        discard;
-    }
-    vec4 finalColor = mix(texColor,ourColor,ourColor.a);
-    FragColor = finalColor;
+    //vec4 finalColor = mix(texColor,ourColor,ourColor.a);
+    FragColor = texColor*ourColor;
     //FragColor = vec4(ourColor,1.0);
 
 }

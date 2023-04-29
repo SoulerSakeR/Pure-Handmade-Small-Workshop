@@ -62,7 +62,7 @@ protected:
     int id; //唯一id
     std::string tag;
     std::string name;
-    Event<void, Property*> onPropertyChanged;
+    PHEvent<void, Property*> onPropertyChanged;
 };
 
 /// <summary>
@@ -84,7 +84,7 @@ inline T* GameObject::addComponent()
                 transform = (Transform*)result;
             result->gameObject = this;
             components.push_back(result);
-            result->onPropertyChange.registerFunc(&GameObject::onComponentPropertyChangedHandler, this);
+            result->onPropertyChanged.registerFunc(&GameObject::onComponentPropertyChangedHandler, this);
         }
         return result;
     }

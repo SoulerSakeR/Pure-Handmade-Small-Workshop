@@ -6,7 +6,7 @@
 #include <vector>
 #include "Property.h"
 #include <unordered_map>
-#include "Core/Utils/Event.h"
+#include "Core/Utils/PHEvent.h"
 
 class GameObject;
 
@@ -18,7 +18,7 @@ public:
 	enum ComponentType { UNKNOWN, TRANSFORM, IMAGE, CAMERA, SCRIPT, RIGID_BODY,BOX_COLLIDER,TEXT,RENDERER,SPINE_ANIMATOR};
 	typedef ComponentType customType;
 	static const int componentTypeCount = 9;
-	Event<void,Property*> onPropertyChange;
+	PHEvent<void,Property*> onPropertyChanged;
 	Component(GameObject* gameObj) {
 		gameObject = gameObj;
 		enabled = true;

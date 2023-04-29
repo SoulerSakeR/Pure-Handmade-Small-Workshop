@@ -76,7 +76,7 @@ public:
    bool set_img_path(const std::string& path);
 
    QOpenGLTexture* get_texture() const;
-   bool set_texture(const std::string& absolutePath);
+   bool set_texture(const std::string& absolutePath, bool horizontallyMirrored = false, bool vertically = true);
    bool set_texture(QOpenGLTexture* texture);
 
    int get_width() const;

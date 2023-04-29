@@ -5,7 +5,7 @@ using namespace std;
 void Component::set_enabled(bool value)
 {
 	enabled = value;
-	onPropertyChange(properties["enabled"]);
+	onPropertyChanged(properties["enabled"]);
 }
 
 void Component::set_property(Property* property, void* value)

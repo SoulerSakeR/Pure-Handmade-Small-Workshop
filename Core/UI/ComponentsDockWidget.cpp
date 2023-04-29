@@ -19,6 +19,7 @@
 #include "qlabel.h"
 #include "Core/Utils/Result.h"
 #include "PropertyEditor/ColorPaletteWidget.h"
+#include "Core/UI/PropertyEditor/AnimationComboBox.h"
 
 ComponentsDockWidget* ComponentsDockWidget::instance = nullptr;
 
@@ -94,14 +95,18 @@ void ComponentsDockWidget::onPropertyChanged(Property* property)
 		else if (property->type == Property::BOOL)
 		{
 			auto checkBox = (QCheckBox*)object;
-			checkBox->setCheckState((Qt::CheckState)(property->get_data<bool>()));
+			QMetaObject::invokeMethod(checkBox, "setCheckState", Qt::QueuedConnection, Q_ARG(Qt::CheckState, (Qt::CheckState)(property->get_data<bool>()?2:0)));
 		}
 		else if (property->type == Property::VECTOR2D)
 		{
 			auto lineEdit = (QLineEdit*)object;
 			auto str = property->get_data<Vector2D>().tostring();
 			QMetaObject::invokeMethod(lineEdit, "setTextSafe", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(str)));
-			//lineEdit->setText(QString::fromStdString(str));
+		}
+		else if (property->type == Property::ANIMATION_COMBOBOX)
+		{
+			auto comboBox = (AnimationComboBox*)object;			
+			QMetaObject::invokeMethod(comboBox, "setCurrentIndexNoSignal", Qt::QueuedConnection, Q_ARG(int, property->get_data<int>()));
 		}
 	}
 	else
@@ -157,7 +162,7 @@ void ComponentsDockWidget::refresh()
 	//setup components properties
 	for (auto component : selected_gameobject->components)
 	{
-		component->onPropertyChange.registerFunc(&ComponentsDockWidget::onPropertyChanged, this);
+		component->onPropertyChanged.registerFunc(&ComponentsDockWidget::onPropertyChanged, this);
 		auto groupBox = new ComponentGroupBox(this,component);
 		components_widget->layout()->addWidget(groupBox);		
 	}
@@ -224,7 +229,7 @@ void ComponentsDockWidget::onGameObjectSelected(GameObject* gameobj)
 	{
 		for (auto component : selected_gameobject->components)
 		{
-			component->onPropertyChange.unRegisterFunc(&ComponentsDockWidget::onPropertyChanged, this);
+			component->onPropertyChanged.unRegisterFunc(&ComponentsDockWidget::onPropertyChanged, this);
 		}
 	}
 	selected_gameobject = gameobj;

@@ -145,6 +145,11 @@ void RenderWidget::renderGameobject(GameObject* gameobj, Camera* camera)
 			renderText(text, camera, false);
 		}
 
+		if (auto target = gameobj->getComponent<SpineAnimator>();target != nullptr && target->get_enabled())
+		{
+			renderSpineAnimator(target, camera, false);
+		}
+
 	}
 
 	

@@ -24,6 +24,7 @@ public:
 	
 	QOpenGLBuffer* borderIbo;
 	std::vector<Vertex> operatorVertices;
+	std::vector<Vertex> borderVertices;
 	std::vector<unsigned int> borderIndices;
 protected:
 	// inherited from Component

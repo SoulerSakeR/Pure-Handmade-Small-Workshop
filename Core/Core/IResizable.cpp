@@ -60,7 +60,7 @@ void IBoxResizable::set_size(Vector2D newSize)
 	size = newSize;
 	IRenderable::reset();
 	updateVertices();
-	onPropertyChange(properties["size"]);
+	onPropertyChanged(properties["size"]);
 }
 
 void IBoxResizable::createBorderIndices()

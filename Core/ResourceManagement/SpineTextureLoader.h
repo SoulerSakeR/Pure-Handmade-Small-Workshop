@@ -24,7 +24,7 @@ public:
     virtual void load(AtlasPage& page, const String& path) {
         std::string path_str(path.buffer(),path.length());
         auto texture = Texture2D::loadFromImgPath(path_str);
-
+        texture->set_texture(path_str,false,false);
         // if texture loading failed, we simply return.
         if (texture==nullptr) 
             return;

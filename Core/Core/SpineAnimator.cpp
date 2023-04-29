@@ -9,6 +9,7 @@
 #include <spine/RegionAttachment.h>
 #include <spine/MeshAttachment.h>
 #include <spine/Vector.h>
+#include <spine/Animation.h>
 
 using namespace spine;
 
@@ -18,7 +19,7 @@ SpineAnimator::SpineAnimator(GameObject* gameobj): IRenderable(gameobj)
 {
 	componentType = ComponentType::SPINE_ANIMATOR;
 	properties.emplace("SpineAnimationName", new Property("SpineAnimationName", &spine_animation_name, Property::STRING, this));
-    createIndices();
+    properties.emplace("Animation", new Property("Animation", &animation_index, Property::ANIMATION_COMBOBOX, this));
 }
 
 bool SpineAnimator::set_spine_animation_name(const std::string& name)
@@ -26,21 +27,57 @@ bool SpineAnimator::set_spine_animation_name(const std::string& name)
 	auto animationdata = ResourceMgr::get_instance().loadFromName<SpineAnimationData>(name);
 	if (animationdata != nullptr)
 	{
+        reset();
 		spine_animation_name = name;
 		skeleton = new spine::Skeleton(animationdata->get_skeleton_data());
 		animation_state = new spine::AnimationState(animationdata->get_animation_state_data());
-        animation_state->setAnimation(0, "Relax", true);
-        animation_state->apply(*skeleton);
         skeleton->updateWorldTransform();
+        onPropertyChanged(properties["SpineAnimationName"]);
+        onPropertyChanged(properties["Animation"]);
 		return true;
 	}
 	return false;
+}
+
+std::vector<std::string> SpineAnimator::getAllAnimations()
+{
+    std::vector<std::string> animations;
+    if (skeleton != nullptr)
+    {
+        spine::Vector<spine::Animation*>& vec = skeleton->getData()->getAnimations();
+        for (int i = 0; i < vec.size(); i++)
+        {
+			animations.push_back(vec[i]->getName().buffer());
+		}
+	}
+	return animations;
 }
 
 void SpineAnimator::render(Camera* camera)
 {
     this->camera = camera;
     updateVertices();
+}
+
+Result<void*> SpineAnimator::setAnimation(int index,bool loop)
+{
+    if (animation_state != nullptr)
+    {
+        auto& animations = skeleton->getData()->getAnimations();
+        if (index < 0 || index >= animations.size())
+        {
+			return Result<void*>(false,"Invalid index : "+ std::to_string(index));
+		}
+		animation_state->setAnimation(0, animations[index], true);
+        animation_index = index;
+		return Result<void*>();
+	}
+    return Result<void*>(false,"Current animation state is null !");
+}
+
+Result<void*> SpineAnimator::setAnimation(const std::string& name, bool loop)
+{
+    return Result<void*>(); // TODO
 }
 
 void SpineAnimator::awake()
@@ -50,9 +87,6 @@ void SpineAnimator::awake()
 	{
 		skeleton = new spine::Skeleton(animationdata->get_skeleton_data());
 		animation_state =  new spine::AnimationState(animationdata->get_animation_state_data());
-        animation_state->setAnimation(0, "Relax", true);
-        animation_state->apply(*skeleton);
-        skeleton->updateWorldTransform();
 	}
 	else {
 		Debug::logWarning() << "SpineAnimator::awake: SpineAnimationData load failed! : " << spine_animation_name << "\n";
@@ -63,19 +97,19 @@ void SpineAnimator::afterUpdate()
 {
 	if (animation_state != nullptr && skeleton != nullptr)
 	{
-		animation_state->update(Time::deltaTime);
+		animation_state->update(Time::deltaTime/1000);
 		animation_state->apply(*skeleton);
 		skeleton->updateWorldTransform();
 	}
 }
 
 void SpineAnimator::updateVertices()
-{ 
-    vertices.clear();
-    indices.clear();
+{    
     spine::Vector<float> spine_vertices;
     // For each slot in the draw order array of the skeleton
     for (size_t i = 0, n = skeleton->getSlots().size(); i < n; ++i) {
+        vertices.clear();
+        indices.clear();
         Slot* slot = skeleton->getDrawOrder()[i];
 
         // Fetch the currently active attachment, continue
@@ -113,7 +147,7 @@ void SpineAnimator::updateVertices()
         Color skeletonColor = skeleton->getColor();
         Color slotColor = slot->getColor();
         Color tint(skeletonColor.r * slotColor.r, skeletonColor.g * slotColor.g, skeletonColor.b * slotColor.b, skeletonColor.a * slotColor.a);
-
+        Color attachmentColor;
         // Fill the vertices array, indices, and texture depending on the type of attachment
         Texture2D* texture = nullptr;
         if (attachment->getRTTI().isExactly(RegionAttachment::rtti)) {
@@ -129,8 +163,8 @@ void SpineAnimator::updateVertices()
             // bone to which the slot (and hence attachment) is attached has been calculated
             // before rendering via Skeleton::updateWorldTransform(). The vertex positions
             // will be written directoy into the vertices array, with a stride of sizeof(Vertex)
-            regionAttachment->computeWorldVertices(slot->getBone(), spine_vertices.buffer(), 0, sizeof(Vertex));
-
+            regionAttachment->computeWorldVertices(slot->getBone(), spine_vertices.buffer(), 0, 2);
+            attachmentColor = regionAttachment->getColor();
             // Our engine specific Texture is stored in the AtlasRegion which was
             // assigned to the attachment on load. It represents the texture atlas
             // page that contains the image the region attachment is mapped to.
@@ -138,11 +172,11 @@ void SpineAnimator::updateVertices()
 
             // copy color and UVs to the vertices
             for (size_t j = 0, l = 0; j < 4; j++, l += 2) {
-
+                vertices.push_back({ spine_vertices[l],spine_vertices[l + 1],0.f,regionAttachment->getUVs()[l],regionAttachment->getUVs()[l+1] });
             }
 
             // set the indices, 2 triangles forming a quad
-            //indices.push_back() = quadIndices;
+            indices = { 0, 1, 2, 2, 3, 0 };
         }
         else if (attachment->getRTTI().isExactly(MeshAttachment::rtti)) {
             // Cast to an MeshAttachment so we can get the rendererObject
@@ -158,8 +192,9 @@ void SpineAnimator::updateVertices()
             // before rendering via Skeleton::updateWorldTransform(). The vertex positions will
             // be written directly into the vertices array, with a stride of sizeof(Vertex)
             size_t numVertices = mesh->getWorldVerticesLength() / 2;
-            mesh->computeWorldVertices(*slot, 0, numVertices, spine_vertices.buffer(), 0, 2);
+            mesh->computeWorldVertices(*slot, 0, mesh->getWorldVerticesLength(), spine_vertices.buffer(), 0, 2);
             auto& index = mesh->getTriangles();
+            attachmentColor = mesh->getColor();
             // Our engine specific Texture is stored in the AtlasRegion which was
             // assigned to the attachment on load. It represents the texture atlas
             // page that contains the image the region attachment is mapped to.
@@ -167,7 +202,7 @@ void SpineAnimator::updateVertices()
 
             // Copy color and UVs to the vertices
             for (size_t j = 0, l = 0; j < numVertices; j++, l += 2) {
-                vertices.push_back({ spine_vertices[l],spine_vertices[l+1],0.f,mesh->getUVs()[0],mesh->getUVs()[1]});
+                vertices.push_back({ spine_vertices[l],spine_vertices[l+1],0.f,mesh->getUVs()[l],mesh->getUVs()[l+1]});
             }
 
 
@@ -177,7 +212,11 @@ void SpineAnimator::updateVertices()
 				indices.push_back(index[j]);
 			}
         }
-        
+        int r = (int)(tint.r * attachmentColor.r * 255);
+        int g = (int)(tint.g * attachmentColor.g * 255);
+        int b = (int)(tint.b * attachmentColor.b * 255);
+        int a = (int)(tint.a * attachmentColor.a * 255);
+        color = {r,g,b,a};
         // Draw the mesh we created for the attachment
         RenderWidget::getCurrentWidget().drawMesh(this,this->camera);
     }
@@ -187,6 +226,16 @@ void SpineAnimator::createIndices()
 {
     indices.clear();
     indices = { 0, 1, 2, 2, 3, 0 };
+}
+
+void SpineAnimator::reset()
+{
+    delete skeleton;
+    skeleton = nullptr;
+    delete animation_state;
+    animation_state = nullptr;
+    animation_index = 0;
+    spine_animation_name = "";
 }
 
 void SpineAnimator::serialize(PHString& str)
@@ -210,7 +259,11 @@ void SpineAnimator::set_property(Property* property, void* value)
 	{
 		set_spine_animation_name(*(std::string*)value);
 	}
-	else
+    else if (property->get_name() == "Animation")
+    {
+        setAnimation(*(int*)value,true);
+    }
+    else
 	{
 		IRenderable::set_property(property, value);
 	}

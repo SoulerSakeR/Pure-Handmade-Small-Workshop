@@ -32,7 +32,7 @@ const std::string& Text::get_text()
 void Text::set_text(const std::string& text)
 {
 	this->text = text;
-	onPropertyChange(properties["text"]);
+	onPropertyChanged(properties["text"]);
 }
 
 void Text::serialize(PHString& str)
