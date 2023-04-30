@@ -24,6 +24,9 @@ void SceneMgr::clear()
 	tagToGameObjects.clear();
 	nameToGameObjects.clear();
 	cameras.clear();
+	script_behaviours.clear();
+	delete current_scene;
+	current_scene = nullptr;
 }
 
 SceneMgr& SceneMgr::get_instance()
@@ -109,7 +112,7 @@ void SceneMgr::set_main_camera(Camera& camera)
 
 Scene* SceneMgr::loadScene(int index)
 {
-	clear();
+	exitScene();
 	auto scene = new Scene();
 	current_scene = scene;
 	Scene::loadFromPath(PHPath(GameEngine::get_instance().getGamePath()).combinePath(scenes[index]).getNewPath(),scene);	
@@ -118,11 +121,19 @@ Scene* SceneMgr::loadScene(int index)
 
 Scene* SceneMgr::loadScene(const std::string& path)
 {
-	clear();
+	exitScene();
 	PHPath p(path);
 	auto scene = Scene::loadFromPath(p.getNewPath());
 	current_scene = scene;
 	return scene;
+}
+
+void SceneMgr::exitScene()
+{
+	if (current_scene != nullptr)
+	{
+		clear();
+	}
 }
 
 void SceneMgr::tagToGameObjects_add(const std::string& tag, GameObject* gameObject)

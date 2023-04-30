@@ -1,8 +1,12 @@
-﻿#include "GameLoop.h"
+﻿#include "Core/Core/Script.h"
+#include "GameLoop.h"
 #include "Core/ResourceManagement/ResourceMgr.h"
 #include "Core/ResourceManagement/SceneMgr.h"
 #include "Core/Utils/Time.h"
 #include "Core/Physics/PhysicsEngine.h"
+
+#include "lib/sol/sol.hpp"
+
 
 
 using std::chrono::system_clock;
@@ -65,13 +69,52 @@ void GameLoop::printDataInfo(float deltaTime) {
         //输出数据信息-测试用
     }
 
-//加载所有游戏对象的所有挂载的脚本，并放入容器中
-void GameLoop::preloadScriptFiles(sol::state &lua) {
-    updateFunctions.clear();
-    for (Script* script : allScripts) {
-        lua.script_file(script->get_path());
-        updateFunctions[script->get_name()] = lua["update"];
-    }
+//加载所有游戏对象的所有挂载的脚本
+void GameLoop::preloadScriptFiles(sol::state& lua) {
+    auto& scripts = SceneMgr::get_instance().script_behaviours;
+    for (auto& script : scripts) {
+        if (auto s = dynamic_cast<Script*>(script))
+        {
+            s->lua = &lua;
+            s->lua->script_file(s->get_path());
+            auto classProxy = lua[s->get_name()];
+            if (classProxy.valid())
+            {
+                string index = "ptr" + std::to_string((size_t)s);
+                
+                lua.script(index + "=" + s->get_name() + ".new()");
+                auto instancesProxy = lua[index];
+                if (instancesProxy.valid())
+                {
+                    instancesProxy["gameObject"] = s->gameObject;
+                    s->sol_instance = index;
+                    sol::protected_function awake_func = instancesProxy["awake"];
+                    if (awake_func.valid())
+                        s->awake_func = new sol::protected_function(awake_func);
+                    sol::protected_function start_func = instancesProxy["start"];
+                    if (start_func.valid())
+                        s->start_func = new sol::protected_function(start_func);
+                    sol::protected_function beforeUpdate_func = instancesProxy["beforeUpdate"];
+                    if (beforeUpdate_func.valid())
+                        s->beforeUpdate_func = new sol::protected_function(beforeUpdate_func);
+                    sol::protected_function update_func = instancesProxy["update"];
+                    if (update_func.valid())
+                        s->update_func = new sol::protected_function(update_func);
+                    sol::protected_function afterUpdate_func = instancesProxy["afterUpdate"];
+                    if (afterUpdate_func.valid())
+                        s->afterUpdate_func = new sol::protected_function(afterUpdate_func);
+				}
+                else
+                {
+                    Debug::logError()<< "Can not create instance of " << s->get_name() << " at script : " <<s->get_path()<<"\n";
+                }
+            }
+            else
+            {
+                Debug::logError() << "Can not find class " << s->get_name() << " at script : " << s->get_path() << " , please make sure you implement it correctly . \n";
+            }
+        }
+	}
 }
 
 //更新游戏逻辑（指调用lua脚本的update函数）  东哥，你看这个函数应该放到什么地方？这个要循环调用
@@ -81,14 +124,6 @@ void GameLoop::updateScripts(float deltaTime, sol::state &lua) {
         for (Script* script : scripts) {
             std::string gameObjectName = gameObject->get_name();
             lua["this"] = gameObject;
-            auto result = updateFunctions[script->get_name()](deltaTime);
-
-            if (result.valid() == false) {
-                sol::error err = result;
-                std::cout << "----- RUN LUA ERROR ----" << std::endl;
-                std::cout << err.what() << std::endl;
-                std::cout << "------------------------" << std::endl;
-            }
 
         }
     }
@@ -106,7 +141,6 @@ void GameLoop::updateGame(RenderWidget* gameWidget,sol::state &lua,float deltaTi
         endtime = system_clock::now();
 
         //不clear的话会导致运行速度越来越慢，会导致东西越来越多
-        gameObjects.clear();
         allScripts.clear();
 
         // 测试用的duaration.count()
@@ -123,7 +157,7 @@ void GameLoop::updateGame(RenderWidget* gameWidget,sol::state &lua,float deltaTi
            
 
         //gameWidget->update();
-        preloadScriptFiles(lua);
+        //preloadScriptFiles();
         updateScripts(deltaTime, lua);
 
         endtime = system_clock::now();
@@ -167,13 +201,12 @@ void GameLoop::startGameLoop()
     physicsEngine->clear();
 
     //initialize lua
-    if (lua != nullptr)
-    {
+    if(lua!=nullptr)
 		delete lua;
-	}
-    lua = new sol::state();
-    lua->open_libraries(sol::lib::base);
+    lua = new sol::state;
+    lua->open_libraries(sol::lib::base ,sol::lib::package);
     bindAllClasses(*lua);
+    preloadScriptFiles(*lua);
 
     //call script function
     awake();
@@ -207,6 +240,7 @@ void GameLoop::startGameLoop()
         Time::deltaTime = end - start;
         deltaTime = Time::deltaTime - frameTime;
     }
+    SceneMgr::get_instance().exitScene();
     isClosed = true;
 }
 
@@ -232,124 +266,53 @@ void GameLoop::startRenderLoop()
         Time::deltaTime = end - start;
         deltaTime = Time::deltaTime - frameTime;
     }
+    SceneMgr::get_instance().exitScene();
     isClosed = true;
 }
 
 void GameLoop::awake()
 {
-    for (auto& pair : SceneMgr::get_instance().get_current_scene()->getAllGameObjs())
+    for (auto& script : SceneMgr::get_instance().script_behaviours)
     {
-        if (pair.second->isActive)
-            if (auto scripts = pair.second->getComponents<IScriptBehaviour>();scripts.size() > 0)
-            {
-                for (auto script : scripts)
-                {
-                    if (dynamic_cast<Component*>(script)->get_enabled())
-                    {
-                        if (auto s = dynamic_cast<Script*>(script);s != nullptr)
-                            s->lua = lua;
-                        script->awake();
-                    }
-                }
-            }
+        script->awake();
     }
 }
 
 void GameLoop::start()
 {
-    for (auto& pair : SceneMgr::get_instance().get_current_scene()->getAllGameObjs())
+    for (auto& script : SceneMgr::get_instance().script_behaviours)
     {
-        if(pair.second->isActive)
-        if (auto scripts = pair.second->getComponents<IScriptBehaviour>();scripts.size() > 0)
-        {
-            for (auto script : scripts)
-            {
-                if (dynamic_cast<Component*>(script)->get_enabled())
-                {
-                    if (auto s = dynamic_cast<Script*>(script);s != nullptr)
-                        s->lua = lua;
-                    script->start();
-                }
-            }
-        }
+        script->start();
     }
 }
 void GameLoop::onCollide(const std::vector<CollisonInfo>& collisionInfo)
 {
-    for (auto& pair : SceneMgr::get_instance().get_current_scene()->getAllGameObjs())
+    for (auto& script : SceneMgr::get_instance().script_behaviours)
     {
-        if (pair.second->isActive)
-            if (auto scripts = pair.second->getComponents<IScriptBehaviour>(); scripts.size() > 0)
-            {
-                for (auto script : scripts)
-                {
-                    if (dynamic_cast<Component*>(script)->get_enabled())
-                    {
-                        if (auto s = dynamic_cast<Script*>(script); s != nullptr)
-                            s->lua = lua;
-                        script->onCollide(collisionInfo);
-                    }
-                }
-            }
+        script->onCollide(collisionInfo);
     }
 }
 void GameLoop::beforeUpdate()
 {
-    for (auto& pair : SceneMgr::get_instance().get_current_scene()->getAllGameObjs())
+    for (auto& script : SceneMgr::get_instance().script_behaviours)
     {
-        if (pair.second->isActive)
-            if (auto scripts = pair.second->getComponents<IScriptBehaviour>();scripts.size() > 0)
-            {
-                for (auto script : scripts)
-                {
-                    if (dynamic_cast<Component*>(script)->get_enabled())
-                    {
-                        if(auto s = dynamic_cast<Script*>(script);s!=nullptr)
-                            s->lua = lua;
-                        script->beforeUpdate();
-                    }                       
-                }
-            }
+        script->beforeUpdate();
     }
 }
 
 void GameLoop::update()
 {
-    for (auto& pair : SceneMgr::get_instance().get_current_scene()->getAllGameObjs())
+    for (auto& script : SceneMgr::get_instance().script_behaviours)
     {
-        if (pair.second->isActive)
-            if (auto scripts = pair.second->getComponents<IScriptBehaviour>();scripts.size() > 0)
-            {
-                for (auto script : scripts)
-                {
-                    if (dynamic_cast<Component*>(script)->get_enabled())
-                    {
-                        if (auto s = dynamic_cast<Script*>(script);s != nullptr)
-                            s->lua = lua;
-                        script->update();
-                    }
-                }
-            }
+        script->update();
     }
 }
 
 void GameLoop::afterUpdate()
 {
-    for (auto& pair : SceneMgr::get_instance().get_current_scene()->getAllGameObjs())
+    for (auto& script : SceneMgr::get_instance().script_behaviours)
     {
-        if (pair.second->isActive)
-            if (auto scripts = pair.second->getComponents<IScriptBehaviour>();scripts.size() > 0)
-            {
-                for (auto script : scripts)
-                {
-                    if (dynamic_cast<Component*>(script)->get_enabled())
-                    {
-                        if (auto s = dynamic_cast<Script*>(script);s != nullptr)
-                            s->lua = lua;
-                        script->afterUpdate();
-                    }
-                }
-            }
+        script->afterUpdate();
     }
 }
 

@@ -4,6 +4,8 @@
 #include <Core/Render/renderwidget.h>
 #include "Core/Render/RenderSetting.h"
 
+class IScriptBehaviour;
+
 class SceneMgr
 {
 	friend class GameEngine;
@@ -32,6 +34,8 @@ public:
 	Scene* loadScene(int index);
 	Scene* loadScene(const std::string& name);
 
+	void exitScene();
+
 	void tagToGameObjects_add(const std::string& tag, GameObject* gameObject);
 	void tagToGameObjects_remove(const std::string& tag, GameObject* gameObject);
 
@@ -52,6 +56,10 @@ private:
 	std::vector<std::string> scenes;
 	std::unordered_map<std::string, std::vector<GameObject*>> nameToGameObjects;
 	std::unordered_map<std::string, std::vector<GameObject*>> tagToGameObjects;
+	std::vector<IScriptBehaviour*> script_behaviours;
 	RenderSetting* render_setting = nullptr;
+
+	friend class IScriptBehaviour;
+	friend class GameLoop;
 };
 

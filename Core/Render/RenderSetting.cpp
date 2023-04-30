@@ -9,6 +9,7 @@ RenderSetting::RenderSetting()
 	render_order_map = std::map<int, std::vector<GameObject*>>();
 	render_layers = std::map<int, std::string>();
 	is_changed = false;
+	target_frame_rate = 100.f;
 }
 
 void RenderSetting::serialize(PHString& str)

@@ -6,21 +6,19 @@
 #include <conio.h>
 #include <Windows.h>
 #include <Core/SystemStatus/GameEngine.h>
-#include "Core/Core/Script.h"
-#include "lib/sol/sol.hpp"
 #include "Core/CppcallLua/BindingLua.h"
 #include "Player.h"
 
 class RenderWidget;
+class Script;
 
 class GameLoop {
     friend class GameEngine;
 public:
     GameLoop() { 
-        lua = nullptr;
     }
     ~GameLoop() {
-        delete lua; 
+        delete lua;
     }
 
     //void gameLoop(GameProject* gamePrj);
@@ -61,7 +59,7 @@ public:
 
     void updateScripts(float deltaTime, sol::state &lua);
 
-    void preloadScriptFiles(sol::state &lua);
+    void preloadScriptFiles(sol::state& lua);
 
     void printDataInfo(float deltaTime);
         //输出数据信息-测试用
@@ -87,8 +85,7 @@ private:
    bool isRunning = true;
    
    bool isPlaying = false;
+   sol::state* lua = nullptr;
    std::vector<GameObject*> gameObjects;
    std::vector<Script*> allScripts;
-   sol::state* lua;
-   std::unordered_map<std::string, sol::protected_function> updateFunctions;
 };

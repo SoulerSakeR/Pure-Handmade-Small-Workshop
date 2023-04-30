@@ -6,6 +6,8 @@ struct CollisonInfo;
 class IScriptBehaviour 
 {
 public:
+	IScriptBehaviour();
+	virtual ~IScriptBehaviour();
 	typedef IScriptBehaviour customType;
 	// called when the object is created
 	virtual void awake() {};

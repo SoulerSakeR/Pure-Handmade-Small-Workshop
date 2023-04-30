@@ -50,7 +50,7 @@ private:
 	//need to serialize
 	std::map<int, std::string> render_layers;
 	Vector2D current_resolution;
-	float target_frame_rate = 60.f;
+	float target_frame_rate;
 
 
 	bool refresh_later = false;

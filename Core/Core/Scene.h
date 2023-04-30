@@ -19,7 +19,7 @@ public:
 
     //constructor
     Scene(std::string name="ExampleScene");
-
+    virtual ~Scene();
     //method
     Result<void*> renameGameObject(GameObject* gameObject, std::string newName);
     void insertGameObject(GameObject& value, GameObject* target=nullptr,InsertMode insertMode = INSIDE);
@@ -41,7 +41,6 @@ public:
 private:
     std::unordered_map<int,GameObject*> allGameObjsByID; //当前场景下所有的GameObject
     std::unordered_map<std::string, std::vector<GameObject*>> allGameObjsByName;
-    std::map<int, GameObject*> allGameObjsByDepth;
     std::vector<GameObject*> rootGameObjs; //当前场景下的根GameObject
     bool is_changed;
 

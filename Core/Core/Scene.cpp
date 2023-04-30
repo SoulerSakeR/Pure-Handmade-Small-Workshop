@@ -16,9 +16,16 @@ Scene::Scene(string name)
 	this->name = name;
 	allGameObjsByID = unordered_map<int,GameObject*>();
 	allGameObjsByName = unordered_map<std::string, std::vector<GameObject*>>();
-	allGameObjsByDepth = map<int, GameObject* >();
 	rootGameObjs = vector<GameObject*>();
 	is_changed = false;
+}
+
+Scene::~Scene()
+{
+	for (auto& gameobj : rootGameObjs)
+	{
+		delete gameobj;
+	}
 }
 
 Result<void*> Scene::renameGameObject(GameObject* gameObject, std::string newName)
@@ -197,8 +204,6 @@ void Scene::addGameObjectWithChildren(GameObject* newObject)
 {
 	is_changed = true;
 	allGameObjsByID.insert(pair<int, GameObject*>(newObject->getID(), newObject));
-	if(newObject->getComponent<Renderer>()!=nullptr)
-		allGameObjsByDepth[newObject->getComponent<Renderer>()->get_render_order()] = newObject;
 	auto it = allGameObjsByName.find(newObject->name);
 	if (it != allGameObjsByName.end())
 		it->second.push_back(newObject);
@@ -248,8 +253,6 @@ void Scene::removeGameObjectWithChildren(GameObject* gameObject)
 {
 	is_changed = true;
 	auto it = allGameObjsByName.find(gameObject->name);
-	if (gameObject->getComponent<Renderer>() != nullptr)
-		allGameObjsByDepth.erase(gameObject->getComponent<Renderer>()->get_render_order());
 	if (it != allGameObjsByName.end())
 	{
 		auto& vec = it->second;
@@ -318,10 +321,6 @@ const std::unordered_map<int, GameObject*> Scene::getAllGameObjs()
 const std::vector<GameObject*> Scene::getRootGameObjs()
 {
 	return rootGameObjs;
-}
-std::map<int, GameObject*>& Scene::getAllGameObjsByDepth()
-{
-	return allGameObjsByDepth;
 }
 
 

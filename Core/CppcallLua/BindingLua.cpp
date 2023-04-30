@@ -11,6 +11,7 @@
 #include "Core/Core/BoxCollider.h"
 #include "Core/Core/Renderer.h"
 #include "Core/Core/RigidBody.h"
+#include "Core/Core/Script.h"
 
 #include "Core/Utils/Vector2D.h"
 
@@ -199,8 +200,7 @@ void bindAllClasses(sol::state& lua) {
         sol::meta_function::subtraction, & Vector2D::operator-,
         sol::meta_function::multiplication, & Vector2D::operator*,
         sol::meta_function::division, & Vector2D::operator/,
-        sol::meta_function::equal_to, & Vector2D::operator==,
-        sol::meta_function::not_equal_to, & Vector2D::operator!=
+        sol::meta_function::equal_to, & Vector2D::operator==
         );
 }
 
