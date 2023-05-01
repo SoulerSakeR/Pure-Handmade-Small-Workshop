@@ -17,7 +17,7 @@ public:
 	spine::AnimationStateData* get_animation_state_data() const { return animation_state_data; }
 	std::string getTexturePath() const;
 
-	static SpineAnimationData* loadFromPath(const std::string& atlasAbsolutePath);
+	static SpineAnimationData* loadFromPath(const std::string& atlasAbsolutePath,bool copy = false);
 	static SpineAnimationData* loadFromName(const std::string& name);
 	static bool isExist(const std::string& name);
 

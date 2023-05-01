@@ -1,6 +1,7 @@
 #include "ResourceMgr.h"
 #include "Core/SystemStatus/GameEngine.h"
 #include "Core/FileIO/IO.h"
+#include "SceneMgr.h"
 
 ResourceMgr* ResourceMgr::instance = nullptr;
 
@@ -15,6 +16,16 @@ ResourceMgr& ResourceMgr::get_instance()
 Result<void*> ResourceMgr::initialize()
 {
 	return Result<void*>();
+}
+
+std::string ResourceMgr::getAssetDir() const
+{
+	return PHPath(GameEngine::get_instance().getGamePath()).combinePath(assetPath).getNewPath();
+}
+
+std::string ResourceMgr::getSpineDir() const
+{
+	return PHPath(GameEngine::get_instance().getGamePath()).combinePath(assetPath).combinePath(spinePath).getNewPath();
 }
 
 void ResourceMgr::loadAllAssets()
@@ -49,14 +60,24 @@ void ResourceMgr::loadAllAssets()
 
 void ResourceMgr::clear()
 {
+	auto vec = std::vector<Texture2D*>(texture_assets.size());
 	for (auto& texture : texture_assets)
 	{
-		delete texture.second;
+		vec.push_back(texture.second);
+	}
+	for (auto& texture : vec)
+	{
+		delete texture;
 	}
 	texture_assets.clear();
+	auto vec2 = std::vector<SpineAnimationData*>(spine_assets.size());
 	for (auto& spine : spine_assets)
 	{
-		delete spine.second;
+		vec2.push_back(spine.second);
+	}
+	for (auto& spine : vec2)
+	{
+		delete spine;
 	}
 	spine_assets.clear();
 }

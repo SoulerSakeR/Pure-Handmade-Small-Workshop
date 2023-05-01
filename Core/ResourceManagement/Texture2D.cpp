@@ -26,7 +26,7 @@ Texture2D::~Texture2D()
 	ResourceMgr::get_instance().texture_assets.erase(name);
 }
 
-Texture2D* Texture2D::loadFromPath(const std::string& absolutePath)
+Texture2D* Texture2D::loadFromPath(const std::string& absolutePath,bool copy)
 {	
 	if (auto res = IO::readText(QString::fromStdString(absolutePath)); !res.isNull())
 	{

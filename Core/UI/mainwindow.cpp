@@ -392,7 +392,21 @@ void MainWindow::onTreeviewRightClick(const QPoint& pos) {
         auto createMenu = menu.addMenu("Create");
         auto addSceneAction = createMenu->addAction("New Scene");
         auto addTextureAction = createMenu->addAction("New Texture2D");
-        auto importExistSceneAction = menu.addAction("Import Exist Scene");
+        auto importMenu = menu.addMenu("Import");
+        auto importExistSceneAction = importMenu->addAction("Import Exist Scene");
+        auto importSpineAction = importMenu->addAction("Import Spine Animation");
+        connect(importSpineAction, &QAction::triggered, [=]() {
+            QString FileAdress = QFileDialog::getOpenFileName(this, "Import Spine Animation", GameEngine::get_instance().getGamePath().c_str(), QString("Spine Animation File (*.atlas)"));// 可以重载第四个参数，意义是筛选文件类型  "(*.txt)"
+            if (FileAdress.isEmpty())
+            {
+                return;
+            }
+            else
+            {
+                ResourceMgr::get_instance().loadFromPath<SpineAnimationData>(FileAdress.toStdString(),false,true);
+                return;
+            }
+        });
         auto deleteSceneAction = menu.addAction("Delete Scene");
         auto reloadAssetAction = menu.addAction("Reload Asset");
         // 将QAction与槽函数绑定
@@ -495,7 +509,8 @@ void MainWindow::deleteScene()
 
 void MainWindow::reloadAsset()
 {
-    ResourceMgr::get_instance().loadAllAssets();
+    // TODO: BUG when reload asset, the texture2D ptr will be deleted but the component still use it
+    // ResourceMgr::get_instance().loadAllAssets();
 }
 
 void MainWindow::importScene()

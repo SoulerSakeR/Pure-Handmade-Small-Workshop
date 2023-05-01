@@ -14,13 +14,15 @@ public:
 	static ResourceMgr& get_instance();
 
 	Result<void*> initialize();
+	std::string getAssetDir() const;
+	std::string getSpineDir() const;
 	void loadAllAssets();
 	void clear();
 
 	Texture2D* CreatNewTexture2D(const std::string name, const std::string path);
 
 	template <typename T>
-	T* loadFromPath(const string& path,bool isRelativePath = true)
+	T* loadFromPath(const string& path,bool isRelativePath = true,bool copy = false)
 	{
 		if (has_type_member<T>::value)
 		{
@@ -34,7 +36,7 @@ public:
 			{
 				absolutePath = path;
 			}
-			T* resource = T::loadFromPath(absolutePath);
+			T* resource = T::loadFromPath(absolutePath,copy);
 			if(resource == nullptr)
 				Debug::logWarning() << "ResourceMgr::load: Resourece load failed! : " << absolutePath << "\n";
 			return resource;
@@ -79,6 +81,7 @@ private:
 	ResourceMgr(ResourceMgr&) = delete;             
 	void operator=(ResourceMgr) = delete;
 	const string assetPath ="\\Resources";
+	const string spinePath = "\\Spine";
 	static ResourceMgr* instance;
 	std::unordered_map<std::string,std::string> resourceNamePathMap;
 	std::unordered_map<std::string,Texture2D*> texture_assets;

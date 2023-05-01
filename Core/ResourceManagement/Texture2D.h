@@ -59,7 +59,7 @@ class Texture2D: public ISerializable
 {
 public:
    virtual ~Texture2D();
-   static Texture2D* loadFromPath(const std::string& absolutePath);
+   static Texture2D* loadFromPath(const std::string& absolutePath,bool copy = false);
    static Texture2D* CreateTexture2D(const std::string& name, const std::string& absolutePath, bool mipmap=true, int minification_filter=0, int magnification_filter=0, int wrap_mode = 0);
    static Texture2D* loadFromImgPath(const std::string& absolutePath);
    static Texture2D* loadFromName(const std::string& name);

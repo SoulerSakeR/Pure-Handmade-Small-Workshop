@@ -41,10 +41,12 @@ bool IO::createPathIfNotExists(const QString& directory) {
 
 bool IO::copy(QString srcPath,QString desPath)
 {
+    srcPath.replace("\\","/");
     desPath.replace("\\","/");
     int loc=srcPath.lastIndexOf("/");
     int cnt=srcPath.length();
     QString fileName=srcPath.right(cnt-loc-1);
+    desPath+="/";
     desPath+=fileName;
     if (srcPath == desPath){
         return true;
