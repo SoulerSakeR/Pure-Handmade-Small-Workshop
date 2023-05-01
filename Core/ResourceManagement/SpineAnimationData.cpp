@@ -29,6 +29,17 @@ SpineAnimationData::SpineAnimationData(const std::string& atlasAbsolutePath)
 	animation_state_data->setDefaultMix(0.5f);
 }
 
+std::string SpineAnimationData::getTexturePath() const
+{
+	auto object = atlas->getPages()[0]->getRendererObject();
+	if (object != nullptr)
+	{
+		auto texture2D = static_cast<Texture2D*>(object);
+		return texture2D->get_img_path();
+	}
+	return "";
+}
+
 SpineAnimationData* SpineAnimationData::loadFromPath(const std::string& atlasAbsolutePath)
 {
 	return new SpineAnimationData(atlasAbsolutePath);
@@ -46,6 +57,11 @@ SpineAnimationData* SpineAnimationData::loadFromName(const std::string& name)
 		Debug::logWarning() << "SpineAnimation with name " << name << " not exist\n";
 		return nullptr;
 	}
+}
+
+bool SpineAnimationData::isExist(const std::string& name)
+{
+	return ResourceMgr::get_instance().isSpineAnimationExist(name);
 }
 
 

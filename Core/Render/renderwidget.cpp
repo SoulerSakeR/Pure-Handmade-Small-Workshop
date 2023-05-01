@@ -701,11 +701,11 @@ void RenderWidget::renderCameraBorder(Camera* target, Camera* renderCamera, bool
 
 void RenderWidget::drawMesh(IRenderable* target, Camera* camera)
 {
-	auto vbo = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
-	vbo->setUsagePattern(QOpenGLBuffer::DynamicDraw);
+	auto vbo = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);	
 	vbo->create();
 	vbo->bind();	
 	vbo->allocate(target->vertices.data(), static_cast<int>(target->vertices.size() * sizeof(Vertex)));
+	vbo->setUsagePattern(QOpenGLBuffer::DynamicDraw);
 	auto ibo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
 	ibo->create();
 	ibo->bind();

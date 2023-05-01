@@ -20,7 +20,7 @@ SpineAnimator::SpineAnimator(GameObject* gameobj): IRenderable(gameobj)
 	componentType = ComponentType::SPINE_ANIMATOR;
     spine_animation_name = "None";
     properties["Color"]->is_visible = false;
-    auto spine_animation_name_property = new Property("Spine Animation Name", &spine_animation_name, Property::STRING, this);
+    auto spine_animation_name_property = new Property("Spine Animation Name", &spine_animation_name, Property::ANIMATION, this);
     spine_animation_name_property->set_property_func<string>(&SpineAnimator::get_spine_animation_name, &SpineAnimator::set_spine_animation_name, this);
     properties.emplace(spine_animation_name_property);
     animation_index = 0;
@@ -40,6 +40,13 @@ std::string SpineAnimator::get_spine_animation_name() const
 
 bool SpineAnimator::set_spine_animation_name(const std::string& name)
 {
+    if (name == "None")
+    {
+		reset();
+        onPropertyChanged(properties["Spine Animation Name"]);
+        onPropertyChanged(properties["Animation"]);
+		return true;
+	}
 	auto animationdata = ResourceMgr::get_instance().loadFromName<SpineAnimationData>(name);
 	if (animationdata != nullptr)
 	{
@@ -106,7 +113,7 @@ Result<void*> SpineAnimator::setAnimation(int index,bool loop)
         {
 			return Result<void*>(false,"Invalid index : "+ std::to_string(index));
 		}
-		animation_state->setAnimation(0, animations[index], true);
+		animation_state->setAnimation(0, animations[index], loop);
         animation_index = index;
 		return Result<void*>();
 	}
@@ -294,7 +301,7 @@ void SpineAnimator::reset()
     delete animation_state;
     animation_state = nullptr;
     animation_index = 0;
-    spine_animation_name = "";
+    spine_animation_name = "None";
 }
 
 void SpineAnimator::serialize(PHString& str)

@@ -15,9 +15,11 @@ public:
 	spine::Atlas* getAtlas() const { return atlas; }
 	spine::SkeletonData* get_skeleton_data() const { return skeleton_data; }
 	spine::AnimationStateData* get_animation_state_data() const { return animation_state_data; }
+	std::string getTexturePath() const;
 
 	static SpineAnimationData* loadFromPath(const std::string& atlasAbsolutePath);
 	static SpineAnimationData* loadFromName(const std::string& name);
+	static bool isExist(const std::string& name);
 
 	std::string get_name() const { return name; }
 

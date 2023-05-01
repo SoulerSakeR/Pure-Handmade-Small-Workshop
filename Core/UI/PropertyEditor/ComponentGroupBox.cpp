@@ -12,6 +12,7 @@
 #include "TextureSelectorWidget.h"
 #include "Core/ResourceManagement/SceneMgr.h"
 #include "AnimationComboBox.h"
+#include "SpineAnimationSelectorWidget.h"
 
 ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGroupBox(parent), component(component)
 {
@@ -87,7 +88,7 @@ ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGr
 		{
 			auto lineEdit = new Vector2DLineEdit();
 			lineEdit->setText(QString::fromStdString(property->get_data<Vector2D>().tostring()));
-			lineEdit->setReadOnly(!property->is_editable);
+			lineEdit->setDisabled(!property->is_editable);
 			layout->addWidget(lineEdit, row, 1);
 			widget->Object_Property_map[lineEdit] = property;
 			widget->property_Object_map[property] = lineEdit;
@@ -149,6 +150,14 @@ ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGr
 			connect(comboBox, &QComboBox::currentIndexChanged, [=](int index) {
 				property->set_data<int>(index);
 			});
+			break;
+		}
+		case Property::ANIMATION:
+		{
+			auto spine = new SpineAnimationSelectorWidget(this, property);
+			layout->addWidget(spine, row, 1);
+			widget->Object_Property_map[spine] = property;
+			widget->property_Object_map[property] = spine;
 			break;
 		}
 		}

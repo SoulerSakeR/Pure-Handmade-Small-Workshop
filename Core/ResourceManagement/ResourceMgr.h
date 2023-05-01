@@ -56,6 +56,14 @@ public:
 		return false;
 	}
 
+	bool isSpineAnimationExist(const string& name)
+	{
+		auto it = spine_assets.find(name);
+		if (it != spine_assets.end())
+			return true;
+		return false;
+	}
+
 	template <typename T>
 	T* loadFromName(const string& name)
 	{
@@ -80,5 +88,6 @@ private:
 	friend class Texture2D;
 	friend class SpineAnimationData;
 	friend class TextureSelectorDialog;
+	friend class AnimationSelectorDialog;
 };
 
