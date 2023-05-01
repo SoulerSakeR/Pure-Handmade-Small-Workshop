@@ -10,6 +10,7 @@
 #include <spine/MeshAttachment.h>
 #include <spine/Vector.h>
 #include <spine/Animation.h>
+#include <spine/Skin.h>
 
 using namespace spine;
 
@@ -27,6 +28,10 @@ SpineAnimator::SpineAnimator(GameObject* gameobj): IRenderable(gameobj)
     auto animation_property = new Property("Animation", &animation_index, Property::ANIMATION_COMBOBOX, this);
     animation_property->set_property_func<int>(&SpineAnimator::get_animation_index, &SpineAnimator::set_animation_index, this);
     properties.emplace(animation_property);
+    skin_index = 0;
+    auto skin_property = new Property("Skin", &skin_index, Property::SKIN_COMBOBOX, this);
+    skin_property->set_property_func<int>(&SpineAnimator::get_skin_index, &SpineAnimator::set_skin_index, this);
+    properties.emplace(skin_property);
     loop = true;
     auto loop_property = new Property("Loop", &loop, Property::BOOL, this);
     loop_property->set_property_func<bool>(&SpineAnimator::get_loop, &SpineAnimator::set_loop, this);
@@ -57,6 +62,7 @@ bool SpineAnimator::set_spine_animation_name(const std::string& name)
         skeleton->updateWorldTransform();
         onPropertyChanged(properties["Spine Animation Name"]);
         onPropertyChanged(properties["Animation"]);
+        onPropertyChanged(properties["Skin"]);
 		return true;
 	}
 	return false;
@@ -71,6 +77,28 @@ void SpineAnimator::set_animation_index(int index)
 {
     setAnimation(index, loop);
     onPropertyChanged(properties["Animation"]);
+}
+
+int SpineAnimator::get_skin_index() const
+{
+    return skin_index;
+}
+
+void SpineAnimator::set_skin_index(int index)
+{
+    if (skeleton != nullptr)
+    {
+		auto& skins = skeleton->getData()->getSkins();
+        if (index < 0 || index >= skins.size())
+        {
+			return;
+		}
+		skeleton->setSkin(skins[index]);
+		skeleton->setSlotsToSetupPose();
+		skeleton->updateWorldTransform();
+		skin_index = index;
+        onPropertyChanged(properties["Skin"]);
+	}	
 }
 
 bool SpineAnimator::get_loop() const
@@ -96,6 +124,20 @@ std::vector<std::string> SpineAnimator::getAllAnimations()
 		}
 	}
 	return animations;
+}
+
+std::vector<std::string> SpineAnimator::getAllSkins()
+{
+    std::vector<std::string> skins;
+    if (skeleton != nullptr)
+    {
+		spine::Vector<spine::Skin*>& vec = skeleton->getData()->getSkins();
+        for (int i = 0; i < vec.size(); i++)
+        {
+            skins.push_back(vec[i]->getName().buffer());
+        }
+    }
+    return skins;
 }
 
 void SpineAnimator::render(Camera* camera)

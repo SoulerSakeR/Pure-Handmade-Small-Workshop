@@ -20,6 +20,7 @@
 #include "Core/Utils/Result.h"
 #include "PropertyEditor/ColorPaletteWidget.h"
 #include "Core/UI/PropertyEditor/AnimationComboBox.h"
+#include "Core/UI/PropertyEditor/SkinComboBox.h"
 #include "qtimer.h"
 
 ComponentsDockWidget* ComponentsDockWidget::instance = nullptr;
@@ -183,6 +184,12 @@ void ComponentsDockWidget::updatePropertyData(Property* property)
 			auto comboBox = (AnimationComboBox*)object;
 			comboBox->setCurrentIndexNoSignal(property->get_data<int>());
 		}
+		else if (property->type == Property::SKIN_COMBOBOX)
+		{
+			auto comboBox = (SkinComboBox*)object;
+			comboBox->setCurrentIndexNoSignal(property->get_data<int>());
+		}
+
 	}
 	else
 		Debug::logError("Property not found: " + property->get_name());

@@ -13,6 +13,7 @@
 #include "Core/ResourceManagement/SceneMgr.h"
 #include "AnimationComboBox.h"
 #include "SpineAnimationSelectorWidget.h"
+#include "SkinComboBox.h"
 
 ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGroupBox(parent), component(component)
 {
@@ -158,6 +159,19 @@ ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGr
 			layout->addWidget(spine, row, 1);
 			widget->Object_Property_map[spine] = property;
 			widget->property_Object_map[property] = spine;
+			break;
+		}
+		case Property::SKIN_COMBOBOX:
+		{
+			auto comboBox = new SkinComboBox(dynamic_cast<SpineAnimator*>(component), this);
+			comboBox->setCurrentIndex(property->get_data<int>());
+			comboBox->setDisabled(!property->is_editable);
+			layout->addWidget(comboBox, row, 1);
+			widget->Object_Property_map[comboBox] = property;
+			widget->property_Object_map[property] = comboBox;
+			connect(comboBox, &QComboBox::currentIndexChanged, [=](int index) {
+				property->set_data<int>(index);
+			});
 			break;
 		}
 		}

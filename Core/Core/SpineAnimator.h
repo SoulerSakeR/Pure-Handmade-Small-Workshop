@@ -14,20 +14,24 @@ public:
 	SpineAnimator(GameObject* gameobj);
 
 	// getters and setters
-	std::string get_spine_animation_name() const;
-	bool set_spine_animation_name(const std::string& name);
+	std::string get_spine_animation_name() const;											// 需要绑定
+	bool set_spine_animation_name(const std::string& name);						// 需要绑定
 
 	int get_animation_index() const;
 	void set_animation_index(int index);
 
+	int get_skin_index() const;
+	void set_skin_index(int index);
+
 	bool get_loop() const;
 	void set_loop(bool loop);
 
-	std::vector<std::string> getAllAnimations();
+	std::vector<std::string> getAllAnimations();                                               // 需要绑定
+	std::vector<std::string> getAllSkins();                                                     // 需要绑定
 
 	void render(Camera* camera);
-	Result<void*> setAnimation(int index,bool loop);
-	Result<void*> setAnimation(const std::string& name, bool loop);
+	Result<void*> setAnimation(int index,bool loop);                                     // 需要绑定
+	Result<void*> setAnimation(const std::string& name, bool loop);           // 需要绑定
 
 	// inherited via IScriptBehaviour
 	void awake() override;
@@ -45,6 +49,7 @@ public:
 private:
 	std::string spine_animation_name;
 	int animation_index;
+	int skin_index;
 	bool loop;
 	spine::AnimationState* animation_state = nullptr;
 	spine::Skeleton* skeleton = nullptr;

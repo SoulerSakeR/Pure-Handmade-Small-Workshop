@@ -24,6 +24,7 @@ public:
     void addScene();
     void addTexture();
     void deleteScene();  
+    void reloadAsset();
     void importScene();
     void showContextMenu(const QPoint&);
     void onTreeviewRightClick(const QPoint& pos);

@@ -9,12 +9,12 @@ class AnimationComboBox : public QComboBox
 public:
 	AnimationComboBox(SpineAnimator* animator, QWidget* parent = nullptr);
 
-	void updateItems();
+	virtual void updateItems();
 
 public slots:
 	void setCurrentIndexNoSignal(int index);
 
-private:
+protected:
 	SpineAnimator* animator;
 };
 

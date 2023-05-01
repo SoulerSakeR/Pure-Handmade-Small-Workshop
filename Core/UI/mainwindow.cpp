@@ -193,6 +193,24 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 点击播放
     connect(ui->pushButton, &QPushButton::clicked, [=]() {
+        if (GameEngine::get_instance().getCurrentGameProject() == nullptr)
+        {
+            Debug::warningBox(this, "No project is loaded!");
+            return;
+        }
+        if (GameEngine::get_instance().needToSave())
+        {
+            QMessageBox::StandardButton button;
+            button = QMessageBox::question(this, "Save", QString("Before playing game, you need to save the game project first !"), QMessageBox::Save | QMessageBox::Cancel, QMessageBox::Save);
+            if (button == QMessageBox::Save)
+            {
+                GameEngine::get_instance().saveGameProject();
+            }
+            else
+            {
+				return;
+            }
+        }
         GameEngine::get_instance().gameLoop->setPlayingStatus(true);
         GameEngine::get_instance().gameLoop->shutdown();
         ui->hierarchy->setCurrentItem(nullptr);
@@ -376,12 +394,14 @@ void MainWindow::onTreeviewRightClick(const QPoint& pos) {
         auto addTextureAction = createMenu->addAction("New Texture2D");
         auto importExistSceneAction = menu.addAction("Import Exist Scene");
         auto deleteSceneAction = menu.addAction("Delete Scene");
+        auto reloadAssetAction = menu.addAction("Reload Asset");
         // 将QAction与槽函数绑定
         connect(openAction, &QAction::triggered, this, &MainWindow::open);
         connect(addSceneAction, &QAction::triggered, this, &MainWindow::addScene);
         connect(addTextureAction, &QAction::triggered, this, &MainWindow::addTexture);
         connect(deleteSceneAction, &QAction::triggered, this, &MainWindow::deleteScene);
         connect(importExistSceneAction, &QAction::triggered, this, &MainWindow::importScene);
+        connect(reloadAssetAction, &QAction::triggered, this, &MainWindow::reloadAsset);
         menu.exec(ui->treeView->viewport()->mapToGlobal(pos));
     }
 }
@@ -471,6 +491,11 @@ void MainWindow::deleteScene()
     else {
         QMessageBox::information(nullptr, "Failed", "Failed to delete scene!");
     }
+}
+
+void MainWindow::reloadAsset()
+{
+    ResourceMgr::get_instance().loadAllAssets();
 }
 
 void MainWindow::importScene()
