@@ -20,6 +20,7 @@
 #include "Core/Utils/Result.h"
 #include "PropertyEditor/ColorPaletteWidget.h"
 #include "Core/UI/PropertyEditor/AnimationComboBox.h"
+#include "qtimer.h"
 
 ComponentsDockWidget* ComponentsDockWidget::instance = nullptr;
 
@@ -44,6 +45,10 @@ ComponentsDockWidget::ComponentsDockWidget(QWidget* parent) :QDockWidget(parent)
 	instance = this;
 	selected_gameobject = nullptr;
 	hierarchy = nullptr;
+	timer = new QTimer(this);
+	timer->setInterval(50);
+	timer->start();
+	connect(timer, &QTimer::timeout, this, &ComponentsDockWidget::onTimer);
 }
 
 void ComponentsDockWidget::set_components_widget(QWidget* widget)
@@ -74,43 +79,10 @@ GameObject* ComponentsDockWidget::get_selected_gameobject()
 
 void ComponentsDockWidget::onPropertyChanged(Property* property)
 {
-	if (property_Object_map.find(property) != property_Object_map.end())
-	{
-		auto object = property_Object_map[property];
-		if (property->type == Property::INT)
-		{
-			auto spinBox = (QSpinBox*)object;
-			spinBox->setValue(property->get_data<int>());
-		}
-		else if (property->type == Property::FLOAT)
-		{
-			auto doubleSpinBox = (QDoubleSpinBox*)object;
-			doubleSpinBox->setValue( property->get_data<float>());
-		}
-		else if (property->type == Property::STRING)
-		{
-			auto lineEdit = (QLineEdit*)object;
-			lineEdit->setText(QString::fromStdString(property->get_data<std::string>()));
-		}
-		else if (property->type == Property::BOOL)
-		{
-			auto checkBox = (QCheckBox*)object;
-			QMetaObject::invokeMethod(checkBox, "setCheckState", Qt::QueuedConnection, Q_ARG(Qt::CheckState, (Qt::CheckState)(property->get_data<bool>()?2:0)));
-		}
-		else if (property->type == Property::VECTOR2D)
-		{
-			auto lineEdit = (QLineEdit*)object;
-			auto str = property->get_data<Vector2D>().tostring();
-			QMetaObject::invokeMethod(lineEdit, "setTextSafe", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(str)));
-		}
-		else if (property->type == Property::ANIMATION_COMBOBOX)
-		{
-			auto comboBox = (AnimationComboBox*)object;			
-			QMetaObject::invokeMethod(comboBox, "setCurrentIndexNoSignal", Qt::QueuedConnection, Q_ARG(int, property->get_data<int>()));
-		}
-	}
+	if(!is_refreshing)
+		changed_properties_buffer1.push_back(property);
 	else
-		Debug::logError("Property not found: "+ property->get_name());
+		changed_properties_buffer2.push_back(property);
 }
 
 void ComponentsDockWidget::refresh()
@@ -124,7 +96,7 @@ void ComponentsDockWidget::refresh()
 	groupBox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
 	
 	auto layout = new QGridLayout(groupBox);
-	layout->addWidget(new QLabel("name"), 0, 0);
+	layout->addWidget(new QLabel("Name"), 0, 0);
 	auto lineEdit = new QLineEdit(selected_gameobject->get_name().c_str(), groupBox);
 	layout->addWidget(lineEdit,0,1);
 	connect(lineEdit, &QLineEdit::editingFinished, [=]()
@@ -141,15 +113,15 @@ void ComponentsDockWidget::refresh()
 			hierarchy->refreshGameObject();
 		}
 	});
-	layout->addWidget(new QLabel("is active"), 1, 0);
+	layout->addWidget(new QLabel("Is Active"), 1, 0);
 	auto checkBox = new QCheckBox(groupBox);
-	checkBox->setCheckState((Qt::CheckState)((selected_gameobject->isActive)?2:0));
+	checkBox->setCheckState((Qt::CheckState)((selected_gameobject->is_active())?2:0));
 	layout->addWidget(checkBox, 1, 1);
 	connect(checkBox, &QCheckBox::stateChanged, [=](int state)
 	{
-		selected_gameobject->isActive = (bool)state;
+		selected_gameobject->set_active(state==2);
 	});
-	layout->addWidget(new QLabel("tag"), 2, 0);
+	layout->addWidget(new QLabel("Tag"), 2, 0);
 	auto tagLineEdit = new QLineEdit(selected_gameobject->get_tag().c_str(), groupBox);
 	layout->addWidget(tagLineEdit, 2, 1);
 	connect(tagLineEdit, &QLineEdit::editingFinished, [=]()
@@ -170,56 +142,79 @@ void ComponentsDockWidget::refresh()
 	components_widget->layout()->addItem(new QSpacerItem(20, 40, QSizePolicy::Expanding, QSizePolicy::Expanding));
 }
 
+void ComponentsDockWidget::updatePropertyData(Property* property)
+{
+	if (property_Object_map.find(property) != property_Object_map.end())
+	{
+		auto object = property_Object_map[property];
+		if (property->type == Property::INT)
+		{
+			auto spinBox = (QSpinBox*)object;
+			QSignalBlocker block(spinBox);
+			spinBox->setValue(property->get_data<int>());
+		}
+		else if (property->type == Property::FLOAT)
+		{
+			auto doubleSpinBox = (QDoubleSpinBox*)object;
+			QSignalBlocker block(doubleSpinBox);
+			doubleSpinBox->setValue(property->get_data<float>());
+		}
+		else if (property->type == Property::STRING)
+		{
+			auto lineEdit = (QLineEdit*)object;
+			QSignalBlocker block(lineEdit);
+			lineEdit->setText(QString::fromStdString(property->get_data<std::string>()));
+		}
+		else if (property->type == Property::BOOL)
+		{
+			auto checkBox = (QCheckBox*)object;
+			QSignalBlocker block(checkBox);
+			checkBox->setCheckState((Qt::CheckState)(property->get_data<bool>() ? 2 : 0));
+		}
+		else if (property->type == Property::VECTOR2D)
+		{
+			auto lineEdit = (QLineEdit*)object;
+			auto str = property->get_data<Vector2D>().tostring();
+			QSignalBlocker block(lineEdit);
+			lineEdit->setText(str.c_str());
+		}
+		else if (property->type == Property::ANIMATION_COMBOBOX)
+		{
+			auto comboBox = (AnimationComboBox*)object;
+			comboBox->setCurrentIndexNoSignal(property->get_data<int>());
+		}
+	}
+	else
+		Debug::logError("Property not found: " + property->get_name());
+}
+
 void ComponentsDockWidget::onPropertyInputed(QObject*  sender, void* value)
 {
 	if (Object_Property_map.find(sender) != Object_Property_map.end())
 	{
 		auto property = Object_Property_map[sender];
-		property->get_component()->set_property(property, value);
+		//property->get_component()->set_property(property, value);
 	}
 	else
 		Debug::logError("Property not found: " + sender->objectName().toStdString());
 }
 
-void ComponentsDockWidget::onIntChanged(int value)
+void ComponentsDockWidget::onTimer()
 {
-	auto sender = QObject::sender();
-	onPropertyInputed(sender, &value);
+	is_refreshing = true;
+	for (auto property : changed_properties_buffer1)
+	{
+		updatePropertyData(property);
+	}
+	changed_properties_buffer1.clear();
+	is_refreshing = false;
+	for (auto property : changed_properties_buffer2)
+	{
+		updatePropertyData(property);
+	}
+	changed_properties_buffer2.clear();
 }
 
-void ComponentsDockWidget::onFloatChanged(double value)
-{
-	auto sender = QObject::sender();
-	float f = (float)value;
-	onPropertyInputed(sender, &f);
-}
-
-void ComponentsDockWidget::onStringChanged()
-{
-	auto sender = QObject::sender();
-	auto value = (QLineEdit*)sender;
-	auto text = value->text();
-	auto str = text.toStdString();
-	onPropertyInputed(sender, &str);
-}
-
-void ComponentsDockWidget::onBoolChanged(bool value)
-{
-	auto sender = QObject::sender();
-	onPropertyInputed(sender, &value);
-}
-
-void ComponentsDockWidget::onVector2DChanged(Vector2D vec)
-{
-	auto sender = QObject::sender();
-	onPropertyInputed(sender, &vec);
-}
-
-void ComponentsDockWidget::onColorChanged(Color32 value)
-{
-	auto sender = QObject::sender();
-	onPropertyInputed(sender, &value);
-}
 
 void ComponentsDockWidget::onGameObjectSelected(GameObject* gameobj)
 {
@@ -235,8 +230,7 @@ void ComponentsDockWidget::onGameObjectSelected(GameObject* gameobj)
 	selected_gameobject = gameobj;
 	refresh();
 	if (gameobj == nullptr)
-		return;
-	
+		return;	
 }
 
 

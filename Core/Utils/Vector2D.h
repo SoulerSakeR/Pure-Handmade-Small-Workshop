@@ -23,7 +23,7 @@ public:
 	static const Vector2D fromQString(const QString& src);
 
 	Vector2D& Scale(const Vector2D& scale);
-	std::string tostring();
+	std::string tostring() const;
 	std::string tostringInt();
 	QString toQString();
 	QString toQStringInt();

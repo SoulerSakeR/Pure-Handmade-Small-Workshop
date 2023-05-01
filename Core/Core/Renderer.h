@@ -7,8 +7,8 @@ class Renderer : public Component
 public:
 	Renderer(GameObject* gameObject);
 	~Renderer();
+
 	// Inherited via Component
-	void set_property(Property* property, void* value) override;
 	void reset() override;
 
 	// getters and setters
@@ -16,6 +16,7 @@ public:
 	//void set_render_order(int order);
 	int get_render_layer();
 	void set_render_layer(int layer);
+	void set_render_layer_index(int index);
 protected:
 	// Inherited via Component
 	void serialize(PHString&) override;

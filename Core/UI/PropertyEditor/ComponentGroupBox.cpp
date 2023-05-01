@@ -15,7 +15,7 @@
 
 ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGroupBox(parent), component(component)
 {
-	setTitle(Component::getName(component->componentType).c_str());
+	setTitle(Component::getTypeName(component->componentType).c_str());
 	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
 	auto layout = new QGridLayout(this);
 	int row = 0;
@@ -23,6 +23,8 @@ ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGr
 	for (auto it = component->properties.vbegin();it < component->properties.vend();++it)
 	{
 		auto property = *it;
+		if (!property->is_visible)
+			continue;
 		layout->addWidget(new QLabel(QString(property->get_name().c_str())),row, 0);
 		switch (property->type)
 		{
@@ -34,7 +36,8 @@ ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGr
 			layout->addWidget(spinbox, row, 1);
 			widget->Object_Property_map[spinbox] = property;
 			widget->property_Object_map[property] = spinbox;
-			connect(spinbox, &QSpinBox::valueChanged, widget, &ComponentsDockWidget::onIntChanged);
+			spinbox->setReadOnly(!property->is_editable);
+			connect(spinbox, &QSpinBox::valueChanged, widget, [=](int value) {property->set_data<int>(value);});
 			break;
 		}
 		case Property::FLOAT:
@@ -44,40 +47,53 @@ ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGr
 			spinbox->setDecimals(7);
 			spinbox->setRange(-FLT_MAX, FLT_MAX);
 			spinbox->setValue(property->get_data<float>());
+			spinbox->setReadOnly(!property->is_editable);
 			layout->addWidget(spinbox, row, 1);
 			widget->Object_Property_map[spinbox] = property;
 			widget->property_Object_map[property] = spinbox;
-			connect(spinbox, &QDoubleSpinBox::valueChanged, widget, &ComponentsDockWidget::onFloatChanged);
+			connect(spinbox, &QDoubleSpinBox::valueChanged, widget, [=](double value) {
+				property->set_data<float>((float)value);
+			});
 			break;
 		}
 		case Property::STRING:
 		{
 			auto lineEdit = new QLineEdit();
 			lineEdit->setText(QString::fromStdString(property->get_data<std::string>()));
+			lineEdit->setReadOnly( !property->is_editable);
 			layout->addWidget(lineEdit, row, 1);
 			widget->Object_Property_map[lineEdit] = property;
 			widget->property_Object_map[property] = lineEdit;
-			connect(lineEdit, &QLineEdit::editingFinished, widget, &ComponentsDockWidget::onStringChanged);
+			connect(lineEdit, &QLineEdit::editingFinished, [=]() {
+				auto str = lineEdit->text().toStdString();
+				property->set_data<std::string>(str);
+			});
 			break;
 		}
 		case Property::BOOL:
 		{
 			auto checkbox = new QCheckBox();
 			checkbox-> setCheckState((Qt::CheckState)((property->get_data<bool>()) ? 2 : 0));
+			checkbox->setDisabled(!property->is_editable);
 			layout->addWidget(checkbox, row, 1);
 			widget->Object_Property_map[checkbox] = property;
 			widget->property_Object_map[property] = checkbox;
-			connect(checkbox, &QCheckBox::stateChanged, widget, &ComponentsDockWidget::onIntChanged);
+			connect(checkbox, &QCheckBox::stateChanged, [=](int value) {
+				property->set_data<bool>(value == 2);
+			});
 			break;
 		}
 		case Property::VECTOR2D:
 		{
 			auto lineEdit = new Vector2DLineEdit();
 			lineEdit->setText(QString::fromStdString(property->get_data<Vector2D>().tostring()));
+			lineEdit->setReadOnly(!property->is_editable);
 			layout->addWidget(lineEdit, row, 1);
 			widget->Object_Property_map[lineEdit] = property;
 			widget->property_Object_map[property] = lineEdit;
-			connect(lineEdit, &Vector2DLineEdit::Vector2DChanged, widget, &ComponentsDockWidget::onVector2DChanged);
+			connect(lineEdit, &Vector2DLineEdit::Vector2DChanged, [=](Vector2D value) {
+				property->set_data<Vector2D>(value);
+			});
 			break;
 		}
 		case Property::COLOR:
@@ -87,7 +103,9 @@ ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGr
 			layout->addWidget(ColorPaletteWidegt, row, 1);
 			widget->Object_Property_map[ColorPaletteWidegt] = property;
 			widget->property_Object_map[property] = ColorPaletteWidegt;
-			connect(ColorPaletteWidegt, &ColorPaletteWidget::colorChanged, widget, &ComponentsDockWidget::onColorChanged);
+			connect(ColorPaletteWidegt, &ColorPaletteWidget::colorChanged, [=](Color32 color) {
+				property->set_data<Color32>(color);
+			});
 			break;
 		}
 		case Property::COMBO_BOX:
@@ -106,7 +124,10 @@ ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGr
 			layout->addWidget(comboBox, row, 1);
 			widget->Object_Property_map[comboBox] = property;
 			widget->property_Object_map[property] = comboBox;
-			connect(comboBox, &QComboBox::currentIndexChanged, widget, &ComponentsDockWidget::onIntChanged);
+			comboBox->setDisabled( !property->is_editable);
+			connect(comboBox, &QComboBox::currentIndexChanged, [=](int index) {
+				property->set_data<int>(index);
+			});
 			break;
 		}
 		case Property::TEXTURE2D:
@@ -121,10 +142,13 @@ ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGr
 		{
 			auto comboBox = new AnimationComboBox(dynamic_cast<SpineAnimator*>(component), this);
 			comboBox->setCurrentIndex(property->get_data<int>());
+			comboBox->setDisabled(!property->is_editable);
 			layout->addWidget(comboBox, row, 1);
 			widget->Object_Property_map[comboBox] = property;
 			widget->property_Object_map[property] = comboBox;
-			connect(comboBox, &QComboBox::currentIndexChanged, widget, &ComponentsDockWidget::onIntChanged);
+			connect(comboBox, &QComboBox::currentIndexChanged, [=](int index) {
+				property->set_data<int>(index);
+			});
 			break;
 		}
 		}

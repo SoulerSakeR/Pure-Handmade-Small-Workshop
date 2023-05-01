@@ -8,7 +8,9 @@ using namespace std;
 BoxCollider::BoxCollider(GameObject* gameObj):IBoxResizable(gameObj)
 {
 	componentType = BOX_COLLIDER;
-	properties.emplace("is trigger", new Property("is trigger", &is_trigger_, Property::VECTOR2D, this));
+	auto is_trigger = new Property("Is Trigger", &is_trigger_, Property::BOOL, this);
+	is_trigger->set_property_func<bool>(&BoxCollider::is_trigger, &BoxCollider::set_trigger,this);
+	properties.emplace(is_trigger);
 	PhysicsEngine::get_instance()->AddObject(gameObj);
 }
 
@@ -17,20 +19,18 @@ BoxCollider::~BoxCollider()
 	PhysicsEngine::get_instance()->RemoveObject(gameObject);
 }
 
+void BoxCollider::set_trigger(bool value)
+{
+	is_trigger_ = value;
+	onPropertyChanged(properties["Is Trigger"]);
+}
+
 
 void BoxCollider::reset()
 {
 	set_size(Vector2D(100, 100));
 }
 
-void BoxCollider::set_property(Property* property, void* value)
-{
-	IBoxResizable::set_property(property, value);
-	if (property->get_name() == "is trigger")
-	{
-		is_trigger_ = *(bool*)value;
-	}
-}
 
 
 void BoxCollider::serialize(PHString& str)

@@ -9,8 +9,12 @@ using namespace std;
 Script::Script(GameObject* gameObj, const std::string& name, const std::string& path):Component(gameObj),name(name),path(path)
 {
 	componentType = SCRIPT;
-	properties.emplace("name",new Property("name", &this->name,Property::STRING,this));
-	properties.emplace("path",new Property("path", &this->path,Property::STRING,this));
+	auto name_property = new Property("Name", &this->name, Property::STRING, this);
+	name_property->set_property_func<string>(&Script::get_name, &Script::set_name, this);
+	properties.emplace(name_property);
+	auto path_property = new Property("Path", &this->path, Property::STRING, this);
+	path_property->set_property_func<string>(&Script::get_path, &Script::set_path, this);
+	properties.emplace(path_property);
 	lua = nullptr;
 }
 
@@ -33,18 +37,6 @@ void Script::reset()
 	path = PHPath("");
 }
 
-void Script::set_property(Property* property, void* value)
-{
-	Component::set_property(property, value);
-	if (property->get_name() == "name")
-	{
-		name = (*(string*)value);
-	}
-	else if (property->get_name() == "path")
-	{
-		path = PHPath(*(string*)value);
-	}
-}
 
 std::string Script::get_name()
 {
@@ -54,7 +46,7 @@ std::string Script::get_name()
 void Script::set_name(const std::string& name)
 {
 	this->name = name;
-	onPropertyChanged(properties["name"]);
+	onPropertyChanged(properties["Name"]);
 }
 
 std::string Script::get_path()
@@ -65,6 +57,7 @@ std::string Script::get_path()
 void Script::set_path(const std::string& path)
 {
 	this->path = PHPath(path);
+	onPropertyChanged(properties["Path"]);
 }
 
 void Script::awake()
@@ -74,7 +67,7 @@ void Script::awake()
 		Debug::logError() <<"GameObjetc : " << gameObject->get_name() << ", Script : " << name << " at path : "<< path.getNewPath()<<" lua state is not initialized !\n";
 		return;
 	}
-	if (gameObject->isActive && get_enabled() && awake_func!=nullptr&&awake_func->valid())
+	if (gameObject->is_active() && get_enabled() && awake_func != nullptr && awake_func->valid())
 	{
 		auto result = (*awake_func)((*lua)[sol_instance]);
 		if (!result.valid())
@@ -93,7 +86,7 @@ void Script::start()
 		Debug::logError() << "GameObjetc : " << gameObject->get_name() << ", Script : " << name << " at path : " << path.getNewPath() << " lua state is not initialized !\n";
 		return;
 	}
-	if (gameObject->isActive && get_enabled() && start_func &&(*start_func).valid())
+	if (gameObject->is_active() && get_enabled() && start_func && (*start_func).valid())
 	{
 		auto result = (*start_func)((*lua)[sol_instance]);
 		if (!result.valid())
@@ -112,7 +105,7 @@ void Script::onCollide(const std::vector<CollisonInfo>& collisionInfo)
 		Debug::logError() << "GameObjetc : " << gameObject->get_name() << ", Script : " << name << " at path : " << path.getNewPath() << " lua state is not initialized !\n";
 		return;
 	}
-	if (gameObject->isActive && get_enabled() && onCollide_func &&(*onCollide_func).valid())
+	if (gameObject->is_active() && get_enabled() && onCollide_func && (*onCollide_func).valid())
 	{
 		auto result = (*onCollide_func)((*lua)[sol_instance]);
 		if (!result.valid())
@@ -131,7 +124,7 @@ void Script::beforeUpdate()
 		Debug::logError() << "GameObjetc : " << gameObject->get_name() << ", Script : " << name << " at path : " << path.getNewPath() << " lua state is not initialized !\n";
 		return;
 	}
-	if (gameObject->isActive && get_enabled() && beforeUpdate_func&& (*beforeUpdate_func).valid())
+	if (gameObject->is_active() && get_enabled() && beforeUpdate_func&& (*beforeUpdate_func).valid())
 	{
 		auto result = (*beforeUpdate_func)((*lua)[sol_instance]);
 		if (!result.valid())
@@ -150,7 +143,7 @@ void Script::update()
 		Debug::logError() << "GameObjetc : " << gameObject->get_name() << ", Script : " << name << " at path : " << path.getNewPath() << " lua state is not initialized !\n";
 		return;
 	}
-	if (gameObject->isActive && get_enabled() && update_func&& (*update_func).valid())
+	if (gameObject->is_active() && get_enabled() && update_func&& (*update_func).valid())
 	{
 		auto result = (*update_func)((*lua)[sol_instance]);
 		if (!result.valid())
@@ -169,7 +162,7 @@ void Script::afterUpdate()
 		Debug::logError() << "GameObjetc : " << gameObject->get_name() << ", Script : " << name << " at path : " << path.getNewPath() << " lua state is not initialized !\n";
 		return;
 	}
-	if (gameObject->isActive && get_enabled() && afterUpdate_func&& (*afterUpdate_func).valid())
+	if (gameObject->is_active() && get_enabled() && afterUpdate_func&& (*afterUpdate_func).valid())
 	{
 		auto result = (*afterUpdate_func)((*lua)[sol_instance]);
 		if (!result.valid())

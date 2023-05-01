@@ -9,8 +9,10 @@ IRenderable::IRenderable(GameObject* gameobj) : Component(gameobj)
 	ibo = nullptr;
 	vertices.clear();
 	indices.clear();
-	properties.emplace("color", new Property("color", &color, Property::COLOR, this));
-	color = Color32{ 255,255,255,255 };
+	this->color = Color32{ 255,255,255,255 };
+	auto color = new Property("Color", &this->color, Property::COLOR, this);
+	color->set_property_func<Color32>(&IRenderable::get_color, &IRenderable::set_color, this);
+	properties.emplace(color);	
 	texture2D = nullptr;
 }
 
@@ -54,14 +56,17 @@ QOpenGLTexture* IRenderable::get_texture()
 	return nullptr;
 }
 
-void IRenderable::set_property(Property* property, void* value)
+Color32 IRenderable::get_color()
 {
-	Component::set_property(property, value);
-	if (property->get_name() == "color")
-	{
-		color = *(Color32*)value;
-	}
+	return color;
 }
+
+void IRenderable::set_color(Color32 color)
+{
+	this->color = color;
+	onPropertyChanged(properties["Color"]);
+}
+
 
 void IRenderable::reset()
 {

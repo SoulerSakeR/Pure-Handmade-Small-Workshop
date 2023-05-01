@@ -4,6 +4,8 @@
 #include "HierarchyWidget.h"
 #include "Core/ResourceManagement/Texture2D.h"
 
+class QTimer;
+
 class ComponentsDockWidget :
     public QDockWidget
 {
@@ -18,18 +20,14 @@ public:
     GameObject* get_selected_gameobject();
     void onPropertyChanged(Property* property);
     void refresh();
+    void updatePropertyData(Property* property);
 
     HierarchyWidget* hierarchy;
 
 public slots:
     void onGameObjectSelected(GameObject* gameobj);
     void onPropertyInputed(QObject* sender,void* value);
-    void onIntChanged(int value);
-    void onFloatChanged(double value);
-    void onStringChanged();
-    void onBoolChanged(bool value);
-    void onVector2DChanged(Vector2D value);
-    void onColorChanged(Color32 value);
+    void onTimer();
 
 private:
     QWidget* components_widget;   
@@ -39,5 +37,9 @@ private:
     GameObject* selected_gameobject;
     Property* changed_property;
     void* changed_value;
+    QTimer* timer;
+    bool is_refreshing;
+    std::vector<Property*> changed_properties_buffer1;
+    std::vector<Property*> changed_properties_buffer2;
 };
 

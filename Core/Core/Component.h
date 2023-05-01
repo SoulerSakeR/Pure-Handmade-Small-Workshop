@@ -19,30 +19,17 @@ public:
 	typedef ComponentType customType;
 	static const int componentTypeCount = 9;
 	PHEvent<void,Property*> onPropertyChanged;
-	Component(GameObject* gameObj) {
-		gameObject = gameObj;
-		enabled = true;
-		componentType = UNKNOWN;
-		properties.emplace("enabled", new Property("enabled", &enabled, Property::BOOL, this));
-	};
-	virtual ~Component() {
-		gameObject = nullptr;
-		for (auto& property : properties)
-		{
-			delete property.second;
-		}
-	};
+	Component(GameObject* gameObj);
+	virtual ~Component();
 
 	virtual void set_enabled(bool value);		
-	virtual bool get_enabled() { return enabled; }
+	virtual bool get_enabled() { return enabled;}
 	virtual void reset() = 0;
-	virtual void set_property(Property* property, void* value);
 
-	static std::string getName(ComponentType type);
+	static std::string getTypeName(ComponentType type);
 	
 	GameObject* gameObject;
 	ComponentType componentType;
-	//std::unordered_map<std::string,Property*> properties;
 	PropertiesQueue<std::string, Property*> properties;
 
 protected:

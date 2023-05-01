@@ -18,7 +18,6 @@ public:
 
     //method    
     void reset() override; //重置
-    void set_property(Property* property, void* value) override; //设置属性
 
     Vector2D getWorldPosition(); //获取世界坐标位置 需要绑定
     float getWorldPositionX();//获取世界坐标位置X 需要绑定

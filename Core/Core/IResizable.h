@@ -7,8 +7,6 @@ class IBoxResizable : public IRenderable
 public:
 	IBoxResizable(GameObject* gameobj);
 	virtual ~IBoxResizable();
-	// inherited from Component
-	virtual void set_property(Property* property, void* value) override;
 
 	// inherited from IRenderable
 	virtual void updateVertices() override;

@@ -74,7 +74,7 @@ Vector2D& Vector2D::Scale(const Vector2D& scale)
 	return *this;
 }
 
-string Vector2D::tostring()
+string Vector2D::tostring() const
 {
 	string result = std::to_string(x);
 	result.append(",");

@@ -8,6 +8,7 @@ class SpineAnimationData
 {
 public:
 	SpineAnimationData(const std::string& atlasAbsolutePath);
+	// TODO : virtual ~SpineAnimationData();
 	typedef SpineAnimationData customType;
 
 	// getters

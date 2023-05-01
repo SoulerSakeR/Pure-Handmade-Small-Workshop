@@ -7,7 +7,9 @@ Renderer::Renderer(GameObject* gameObject):Component(gameObject)
 {
 	componentType = RENDERER;
 	render_layer = 0;
-	properties.emplace("render layer", new Property("render layer", &(this->render_layer), Property::COMBO_BOX, this));
+	auto renderLayer = new Property("Render Layer", &(this->render_layer), Property::COMBO_BOX, this);
+	renderLayer->set_property_func<int>(&Renderer::get_render_layer, &Renderer::set_render_layer_index,this);
+	properties.emplace(renderLayer);
 	if (auto& sceneMgr = SceneMgr::get_instance();sceneMgr.hasCurrentScene())
 	{
 		sceneMgr.registerRenderer(this);
@@ -19,29 +21,10 @@ Renderer::~Renderer()
 	SceneMgr::get_instance().get_render_setting()->unregisterRenderer(this);
 }
 
-void Renderer::set_property(Property* property, void* value)
-{
-	Component::set_property(property, value);
-	if (property->get_name() == "render layer")
-	{
-		int index = *(int*)value;
-		int i = 0;
-		for (auto& pair : SceneMgr::get_instance().get_render_setting()->render_layers)
-		{
-			if (i == index)
-			{
-				set_render_layer(pair.first);
-				return;
-			}
-			i++;
-		}
-		set_render_layer(index);
-	}
-}
 
 void Renderer::reset()
 {
-
+	set_render_layer_index(0);
 }
 
 int Renderer::get_render_order()
@@ -88,6 +71,22 @@ void Renderer::set_render_layer(int layer)
 	SceneMgr::get_instance().unregisterRenderer(this);
 	render_layer = layer;
 	SceneMgr::get_instance().registerRenderer(this);
+	onPropertyChanged(properties["Render Layer"]);
+}
+
+void Renderer::set_render_layer_index(int index)
+{
+	int i = 0;
+	for (auto& pair : SceneMgr::get_instance().get_render_setting()->render_layers)
+	{
+		if (i == index)
+		{
+			set_render_layer(pair.first);
+			return;
+		}
+		i++;
+	}
+	set_render_layer(index);
 }
 
 //void Renderer::set_render_order_directly(int order)

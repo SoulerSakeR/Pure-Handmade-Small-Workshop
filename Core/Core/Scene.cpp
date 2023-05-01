@@ -189,7 +189,7 @@ void Scene::insertExistGameObject(GameObject* gameObject, GameObject* target, In
 void Scene::addGameObject(GameObject *newObject)
 {
 	is_changed = true;
-	allGameObjsByID.insert(pair<int,GameObject*>(newObject->getID(), newObject));
+	allGameObjsByID.insert(pair<int,GameObject*>(newObject->get_id(), newObject));
 	auto it = allGameObjsByName.find(newObject->name);
 	if (it != allGameObjsByName.end())
 		it->second.push_back(newObject);
@@ -203,7 +203,7 @@ void Scene::addGameObject(GameObject *newObject)
 void Scene::addGameObjectWithChildren(GameObject* newObject)
 {
 	is_changed = true;
-	allGameObjsByID.insert(pair<int, GameObject*>(newObject->getID(), newObject));
+	allGameObjsByID.insert(pair<int, GameObject*>(newObject->get_id(), newObject));
 	auto it = allGameObjsByName.find(newObject->name);
 	if (it != allGameObjsByName.end())
 		it->second.push_back(newObject);
@@ -263,7 +263,7 @@ void Scene::removeGameObjectWithChildren(GameObject* gameObject)
 				break;
 			}				
 	}		
-	allGameObjsByID.erase(gameObject->getID());
+	allGameObjsByID.erase(gameObject->get_id());
 	for (auto t : gameObject->transform->children)
 		removeGameObjectWithChildren(t->gameObject);
 }

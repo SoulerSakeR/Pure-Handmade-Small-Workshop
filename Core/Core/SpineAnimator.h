@@ -14,8 +14,14 @@ public:
 	SpineAnimator(GameObject* gameobj);
 
 	// getters and setters
-	std::string get_spine_animation_name() const { return spine_animation_name; }
+	std::string get_spine_animation_name() const;
 	bool set_spine_animation_name(const std::string& name);
+
+	int get_animation_index() const;
+	void set_animation_index(int index);
+
+	bool get_loop() const;
+	void set_loop(bool loop);
 
 	std::vector<std::string> getAllAnimations();
 
@@ -35,11 +41,11 @@ public:
 	virtual void reset() override;
 	virtual void serialize(PHString& str) override;
 	virtual void deserialize(std::stringstream& ss) override;
-	virtual void set_property(Property* property, void* value) override;
 
 private:
 	std::string spine_animation_name;
-	int animation_index = 0;
+	int animation_index;
+	bool loop;
 	spine::AnimationState* animation_state = nullptr;
 	spine::Skeleton* skeleton = nullptr;
 	Camera* camera = nullptr;

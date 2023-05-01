@@ -35,7 +35,7 @@ void TextureSelectorWidget::onButtonClicked()
 	if (dialog.exec() == QDialog::Accepted)
 	{
 		auto textureName = dialog.getSelectedTextureName();
-		property->get_component()->set_property(property, &textureName);
+		property->set_data<std::string>(textureName);
 		textureLabel->setText(QString::fromStdString(textureName));
 	}
 }

@@ -149,7 +149,7 @@ void GameLoop::updateGame(RenderWidget* gameWidget,sol::state &lua,float deltaTi
         for (auto &gameObj : GameEngine::get_instance().getCurrentScene()->getAllGameObjs()) {
             if (auto script = gameObj.second->getComponent<Script>(); script != nullptr && 
                 !script->get_path().empty() && script->get_enabled() && 
-                gameObj.second->isActive) {
+                gameObj.second->is_active()) {
              gameObjects.push_back(gameObj.second);
             allScripts.push_back(script);
             }

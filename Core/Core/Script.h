@@ -41,7 +41,6 @@ public:
 protected:
     void serialize(PHString& str) override;
 	void deserialize(std::stringstream& ss) override;
-    void set_property(Property* property, void* value) override;
 
     std::string name;
     PHPath path;

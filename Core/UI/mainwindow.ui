@@ -200,7 +200,7 @@
     <bool>true</bool>
    </property>
    <property name="windowTitle">
-    <string>Components</string>
+    <string>Property Editor</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>

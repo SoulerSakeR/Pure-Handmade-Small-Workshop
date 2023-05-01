@@ -31,7 +31,6 @@ public:
     bool isChanged() const { return is_changed; }
     const std::unordered_map<int, GameObject*> getAllGameObjs();
     const std::vector<GameObject*> getRootGameObjs();
-    std::map<int, GameObject*>& getAllGameObjsByDepth();
     static Scene* loadFromPath(std::string path,Scene* scene = nullptr);
 
     // inherited via ISerializable

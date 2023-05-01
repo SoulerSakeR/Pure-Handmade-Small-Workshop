@@ -6,7 +6,10 @@ using namespace std;
 IBoxResizable::IBoxResizable(GameObject* gameobj):IRenderable(gameobj)
 {	
 	borderIbo = nullptr;
-	properties.emplace("size", new Property("size", &(this->size), Property::VECTOR2D, this));
+	Vector2D size = Vector2D(100, 100);	
+	auto size_property = new Property("Size", &size, Property::VECTOR2D, this);
+	size_property->set_property_func<Vector2D>(&IBoxResizable::get_size, &IBoxResizable::set_size, this);
+	properties.emplace(size_property);
 	set_size(Vector2D(100, 100));
 	createIndices();
 	createBorderIndices();
@@ -20,14 +23,6 @@ IBoxResizable::~IBoxResizable()
 	borderIbo = nullptr;
 }
 
-void IBoxResizable::set_property(Property* property, void* value)
-{
-	IRenderable::set_property(property, value);
-	if (property->get_name() == "size")
-	{
-		set_size(*(Vector2D*)value);
-	}
-}
 
 void IBoxResizable::updateVertices()
 {
@@ -60,7 +55,7 @@ void IBoxResizable::set_size(Vector2D newSize)
 	size = newSize;
 	IRenderable::reset();
 	updateVertices();
-	onPropertyChanged(properties["size"]);
+	onPropertyChanged(properties["Size"]);
 }
 
 void IBoxResizable::createBorderIndices()

@@ -70,7 +70,7 @@ MainWindow::MainWindow(QWidget *parent)
     // 根据组件类型动态生成组件按钮
     for (int i = 1;i < Component::componentTypeCount + 1;++i)
     {
-        auto action = new QAction(QString::fromStdString(Component::getName((Component::ComponentType)i)),this);
+        auto action = new QAction(QString::fromStdString(Component::getTypeName((Component::ComponentType)i)),this);
         ui->menu_component->addAction(action);
         connect(action, &QAction::triggered, [=]() {
             if (ui->hierarchy->selectedGameObject != nullptr)
@@ -195,6 +195,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pushButton, &QPushButton::clicked, [=]() {
         GameEngine::get_instance().gameLoop->setPlayingStatus(true);
         GameEngine::get_instance().gameLoop->shutdown();
+        ui->hierarchy->setCurrentItem(nullptr);
         while (!GameEngine::get_instance().gameLoop->isClosed || RenderWidget::getCurrentWidget().isRendering)
         {
             // 等待Loop关闭
@@ -209,6 +210,7 @@ MainWindow::MainWindow(QWidget *parent)
     // 点击停止
     connect(ui->pushButton_2, &QPushButton::clicked, [=]() {
         GameEngine::get_instance().gameLoop->shutdown();
+        ui->hierarchy->setCurrentItem(nullptr);
         while (!GameEngine::get_instance().gameLoop->isClosed || RenderWidget::getCurrentWidget().isRendering)
         {
             // 等待Loop关闭

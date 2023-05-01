@@ -71,13 +71,13 @@ void bindAllClasses(sol::state& lua) {
         sol::constructors<GameObject(std::string, bool)>(),
 
         // 属性
-        "isActive", &GameObject::isActive,
+        "isActive", sol::property(&GameObject::is_active, &GameObject::set_active),
         "name", sol::property(&GameObject::get_name, &GameObject::set_name),
         "tag", sol::property(&GameObject::get_tag, &GameObject::set_tag),
         "transform", &GameObject::transform,
 
         // 方法
-        "getID", &GameObject::getID,
+        "getID", &GameObject::get_id,
         "addComponent", sol::overload(
             [](GameObject& obj, Component::ComponentType type) { return obj.addComponent(type); },
             [](GameObject& obj) { return obj.template addComponent<Transform>(); },
@@ -135,7 +135,6 @@ void bindAllClasses(sol::state& lua) {
 
         // 方法
         "reset", &Transform::reset,
-        "set_property", &Transform::set_property,
         "getWorldPosition", &Transform::getWorldPosition,
         "getWorldPositionX", & Transform::getWorldPositionX,
         "getWorldPositionY", & Transform::getWorldPositionY,
@@ -154,8 +153,7 @@ void bindAllClasses(sol::state& lua) {
         "text", sol::property(&Text::get_text, &Text::set_text),
 
         // 方法
-        "reset", & Text::reset,
-        "set_property", & Text::set_property);
+        "reset", & Text::reset);
 
 
     //RigidBody

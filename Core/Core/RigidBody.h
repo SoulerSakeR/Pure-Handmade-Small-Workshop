@@ -19,7 +19,6 @@ public:
 	void set_friction_ratio(float value);
 	
 	void reset() override;
-	void set_property(Property * property, void* value) override;
 
 private:
 	void serialize(PHString& str) override;

@@ -13,20 +13,22 @@ class GameObject :
     friend class Scene;
 public:
     //field
-    bool isActive; //当前游戏对象的激活状态 需要绑定
     Transform* transform; //游戏对象的transform组件 需要绑定
     std::vector<Component*> components; //游戏对象的所有组件
     //constructor
     GameObject(std::string name="",bool withTransform=true);   
 
     //getters and setters
-    int getID();                                                                                            //需要绑定
+    int get_id();                                                                                            //需要绑定
 
     std::string get_tag();                                                                             //需要绑定
     void set_tag(const std::string& tag);                                                    //需要绑定
 
     std::string get_name();                                                                         //需要绑定
     Result<void*> set_name(const std::string& name);                            //需要绑定
+
+    bool is_active() const;																			 //需要绑定
+    void set_active(bool value);																 //需要绑定
 
     //methods
     Component* addComponent(Component::ComponentType type);   
@@ -60,8 +62,10 @@ protected:
 
     static int idCount; //id计数器
     int id; //唯一id
+    bool is_active_; 
     std::string tag;
     std::string name;
+    PropertiesQueue<std::string,Property*> properties;
     PHEvent<void, Property*> onPropertyChanged;
 };
 

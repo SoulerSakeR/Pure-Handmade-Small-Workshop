@@ -18,8 +18,24 @@ unsigned short quadIndices[] = { 0, 1, 2, 2, 3, 0 };
 SpineAnimator::SpineAnimator(GameObject* gameobj): IRenderable(gameobj)
 {
 	componentType = ComponentType::SPINE_ANIMATOR;
-	properties.emplace("SpineAnimationName", new Property("SpineAnimationName", &spine_animation_name, Property::STRING, this));
-    properties.emplace("Animation", new Property("Animation", &animation_index, Property::ANIMATION_COMBOBOX, this));
+    spine_animation_name = "None";
+    properties["Color"]->is_visible = false;
+    auto spine_animation_name_property = new Property("Spine Animation Name", &spine_animation_name, Property::STRING, this);
+    spine_animation_name_property->set_property_func<string>(&SpineAnimator::get_spine_animation_name, &SpineAnimator::set_spine_animation_name, this);
+    properties.emplace(spine_animation_name_property);
+    animation_index = 0;
+    auto animation_property = new Property("Animation", &animation_index, Property::ANIMATION_COMBOBOX, this);
+    animation_property->set_property_func<int>(&SpineAnimator::get_animation_index, &SpineAnimator::set_animation_index, this);
+    properties.emplace(animation_property);
+    loop = true;
+    auto loop_property = new Property("Loop", &loop, Property::BOOL, this);
+    loop_property->set_property_func<bool>(&SpineAnimator::get_loop, &SpineAnimator::set_loop, this);
+    properties.emplace(loop_property);
+}
+
+std::string SpineAnimator::get_spine_animation_name() const
+{
+    return spine_animation_name;
 }
 
 bool SpineAnimator::set_spine_animation_name(const std::string& name)
@@ -32,11 +48,33 @@ bool SpineAnimator::set_spine_animation_name(const std::string& name)
 		skeleton = new spine::Skeleton(animationdata->get_skeleton_data());
 		animation_state = new spine::AnimationState(animationdata->get_animation_state_data());
         skeleton->updateWorldTransform();
-        onPropertyChanged(properties["SpineAnimationName"]);
+        onPropertyChanged(properties["Spine Animation Name"]);
         onPropertyChanged(properties["Animation"]);
 		return true;
 	}
 	return false;
+}
+
+int SpineAnimator::get_animation_index() const
+{
+    return animation_index;
+}
+
+void SpineAnimator::set_animation_index(int index)
+{
+    setAnimation(index, loop);
+    onPropertyChanged(properties["Animation"]);
+}
+
+bool SpineAnimator::get_loop() const
+{
+    return loop;
+}
+
+void SpineAnimator::set_loop(bool loop)
+{
+    this->loop = loop;
+    onPropertyChanged(properties["Loop"]);
 }
 
 std::vector<std::string> SpineAnimator::getAllAnimations()
@@ -77,7 +115,17 @@ Result<void*> SpineAnimator::setAnimation(int index,bool loop)
 
 Result<void*> SpineAnimator::setAnimation(const std::string& name, bool loop)
 {
-    return Result<void*>(); // TODO
+    if (animation_state != nullptr)
+    {
+		auto& animations = skeleton->getData()->getAnimations();
+        auto animation = skeleton->getData()->findAnimation(name.c_str());
+        if (animation != nullptr)
+        {
+            animation_state->setAnimation(0, animation, loop);
+        }
+		return Result<void*>(false, "Invalid animation name : " + name);
+	}
+    return Result<void*>(false, "Current animation state is null !");
 }
 
 void SpineAnimator::awake()
@@ -105,11 +153,15 @@ void SpineAnimator::afterUpdate()
 
 void SpineAnimator::updateVertices()
 {    
+    if (animation_state == nullptr || skeleton == nullptr)
+        return;
+    vertices.clear();
+    indices.clear();
     spine::Vector<float> spine_vertices;
+    
     // For each slot in the draw order array of the skeleton
     for (size_t i = 0, n = skeleton->getSlots().size(); i < n; ++i) {
-        vertices.clear();
-        indices.clear();
+        int size = vertices.size();
         Slot* slot = skeleton->getDrawOrder()[i];
 
         // Fetch the currently active attachment, continue
@@ -176,7 +228,13 @@ void SpineAnimator::updateVertices()
             }
 
             // set the indices, 2 triangles forming a quad
-            indices = { 0, 1, 2, 2, 3, 0 };
+            assert(size + 3 < vertices.size());
+            indices.push_back(size + 0);
+            indices.push_back(size+1);
+            indices.push_back(size+2);
+            indices.push_back(size+2);
+            indices.push_back(size+3);
+            indices.push_back(size+0);
         }
         else if (attachment->getRTTI().isExactly(MeshAttachment::rtti)) {
             // Cast to an MeshAttachment so we can get the rendererObject
@@ -209,7 +267,8 @@ void SpineAnimator::updateVertices()
             // set the indices, 2 triangles forming a quad
             for (int j=0;j<index.size();++j)
             {
-				indices.push_back(index[j]);
+                assert(size + index[j] < vertices.size());
+				indices.push_back(size+index[j]);
 			}
         }
         int r = (int)(tint.r * attachmentColor.r * 255);
@@ -218,8 +277,8 @@ void SpineAnimator::updateVertices()
         int a = (int)(tint.a * attachmentColor.a * 255);
         color = {r,g,b,a};
         // Draw the mesh we created for the attachment
-        RenderWidget::getCurrentWidget().drawMesh(this,this->camera);
     }
+    RenderWidget::getCurrentWidget().drawMesh(this, this->camera);
 }
 
 void SpineAnimator::createIndices()
@@ -253,18 +312,3 @@ void SpineAnimator::deserialize(std::stringstream& ss)
     set_spine_animation_name(line);
 }
 
-void SpineAnimator::set_property(Property* property, void* value)
-{
-	if (property->get_name() == "SpineAnimationName")
-	{
-		set_spine_animation_name(*(std::string*)value);
-	}
-    else if (property->get_name() == "Animation")
-    {
-        setAnimation(*(int*)value,true);
-    }
-    else
-	{
-		IRenderable::set_property(property, value);
-	}
-}

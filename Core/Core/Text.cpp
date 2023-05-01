@@ -1,21 +1,13 @@
 #include "Text.h"
 using namespace std;
 
-Text::Text(GameObject* gameObj, const std::string& text):IBoxResizable(gameObj),text(text)
+Text::Text(GameObject* gameObj, const std::string& text):IBoxResizable(gameObj)
 {
 	componentType = ComponentType::TEXT;	
-	properties.emplace("text", new Property("text", &(this->text), Property::STRING, this));
-	set_size(Vector2D(380, 150));
-	color = Color32("255,255,255,255");
-}
-
-void Text::set_property(Property* property, void* value)
-{
-	IBoxResizable::set_property(property, value);
-	if (property->get_name() == "text")
-	{
-		set_text(*(string*)value);
-	}
+	this->text = text;
+	auto text_property = new Property("Text", &this->text, Property::STRING, this);
+	text_property->set_property_func<string>(&Text::get_text, &Text::set_text, this);
+	properties.emplace(text_property);
 }
 
 void Text::reset()
@@ -32,7 +24,7 @@ const std::string& Text::get_text()
 void Text::set_text(const std::string& text)
 {
 	this->text = text;
-	onPropertyChanged(properties["text"]);
+	onPropertyChanged(properties["Text"]);
 }
 
 void Text::serialize(PHString& str)

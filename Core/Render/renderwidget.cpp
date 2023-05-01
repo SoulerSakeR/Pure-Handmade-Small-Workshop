@@ -218,7 +218,8 @@ void RenderWidget::renderBoxCollider(BoxCollider* box, Camera* boxColliderCamera
 	//transfer the MVP matrix to the shader
 	boxColliderShaderProgram->bind();
 	boxColliderShaderProgram->setUniformValue("MVPMatrix", matrix);
-	boxColliderShaderProgram->setUniformValue("color",box->color.red(), box->color.green(), box->color.blue(),box->color.alpha());
+	const auto color = box->get_color();
+	boxColliderShaderProgram->setUniformValue("color",color.red(), color.green(), color.blue(),color.alpha());
 
 	//set line mode
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -337,7 +338,8 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 	//transfer the MVP matrix to the shader
 	imageShaderProgram->bind();
 	imageShaderProgram->setUniformValue("MVPMatrix", matrix);
-	imageShaderProgram->setUniformValue("color", img->color.red(), img->color.green(), img->color.blue(), img->color.alpha());
+	const auto& color = img->get_color();
+	imageShaderProgram->setUniformValue("color", color.red(), color.green(), color.blue(), color.alpha());
 
 	//bind texture
 	/*if(img->texture!=nullptr)
@@ -423,7 +425,8 @@ void RenderWidget::renderText(Text* text, Camera* textCamera, bool visBorder)
 	text->set_size(Vector2D(width, height));
 
 	// 创建QColor对象color为text.color
-	QColor color(text->color.r, text->color.g, text->color.b, text->color.a);
+	const auto& color32 = text->get_color();
+	QColor color(color32.r, color32.g, color32.b, color32.a);
 	if (mTexture != nullptr)
 	{
 		mTexture->release();
@@ -679,9 +682,10 @@ void RenderWidget::renderCameraBorder(Camera* target, Camera* renderCamera, bool
 	matrix.scale(transform->getWorldScale().toQVector3D(1.0f));
 
 	target->vao->bind();
+	const auto& color = target->get_color();
 	cameraBorderShaderProgram->bind();
 	cameraBorderShaderProgram->setUniformValue("MVPMatrix", matrix);
-	cameraBorderShaderProgram->setUniformValue("color", target->color.red(), target->color.green(), target->color.blue(), target->color.alpha());
+	cameraBorderShaderProgram->setUniformValue("color", color.red(),color.green(), color.blue(), color.alpha());
 	
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -708,8 +712,8 @@ void RenderWidget::drawMesh(IRenderable* target, Camera* camera)
 	ibo->allocate(target->indices.data(), static_cast<int>(target->indices.size() * sizeof(unsigned int)));
 	imageShaderProgram->bind();
 	
-	GLint posLocation = 0;
-	GLint texCoordLocation = 1;
+	GLint posLocation = imageShaderProgram->attributeLocation("aPos");
+	GLint texCoordLocation = imageShaderProgram->attributeLocation("aTexCord");
 
 	GLsizei stride = sizeof(Vertex);
 	//-----------------position--------------------//
@@ -737,9 +741,10 @@ void RenderWidget::drawMesh(IRenderable* target, Camera* camera)
 	matrix.translate(transform->getWorldPosition().toQVector3D());
 	matrix.rotate(transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
 	matrix.scale(transform->getWorldScale().toQVector3D(1.0f));
-
+	
+	const auto& color = target->get_color();
 	imageShaderProgram->setUniformValue("MVPMatrix", matrix);
-	imageShaderProgram->setUniformValue("color", target->color.red(), target->color.green(), target->color.blue(), target->color.alpha());
+	imageShaderProgram->setUniformValue("color", color.red(), color.green(), color.blue(), color.alpha());
 
 	//texture
 	if (target->isTextureValid())
@@ -758,15 +763,16 @@ void RenderWidget::drawMesh(IRenderable* target, Camera* camera)
 }
 
 void RenderWidget::renderScene(Camera* camera)
-{
+{	
 	auto scene = SceneMgr::get_instance().get_current_scene();
 	if ( scene == nullptr || scene->getRootGameObjs().size() == 0 || mCamera == nullptr)
 		return;
 	for (auto& layer : SceneMgr::get_instance().get_render_setting()->render_order_map)
 	{
+		// TODO: batch rendering
 		for (auto& obj : layer.second)
 		{
-			if (obj->isActive)
+			if (obj->is_active())
 				renderGameobject(obj, camera);
 		}
 	}
@@ -909,7 +915,7 @@ void RenderWidget::renderFbo()
 		renderScene(mCamera);
 	else
 	{
-		if (auto camera = SceneMgr::get_instance().get_main_camera();camera!=nullptr && camera->get_enabled() && camera->gameObject->isActive)
+		if (auto camera = SceneMgr::get_instance().get_main_camera();camera!=nullptr && camera->get_enabled() && camera->gameObject->is_active())
 			renderScene(camera);
 	}
 
@@ -956,7 +962,7 @@ void RenderWidget::renderFboOverlay()
 	{
 		for (auto camera : cameras)
 		{
-			if (camera->get_enabled() && camera->gameObject->isActive && camera->is_overlay())
+			if (camera->get_enabled() && camera->gameObject->is_active() && camera->is_overlay())
 			{
 				renderScene(camera);
 			}

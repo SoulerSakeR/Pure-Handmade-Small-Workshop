@@ -7,21 +7,28 @@
 
 using namespace std;
 
-bool Image::set_texture2D(const std::string& name)
+std::string Image::get_texture_name() const
+{
+	return texture_name;
+}
+
+bool Image::set_texture_name(const std::string& name)
 {
 	if (name == "None")
 	{
 		IRenderable::texture2D = nullptr;
-		this->texture2D = "None";
+		this->texture_name = "None";
+		onPropertyChanged(properties["Texture Name"]);
 		return true;
 	}
 	IRenderable::texture2D = ResourceMgr::get_instance().loadFromName<Texture2D>(name);
 	if(IRenderable::texture2D != nullptr)
-		this->texture2D = IRenderable::texture2D->get_name();
+		this->texture_name = IRenderable::texture2D->get_name();
 	else
-		this->texture2D = name;
+		this->texture_name = name;
 	if (isTextureValid())
 		set_size(Vector2D(get_texture()->width(), get_texture()->height()));
+	onPropertyChanged(properties["Texture Name"]);
 	return true;
 }
 
@@ -30,26 +37,20 @@ bool Image::set_texture2D(const std::string& name)
 Image::Image(GameObject* gameObj):IBoxResizable(gameObj)
 {
 	componentType = IMAGE;
-	texture2D = "None";
-	properties.emplace("texture2D", new Property("texture2D", &(this->texture2D), Property::TEXTURE2D, this));
+	texture_name = "None";
+	auto texture_name_property = new Property("Texture Name", &(this->texture_name), Property::TEXTURE2D, this);
+	texture_name_property->set_property_func<string>(&Image::get_texture_name, &Image::set_texture_name, this);
+	properties.emplace(texture_name_property);
 }
 
 void Image::serialize(PHString& str)
 {
 	str.appendLine(to_string((int)componentType));
 	IBoxResizable::serialize(str);
-	str.appendLine(texture2D);
+	str.appendLine(texture_name);
 }
 
 
-void Image::set_property(Property* property, void* value)
-{
-	IBoxResizable::set_property(property, value);
-	if (property->get_name() == "texture2D")
-	{
-		set_texture2D(*(string*)value);
-	}
-}
 
 
 
@@ -58,11 +59,11 @@ void Image::deserialize(std::stringstream& ss)
 	IBoxResizable::deserialize(ss);
 	string s;
 	getline(ss, s);
-	set_texture2D(s);
+	set_texture_name(s);
 }
 
 void Image::reset()
 {
-
+	set_texture_name("None");
 }
 

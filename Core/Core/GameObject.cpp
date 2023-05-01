@@ -15,7 +15,7 @@ using namespace std;
 
 int GameObject::idCount = 0;
 
-int GameObject::getID()
+int GameObject::get_id()
 {
     return id;
 }
@@ -29,6 +29,19 @@ Result<void*> GameObject::set_name(const std::string& name)
         return scene->renameGameObject(this, name);       
     }
     return Result<void*>();
+}
+
+bool GameObject::is_active() const
+{
+    return is_active_;
+}
+
+void GameObject::set_active(bool value)
+{
+    if (is_active_ == value)
+        return;
+    is_active_ = value;
+    onPropertyChanged(properties["Is Active"]);
 }
 
 std::string GameObject::get_tag()
@@ -62,7 +75,7 @@ void GameObject::serialize(PHString& result)
 {
     result.appendLine("GameObject:", to_string(id));
     result.appendLine(name);
-    result.appendLine(to_string(isActive));
+    result.appendLine(to_string(is_active_));
     result.appendLine(tag);
     result.appendLine("Components:", to_string(components.size()));
     for(int i=0;i<components.size();i++)
@@ -93,7 +106,7 @@ void GameObject::deserialize(std::stringstream& ss)
             getline(ss, s);
             set_name(s);
             getline(ss, s);
-            isActive = (bool)stoi(s);
+            is_active_ = (bool)stoi(s);
             getline(ss, s);
             set_tag(s);
 
@@ -139,8 +152,17 @@ GameObject::GameObject(string name,bool withTransform)
     id = idCount + 1;
     this->name = name;
     tag = "Untagged";
-    isActive = true;
-    // TODO: 随机生成uuid   
+    is_active_ = true;
+    auto name_property = new Property("Name", &this->name,Property::STRING,this);
+    name_property->set_property_func<string>(&GameObject::get_name,&GameObject::set_name,this);
+    properties.emplace(name_property);
+    auto is_active_property = new Property("Is Active", &is_active_, Property::BOOL, this);
+    is_active_property->set_property_func<bool>(&GameObject::is_active, &GameObject::set_active, this);
+    properties.emplace(is_active_property);
+    auto tag_property = new Property("Tag", &tag, Property::STRING, this);
+    tag_property->set_property_func<string>(&GameObject::get_tag, &GameObject::set_tag, this);
+    properties.emplace(tag_property);
+
     idCount++;
     components = vector<Component*>();
     if(withTransform)
@@ -267,7 +289,7 @@ GameObject* GameObject::clone(const std::string newName, GameObject* parent)
     GameObject* result = new GameObject(newName, false);
     result->name = newName;
     result->tag = tag;
-    result->isActive = isActive;
+    result->is_active_ = is_active();
     stringstream ss;
     for (auto component : components)
     {
@@ -290,7 +312,8 @@ GameObject* GameObject::clone(const std::string newName, GameObject* parent)
 
 void GameObject::onComponentPropertyChangedHandler(Property* property)
 {
-    SceneMgr::get_instance().get_current_scene()->is_changed = true;
+    if(SceneMgr::get_instance().hasCurrentScene())
+        SceneMgr::get_instance().get_current_scene()->is_changed = true;
     onPropertyChanged(property);
 }
 

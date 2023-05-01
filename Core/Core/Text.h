@@ -6,7 +6,6 @@ public:
 	Text(GameObject* gameObj, const std::string& text = "");
 
 	// Inherited via Component
-	void set_property(Property* property, void* value) override;
 	void reset() override;
 
 	// getters and setters

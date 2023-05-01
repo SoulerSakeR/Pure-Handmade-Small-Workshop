@@ -20,9 +20,10 @@ public:
 	virtual void createIndices() = 0;
 	virtual bool isTextureValid();
 	QOpenGLTexture* get_texture();
+	Color32 get_color();
+	void set_color(Color32 color);
 
 	// Inherited via Component
-	virtual void set_property(Property* property, void* value) override;
 	virtual void reset() override;
 
 	virtual void serialize(PHString&) override;
@@ -30,10 +31,13 @@ public:
 
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices; 
-	Color32 color;
+	
 	Texture2D* texture2D;
 	QOpenGLVertexArrayObject* vao;
 	QOpenGLBuffer* vbo;
 	QOpenGLBuffer* ibo;
+
+protected:
+	Color32 color;
 };
 

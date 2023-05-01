@@ -1,8 +1,12 @@
 #include "Property.h"
 #include <string>
 
-Property::Property(const std::string& name, void* data,PropertyType type, Component* compoennt) :name(name), data(data), type(type),component(compoennt)
+Property::Property(const std::string& name, void* data,PropertyType type, ISerializable* object,bool isVisible, bool isEditable) :name(name), data(data), type(type),object(object)
 {
+	is_visible = isVisible;
+	is_editable = isEditable;
+	get = nullptr;
+	set = nullptr;
 }
 
 std::string Property::get_name()
@@ -10,12 +14,12 @@ std::string Property::get_name()
 	return name;
 }
 
-Component* const Property::get_component()
+ISerializable* const Property::get_object()
 {
-	return component;
+	return object;
 }
 
 Property::~Property()
 {
-	//TO
+
 }

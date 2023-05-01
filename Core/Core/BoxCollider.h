@@ -9,9 +9,10 @@ public:
 	BoxCollider(GameObject* gameObj);
 	virtual ~BoxCollider();
 
+	virtual void set_trigger(bool value) override;
+
 	// Inherited via Component
 	void reset() override;
-	void set_property(Property * property, void* value) override;
 
 protected:
 	void serialize(PHString& str) override;

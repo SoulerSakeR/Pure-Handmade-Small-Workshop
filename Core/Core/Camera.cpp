@@ -7,7 +7,7 @@ bool Camera::is_main_camera()
 	return is_main_camera_;
 }
 
-void Camera::set_main_camera(bool value,bool refreshUI)
+void Camera::set_main_camera(bool value)
 {
 	if (value == is_main_camera_)
 		return;
@@ -29,10 +29,7 @@ void Camera::set_main_camera(bool value,bool refreshUI)
 	{
 		is_main_camera_ = false;
 	}
-	if (refreshUI && GameEngine::get_instance().getSelectedGameObject() == gameObject)
-	{
-		GameEngine::get_instance().onPropertyChange(properties["is main camera"]);
-	}
+	onPropertyChanged(properties["Is Main Camera"]);
 }
 
 QMatrix4x4 Camera::CalculateProjectionMulViewMatrix()
@@ -71,30 +68,11 @@ void Camera::lookAt(Vector2D worldPos)
 	gameObject->transform->translate(dir);
 }
 
-void Camera::set_property(Property* property, void* value)
-{
-	IBoxResizable::set_property(property, value);
-	if (property->get_name() == "view width")
-	{
-		set_view_width(*(float*)value, false);
-	}
-	else if (property->get_name() == "is main camera")
-	{
-		set_main_camera(*(bool*)value,false);
-	}
-	else if (property->get_name() == "is overlay")
-	{
-		set_overlay(*(bool*)value);
-	}
-}
 
-void Camera::set_view_width(float value,bool refreshUI)
+void Camera::set_view_width(float value)
 {
 	view_width = value;
-	if (refreshUI && GameEngine::get_instance().getSelectedGameObject() == gameObject)
-	{
-		GameEngine::get_instance().onPropertyChange(properties[0]);
-	}
+	onPropertyChanged(properties["View Width"]);
 }
 
 float Camera::get_view_width()
@@ -110,6 +88,7 @@ bool Camera::is_overlay()
 void Camera::set_overlay(bool value)
 {
 	is_overlay_ = value;
+	onPropertyChanged(properties["Is Overlay"]);
 }
 
 Camera::Camera(GameObject* gameObj,float viewWidth):IBoxResizable(gameObj)
@@ -118,9 +97,16 @@ Camera::Camera(GameObject* gameObj,float viewWidth):IBoxResizable(gameObj)
 	view_width = viewWidth;
 	is_main_camera_ = false;
 	is_overlay_ = false;
-	properties.emplace("view width",new Property("view width", &(this->view_width), Property::FLOAT,this));
-	properties.emplace("is main camera",new Property("is main camera", &(this->is_main_camera_), Property::BOOL,this));
-	properties.emplace("is overlay",new Property("is overlay", &(this->is_overlay_), Property::BOOL,this));
+	properties["Size"]->is_editable = false;
+	auto view_width_property = new Property("View Width", &(this->view_width), Property::FLOAT,this);
+	view_width_property->set_property_func<float>(&Camera::get_view_width,&Camera::set_view_width,this);
+	properties.emplace(view_width_property);
+	auto is_main_camera_property = new Property("Is Main Camera", &(this->is_main_camera_), Property::BOOL,this);
+	is_main_camera_property->set_property_func<bool>(&Camera::is_main_camera,&Camera::set_main_camera,this);
+	properties.emplace(is_main_camera_property);
+	auto is_overlay_property = new Property("Is Overlay", &(this->is_overlay_), Property::BOOL,this);
+	is_overlay_property->set_property_func<bool>(&Camera::is_overlay,&Camera::set_overlay,this);
+	properties.emplace(is_overlay_property);
 	if (SceneMgr::get_instance().get_current_scene() != nullptr)
 	{
 		auto& cameras = SceneMgr::get_instance().cameras;
@@ -170,5 +156,5 @@ void Camera::deserialize(std::stringstream& ss)
 
 void Camera::reset()
 {
-	view_width = default_view_width;
+	view_width = CAMERA_DEFAULT_VIEW_WIDTH;
 }

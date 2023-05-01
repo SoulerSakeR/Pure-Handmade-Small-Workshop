@@ -20,14 +20,21 @@ Transform::Transform(GameObject* gameObject):Component(gameObject)
 	children = vector<Transform*>();
 	parent = nullptr;
 	reset();
-	properties.emplace("localPosition", new Property("localPosition", &localPosition, Property::VECTOR2D, this));
-	properties.emplace("localRotation",new Property("localRotation", &localRotation, Property::FLOAT, this));
-	properties.emplace("localScale",new Property("localScale", &localScale, Property::VECTOR2D, this));	
+	properties["Enabled"]->is_editable = false;
+	auto localPosition = new Property("Local Position", &this->localPosition, Property::VECTOR2D, this);
+	localPosition->set_property_func<Vector2D>(&Transform::get_localPosition, &Transform::set_localPosition, this);
+	properties.emplace(localPosition);
+	auto localRotation = new Property("Local Rotation", &this->localRotation, Property::FLOAT, this);
+	localRotation->set_property_func<float>(&Transform::get_localRotation, &Transform::set_localRotation, this);
+	properties.emplace(localRotation);
+	auto localScale = new Property("Local Scale", &this->localScale, Property::VECTOR2D, this);
+	localScale->set_property_func<Vector2D>(&Transform::get_localScale, &Transform::set_localScale, this);
+	properties.emplace(localScale);
 }
 
 Transform::~Transform()
 {
-	// TODO: 析构函数
+	
 }
 
 Vector2D Transform::getWorldPosition()
@@ -69,7 +76,7 @@ Vector2D Transform::getWorldScale()
 Transform* Transform::translate(Vector2D value)
 {
 	localPosition = localPosition + value;
-	onPropertyChanged(properties["localPosition"]);
+	onPropertyChanged(properties["Local Position"]);
 	return this;
 }
 
@@ -77,7 +84,7 @@ Transform* Transform::translate1(float x, float y)
 {
 	localPosition.y = localPosition.y + y;
 	localPosition.x = localPosition.x + x;
-	onPropertyChanged(properties["localPosition"]);
+	onPropertyChanged(properties["Local Position"]);
 	return this;
 }
 
@@ -101,7 +108,7 @@ void Transform::set_localPosition(Vector2D value)
 	if(localPosition == value)
 		return;
 	localPosition = value;
-	onPropertyChanged(properties["localPosition"]);
+	onPropertyChanged(properties["Local Position"]);
 }
 
 void Transform::set_localRotation(float value)
@@ -109,7 +116,7 @@ void Transform::set_localRotation(float value)
 	if (localRotation == value)
 		return;
 	localRotation = value;
-	onPropertyChanged(properties["localRotation"]);
+	onPropertyChanged(properties["Local Rotation"]);
 }
 
 void Transform::set_localScale(Vector2D value)
@@ -117,7 +124,7 @@ void Transform::set_localScale(Vector2D value)
 	if (localScale == value)
 		return;
 	localScale = value;
-	onPropertyChanged(properties["localScale"]);
+	onPropertyChanged(properties["Local Scale"]);
 }
 
 
@@ -140,18 +147,3 @@ void Transform::reset()
 	localScale = Vector2D::one();
 }
 
-void Transform::set_property(Property* property, void* value)
-{
-	if (property->get_name() == "localPosition")
-	{
-		set_localPosition(*(Vector2D*)value);
-	}
-	else if (property->get_name() == "localRotation")
-	{
-		set_localRotation(*(float*)value);
-	}
-	else if (property->get_name() == "localScale")
-	{
-		set_localScale(*(Vector2D*)value);
-	}
-}

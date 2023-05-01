@@ -5,16 +5,30 @@ using namespace std;
 void Component::set_enabled(bool value)
 {
 	enabled = value;
-	onPropertyChanged(properties["enabled"]);
+	onPropertyChanged(properties["Enabled"]);
 }
 
-void Component::set_property(Property* property, void* value)
+Component::Component(GameObject* gameObj)
 {
-	if(property->get_name()=="enabled")
-		set_enabled(*(bool*)value);
+	gameObject = gameObj;
+	enabled = true;
+	componentType = UNKNOWN;
+	auto enabled_property = new Property("Enabled", &this->enabled, Property::BOOL, this);
+	enabled_property->set_property_func<bool>(&Component::get_enabled, &Component::set_enabled,this);
+	properties.emplace(enabled_property);
 }
 
-std::string Component::getName(ComponentType type)
+Component::~Component()
+{
+	gameObject = nullptr;
+	for (auto& property : properties)
+	{
+		delete property.second;
+	}
+}
+
+
+std::string Component::getTypeName(ComponentType type)
 {
 	switch (type)
 	{

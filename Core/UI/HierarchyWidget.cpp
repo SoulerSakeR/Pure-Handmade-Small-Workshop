@@ -70,7 +70,7 @@ void HierarchyWidget::initContextMenu()
 	QMenu *addComponentMenu = new QMenu("Attach Component", this);
 	for (int i = 1;i < Component::componentTypeCount + 1;++i)
 	{
-		auto action = new QAction(QString::fromStdString(Component::getName((Component::ComponentType)i)), this);
+		auto action = new QAction(QString::fromStdString(Component::getTypeName((Component::ComponentType)i)), this);
 		addComponentMenu->addAction(action);
 		connect(action, &QAction::triggered, [=]() {
 			if (selectedGameObject != nullptr)

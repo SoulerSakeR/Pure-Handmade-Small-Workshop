@@ -8,21 +8,21 @@
 class Image : public IBoxResizable
 {
 public:
-    static constexpr int max_component_size = 1;
+    static constexpr int MAX_COMPONENT_SIZE = -1;
 
     Image(GameObject* gameObj);
 
     // getters and setters
-    bool set_texture2D(const std::string& name);
+    std::string get_texture_name() const;
+    bool set_texture_name(const std::string& name);
 
     // Inherited via Component
-    void set_property(Property* property, void* value) override;
     void reset() override; 
 
 protected:
     // Inherited via Component
     void serialize(PHString&) override; 
     void deserialize(std::stringstream& ss) override;     
-    std::string texture2D;
+    std::string texture_name;
 };
 
