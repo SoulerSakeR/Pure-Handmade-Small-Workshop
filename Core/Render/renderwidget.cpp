@@ -1490,6 +1490,7 @@ void RenderWidget::resetFBO()
 	}
 }
 
+
 GameObject* RenderWidget::getSelectedGameObject()
 {
 	return hierarchyWidget->selectedGameObject;	
@@ -1509,6 +1510,79 @@ void RenderWidget::setFullScreen(bool fullScreen)
 		// 恢复窗口化时的位置和大小
 		setGeometry(m_normalGeometry);
 	}
+}
+
+
+void RenderWidget::setLight(GameObject* target)
+{
+	// 创建一个光源对象
+	LightSource light(QPointF(0, 0), QColor(255, 255, 255), PointLight);
+
+	
+	QGraphicsEllipseItem* lightItem = new QGraphicsEllipseItem(-5, -5, 10, 10);
+	lightItem->setPos(light.getPosition());
+	lightItem->setBrush(QBrush(light.getColor()));
+	
+	//=========================================================//
+	//  TODO: 将光源添加到场景中
+	
+
+	//=========================================================//
+
+
+	// 计算物体的光照效果
+	QPointF lightPos = light.getPosition();
+	QColor lightColor = light.getColor();
+	qreal ambient = 0.1;
+	qreal diffuse = 0.8;
+	qreal specular = 0.4;
+	qreal shininess = 50;
+
+	qreal dx = target->transform->getWorldPositionX() - lightPos.x();
+	qreal dy = target->transform->getWorldPositionY() - lightPos.y();
+	
+	Vector2D gameObjectPos = target->transform->getWorldPosition();
+	QPointF targetPos = QPointF(gameObjectPos.x, gameObjectPos.y);
+
+	// 计算物体和光源之间的距离和光源衰减因子
+	QVector2D lightDir = QVector2D(lightPos - targetPos).normalized();
+	qreal distance = QVector2D(lightPos - targetPos).length();
+	qreal attenuation = 1.0 / (1.0 + 0.1 * distance + 0.01 * distance * distance);
+
+
+	// 计算物体的漫反射系数
+	QVector2D normal(0, -1);
+	QVector2D lightDirNormalized = QVector2D(lightDir).normalized();
+	qreal diffuseFactor = qMax(normal.x() * lightDirNormalized.x() + normal.y() * lightDirNormalized.y(), 0.0);
+
+
+	// 计算物体的光照强度
+	QColor ambientColor(50, 50, 50);
+	QColor diffuseColor(255, 0, 0);
+	
+	// 计算环境光照强度
+	QColor ambientIntensity = lightColor.lighter(150).darker(150);
+	ambientIntensity.setRed(ambientIntensity.red() * ambientColor.red() / 255);
+	ambientIntensity.setGreen(ambientIntensity.green() * ambientColor.green() / 255);
+	ambientIntensity.setBlue(ambientIntensity.blue() * ambientColor.blue() / 255);
+
+	// 计算漫反射光照强度
+	QColor diffuseIntensity = lightColor.lighter(150).darker(150);
+	diffuseIntensity.setRed(diffuseIntensity.red() * diffuseColor.red() / 255 * diffuseFactor);
+	diffuseIntensity.setGreen(diffuseIntensity.green() * diffuseColor.green() / 255 * diffuseFactor);
+	diffuseIntensity.setBlue(diffuseIntensity.blue() * diffuseColor.blue() / 255 * diffuseFactor);
+
+	// 计算物体的光照强度
+	qreal intensity = ambientIntensity.value() + diffuseIntensity.value() * attenuation;
+	QColor finalColor(intensity, intensity, intensity);
+
+
+
+
+	// 将光照效果应用到物体上
+	// TODO: target->setBrush(QBrush(lightColor.toRgb() * intensity));
+	// target->setBrush(QBrush(finalColor));
+
 }
 
 

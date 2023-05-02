@@ -1,6 +1,7 @@
 #ifndef RENDERWIDGET_H
 #define RENDERWIDGET_H
 
+#include <algorithm>
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions_3_3_Core>
 #include <QOpenGLShaderProgram>
@@ -18,6 +19,8 @@
 #include <Core/UI/HierarchyWidget.h>
 #include <Core/UI/GameWindow.h>
 #include "Core/Core/SpineAnimator.h"
+#include "Core/Render/LightSource.h"
+
 
 class GameLoop;
 
@@ -71,6 +74,8 @@ public:
     void lookAt(GameObject* target);
     void resetResolution();
     void resetFBO();
+
+    void setLight(GameObject* target);
 
     GameObject* getSelectedGameObject();
 
