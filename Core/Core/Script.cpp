@@ -1,6 +1,7 @@
 #include "Script.h"
 #include "GameObject.h"
 #include "Core/Core/Debug.h"
+#include "Core/ResourceManagement/ResourceMgr.h"
 
 #include "lib/sol/sol.hpp"
 
@@ -9,12 +10,13 @@ using namespace std;
 Script::Script(GameObject* gameObj, const std::string& name, const std::string& path):Component(gameObj),name(name),path(path)
 {
 	componentType = SCRIPT;
-	auto name_property = new Property("Name", &this->name, Property::STRING, this);
+	auto name_property = new Property("Name", &this->name, Property::SCRIPT_COMBOBOX, this);
 	name_property->set_property_func<string>(&Script::get_name, &Script::set_name, this);
 	properties.emplace(name_property);
 	auto path_property = new Property("Path", &this->path, Property::STRING, this);
 	path_property->set_property_func<string>(&Script::get_path, &Script::set_path, this);
 	properties.emplace(path_property);
+	path_property->is_editable = false;
 	lua = nullptr;
 }
 
@@ -33,7 +35,7 @@ Script::~Script()
 
 void Script::reset()
 {
-	name = "";
+	name = "None";
 	path = PHPath("");
 }
 
@@ -45,8 +47,34 @@ std::string Script::get_name()
 
 void Script::set_name(const std::string& name)
 {
-	this->name = name;
-	onPropertyChanged(properties["Name"]);
+	if (name == "None")
+	{
+		this->name = name;
+		onPropertyChanged(properties["Name"]);
+	}
+	else if(ResourceMgr::get_instance().isExist<ScriptData>(name))
+	{
+		auto scriptData = ResourceMgr::get_instance().loadFromName<ScriptData>(name);
+		this->name = name;
+		path = scriptData->get_path();
+		onPropertyChanged(properties["Name"]);
+		onPropertyChanged(properties["Path"]);
+	}
+	else // creat new script
+	{
+		ScriptData* newScript = ScriptData::CreateScriptData(name);
+		if (newScript != nullptr)
+		{
+			this->name = name;
+			path = newScript->get_path();
+			onPropertyChanged(properties["Name"]);
+			onPropertyChanged(properties["Path"]);
+		}
+		else
+		{
+			Debug::logError() << "GameObject : " << gameObject->get_name() << ", Script : " << name << " can't create new script !\n";
+		}
+	}
 }
 
 std::string Script::get_path()

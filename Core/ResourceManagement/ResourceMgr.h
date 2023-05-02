@@ -5,6 +5,7 @@
 #include "Core/Utils/PHPath.h"
 #include "Core/UI/TextureSelectorDialog.h"
 #include "SpineAnimationData.h"
+#include "ScriptData.h"
 
 using std::string;
 
@@ -16,6 +17,7 @@ public:
 	Result<void*> initialize();
 	std::string getAssetDir() const;
 	std::string getSpineDir() const;
+	std::string getScriptDir() const;
 	void loadAllAssets();
 	void clear();
 
@@ -58,6 +60,14 @@ public:
 		return false;
 	}
 
+	bool isScriptExist(const string& name)
+	{
+		auto it = script_assets.find(name);
+		if (it != script_assets.end())
+			return true;
+		return false;
+	}
+
 	bool isSpineAnimationExist(const string& name)
 	{
 		auto it = spine_assets.find(name);
@@ -82,15 +92,19 @@ private:
 	void operator=(ResourceMgr) = delete;
 	const string assetPath ="\\Resources";
 	const string spinePath = "\\Spine";
+	const string scriptPath = "\\Scripts";
 	static ResourceMgr* instance;
 	std::unordered_map<std::string,std::string> resourceNamePathMap;
 	std::unordered_map<std::string,Texture2D*> texture_assets;
 	std::unordered_map<std::string,SpineAnimationData*> spine_assets;
+	std::unordered_map<std::string,ScriptData*> script_assets;
 	std::unordered_map<std::string, void*> resources;
 
 	friend class Texture2D;
 	friend class SpineAnimationData;
 	friend class TextureSelectorDialog;
 	friend class AnimationSelectorDialog;
+	friend class ScriptData;
+	friend class ScriptComboBox;
 };
 

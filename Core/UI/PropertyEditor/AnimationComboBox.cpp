@@ -3,7 +3,8 @@
 
 AnimationComboBox::AnimationComboBox(SpineAnimator* animator, QWidget* parent) :QComboBox(parent), animator(animator)
 {
-	updateItems();
+	if(animator != nullptr)
+		updateItems();
 }
 
 void AnimationComboBox::updateItems()

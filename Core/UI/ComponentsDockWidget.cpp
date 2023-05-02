@@ -22,6 +22,7 @@
 #include "Core/UI/PropertyEditor/AnimationComboBox.h"
 #include "Core/UI/PropertyEditor/SkinComboBox.h"
 #include "qtimer.h"
+#include "Core/Core/Component.h"
 
 ComponentsDockWidget* ComponentsDockWidget::instance = nullptr;
 
@@ -192,7 +193,11 @@ void ComponentsDockWidget::updatePropertyData(Property* property)
 
 	}
 	else
-		Debug::logError("Property not found: " + property->get_name());
+	{
+		Component* component = dynamic_cast<Component*>(property->get_object());
+		Debug::logError() << "Property not found: " << property->get_name() << " in Component : " << component->getTypeName(component->componentType)
+			<< " of GameObject " << component->gameObject->get_name() << "\n";
+	}
 }
 
 void ComponentsDockWidget::onPropertyInputed(QObject*  sender, void* value)
@@ -211,13 +216,15 @@ void ComponentsDockWidget::onTimer()
 	is_refreshing = true;
 	for (auto property : changed_properties_buffer1)
 	{
-		updatePropertyData(property);
+		if(property->is_visible)
+			updatePropertyData(property);
 	}
 	changed_properties_buffer1.clear();
 	is_refreshing = false;
 	for (auto property : changed_properties_buffer2)
 	{
-		updatePropertyData(property);
+		if (property->is_visible)
+			updatePropertyData(property);
 	}
 	changed_properties_buffer2.clear();
 }

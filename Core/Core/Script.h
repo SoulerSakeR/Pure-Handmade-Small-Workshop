@@ -19,7 +19,7 @@ namespace sol
 class Script : public Component , public IScriptBehaviour
 {
 public:
-    Script(GameObject* gameObj,const std::string& name = "",const std::string& path = "");
+    Script(GameObject* gameObj,const std::string& name = "None",const std::string& path = "");
     virtual ~Script();
     void reset() override;
     

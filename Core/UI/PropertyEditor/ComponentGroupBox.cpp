@@ -14,6 +14,7 @@
 #include "AnimationComboBox.h"
 #include "SpineAnimationSelectorWidget.h"
 #include "SkinComboBox.h"
+#include "ScriptComboBox.h"
 
 ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGroupBox(parent), component(component)
 {
@@ -62,7 +63,7 @@ ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGr
 		{
 			auto lineEdit = new QLineEdit();
 			lineEdit->setText(QString::fromStdString(property->get_data<std::string>()));
-			lineEdit->setReadOnly( !property->is_editable);
+			lineEdit->setDisabled( !property->is_editable);
 			layout->addWidget(lineEdit, row, 1);
 			widget->Object_Property_map[lineEdit] = property;
 			widget->property_Object_map[property] = lineEdit;
@@ -172,6 +173,15 @@ ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGr
 			connect(comboBox, &QComboBox::currentIndexChanged, [=](int index) {
 				property->set_data<int>(index);
 			});
+			break;
+		}
+		case Property::SCRIPT_COMBOBOX:
+		{
+			auto comboBox = new ScriptComboBox(this,property);
+			comboBox->setDisabled(!property->is_editable);
+			layout->addWidget(comboBox, row, 1);
+			widget->Object_Property_map[comboBox] = property;
+			widget->property_Object_map[property] = comboBox;
 			break;
 		}
 		}

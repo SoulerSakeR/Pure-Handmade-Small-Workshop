@@ -28,6 +28,11 @@ std::string ResourceMgr::getSpineDir() const
 	return PHPath(GameEngine::get_instance().getGamePath()).combinePath(assetPath).combinePath(spinePath).getNewPath();
 }
 
+std::string ResourceMgr::getScriptDir() const
+{
+	return PHPath(GameEngine::get_instance().getGamePath()).combinePath(assetPath).combinePath(scriptPath).getNewPath();
+}
+
 void ResourceMgr::loadAllAssets()
 {
 	clear();
@@ -53,6 +58,15 @@ void ResourceMgr::loadAllAssets()
 			{
 				spine_assets[spineData->get_name()] = spineData;
 				Debug::logInfo() << "SpineAnimationData loaded: " << spineData->get_name() << "\n";
+			}
+		}
+		else if (type == ".lua")
+		{
+			auto scriptData = loadFromPath<ScriptData>(filePath,false);
+			if (scriptData != nullptr)
+			{
+				script_assets[scriptData->get_name()] = scriptData;
+				Debug::logInfo() << "ScriptData loaded: " << scriptData->get_name() << "\n";
 			}
 		}
 	}
