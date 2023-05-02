@@ -75,6 +75,11 @@ void GameLoop::preloadScriptFiles(sol::state& lua) {
     for (auto& script : scripts) {
         if (auto s = dynamic_cast<Script*>(script))
         {
+            if (!QFile::exists(s->get_path().c_str()))
+            {
+                Debug::logWarning() << "GameObject : " << s->gameObject->get_name() << " preloading script file : " << s->get_path() << " failed , file not exist . \n";
+				continue;
+            }
             s->lua = &lua;
             s->lua->script_file(s->get_path());
             auto classProxy = lua[s->get_name()];

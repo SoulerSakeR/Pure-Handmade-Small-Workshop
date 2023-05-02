@@ -68,11 +68,17 @@ ScriptData* ScriptData::CreateScriptData(const std::string& className)
 		IO::copy(PHPath(GameEngine::get_instance().getRootPath()).combinePath("IScriptBehaviour.lua").getNewPath().c_str(),
 			scriptDir.getNewPath().c_str());
 	}
+	if (!QFile::exists(scriptDir.combinePath("Comment.lua").getNewPath().c_str()))
+	{
+		IO::copy(PHPath(GameEngine::get_instance().getRootPath()).combinePath("Comment.lua").getNewPath().c_str(),
+			scriptDir.getNewPath().c_str());
+	}
 	string luaPath = PHPath(ResourceMgr::get_instance().getScriptDir()).combinePath(luaName).getNewPath();
 	PHString str;
 	str.appendLine("require(\"IScriptBehaviour\")");
 	str.appendLine();
 	str.appendLine("---@class ", className + " : IScriptBehaviour");
+	str.appendLine("---@field public gameObject GameObject");
 	str.appendLine(className, " = class(IScriptBehaviour)");
 	if (IO::write(str.str(),luaPath,1))
 	{

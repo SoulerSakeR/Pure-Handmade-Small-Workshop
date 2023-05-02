@@ -13,7 +13,7 @@ class Property
 public:
 	enum PropertyType
 	{
-		INT,FLOAT,STRING,BOOL,VECTOR2D,COLOR,COMBO_BOX,TEXTURE2D,ANIMATION_COMBOBOX,ANIMATION,SKIN_COMBOBOX,SCRIPT_COMBOBOX
+		INT,FLOAT,STRING,BOOL,VECTOR2D,COLOR,COMBO_BOX,TEXTURE2D,ANIMATION_COMBOBOX,ANIMATION,SKIN_COMBOBOX,SCRIPT_LINEEDIT
 	};
 	
 	Property(const std::string& name, void* data,PropertyType type,ISerializable* src,bool isVisible = true,bool isEditable = true);

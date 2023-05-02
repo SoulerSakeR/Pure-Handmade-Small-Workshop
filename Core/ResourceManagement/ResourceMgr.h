@@ -106,5 +106,6 @@ private:
 	friend class AnimationSelectorDialog;
 	friend class ScriptData;
 	friend class ScriptComboBox;
+	friend class ScriptNameLineEdit;
 };
 

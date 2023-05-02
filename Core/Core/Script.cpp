@@ -10,7 +10,7 @@ using namespace std;
 Script::Script(GameObject* gameObj, const std::string& name, const std::string& path):Component(gameObj),name(name),path(path)
 {
 	componentType = SCRIPT;
-	auto name_property = new Property("Name", &this->name, Property::SCRIPT_COMBOBOX, this);
+	auto name_property = new Property("Name", &this->name, Property::SCRIPT_LINEEDIT, this);
 	name_property->set_property_func<string>(&Script::get_name, &Script::set_name, this);
 	properties.emplace(name_property);
 	auto path_property = new Property("Path", &this->path, Property::STRING, this);
@@ -47,10 +47,12 @@ std::string Script::get_name()
 
 void Script::set_name(const std::string& name)
 {
-	if (name == "None")
+	if (name == "None" || name == "")
 	{
 		this->name = name;
+		path = PHPath("");
 		onPropertyChanged(properties["Name"]);
+		onPropertyChanged(properties["Path"]);
 	}
 	else if(ResourceMgr::get_instance().isExist<ScriptData>(name))
 	{

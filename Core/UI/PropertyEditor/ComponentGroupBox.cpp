@@ -14,7 +14,7 @@
 #include "AnimationComboBox.h"
 #include "SpineAnimationSelectorWidget.h"
 #include "SkinComboBox.h"
-#include "ScriptComboBox.h"
+#include "ScriptNameLineEdit.h"
 
 ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGroupBox(parent), component(component)
 {
@@ -175,13 +175,12 @@ ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGr
 			});
 			break;
 		}
-		case Property::SCRIPT_COMBOBOX:
+		case Property::SCRIPT_LINEEDIT:
 		{
-			auto comboBox = new ScriptComboBox(this,property);
-			comboBox->setDisabled(!property->is_editable);
-			layout->addWidget(comboBox, row, 1);
-			widget->Object_Property_map[comboBox] = property;
-			widget->property_Object_map[property] = comboBox;
+			auto lineEdit = new ScriptNameLineEdit(this,property);
+			layout->addWidget(lineEdit, row, 1);
+			widget->Object_Property_map[lineEdit] = property;
+			widget->property_Object_map[property] = lineEdit;
 			break;
 		}
 		}
