@@ -110,7 +110,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>播放</string>
+        <string>Play</string>
        </property>
       </widget>
       <widget class="QPushButton" name="pushButton_2">
@@ -123,7 +123,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>停止</string>
+        <string>Stop</string>
        </property>
       </widget>
      </widget>
@@ -141,7 +141,7 @@
    </property>
    <widget class="QMenu" name="menu_file">
     <property name="title">
-     <string>文件</string>
+     <string>Documents</string>
     </property>
     <addaction name="actioncreatProject"/>
     <addaction name="actionopenProject"/>
@@ -150,19 +150,19 @@
    </widget>
    <widget class="QMenu" name="menu_gameobject">
     <property name="title">
-     <string>创建</string>
+     <string>Create</string>
     </property>
     <addaction name="actionCreatEmptyGameObject"/>
     <addaction name="actionCreatGameObjectWithImage"/>
    </widget>
    <widget class="QMenu" name="menu_component">
     <property name="title">
-     <string>组件</string>
+     <string>Components</string>
     </property>
    </widget>
    <widget class="QMenu" name="menu">
     <property name="title">
-     <string>工具</string>
+     <string>Tools</string>
     </property>
     <addaction name="actionwfc"/>
    </widget>
@@ -353,12 +353,12 @@
   </widget>
   <action name="actioncreatProject">
    <property name="text">
-    <string>创建项目</string>
+    <string>Create Project</string>
    </property>
   </action>
   <action name="actionopenProject">
    <property name="text">
-    <string>打开项目</string>
+    <string>Open Project</string>
    </property>
   </action>
   <action name="Render_action">
@@ -381,17 +381,17 @@
   </action>
   <action name="actionCreatEmptyGameObject">
    <property name="text">
-    <string>空物体</string>
+    <string>Empty Objects</string>
    </property>
   </action>
   <action name="actionCreatGameObjectWithImage">
    <property name="text">
-    <string>图像</string>
+    <string>Image</string>
    </property>
   </action>
   <action name="actionsaveProject">
    <property name="text">
-    <string>保存项目</string>
+    <string>Save Project</string>
    </property>
   </action>
   <action name="actionnew">
@@ -404,7 +404,7 @@
   </action>
   <action name="actionwfc">
    <property name="text">
-    <string>波函数坍缩</string>
+    <string>Wave Function Collapse</string>
    </property>
    <property name="iconText">
     <string>wfc</string>
@@ -467,7 +467,7 @@
   </action>
   <action name="actionExport_current_project">
    <property name="text">
-    <string>Export current project</string>
+    <string>Export Current Project</string>
    </property>
   </action>
   <zorder>dockWidget_components</zorder>
