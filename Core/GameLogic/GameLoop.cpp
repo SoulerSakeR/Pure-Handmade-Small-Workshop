@@ -245,6 +245,14 @@ void GameLoop::startGameLoop()
         Time::deltaTime = end - start;
         deltaTime = Time::deltaTime - frameTime;
     }
+    if (GameEngine::get_instance().getInEditor())
+    {
+        ComponentsDockWidget::get_instance()->timer->stop();
+        while (ComponentsDockWidget::get_instance()->is_refreshing)
+        {
+            continue;
+        }
+    }
     SceneMgr::get_instance().exitScene();
     isClosed = true;
 }
@@ -271,7 +279,15 @@ void GameLoop::startRenderLoop()
         Time::deltaTime = end - start;
         deltaTime = Time::deltaTime - frameTime;
     }
-    SceneMgr::get_instance().exitScene();
+    if (GameEngine::get_instance().getInEditor())
+    {
+        ComponentsDockWidget::get_instance()->timer->stop();
+        while (ComponentsDockWidget::get_instance()->is_refreshing)
+        {
+            continue;
+        }
+    } 
+    SceneMgr::get_instance().exitScene();   
     isClosed = true;
 }
 
