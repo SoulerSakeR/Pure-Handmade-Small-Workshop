@@ -363,7 +363,7 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	//draw texture
-	glDrawElements(GL_TRIANGLES, img->vertices.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, img->indices.size(), GL_UNSIGNED_INT, 0);
 	
 	if (img->isTextureValid())
 		img->get_texture()->release();
@@ -556,7 +556,7 @@ void RenderWidget::renderText(Text* text, Camera* textCamera, bool visBorder)
 
 	
 	//draw
-	glDrawElements(GL_TRIANGLES, text->vertices.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, text->indices.size(), GL_UNSIGNED_INT, 0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	text->ibo->release();
 	mTexture ->release();
