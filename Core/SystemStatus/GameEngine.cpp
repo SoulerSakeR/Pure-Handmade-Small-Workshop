@@ -41,8 +41,8 @@ bool GameEngine::initialize(MainWindow* window)
 	Debug::logLevel = Debug::LogLevel::INFO;
 	Debug::logInfo()<< "Engine initializing\n";
 	auto media = new Media();
-	media->loadAudio("E:\\Musics\\是肉米_ - すずめ《铃芽户缔》／《铃芽之旅》主题曲Short ver.mp3");
-	media->playAudio();
+	media->loadAudio("E:\\Musics\\minecraft-villager-sound-effect.mp3");
+	media->playAudio(true);
 	srand((unsigned)time(NULL));
 	gameProject = nullptr;
 	this->window = window;

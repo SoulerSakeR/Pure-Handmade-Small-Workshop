@@ -21,7 +21,7 @@ public:
     ~Media();
 
     bool loadAudio(const QString& inputPath);
-    bool playAudio();
+    bool playAudio(bool loop = false);
     bool pauseAudio();
     bool stopAudio();
     bool saveAudio(const QString& outputPath);
@@ -37,6 +37,8 @@ private:
 
     QAudioOutput* audioOutput;//指向处理音频输出的 QAudioOutput 对象的指针
    // QAudioProbe* audioProbe;//指向允许监视音频数据的 QAudioProbe 对象的指针
+
+    friend class GameEngine;
 };
 
 #endif // MEDIA_H

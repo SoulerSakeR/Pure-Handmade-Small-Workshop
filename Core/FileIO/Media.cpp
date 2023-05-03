@@ -31,8 +31,9 @@ bool Media::loadAudio(const QString& inputPath)
 }
 
 
-bool Media::playAudio()
+bool Media::playAudio(bool loop)
 {
+    audioPlayer->setLoops(loop ? QMediaPlayer::Infinite : 1);
     audioPlayer->play();
     return audioPlayer->error() == QMediaPlayer::NoError;
 }
