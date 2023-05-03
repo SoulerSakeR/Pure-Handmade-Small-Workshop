@@ -226,7 +226,7 @@ void RenderWidget::renderBoxCollider(BoxCollider* box, Camera* boxColliderCamera
 	glLineWidth(3.0f);
 
 	//draw
-	glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_LINES, box->borderIndices.size(), GL_UNSIGNED_INT, 0);
 	box->vao->release();
 }
 
@@ -363,7 +363,7 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	//draw texture
-	glDrawElements(GL_TRIANGLES, sizeof(unsigned int)*6, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, img->vertices.size(), GL_UNSIGNED_INT, 0);
 	
 	if (img->isTextureValid())
 		img->get_texture()->release();
@@ -386,7 +386,7 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth(3.0f);
-		glDrawElements(GL_LINES, static_cast<GLsizei>(sizeof(unsigned int) * img->borderIndices.size()), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_LINES, static_cast<GLsizei>(img->borderIndices.size()), GL_UNSIGNED_INT, 0);
 		img->borderIbo->release();
 	}	
 	//release
@@ -556,7 +556,7 @@ void RenderWidget::renderText(Text* text, Camera* textCamera, bool visBorder)
 
 	
 	//draw
-	glDrawElements(GL_TRIANGLES, sizeof(unsigned int) * 6, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, text->vertices.size(), GL_UNSIGNED_INT, 0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	text->ibo->release();
 	mTexture ->release();
@@ -577,7 +577,7 @@ void RenderWidget::renderText(Text* text, Camera* textCamera, bool visBorder)
 		boxColliderShaderProgram->setUniformValue("MVPMatrix", matrix);
 
 		glLineWidth(3.0f);
-		glDrawElements(GL_LINES, static_cast<GLsizei>(sizeof(unsigned int) * text->borderIndices.size()), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_LINES, static_cast<GLsizei>(text->borderIndices.size()), GL_UNSIGNED_INT, 0);
 		text->borderIbo->release();
 
 	}
@@ -692,7 +692,7 @@ void RenderWidget::renderCameraBorder(Camera* target, Camera* renderCamera, bool
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glLineWidth(3.0f);
 	
-	glDrawElements(GL_LINES, static_cast<GLsizei>(sizeof(unsigned int) * target->borderIndices.size()), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_LINES, static_cast<GLsizei>(target->borderIndices.size()), GL_UNSIGNED_INT, 0);
 
 	target->vao->release();
 
@@ -752,7 +752,7 @@ void RenderWidget::drawMesh(IRenderable* target, Camera* camera, bool visBorder)
 		target->get_texture()->bind();
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(sizeof(unsigned int) * target->indices.size()), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(target->indices.size()), GL_UNSIGNED_INT, 0);
 
 	//release
 	vbo->release();
@@ -797,7 +797,7 @@ void RenderWidget::drawMesh(IRenderable* target, Camera* camera, bool visBorder)
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth(1.0f);
-		glDrawElements(GL_LINES, static_cast<GLsizei>(sizeof(unsigned int) * box->borderIndices.size()), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_LINES, static_cast<GLsizei>(box->borderIndices.size()), GL_UNSIGNED_INT, 0);
 		box->borderVbo->release();
 		box->borderIbo->release();
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
