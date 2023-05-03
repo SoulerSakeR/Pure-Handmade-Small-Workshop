@@ -11,6 +11,7 @@
 #include <spine/Vector.h>
 #include <spine/Animation.h>
 #include <spine/Skin.h>
+#include "AnimationEventListener.h"
 
 using namespace spine;
 
@@ -68,6 +69,8 @@ bool SpineAnimator::set_spine_animation_name(const std::string& name)
 		spine_animation_name = name;
 		skeleton = new spine::Skeleton(animationdata->get_skeleton_data());
 		animation_state = new spine::AnimationState(animationdata->get_animation_state_data());
+        listener = new AnimationEventListener(this);
+        animation_state->setListener(listener);
         skeleton->setScaleX(flipX ? -1 : 1);
         skeleton->setScaleY(flipY ? -1 : 1);
         skeleton->setToSetupPose();
@@ -222,6 +225,11 @@ Result<void*> SpineAnimator::setAnimation(const std::string& name, bool loop)
 		return Result<void*>(false, "Invalid animation name : " + name);
 	}
     return Result<void*>(false, "Current animation state is null !");
+}
+
+void SpineAnimator::addListener(sol::protected_function* callback)
+{
+    listener->addListener(callback);
 }
 
 void SpineAnimator::awake()
@@ -421,6 +429,8 @@ void SpineAnimator::reset()
     animation_state = nullptr;
     animation_index = 0;
     spine_animation_name = "None";
+    delete listener;
+    listener = nullptr;
 }
 
 void SpineAnimator::serialize(PHString& str)

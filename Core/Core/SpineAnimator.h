@@ -7,6 +7,17 @@
 #include "Core/Utils/Result.h"
 #include "AnimationEventData.h"
 
+class AnimationEventListener;
+namespace sol
+{
+	template <bool b>
+	class basic_reference;
+	using reference = basic_reference<false>;
+	template <typename T, bool, typename H>
+	class basic_protected_function;
+	using protected_function = basic_protected_function<reference, false, reference>;
+}
+
 class SpineAnimator : public IBoxResizable , public IScriptBehaviour
 {
 public:
@@ -41,6 +52,8 @@ public:
 	Result<void*> setAnimation(int index,bool loop);                                     // 需要绑定
 	Result<void*> setAnimation(const std::string& name, bool loop);           // 需要绑定
 
+	void addListener(sol::protected_function* callback);                                  // 需要绑定
+
 	// inherited via IScriptBehaviour
 	void awake() override;
 	void afterUpdate() override;
@@ -68,5 +81,6 @@ private:
 	bool flipY;
 	spine::AnimationState* animation_state = nullptr;
 	spine::Skeleton* skeleton = nullptr;
+	AnimationEventListener* listener = nullptr;
 };
 
