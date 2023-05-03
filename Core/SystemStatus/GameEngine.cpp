@@ -11,6 +11,7 @@
 #include <Core/UI/ComponentsDockWidget.h>
 #include "Core/ResourceManagement/ResourceMgr.h"
 #include "Core/GameLogic/GameLoop.h"
+#include "Core/FileIO/Media.h"
 
 using namespace std;
 
@@ -39,6 +40,9 @@ bool GameEngine::initialize(MainWindow* window)
 	this->inEditor = true;
 	Debug::logLevel = Debug::LogLevel::INFO;
 	Debug::logInfo()<< "Engine initializing\n";
+	auto media = new Media();
+	media->loadAudio("E:\\Musics\\是肉米_ - すずめ《铃芽户缔》／《铃芽之旅》主题曲Short ver.mp3");
+	media->playAudio();
 	srand((unsigned)time(NULL));
 	gameProject = nullptr;
 	this->window = window;

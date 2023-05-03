@@ -6,8 +6,8 @@
 #include <QObject>
 #include <QMediaPlayer>
 #include <QMediaRecorder>
-#include <QAudioEncoderSettings>
-#include <QAudioProbe>
+//#include <QAudioEncoderSettings>
+//#include <QAudioProbe>
 #include <QUrl>
 #include <QString>
 #include <QFileInfo>
@@ -25,7 +25,7 @@ public:
     bool pauseAudio();
     bool stopAudio();
     bool saveAudio(const QString& outputPath);
-    void setAudioVolume(int volume);
+    void setAudioVolume(float volume);
     void setAudioPosition(qint64 position);
 
 private:
@@ -35,7 +35,8 @@ private:
 
     QMediaRecorder* mediaRecorder;//指向记录音频数据的 QMediaRecorder 对象的指针
 
-    QAudioProbe* audioProbe;//指向允许监视音频数据的 QAudioProbe 对象的指针
+    QAudioOutput* audioOutput;//指向处理音频输出的 QAudioOutput 对象的指针
+   // QAudioProbe* audioProbe;//指向允许监视音频数据的 QAudioProbe 对象的指针
 };
 
 #endif // MEDIA_H
