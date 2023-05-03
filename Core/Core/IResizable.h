@@ -16,10 +16,12 @@ public:
 	virtual Vector2D get_size();
 	virtual void set_size(Vector2D newSize);
 
+	virtual void updateBorderVertices();
 	virtual void createBorderIndices();
 	virtual void updateOperatorVertices();
 	bool isHovered(Vector2D screenPos);
 	
+	QOpenGLBuffer* borderVbo;
 	QOpenGLBuffer* borderIbo;
 	std::vector<Vertex> operatorVertices;
 	std::vector<Vertex> borderVertices;

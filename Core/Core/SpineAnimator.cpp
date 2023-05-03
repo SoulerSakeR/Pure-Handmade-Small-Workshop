@@ -16,11 +16,12 @@ using namespace spine;
 
 unsigned short quadIndices[] = { 0, 1, 2, 2, 3, 0 };
 
-SpineAnimator::SpineAnimator(GameObject* gameobj): IRenderable(gameobj)
+SpineAnimator::SpineAnimator(GameObject* gameobj): IBoxResizable(gameobj)
 {
 	componentType = ComponentType::SPINE_ANIMATOR;
     spine_animation_name = "None";
     properties["Color"]->is_visible = false;
+    properties["Size"]->is_editable = false;
     auto spine_animation_name_property = new Property("Spine Animation Name", &spine_animation_name, Property::ANIMATION, this);
     spine_animation_name_property->set_property_func<string>(&SpineAnimator::get_spine_animation_name, &SpineAnimator::set_spine_animation_name, this);
     properties.emplace(spine_animation_name_property);
@@ -36,6 +37,14 @@ SpineAnimator::SpineAnimator(GameObject* gameobj): IRenderable(gameobj)
     auto loop_property = new Property("Loop", &loop, Property::BOOL, this);
     loop_property->set_property_func<bool>(&SpineAnimator::get_loop, &SpineAnimator::set_loop, this);
     properties.emplace(loop_property);
+    flipX = false;
+    auto flipX_property = new Property("Flip X", &flipX, Property::BOOL, this);
+    flipX_property->set_property_func<bool>(&SpineAnimator::get_flipX, &SpineAnimator::set_flipX, this);
+    properties.emplace(flipX_property);
+    flipY = false;
+    auto flipY_property = new Property("Flip Y", &flipY, Property::BOOL, this);
+    flipY_property->set_property_func<bool>(&SpineAnimator::get_flipY, &SpineAnimator::set_flipY, this);
+    properties.emplace(flipY_property);
 }
 
 std::string SpineAnimator::get_spine_animation_name() const
@@ -59,6 +68,9 @@ bool SpineAnimator::set_spine_animation_name(const std::string& name)
 		spine_animation_name = name;
 		skeleton = new spine::Skeleton(animationdata->get_skeleton_data());
 		animation_state = new spine::AnimationState(animationdata->get_animation_state_data());
+        skeleton->setScaleX(flipX ? -1 : 1);
+        skeleton->setScaleY(flipY ? -1 : 1);
+        skeleton->setToSetupPose();
         skeleton->updateWorldTransform();
         onPropertyChanged(properties["Spine Animation Name"]);
         onPropertyChanged(properties["Animation"]);
@@ -112,6 +124,47 @@ void SpineAnimator::set_loop(bool loop)
     onPropertyChanged(properties["Loop"]);
 }
 
+bool SpineAnimator::get_flipX() const
+{
+    return flipX;
+}
+
+void SpineAnimator::set_flipX(bool flipX)
+{
+    if(this->flipX==flipX)
+		return;
+    this->flipX = flipX;
+    if (is_Valid())
+    {
+        skeleton->setScaleX(flipX ? -1 : 1);
+        skeleton->updateWorldTransform();
+    }
+	onPropertyChanged(properties["Flip X"]);
+}
+
+bool SpineAnimator::get_flipY() const
+{
+    return flipY;
+}
+
+void SpineAnimator::set_flipY(bool flipY)
+{
+    if (this->flipY == flipY)
+		return;
+	this->flipY = flipY;
+    if (is_Valid())
+    {
+		skeleton->setScaleY(flipY ? -1 : 1);
+        skeleton->updateWorldTransform();
+	}
+	onPropertyChanged(properties["Flip Y"]);
+}
+
+bool SpineAnimator::is_Valid() const
+{
+    return animation_state != nullptr && skeleton != nullptr;
+}
+
 std::vector<std::string> SpineAnimator::getAllAnimations()
 {
     std::vector<std::string> animations;
@@ -138,12 +191,6 @@ std::vector<std::string> SpineAnimator::getAllSkins()
         }
     }
     return skins;
-}
-
-void SpineAnimator::render(Camera* camera)
-{
-    this->camera = camera;
-    updateVertices();
 }
 
 Result<void*> SpineAnimator::setAnimation(int index,bool loop)
@@ -198,6 +245,36 @@ void SpineAnimator::afterUpdate()
 		animation_state->apply(*skeleton);
 		skeleton->updateWorldTransform();
 	}
+}
+
+void SpineAnimator::updateBorderVertices()
+{
+    if (animation_state == nullptr || skeleton == nullptr)
+        return;
+    borderVertices.clear();
+    float right_x = 0.0f;
+    float left_x = 0.0f;
+    float uppon_y = 0.0f;
+    float bottom_y = 0.0f;
+    for (auto& vertex : vertices)
+    {
+        if (vertex.position[0]>right_x)
+            right_x = vertex.position[0];
+        if (vertex.position[0]<left_x)
+            left_x = vertex.position[0];
+        if (vertex.position[1]>uppon_y)
+            uppon_y = vertex.position[1];
+        if (vertex.position[1]<bottom_y)
+            bottom_y = vertex.position[1];
+    }
+    size =Vector2D(right_x-left_x, uppon_y-bottom_y);
+    onPropertyChanged(properties["Size"]);
+    borderVertices = {
+        Vertex{{right_x, uppon_y, 0.0f},{1.0f, 1.0f}},        // top right
+        Vertex{{right_x, bottom_y, 0.0f},{1.0f, 0.0f}},	   // bottom right
+        Vertex{{left_x, bottom_y, 0.0f},{0.0f, 0.0f}}, 	   // bottom left
+        Vertex{{left_x, uppon_y, 0.0f},{0.0f,1.0f}}         // top left
+    };
 }
 
 void SpineAnimator::updateVertices()
@@ -325,9 +402,9 @@ void SpineAnimator::updateVertices()
         int b = (int)(tint.b * attachmentColor.b * 255);
         int a = (int)(tint.a * attachmentColor.a * 255);
         color = {r,g,b,a};
-        // Draw the mesh we created for the attachment
+        
     }
-    RenderWidget::getCurrentWidget().drawMesh(this, this->camera);
+    updateBorderVertices();
 }
 
 void SpineAnimator::createIndices()

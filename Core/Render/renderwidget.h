@@ -46,7 +46,7 @@ public:
 
     HierarchyWidget* hierarchyWidget;
 
-    void drawMesh(IRenderable* target, Camera* camera);
+    void drawMesh(IRenderable* target, Camera* camera,bool visBorder);
   
     void renderScene(Camera* camera);
     void renderGameobject(GameObject* gameobj, Camera* camera);

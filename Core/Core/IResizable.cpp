@@ -5,6 +5,7 @@ using namespace std;
 
 IBoxResizable::IBoxResizable(GameObject* gameobj):IRenderable(gameobj)
 {	
+	borderVbo = nullptr;
 	borderIbo = nullptr;
 	Vector2D size = Vector2D(100, 100);	
 	auto size_property = new Property("Size", &size, Property::VECTOR2D, this);
@@ -17,6 +18,10 @@ IBoxResizable::IBoxResizable(GameObject* gameobj):IRenderable(gameobj)
 
 IBoxResizable::~IBoxResizable()
 {
+	if(borderVbo != nullptr)
+		borderVbo->destroy();
+	delete borderVbo;
+	borderVbo = nullptr;
 	if(borderIbo != nullptr)
 		borderIbo->destroy();
 	delete borderIbo;
@@ -55,7 +60,21 @@ void IBoxResizable::set_size(Vector2D newSize)
 	size = newSize;
 	IRenderable::reset();
 	updateVertices();
+	updateBorderVertices();
 	onPropertyChanged(properties["Size"]);
+}
+
+void IBoxResizable::updateBorderVertices()
+{
+	borderVertices.clear();
+	float half_width = size.x / 2;
+	float half_height = size.y / 2;
+	borderVertices = {
+		Vertex{{half_width, half_height, 0.0f},{1.0f, 1.0f}},        // top right
+		Vertex{{half_width, -half_height, 0.0f},{1.0f, 0.0f}},	   // bottom right
+		Vertex{{-half_width, -half_height, 0.0f},{0.0f, 0.0f}}, 	   // bottom left
+		Vertex{{-half_width, half_height, 0.0f},{0.0f,1.0f}}         // top left
+	};
 }
 
 void IBoxResizable::createBorderIndices()

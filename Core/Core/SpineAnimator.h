@@ -1,12 +1,13 @@
 #pragma once
 #include "IScriptBehaviour.h"
-#include "IRenderable.h"
+#include "IResizable.h"
 #include <spine/AnimationState.h>
 #include <spine/Skeleton.h>
 #include "Camera.h"
 #include "Core/Utils/Result.h"
+#include "AnimationEventData.h"
 
-class SpineAnimator : public IRenderable , public IScriptBehaviour
+class SpineAnimator : public IBoxResizable , public IScriptBehaviour
 {
 public:
 	typedef SpineAnimator customType;
@@ -26,16 +27,26 @@ public:
 	bool get_loop() const;
 	void set_loop(bool loop);
 
+	bool get_flipX() const;
+	void set_flipX(bool flipX);
+
+	bool get_flipY() const;
+	void set_flipY(bool flipY);
+
+	bool is_Valid() const;
+
 	std::vector<std::string> getAllAnimations();                                               // 需要绑定
 	std::vector<std::string> getAllSkins();                                                     // 需要绑定
 
-	void render(Camera* camera);
 	Result<void*> setAnimation(int index,bool loop);                                     // 需要绑定
 	Result<void*> setAnimation(const std::string& name, bool loop);           // 需要绑定
 
 	// inherited via IScriptBehaviour
 	void awake() override;
 	void afterUpdate() override;
+
+	// inherited via IBoxResizable
+	virtual void updateBorderVertices() override;
 
 	//inherited via IRenderable
 	virtual void updateVertices() override ;
@@ -46,13 +57,16 @@ public:
 	virtual void serialize(PHString& str) override;
 	virtual void deserialize(std::stringstream& ss) override;
 
+	PHEvent<void,AnimationEventData> onAnimationEvent;
+
 private:
 	std::string spine_animation_name;
 	int animation_index;
 	int skin_index;
 	bool loop;
+	bool flipX;
+	bool flipY;
 	spine::AnimationState* animation_state = nullptr;
 	spine::Skeleton* skeleton = nullptr;
-	Camera* camera = nullptr;
 };
 

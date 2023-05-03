@@ -364,8 +364,7 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 
 	//draw texture
 	glDrawElements(GL_TRIANGLES, sizeof(unsigned int)*6, GL_UNSIGNED_INT, 0);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
+	
 	if (img->isTextureValid())
 		img->get_texture()->release();
 
@@ -385,6 +384,7 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 		boxColliderShaderProgram->setUniformValue("MVPMatrix", matrix);
 		boxColliderShaderProgram->setUniformValue("color", 1.0f, 1.0f, 1.0f, 1.0f);
 
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth(3.0f);
 		glDrawElements(GL_LINES, static_cast<GLsizei>(sizeof(unsigned int) * img->borderIndices.size()), GL_UNSIGNED_INT, 0);
 		img->borderIbo->release();
@@ -590,8 +590,9 @@ void RenderWidget::renderText(Text* text, Camera* textCamera, bool visBorder)
 
 void RenderWidget::renderSpineAnimator(SpineAnimator* target, Camera* camera, bool visBorder)
 {
-
-	target->render(camera);
+	target->updateVertices();
+	if(target->is_Valid())
+		drawMesh(target, camera,visBorder);
 }
 
 // render camera border
@@ -699,7 +700,7 @@ void RenderWidget::renderCameraBorder(Camera* target, Camera* renderCamera, bool
 
 	
 
-void RenderWidget::drawMesh(IRenderable* target, Camera* camera)
+void RenderWidget::drawMesh(IRenderable* target, Camera* camera, bool visBorder)
 {
 	auto vbo = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);	
 	vbo->create();
@@ -760,6 +761,47 @@ void RenderWidget::drawMesh(IRenderable* target, Camera* camera)
 	ibo->destroy();
 	if (target->isTextureValid())
 		target->get_texture()->release();
+
+	//draw border
+	if (visBorder)
+	{
+		auto box = dynamic_cast<IBoxResizable*>(target);
+		if (box == nullptr)
+			return;
+		if (box->borderVbo == nullptr)
+		{
+			box->borderVbo = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+			box->borderVbo->create();
+			box->borderVbo->bind();
+			box->borderVbo->allocate(box->borderVertices.data(), static_cast<int>(box->borderVertices.size() * sizeof(Vertex)));
+		}
+		box->borderVbo->bind();
+		if (box->borderIbo == nullptr)
+		{
+			box->borderIbo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+			box->borderIbo->create();
+			box->borderIbo->bind();
+			box->borderIbo->allocate(box->borderIndices.data(), static_cast<int>(box->borderIndices.size() * sizeof(unsigned int)));
+		}
+		box->borderIbo->bind();
+		boxColliderShaderProgram->bind();
+
+		GLint posLocation = boxColliderShaderProgram->attributeLocation("aPos");
+
+		GLuint stride = sizeof(Vertex);
+		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+		glEnableVertexAttribArray(posLocation);
+
+		boxColliderShaderProgram->setUniformValue("MVPMatrix", matrix);
+		boxColliderShaderProgram->setUniformValue("color", 1.0f, 1.0f, 1.0f, 1.0f);
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glLineWidth(1.0f);
+		glDrawElements(GL_LINES, static_cast<GLsizei>(sizeof(unsigned int) * box->borderIndices.size()), GL_UNSIGNED_INT, 0);
+		box->borderVbo->release();
+		box->borderIbo->release();
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
 }
 
 void RenderWidget::renderScene(Camera* camera)
@@ -1446,11 +1488,11 @@ std::vector<GameObject*> RenderWidget::hitRay(Vector2D screenPos)
 		Vector2D center = Vector2D(0.f, 0.f);
 		if (auto box = gameObject.second->getComponent<IBoxResizable>(); box != nullptr)
 		{
-			auto leftX = box->vertices[2].position[0];
-			auto rightX = box->vertices[0].position[0];
+			auto leftX = box->borderVertices[2].position[0];
+			auto rightX = box->borderVertices[0].position[0];
 
-			auto topY = box->vertices[0].position[1];
-			auto bottomY = box->vertices[2].position[1];
+			auto topY = box->borderVertices[0].position[1];
+			auto bottomY = box->borderVertices[2].position[1];
 
 			leftX = (matrix * QVector4D(leftX, 0.f, 0.f, 1.f)).toVector2DAffine().x();
 			rightX = (matrix * QVector4D(rightX, 0.f, 0.f, 1.f)).toVector2DAffine().x();
