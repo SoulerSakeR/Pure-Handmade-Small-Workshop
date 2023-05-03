@@ -5,6 +5,7 @@
 #include "Image.h"
 #include "Core/Core/Renderer.h"
 #include <Core/ResourceManagement/SceneMgr.h>
+#include <Core/ResourceManagement/ResourceMgr.h>
 
 using namespace std;
 
@@ -107,6 +108,7 @@ void Scene::insertGameObject(GameObject& value,GameObject* target,InsertMode ins
 	default:
 		break;
 	}
+	SceneMgr::get_instance().get_render_setting()->refreshLater();
 }
 
 void Scene::insertExistGameObject(GameObject* gameObject, GameObject* target, InsertMode insertMode)
@@ -183,6 +185,7 @@ void Scene::insertExistGameObject(GameObject* gameObject, GameObject* target, In
 			break;
 		}
 	}
+	SceneMgr::get_instance().get_render_setting()->refreshLater();
 }
 
 

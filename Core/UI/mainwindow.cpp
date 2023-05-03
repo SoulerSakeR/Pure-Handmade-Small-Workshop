@@ -213,6 +213,7 @@ MainWindow::MainWindow(QWidget *parent)
         }
         GameEngine::get_instance().gameLoop->setPlayingStatus(true);
         GameEngine::get_instance().gameLoop->shutdown();
+        ui->dockWidget_components->timer->stop();
         ui->hierarchy->setCurrentItem(nullptr);
         while (!GameEngine::get_instance().gameLoop->isClosed || RenderWidget::getCurrentWidget().isRendering)
         {
@@ -223,11 +224,13 @@ MainWindow::MainWindow(QWidget *parent)
         ui->pushButton_2->setEnabled(true);       
         auto gameLoop = std::bind(&GameLoop::startGameLoop, GameEngine::get_instance().gameLoop);
         GameEngine::get_instance().pool.enqueue(gameLoop);
+        ui->dockWidget_components->timer->start();
         });
 
     // 点击停止
     connect(ui->pushButton_2, &QPushButton::clicked, [=]() {
         GameEngine::get_instance().gameLoop->shutdown();
+        ui->dockWidget_components->timer->stop();
         ui->hierarchy->setCurrentItem(nullptr);
         while (!GameEngine::get_instance().gameLoop->isClosed || RenderWidget::getCurrentWidget().isRendering)
         {
@@ -239,6 +242,7 @@ MainWindow::MainWindow(QWidget *parent)
         ui->pushButton_2->setEnabled(false);       
         auto renderLoop = std::bind(&GameLoop::startRenderLoop, GameEngine::get_instance().gameLoop);
         GameEngine::get_instance().pool.enqueue(renderLoop);
+        ui->dockWidget_components->timer->start();
         });
 
     // 实现Window菜单控制Hierarchy

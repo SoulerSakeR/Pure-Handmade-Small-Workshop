@@ -276,7 +276,7 @@ void SpineAnimator::updateBorderVertices()
             bottom_y = vertex.position[1];
     }
     size =Vector2D(right_x-left_x, uppon_y-bottom_y);
-    onPropertyChanged(properties["Size"]);
+    //onPropertyChanged(properties["Size"]);
     borderVertices = {
         Vertex{{right_x, uppon_y, 0.0f},{1.0f, 1.0f}},        // top right
         Vertex{{right_x, bottom_y, 0.0f},{1.0f, 0.0f}},	   // bottom right

@@ -23,6 +23,7 @@ public:
     void updatePropertyData(Property* property);
 
     HierarchyWidget* hierarchy;
+    QTimer* timer;
 
 public slots:
     void onGameObjectSelected(GameObject* gameobj);
@@ -37,9 +38,10 @@ private:
     GameObject* selected_gameobject;
     Property* changed_property;
     void* changed_value;
-    QTimer* timer;
     bool is_refreshing;
     std::vector<Property*> changed_properties_buffer1;
     std::vector<Property*> changed_properties_buffer2;
+
+    friend class MainWindow;
 };
 

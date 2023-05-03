@@ -39,9 +39,9 @@ public:
 	bool removeRenderLayer(int order);
 	void registerRenderer(Renderer* renderer);
 	void unregisterRenderer(Renderer* renderer);
-
-private:
 	void refreshLater();
+
+private:	
 	void refreshAll();
 	void addRendererWithChild(GameObject* gameObj);
 	void reset2Default(int layer);

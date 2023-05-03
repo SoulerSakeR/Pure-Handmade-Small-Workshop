@@ -23,6 +23,8 @@ ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGr
 	auto layout = new QGridLayout(this);
 	int row = 0;
 	auto widget =(ComponentsDockWidget*)parent;
+
+	// create property widgets
 	for (auto it = component->properties.vbegin();it < component->properties.vend();++it)
 	{
 		auto property = *it;
