@@ -1,5 +1,5 @@
 
 awake = function()
-    local PosX = this.transform:getWorldPositionX()
-    Debug.logInfo(tostring(PosX))
+    local gameObj = this.findTag("Player")
+    Debug.logInfo(tostring(gameObj[1]:getID()))
 end

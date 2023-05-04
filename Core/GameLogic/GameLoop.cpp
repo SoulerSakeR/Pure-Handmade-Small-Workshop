@@ -209,7 +209,7 @@ void GameLoop::startGameLoop()
     if(lua!=nullptr)
 		delete lua;
     lua = new sol::state;
-    lua->open_libraries(sol::lib::base ,sol::lib::package);
+    lua->open_libraries(sol::lib::base ,sol::lib::package, sol::lib::math);
     bindAllClasses(*lua);
     preloadScriptFiles(*lua);
 
