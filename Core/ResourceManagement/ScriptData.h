@@ -1,22 +1,15 @@
 #pragma once
 #include <string>
+#include "PHAsset.h"
 
-class ScriptData
+class ScriptData : public PHAsset
 {
 public:
-	typedef ScriptData customType;
+	ScriptData();
 
-	// getters
-	std::string get_name() const;
-	std::string get_path() const;
-
-	static ScriptData* loadFromPath(const std::string& absolutePath, bool copy = false);	
-	static ScriptData* loadFromName(const std::string& name);
-	static bool isExist(const std::string& name);
 	static ScriptData* CreateScriptData(const std::string& className);
 
-private:
-	std::string name;
-	std::string path;
+	// inherited via PHAsset
+	virtual ScriptData* loadFromPath(const std::string& path, bool isRelativePath) override;
 };
 

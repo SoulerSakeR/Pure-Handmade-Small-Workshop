@@ -4,59 +4,12 @@
 #include "Core/Core/Debug.h"
 #include "ResourceMgr.h"
 
-std::string ScriptData::get_name() const
+ScriptData::ScriptData()
 {
-	return name;
+	assetType = SCRIPT;
 }
 
-std::string ScriptData::get_path() const
-{
-	return path;
-}
 
-ScriptData* ScriptData::loadFromPath(const std::string& absolutePath, bool copy)
-{
-	if (auto res = IO::readText(QString::fromStdString(absolutePath)); !res.isNull())
-	{
-		auto scriptData = new ScriptData();
-		PHPath path(absolutePath);
-		scriptData->name = path.getFileName(false);
-		scriptData->path = absolutePath;
-		if (auto it = ResourceMgr::get_instance().script_assets.find(scriptData->get_name());it != ResourceMgr::get_instance().script_assets.end())
-		{
-			Debug::logWarning() << "script file with name " << scriptData->get_name() << " already exist\n";
-		}
-		else
-		{
-			ResourceMgr::get_instance().script_assets[scriptData->get_name()] = scriptData;
-		}
-		return scriptData;
-	}
-	else
-	{
-		Debug::logError() << "Failed to load script file from path " << absolutePath << "\n";
-		return nullptr;
-	}
-}
-
-ScriptData* ScriptData::loadFromName(const std::string& name)
-{
-	auto& assets = ResourceMgr::get_instance().script_assets;
-	if (assets.find(name) != assets.end())
-	{
-		return assets[name];
-	}
-	else
-	{
-		Debug::logWarning() << "Script with name " << name << " not exist\n";
-		return nullptr;
-	}
-}
-
-bool ScriptData::isExist(const std::string& name)
-{
-	return ResourceMgr::get_instance().isScriptExist(name);
-}
 
 ScriptData* ScriptData::CreateScriptData(const std::string& className)
 {
@@ -82,7 +35,7 @@ ScriptData* ScriptData::CreateScriptData(const std::string& className)
 	str.appendLine(className, " = class(IScriptBehaviour)");
 	if (IO::write(str.str(),luaPath,1))
 	{
-		return loadFromPath(luaPath);
+		return ScriptData().loadFromPath(luaPath,false);
 	}
 	else
 	{
@@ -91,3 +44,41 @@ ScriptData* ScriptData::CreateScriptData(const std::string& className)
 	}
 
 }
+
+ScriptData* ScriptData::loadFromPath(const std::string& path, bool isRelativePath)
+{
+	// Get absolute path
+	string absolutePath;
+	if (isRelativePath)
+	{
+		absolutePath = PHPath(ResourceMgr::get_instance().getAssetDir()).combinePath(path).getNewPath();
+	}
+	else
+	{
+		absolutePath = path;
+	}
+
+	// Check if file exist
+	if (auto res = IO::readText(QString::fromStdString(absolutePath)); !res.isNull())
+	{
+		auto scriptData = new ScriptData();
+		PHPath path(absolutePath);
+		scriptData->name = path.getFileName(false);
+		scriptData->path = absolutePath;
+		if (isExist(scriptData->get_name()))
+		{
+			Debug::logWarning() << " [ScriptData::loadFromPath] script file with name " << scriptData->get_name() << " already exist\n";
+		}
+		else
+		{
+			scriptData->registerAssetToMgr();
+		}
+		return scriptData;
+	}
+	else
+	{
+		Debug::logError() << "Failed to load script file from path " << absolutePath << "\n";
+		return nullptr;
+	}
+}
+

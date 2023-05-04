@@ -66,9 +66,10 @@ void AnimationSelectorDialog::initListWidget()
 	listWidget->setSpacing(10);
 	listWidget->setStyleSheet("QListWidget{background-color: rgb(255, 255, 255);border: 1px solid gray;border-radius: 5px;padding: 0 8px;}");
 	listWidget->addItem(new QListWidgetItem("None"));
-	for (auto& spine : ResourceMgr::get_instance().spine_assets)
+	for (auto& spine : ResourceMgr::get_instance().assets[PHAsset::SPINE_ANIMATION])
 	{
-		listWidget->addItem(new QListWidgetItem(QIcon(QString::fromStdString(spine.second->getTexturePath())), QString::fromStdString(spine.second->get_name())));
+		auto spineAnimation = dynamic_cast<SpineAnimationData*>(spine.second);
+		listWidget->addItem(new QListWidgetItem(QIcon(QString::fromStdString(spineAnimation->getTexturePath())), QString::fromStdString(spine.second->get_name())));
 	}
 	layout()->addWidget(listWidget);
 }

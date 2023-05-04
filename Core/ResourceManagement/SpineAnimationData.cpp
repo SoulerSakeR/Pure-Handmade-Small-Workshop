@@ -5,9 +5,9 @@
 
 using namespace spine;
 
-SpineAnimationData::SpineAnimationData(const std::string& atlasAbsolutePath)
+SpineAnimationData::SpineAnimationData()
 {
-	name = "";
+	assetType = SPINE_ANIMATION;
 }
 
 std::string SpineAnimationData::getTexturePath() const
@@ -21,23 +21,30 @@ std::string SpineAnimationData::getTexturePath() const
 	return "";
 }
 
-SpineAnimationData* SpineAnimationData::loadFromPath(const std::string& atlasAbsolutePath, bool copy)
+SpineAnimationData* SpineAnimationData::loadFromPath(const std::string& path, bool isRelativePath)
 {
-	auto result = new SpineAnimationData(atlasAbsolutePath);
-	result->atlas = new spine::Atlas(atlasAbsolutePath.c_str(), SpineTextureLoader::get_instance());
+	// Get path
+	PHPath absolutePath(path);
+	if (isRelativePath)
+	{
+		absolutePath = PHPath(ResourceMgr::get_instance().getAssetDir()).combinePath(path);
+	}
+
+	auto result = new SpineAnimationData();
+	result->atlas = new spine::Atlas(absolutePath.getNewPath().c_str(), SpineTextureLoader::get_instance());
 
 	// Create a SkeletonJson used for loading and set the scale
 	// to make the loaded data two times as big as the original data
 	if (result->atlas == nullptr)
 	{
-		Debug::logError() << "Error reading atlas file: " << atlasAbsolutePath << "\n";
+		Debug::logError() << " [SpineAnimationData::loadFromPath] Error reading atlas file: " << absolutePath.getNewPath() << "\n";
 		return nullptr;
 	}
 	SkeletonJson json(result->atlas);
 	json.setScale(2);
 
 	// Load the skeleton .json file into a SkeletonData
-	PHPath atlas(atlasAbsolutePath);
+	PHPath atlas(absolutePath);
 	auto name = atlas.getFileName(false);
 	result->name = name;
 	auto jsonName = name + ".json";
@@ -54,45 +61,18 @@ SpineAnimationData* SpineAnimationData::loadFromPath(const std::string& atlasAbs
 	}
 	result->animation_state_data = new AnimationStateData(result->skeleton_data);
 	result->animation_state_data->setDefaultMix(0.5f);
-	if (auto it = ResourceMgr::get_instance().spine_assets.find(result->get_name());it != ResourceMgr::get_instance().spine_assets.end())
+	if (isExist(result->get_name()))
 	{
 		Debug::logWarning() << "Spine animation with name " << result->get_name() << " already exist\n";
 		return nullptr;
 	}
 	else
 	{
-		if (copy)
-		{
-			PHPath spineDir(ResourceMgr::get_instance().getSpineDir());
-			spineDir = spineDir.combinePath(result->get_name());
-			IO::createPathIfNotExists(spineDir.getNewPath());
-			IO::copy(atlasAbsolutePath.c_str(), spineDir.getNewPath().c_str());
-			IO::copy(jsonPath.c_str(), spineDir.getNewPath().c_str());
-			IO::copy(texturePath.c_str(), spineDir.getNewPath().c_str());
-		}
-		ResourceMgr::get_instance().spine_assets[result->get_name()] = result;
+		result->registerAssetToMgr();
 		return result;
-	}	
-}
-
-SpineAnimationData* SpineAnimationData::loadFromName(const std::string& name)
-{
-	auto& assets = ResourceMgr::get_instance().spine_assets;
-	if (assets.find(name) != assets.end())
-	{
-		return assets[name];
-	}
-	else
-	{
-		Debug::logWarning() << "SpineAnimation with name " << name << " not exist\n";
-		return nullptr;
 	}
 }
 
-bool SpineAnimationData::isExist(const std::string& name)
-{
-	return ResourceMgr::get_instance().isSpineAnimationExist(name);
-}
 
 
 

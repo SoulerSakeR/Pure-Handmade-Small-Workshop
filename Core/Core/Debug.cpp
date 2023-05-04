@@ -26,10 +26,7 @@ Debug Debug::logWarning(const std::string& info)
 
 void Debug::log(const std::string& info,LogLevel level)
 {	
-	std::string text = info;
-#ifndef NDEBUG 
-	
-#ifdef LOG_TO_CONSOLE
+	std::string text = info;	
 	if (logLevel <= level)
 	{
 		Log2Console(text);
@@ -37,11 +34,8 @@ void Debug::log(const std::string& info,LogLevel level)
 			if (MainWindow::getConsoleTextEdit() != nullptr)
 				QMetaObject::invokeMethod(MainWindow::getConsoleTextEdit(), "insertPlainText",Qt::QueuedConnection,Q_ARG(QString, QString::fromStdString(text)));
 		}
+		log2File(text);
 	}	
-#endif // LOG_TO_CONSOLE
-
-#endif // NDEBUG
-	log2File(text);
 }
 
 Debug Debug::logError(const std::string& error)

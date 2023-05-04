@@ -47,7 +47,7 @@ void ResourceMgr::loadAllAssets()
 			auto texture = loadFromPath<Texture2D>(filePath,false);
 			if (texture != nullptr)
 			{
-				texture_assets[texture->get_name()] = texture;
+				texture->registerAssetToMgr();
 				Debug::logInfo() << "Texture2D loaded: " << texture->get_name() << "\n";
 			}				
 		}
@@ -56,7 +56,7 @@ void ResourceMgr::loadAllAssets()
 			auto spineData = loadFromPath<SpineAnimationData>(filePath,false);
 			if (spineData != nullptr)
 			{
-				spine_assets[spineData->get_name()] = spineData;
+				spineData->registerAssetToMgr();
 				Debug::logInfo() << "SpineAnimationData loaded: " << spineData->get_name() << "\n";
 			}
 		}
@@ -65,7 +65,7 @@ void ResourceMgr::loadAllAssets()
 			auto scriptData = loadFromPath<ScriptData>(filePath,false);
 			if (scriptData != nullptr)
 			{
-				script_assets[scriptData->get_name()] = scriptData;
+				scriptData->registerAssetToMgr();
 				Debug::logInfo() << "ScriptData loaded: " << scriptData->get_name() << "\n";
 			}
 		}
@@ -74,32 +74,16 @@ void ResourceMgr::loadAllAssets()
 
 void ResourceMgr::clear()
 {
-	auto vec = std::vector<Texture2D*>(texture_assets.size());
-	for (auto& texture : texture_assets)
+	for (auto& pair : assets)
 	{
-		vec.push_back(texture.second);
+
 	}
-	for (auto& texture : vec)
-	{
-		delete texture;
-	}
-	texture_assets.clear();
-	auto vec2 = std::vector<SpineAnimationData*>(spine_assets.size());
-	for (auto& spine : spine_assets)
-	{
-		vec2.push_back(spine.second);
-	}
-	for (auto& spine : vec2)
-	{
-		delete spine;
-	}
-	spine_assets.clear();
 }
 
 Texture2D* ResourceMgr::CreatNewTexture2D(const std::string name, const std::string path)
 {
 	if(name!="")
-	if (texture_assets.find(name) != texture_assets.end())
+	if (isExist<Texture2D>(name))
 	{
 		Debug::logWarning() << "Texture2D with name " << name << " already exist\n";
 		return nullptr;

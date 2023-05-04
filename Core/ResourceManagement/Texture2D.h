@@ -5,6 +5,7 @@
 #include "Core/Core/ISerializable.h"
 #include "qopengltexture.h"
 #include <sstream>
+#include "PHAsset.h"
 
 struct Color32{
 public:
@@ -55,15 +56,12 @@ public:
 	}
 };
 
-class Texture2D: public ISerializable
+class Texture2D: public PHAsset, public ISerializable
 {
 public:
    virtual ~Texture2D();
-   static Texture2D* loadFromPath(const std::string& absolutePath,bool copy = false);
    static Texture2D* CreateTexture2D(const std::string& name, const std::string& absolutePath, bool mipmap=true, int minification_filter=0, int magnification_filter=0, int wrap_mode = 0);
    static Texture2D* loadFromImgPath(const std::string& absolutePath);
-   static Texture2D* loadFromName(const std::string& name);
-   static bool isExist(const std::string& name);
 
    //getter and setter
    std::string get_name() const;
@@ -98,7 +96,9 @@ public:
    bool isNull() const;
    void reset_texture();
 
-   typedef Texture2D customType;
+   // inherited via PHAsset
+   virtual Texture2D* loadFromPath(const std::string& path, bool isRelativePath) override;
+
    // Inherited via ISerializable
    virtual void serialize(PHString& str) override;
    virtual void deserialize(std::stringstream& ss) override;
@@ -110,8 +110,6 @@ private:
     Texture2D(const Texture2D& other) = delete;
     Texture2D& operator=(const Texture2D& other) = delete;
     QOpenGLTexture* texture;
-    std::string name;
-    std::string path;
     std::string img_path;       
     bool mipmap;
     int minification_filter;

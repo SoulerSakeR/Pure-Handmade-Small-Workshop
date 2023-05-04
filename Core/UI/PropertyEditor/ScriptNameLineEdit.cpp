@@ -10,9 +10,9 @@ ScriptNameLineEdit::ScriptNameLineEdit(QWidget* parent, Property* property): QLi
 {
 	setText(property->get_data<string>().c_str());
 	word_list << "None";
-	for (auto& pair : ResourceMgr::get_instance().script_assets)
+	for (auto& pair : ResourceMgr::get_instance().assets[PHAsset::SCRIPT])
 	{
-		auto script = pair.second;
+		auto script =pair.second;
 		word_list<< script->get_name().c_str();
 	}
 	QCompleter* completer = new QCompleter(word_list, this);

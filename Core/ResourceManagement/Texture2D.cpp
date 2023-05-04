@@ -9,6 +9,7 @@ using namespace std;
 
 Texture2D::Texture2D()
 {
+	assetType = TEXTURE2D;
 	name = "";
 	img_path = "";
 	texture = nullptr;
@@ -23,27 +24,7 @@ Texture2D::~Texture2D()
 	{
 		delete texture;
 	}
-	ResourceMgr::get_instance().texture_assets.erase(name);
-}
-
-Texture2D* Texture2D::loadFromPath(const std::string& absolutePath,bool copy)
-{	
-	if (auto res = IO::readText(QString::fromStdString(absolutePath)); !res.isNull())
-	{
-		auto result = new Texture2D();
-		stringstream ss(res.toStdString());
-		result->deserialize(ss);
-		if (auto it = ResourceMgr::get_instance().texture_assets.find(result->get_name());it != ResourceMgr::get_instance().texture_assets.end())
-		{
-			Debug::logWarning() << "Texture2D with name " << result->get_name() << " already exist\n";
-		}
-		else
-		{
-			ResourceMgr::get_instance().texture_assets[result->get_name()] = result;
-		}
-		return result;
-	}
-	return nullptr;
+	unregisterAssetFromMgr();
 }
 
 Texture2D* Texture2D::CreateTexture2D(const std::string& name, const std::string& img_path, bool mipmap, int minification_filter, int magnification_filter, int wrap_mode)
@@ -66,24 +47,6 @@ Texture2D* Texture2D::loadFromImgPath(const std::string& absolutePath)
 	return CreateTexture2D(PHPath(absolutePath).getFileName(false), absolutePath);
 }
 
-Texture2D* Texture2D::loadFromName(const std::string& name)
-{
-	auto& assets = ResourceMgr::get_instance().texture_assets;
-	if (assets.find(name) != assets.end())
-	{
-		return assets[name];
-	}
-	else
-	{
-		Debug::logWarning() << "Texture2D with name " << name << " not exist\n";
-		return nullptr;
-	}
-}
-
-bool Texture2D::isExist(const std::string& name)
-{
-	return ResourceMgr::get_instance().isTextureExist(name);
-}
 
 std::string Texture2D::get_name() const
 {
@@ -99,15 +62,15 @@ bool Texture2D::set_name(const std::string& name)
 	}
 	if(this->name==name)
 		return true;
-	if (ResourceMgr::get_instance().isTextureExist(name))
+	if (isExist(name))
 	{
 		Debug::logWarning() << "Texture2D with name " << name << " already exist\n";
 		return false;
 	}
 	if (this->name != "")
-		ResourceMgr::get_instance().texture_assets.erase(this->name);
+		unregisterAssetFromMgr();
 	this->name = name;
-	ResourceMgr::get_instance().texture_assets[name] = this;	
+	registerAssetToMgr();
 	return true;
 }
 
@@ -156,7 +119,7 @@ bool Texture2D::set_texture(const std::string& absolutePath,bool horizontallyMir
 	RenderWidget::getCurrentWidget().doneCurrent();
 	Debug::logInfo() << "Texture2D " << name << " load image success, image path: " << absolutePath << "\n";
 	Debug::logInfo() << "Texture2D " << name << " width: " << texture->width() << " height: " << texture->height() << "\n";
-	//TODO: ÉèÖÃÎÆÀí²ÎÊý
+	//TODO: è®¾ç½®çº¹ç†å‚æ•°
 	return true;
 }
 
@@ -226,8 +189,7 @@ bool Texture2D::set_wrap_mode(int mode)
 }
 
 void Texture2D::save()
-{
-	
+{	
 	PHString str;
 	serialize(str);
 	auto path = PHPath(GameEngine::get_instance().getGamePath()).combinePath(get_path());
@@ -248,6 +210,31 @@ void Texture2D::reset_texture()
 		delete texture;
 		texture = nullptr;
 	}
+}
+
+Texture2D* Texture2D::loadFromPath(const std::string& path, bool isRelativePath)
+{
+	PHPath texturePath(path);
+	if (isRelativePath)
+	{
+		texturePath = PHPath(ResourceMgr::get_instance().getAssetDir()).combinePath(path);
+	}
+	if (auto res = IO::readText(QString::fromStdString(texturePath.getNewPath())); ! res.isNull())
+	{
+		auto result = new Texture2D();
+		stringstream ss(res.toStdString());
+		result->deserialize(ss);
+		if (isExist(result->name))
+		{
+			Debug::logWarning() << " [Texture2D::loadFromPath] Texture2D with name " << result->get_name() << " already exist\n";
+		}
+		else
+		{
+			result->registerAssetToMgr();
+		}
+		return result;
+	}
+	return nullptr;
 }
 
 void Texture2D::serialize(PHString& str)

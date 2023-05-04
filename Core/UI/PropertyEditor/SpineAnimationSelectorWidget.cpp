@@ -15,7 +15,7 @@ SpineAnimationSelectorWidget::SpineAnimationSelectorWidget(QWidget* parent, Prop
 	string spineName = property->get_data<string>();
 	if (spineName == "None")
 		spineAnimationLabel = new QLabel("None");
-	else if (ResourceMgr::get_instance().isSpineAnimationExist(spineName))
+	else if (ResourceMgr::get_instance().isExist<SpineAnimationData>(spineName))
 		spineAnimationLabel = new QLabel(QString::fromStdString(spineName));
 	else
 		spineAnimationLabel = new QLabel(QString::fromStdString(spineName).append("(not found)"));

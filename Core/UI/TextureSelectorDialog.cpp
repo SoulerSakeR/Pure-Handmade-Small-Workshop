@@ -62,9 +62,10 @@ void TextureSelectorDialog::initListWidget()
 	listWidget->setSpacing(10);
 	listWidget->setStyleSheet("QListWidget{background-color: rgb(255, 255, 255);border: 1px solid gray;border-radius: 5px;padding: 0 8px;}");
 	listWidget->addItem(new QListWidgetItem("None"));
-	for (auto& texture : ResourceMgr::get_instance().texture_assets)
+	for (auto& texture : ResourceMgr::get_instance().assets[PHAsset::TEXTURE2D])
 	{
-		listWidget->addItem(new QListWidgetItem(QIcon(QString::fromStdString(texture.second->get_img_path())), QString::fromStdString(texture.second->get_name())));
+		auto texture2D = static_cast<Texture2D*>(texture.second);
+		listWidget->addItem(new QListWidgetItem(QIcon(QString::fromStdString(texture2D->get_img_path())), QString::fromStdString(texture.second->get_name())));
 	}
 	layout()->addWidget(listWidget);
 }

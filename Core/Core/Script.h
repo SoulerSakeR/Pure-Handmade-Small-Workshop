@@ -24,10 +24,10 @@ public:
     void reset() override;
     
     // getters and setters
-    std::string get_name();                              //ĞèÒª°ó¶¨            
-    void set_name(const std::string& name);//ĞèÒª°ó¶¨ 
-    std::string get_path();							  //ĞèÒª°ó¶¨
-    void set_path(const std::string& path);			  //ĞèÒª°ó¶¨
+    std::string get_name();                              //éœ€è¦ç»‘å®š            
+    void set_name(const std::string& name);//éœ€è¦ç»‘å®š 
+    std::string get_path();							  //éœ€è¦ç»‘å®š
+    void set_path(const std::string& path);			  //éœ€è¦ç»‘å®š
 
 
     // inherited via IScriptBehaviour

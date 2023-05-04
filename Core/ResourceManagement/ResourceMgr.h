@@ -6,6 +6,7 @@
 #include "Core/UI/TextureSelectorDialog.h"
 #include "SpineAnimationData.h"
 #include "ScriptData.h"
+#include "PHAsset.h"
 
 using std::string;
 
@@ -24,7 +25,7 @@ public:
 	Texture2D* CreatNewTexture2D(const std::string name, const std::string path);
 
 	template <typename T>
-	T* loadFromPath(const string& path,bool isRelativePath = true,bool copy = false)
+	T* loadFromPath(const string& path,bool isRelativePath = true,bool copy = false,const std::string& desPath = "")
 	{
 		if (has_type_member<T>::value)
 		{
@@ -38,7 +39,7 @@ public:
 			{
 				absolutePath = path;
 			}
-			T* resource = T::loadFromPath(absolutePath,copy);
+			T* resource = T().loadFromPath(absolutePath,copy);
 			if(resource == nullptr)
 				Debug::logWarning() << "ResourceMgr::load: Resourece load failed! : " << absolutePath << "\n";
 			return resource;
@@ -49,31 +50,7 @@ public:
 	template <typename T>
 	bool isExist(const string& name)
 	{
-		return T::isExist(name);
-	}
-
-	bool isTextureExist(const string& name)
-	{
-		auto it = texture_assets.find(name);
-		if (it != texture_assets.end())
-			return true;
-		return false;
-	}
-
-	bool isScriptExist(const string& name)
-	{
-		auto it = script_assets.find(name);
-		if (it != script_assets.end())
-			return true;
-		return false;
-	}
-
-	bool isSpineAnimationExist(const string& name)
-	{
-		auto it = spine_assets.find(name);
-		if (it != spine_assets.end())
-			return true;
-		return false;
+		return T().isExist(name);
 	}
 
 	template <typename T>
@@ -81,7 +58,7 @@ public:
 	{
 		if (has_type_member<T>::value)
 		{
-			return T::loadFromName(name);
+			return dynamic_cast<T*>(T().loadFromName(name));
 		}
 		else
 			Debug::logWarning() << "ResourceMgr::load: Resource type not supported! : " << typeid(T).name() << "\n";
@@ -94,11 +71,7 @@ private:
 	const string spinePath = "\\Spine";
 	const string scriptPath = "\\Scripts";
 	static ResourceMgr* instance;
-	std::unordered_map<std::string,std::string> resourceNamePathMap;
-	std::unordered_map<std::string,Texture2D*> texture_assets;
-	std::unordered_map<std::string,SpineAnimationData*> spine_assets;
-	std::unordered_map<std::string,ScriptData*> script_assets;
-	std::unordered_map<std::string, void*> resources;
+	std::unordered_map<PHAsset::AssetType, std::unordered_map<std::string,PHAsset*>> assets;
 
 	friend class Texture2D;
 	friend class SpineAnimationData;
@@ -107,5 +80,6 @@ private:
 	friend class ScriptData;
 	friend class ScriptComboBox;
 	friend class ScriptNameLineEdit;
+	friend class PHAsset;
 };
 

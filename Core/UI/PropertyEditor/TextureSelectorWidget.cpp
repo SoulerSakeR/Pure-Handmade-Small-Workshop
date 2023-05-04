@@ -12,7 +12,7 @@ TextureSelectorWidget::TextureSelectorWidget(QWidget* parent, Property* property
 	string textureName = property->get_data<string>();
 	if (textureName=="None")
 		textureLabel = new QLabel("None");
-	else if (ResourceMgr::get_instance().isTextureExist(textureName))
+	else if (ResourceMgr::get_instance().isExist<Texture2D>(textureName))
 		textureLabel = new QLabel(QString::fromStdString(textureName));
 	else
 		textureLabel = new QLabel(QString::fromStdString(textureName).append("(not found)"));

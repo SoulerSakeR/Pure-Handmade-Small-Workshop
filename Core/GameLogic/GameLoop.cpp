@@ -247,7 +247,6 @@ void GameLoop::startGameLoop()
     }
     if (GameEngine::get_instance().getInEditor())
     {
-        ComponentsDockWidget::get_instance()->timer->stop();
         while (ComponentsDockWidget::get_instance()->is_refreshing)
         {
             continue;
@@ -281,7 +280,6 @@ void GameLoop::startRenderLoop()
     }
     if (GameEngine::get_instance().getInEditor())
     {
-        ComponentsDockWidget::get_instance()->timer->stop();
         while (ComponentsDockWidget::get_instance()->is_refreshing)
         {
             continue;
