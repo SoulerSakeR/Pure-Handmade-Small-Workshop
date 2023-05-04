@@ -266,3 +266,14 @@ void Texture2D::deserialize(std::stringstream& ss)
 	getline(ss, line);
 	set_wrap_mode(stoi(line));
 }
+
+void Texture2D::serialize_1_0(PHString& str)
+{
+	serialize(str);
+}
+
+void Texture2D::deserialize_1_0(std::stringstream& ss)
+{
+	deserialize(ss);
+}
+

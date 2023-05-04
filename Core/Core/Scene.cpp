@@ -299,6 +299,11 @@ void Scene::deserialize(std::stringstream& ss)
 	do
 	{
 		getline(ss, line);
+		if (line.find("Version:1.0") != string::npos)
+		{
+			deserialize_1_0(ss);
+			return;
+		}
 		if (line.find("Scene:") != string::npos)
 		{
 			name = line.substr(6, line.size() - 1);
@@ -317,6 +322,44 @@ void Scene::deserialize(std::stringstream& ss)
 		}
 	} while (ss.good()&&line!="SceneEnd");
 }
+void Scene::serialize_1_0(PHString& str)
+{
+	str.appendLine("Version:1.0");
+	str.appendLine("Scene:", name);
+	int size = rootGameObjs.size();
+	str.appendLine("rootGameObject:", to_string(size));
+	for (int i = 0;i < size;i++)
+	{
+		rootGameObjs[i]->serialize_1_0(str);
+	}
+	str.appendLine("SceneEnd");
+}
+
+void Scene::deserialize_1_0(std::stringstream& ss)
+{
+	string line;
+	do
+	{
+		getline(ss, line);
+		if (line.find("Scene:") != string::npos)
+		{
+			name = line.substr(6, line.size() - 1);
+			getline(ss, line);
+			auto index = line.find(rootGameObjectPrefix);
+			if (index != string::npos)
+			{
+				int size = stoi(line.substr(index + rootGameObjectPrefix.size(), line.size() - 1));
+				for (int i = 0;i < size;i++)
+				{
+					GameObject* root = new GameObject("", false);
+					root->deserialize_1_0(ss);
+					initRootGameObject(root);
+				}
+			}
+		}
+	} while (ss.good() && line != "SceneEnd");
+}
+
 const std::unordered_map<int, GameObject*> Scene::getAllGameObjs()
 {
 	return allGameObjsByID;

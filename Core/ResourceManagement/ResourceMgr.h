@@ -24,6 +24,9 @@ public:
 
 	Texture2D* CreatNewTexture2D(const std::string name, const std::string path);
 
+	// api for lua script
+	bool isExist(PHAsset::AssetType assetType,const std::string& name) const;
+
 	template <typename T>
 	T* loadFromPath(const string& path,bool isRelativePath = true,bool copy = false,const std::string& desPath = "")
 	{
@@ -63,16 +66,17 @@ public:
 		else
 			Debug::logWarning() << "ResourceMgr::load: Resource type not supported! : " << typeid(T).name() << "\n";
 	}
+
 private:
 	ResourceMgr() {};
-	ResourceMgr(ResourceMgr&) = delete;             
+	ResourceMgr(ResourceMgr&) = delete; 
 	void operator=(ResourceMgr) = delete;
 	const string assetPath ="\\Resources";
 	const string spinePath = "\\Spine";
 	const string scriptPath = "\\Scripts";
 	static ResourceMgr* instance;
 	std::unordered_map<PHAsset::AssetType, std::unordered_map<std::string,PHAsset*>> assets;
-
+	std::unordered_map<PHAsset::AssetType,PHAsset*> assetTypes;
 	friend class Texture2D;
 	friend class SpineAnimationData;
 	friend class TextureSelectorDialog;
@@ -81,5 +85,6 @@ private:
 	friend class ScriptComboBox;
 	friend class ScriptNameLineEdit;
 	friend class PHAsset;
+	friend class AssetSelectorDialog;
 };
 

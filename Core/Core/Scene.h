@@ -36,6 +36,8 @@ public:
     // inherited via ISerializable
     void serialize(PHString&) override;
     void deserialize(std::stringstream& ss) override;
+    void serialize_1_0(PHString& str) override;
+    void deserialize_1_0(std::stringstream& ss) override;
 
 private:
     std::unordered_map<int,GameObject*> allGameObjsByID; //当前场景下所有的GameObject

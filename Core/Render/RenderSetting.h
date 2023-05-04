@@ -23,6 +23,8 @@ public:
 	// Inherited via ISerializable
 	virtual void serialize(PHString& str) override;
 	virtual void deserialize(std::stringstream& ss) override;
+	virtual void serialize_1_0(PHString& str)override;
+	virtual void deserialize_1_0(std::stringstream& ss)override;
 
 	//getters and setters
 	const std::map<int, std::string>& get_render_layers() const;

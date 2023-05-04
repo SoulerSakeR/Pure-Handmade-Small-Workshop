@@ -40,6 +40,8 @@ bool GameEngine::initialize(MainWindow* window)
 	this->inEditor = true;
 	Debug::logLevel = Debug::LogLevel::INFO;
 	Debug::logInfo()<< "Engine initializing\n";
+	Media::get_Instance();
+	ResourceMgr::get_instance().initialize();
 	srand((unsigned)time(NULL));
 	gameProject = nullptr;
 	this->window = window;
@@ -54,6 +56,7 @@ bool GameEngine::initializeGame (GameWindow* window)
 	this->inEditor = false;
 	Debug::logLevel = Debug::LogLevel::WARNING;
 	Debug::logInfo() << "Game initializing\n";
+	ResourceMgr::get_instance().initialize();
 	srand((unsigned)time(NULL));
 	gameProject = nullptr;
 	this->gameWindow = window;	

@@ -33,8 +33,7 @@ Audio* Audio::loadFromPath(const std::string& path, bool isRelativePath)
     if (isExist(audio->name))
     {
 		Debug::logWarning() << "Audio::loadFromPath : Audio with name " << audio->name << " already exists\n";
-		delete audio;
-		return nullptr;
+		return audio;
 	}
 
     // Check audio type

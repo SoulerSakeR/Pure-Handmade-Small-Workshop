@@ -2,6 +2,7 @@
 #include "Core/SystemStatus/GameEngine.h"
 #include "Core/FileIO/IO.h"
 #include "SceneMgr.h"
+#include "Audio.h"
 
 ResourceMgr* ResourceMgr::instance = nullptr;
 
@@ -15,6 +16,10 @@ ResourceMgr& ResourceMgr::get_instance()
 
 Result<void*> ResourceMgr::initialize()
 {
+	assetTypes.emplace(PHAsset::TEXTURE2D, new Texture2D());
+	assetTypes.emplace(PHAsset::SPINE_ANIMATION, new SpineAnimationData());
+	assetTypes.emplace(PHAsset::SCRIPT, new ScriptData());
+	assetTypes.emplace(PHAsset::AUDIO, new Audio());
 	return Result<void*>();
 }
 
@@ -92,5 +97,12 @@ Texture2D* ResourceMgr::CreatNewTexture2D(const std::string name, const std::str
 	texture->name = name ;
 	texture->set_img_path(path);
 	return texture;
+}
+
+bool ResourceMgr::isExist(PHAsset::AssetType assetType, const std::string& name) const
+{
+	if(assetTypes.find(assetType)!=assetTypes.end())
+		return assetTypes.at(assetType)->isExist(name);
+	return false;
 }
 

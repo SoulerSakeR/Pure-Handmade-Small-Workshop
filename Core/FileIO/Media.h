@@ -17,11 +17,16 @@ class Media : public QObject
     Q_OBJECT
 
 public:
+    static Media* get_Instance()
+    {
+		static Media *instance = new Media();
+		return instance;
+	}
     Media(QObject* parent = nullptr);
     ~Media();
 
     bool loadAudio(const QString& inputPath);
-    bool playAudio(bool loop = false);
+    bool playAudio(int loop = 1);
     bool pauseAudio();
     bool stopAudio();
     bool saveAudio(const QString& outputPath);

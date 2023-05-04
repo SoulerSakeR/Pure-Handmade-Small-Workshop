@@ -24,17 +24,17 @@ bool Media::loadAudio(const QString& inputPath)
 
     if (!codec.isEmpty())
     {
-        audioPlayer->setSource(QUrl::fromLocalFile(inputPath));
+        QMetaObject::invokeMethod(audioPlayer, "setSource", Qt::QueuedConnection, Q_ARG(QUrl, QUrl::fromLocalFile(inputPath)));
         return audioPlayer->error() == QMediaPlayer::NoError;
     }
     return false;
 }
 
 
-bool Media::playAudio(bool loop)
+bool Media::playAudio(int loop)
 {
-    audioPlayer->setLoops(loop ? QMediaPlayer::Infinite : 1);
-    audioPlayer->play();
+    audioPlayer->setLoops(loop);
+    QMetaObject::invokeMethod(audioPlayer,"play",Qt::QueuedConnection);
     return audioPlayer->error() == QMediaPlayer::NoError;
 }
 

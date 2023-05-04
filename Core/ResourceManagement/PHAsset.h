@@ -16,7 +16,6 @@ public:
 
 	PHAsset();
 	virtual ~PHAsset();
-
 	std::string getAssetTypeName() const; 
 
 	// getters

@@ -65,6 +65,9 @@ void ComponentsDockWidget::set_components_widget(QWidget* widget)
 void ComponentsDockWidget::clear()
 {
 	clearLayout(components_widget->layout());
+	is_refreshing = false;
+	changed_properties_buffer1.clear();
+	changed_properties_buffer2.clear();
 	property_Object_map.clear();
 	Object_Property_map.clear();
 }
@@ -153,24 +156,28 @@ void ComponentsDockWidget::updatePropertyData(Property* property)
 		{
 			auto spinBox = (QSpinBox*)object;
 			QSignalBlocker block(spinBox);
+			spinBox->setDisabled(!property->is_editable);
 			spinBox->setValue(property->get_data<int>());
 		}
 		else if (property->type == Property::FLOAT)
 		{
 			auto doubleSpinBox = (QDoubleSpinBox*)object;
 			QSignalBlocker block(doubleSpinBox);
+			doubleSpinBox->setDisabled(!property->is_editable);
 			doubleSpinBox->setValue(property->get_data<float>());
 		}
 		else if (property->type == Property::STRING)
 		{
 			auto lineEdit = (QLineEdit*)object;
 			QSignalBlocker block(lineEdit);
+			lineEdit->setDisabled(!property->is_editable);
 			lineEdit->setText(QString::fromStdString(property->get_data<std::string>()));
 		}
 		else if (property->type == Property::BOOL)
 		{
 			auto checkBox = (QCheckBox*)object;
 			QSignalBlocker block(checkBox);
+			checkBox->setDisabled(!property->is_editable);
 			checkBox->setCheckState((Qt::CheckState)(property->get_data<bool>() ? 2 : 0));
 		}
 		else if (property->type == Property::VECTOR2D)
@@ -178,6 +185,7 @@ void ComponentsDockWidget::updatePropertyData(Property* property)
 			auto lineEdit = (QLineEdit*)object;
 			auto str = property->get_data<Vector2D>().tostring();
 			QSignalBlocker block(lineEdit);
+			lineEdit->setDisabled(!property->is_editable);
 			lineEdit->setText(str.c_str());
 		}
 		else if (property->type == Property::ANIMATION_COMBOBOX)
@@ -195,6 +203,7 @@ void ComponentsDockWidget::updatePropertyData(Property* property)
 	else
 	{
 		Component* component = dynamic_cast<Component*>(property->get_object());
+		if(component!=nullptr)
 		Debug::logError() << "Property not found: " << property->get_name() << " in Component : " << component->getTypeName(component->componentType)
 			<< " of GameObject " << component->gameObject->get_name() << "\n";
 	}

@@ -31,6 +31,9 @@ public:
 	Scene* currentScene; //当前游戏场景
 	void deserialize(std::stringstream& ss) override;
 
+	virtual void serialize_1_0(PHString& str) override;
+	virtual void deserialize_1_0(std::stringstream& ss) override;
+
 private:
 	bool saveCurrentScene();
 	void serialize(PHString&);

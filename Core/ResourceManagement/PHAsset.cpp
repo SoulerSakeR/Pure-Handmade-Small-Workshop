@@ -14,6 +14,7 @@ PHAsset::~PHAsset()
 
 }
 
+
 std::string PHAsset::getAssetTypeName() const
 {
 	return assetTypeNames[assetType];

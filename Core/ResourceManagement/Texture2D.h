@@ -59,6 +59,7 @@ public:
 class Texture2D: public PHAsset, public ISerializable
 {
 public:
+    Texture2D();
    virtual ~Texture2D();
    static Texture2D* CreateTexture2D(const std::string& name, const std::string& absolutePath, bool mipmap=true, int minification_filter=0, int magnification_filter=0, int wrap_mode = 0);
    static Texture2D* loadFromImgPath(const std::string& absolutePath);
@@ -102,11 +103,12 @@ public:
    // Inherited via ISerializable
    virtual void serialize(PHString& str) override;
    virtual void deserialize(std::stringstream& ss) override;
+   virtual void serialize_1_0(PHString& str) override;
+   virtual void deserialize_1_0(std::stringstream& ss) override;
 
    const std::string EXTENSION = ".texture";
 
 private:
-    Texture2D();
     Texture2D(const Texture2D& other) = delete;
     Texture2D& operator=(const Texture2D& other) = delete;
     QOpenGLTexture* texture;

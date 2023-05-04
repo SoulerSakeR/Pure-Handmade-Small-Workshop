@@ -4,16 +4,17 @@
 
 #include "Core/Utils/PHEvent.h"
 #include "Core/Core/ISerializable.h"
+#include <Core/ResourceManagement/PHAsset.h>
 
 class Component;
 
-class Property
+class Property : public ISerializable
 {
 
 public:
 	enum PropertyType
 	{
-		INT,FLOAT,STRING,BOOL,VECTOR2D,COLOR,COMBO_BOX,TEXTURE2D,ANIMATION_COMBOBOX,ANIMATION,SKIN_COMBOBOX,SCRIPT_LINEEDIT
+		INT,FLOAT,STRING,BOOL,VECTOR2D,COLOR,COMBO_BOX,TEXTURE2D,ANIMATION_COMBOBOX,ANIMATION,SKIN_COMBOBOX,SCRIPT_LINEEDIT,ASSET
 	};
 	
 	Property(const std::string& name, void* data,PropertyType type,ISerializable* src,bool isVisible = true,bool isEditable = true);
@@ -66,9 +67,17 @@ public:
 
 	std::string get_name();
 	ISerializable* const get_object();
+
+	// inherited via ISerializable
+	virtual void serialize(PHString& str) override;
+	virtual void deserialize(std::stringstream& ss) override;
+	virtual void serialize_1_0(PHString& str) override;
+	virtual void deserialize_1_0(std::stringstream& ss) override;
+
 	bool is_visible;
 	bool is_editable;
 	PropertyType type;
+	PHAsset::AssetType asset_type;
 
 private:	
 	std::string name;
@@ -94,6 +103,12 @@ public:
 		if (auto it = properties.find(key);it != properties.end())
 			return it->second;
 		//TODO: throw exception
+	}
+	bool find(const key& key)
+	{
+		if (auto it = properties.find(key);it != properties.end())
+			return true;
+		return false;
 	}
 	void emplace(const key& key, const value& value)
 	{

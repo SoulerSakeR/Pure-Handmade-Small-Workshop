@@ -32,7 +32,10 @@ void Debug::log(const std::string& info,LogLevel level)
 		Log2Console(text);
 		if (GameEngine::get_instance().getInEditor()) {
 			if (MainWindow::getConsoleTextEdit() != nullptr)
-				QMetaObject::invokeMethod(MainWindow::getConsoleTextEdit(), "insertPlainText",Qt::QueuedConnection,Q_ARG(QString, QString::fromStdString(text)));
+			{
+				QMetaObject::invokeMethod(MainWindow::getConsoleTextEdit(), "insertPlainText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(text)));
+			}
+				
 		}
 		log2File(text);
 	}	

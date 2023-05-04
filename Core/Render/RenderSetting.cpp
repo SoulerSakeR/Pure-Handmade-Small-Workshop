@@ -85,6 +85,16 @@ void RenderSetting::deserialize(std::stringstream& ss)
 	is_changed = false;
 }
 
+void RenderSetting::serialize_1_0(PHString& str)
+{
+	serialize(str);
+}
+
+void RenderSetting::deserialize_1_0(std::stringstream& ss)
+{
+	deserialize(ss);
+}
+
 void RenderSetting::registerRenderer(Renderer* renderer)
 {
 	int layer = renderer->get_render_layer();

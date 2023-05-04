@@ -714,15 +714,16 @@ void RenderWidget::renderCameraBorder(Camera* target, Camera* renderCamera, bool
 
 void RenderWidget::drawMesh(IRenderable* target, Camera* camera, bool visBorder)
 {
-	auto vbo = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);	
+	static auto vbo = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);	
 	vbo->create();
 	vbo->bind();	
 	vbo->allocate(target->vertices.data(), static_cast<int>(target->vertices.size() * sizeof(Vertex)));
 	vbo->setUsagePattern(QOpenGLBuffer::DynamicDraw);
-	auto ibo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+	static auto ibo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
 	ibo->create();
 	ibo->bind();
 	ibo->allocate(target->indices.data(), static_cast<int>(target->indices.size() * sizeof(unsigned int)));
+	ibo->setUsagePattern(QOpenGLBuffer::DynamicDraw);
 	imageShaderProgram->bind();
 	
 	GLint posLocation = imageShaderProgram->attributeLocation("aPos");
@@ -768,17 +769,17 @@ void RenderWidget::drawMesh(IRenderable* target, Camera* camera, bool visBorder)
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(target->indices.size()), GL_UNSIGNED_INT, 0);
 
-	/*
+	
 	//release
 	vbo->release();
 	ibo->release();
-	vbo->destroy();
-	ibo->destroy();
+	//vbo->destroy();
+	//ibo->destroy();
 	if (target->isTextureValid())
 		target->get_texture()->release();
 
 	// imageShaderProgram->release();
-	*/
+	
 
 	//draw border
 	if (visBorder)

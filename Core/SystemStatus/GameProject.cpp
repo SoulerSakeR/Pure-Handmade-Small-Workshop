@@ -142,7 +142,7 @@ bool GameProject::save()
 	IO::createPathIfNotExists(path.getNewPath());
 	saveCurrentScene();
 	PHString content = PHString("");
-	serialize(content);	
+	serialize_1_0(content);	
 	IO::write(content.str(), path.combinePath(name + ".gameProject").getNewPath(), 1);
 	is_changed = false;
     return true;
@@ -271,12 +271,22 @@ void GameProject::deserialize(std::stringstream& ss)
 	Debug::logInfo() << "Deserialing gameProject finished \n";
 }
 
+void GameProject::serialize_1_0(PHString& str)
+{
+	serialize(str);
+}
+
+void GameProject::deserialize_1_0(std::stringstream& ss)
+{
+	deserialize(ss);
+}
+
 bool GameProject::saveCurrentScene()
 {
 	if(currentScene==nullptr)
 		return false;
 	PHString scene = PHString("");
-	currentScene->serialize(scene);
+	currentScene->serialize_1_0(scene);
 	string fileName = currentScene->name + sceneExtensionName;
 	IO::createPathIfNotExists(path.combinePath("Scenes").getNewPath());
 	currentScene->is_changed = false;

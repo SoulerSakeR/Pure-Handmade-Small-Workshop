@@ -15,6 +15,7 @@
 #include "SpineAnimationSelectorWidget.h"
 #include "SkinComboBox.h"
 #include "ScriptNameLineEdit.h"
+#include "AssetWidget.h"
 
 ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGroupBox(parent), component(component)
 {
@@ -184,6 +185,13 @@ ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGr
 			widget->Object_Property_map[lineEdit] = property;
 			widget->property_Object_map[property] = lineEdit;
 			break;
+		}
+		case Property::ASSET:
+		{
+			auto assetWidget = new AssetWidget(this, property);
+			layout->addWidget(assetWidget, row, 1);
+			widget->Object_Property_map[assetWidget] = property;
+			widget->property_Object_map[property] = assetWidget;
 		}
 		}
 		row++;
