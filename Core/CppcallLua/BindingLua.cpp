@@ -12,6 +12,7 @@
 #include "Core/Core/Renderer.h"
 #include "Core/Core/RigidBody.h"
 #include "Core/Core/Script.h"
+#include "Core/Core/SpineAnimator.h"
 
 #include "Core/Utils/Vector2D.h"
 
@@ -163,6 +164,29 @@ void bindAllClasses(sol::state& lua) {
         "velocity", sol::property(&RigidBody::get_velocity, &RigidBody::set_velocity),
         "acceleration", sol::property(&RigidBody::get_acceleration, &RigidBody::set_acceleration),
         "friction_ratio", sol::property(&RigidBody::get_friction_ratio, &RigidBody::set_friction_ratio)
+        );
+
+    //SpineAnimator
+    lua.new_usertype<SpineAnimator>("SpineAnimator",
+        sol::constructors<SpineAnimator(GameObject*)>(),
+
+        // 属性
+        "spine_animation_name", sol::property(&SpineAnimator::get_spine_animation_name, &SpineAnimator::set_spine_animation_name),
+        "animation_index", sol::property(&SpineAnimator::get_animation_index, &SpineAnimator::set_animation_index),
+        "skin_index", sol::property(&SpineAnimator::get_skin_index, &SpineAnimator::set_skin_index),
+        "loop", sol::property(&SpineAnimator::get_loop, &SpineAnimator::set_loop),
+        "flipX", sol::property(&SpineAnimator::get_flipX, &SpineAnimator::set_flipX),
+        "flipY", sol::property(&SpineAnimator::get_flipY, &SpineAnimator::set_flipY),
+
+        // 方法
+        "is_Valid", & SpineAnimator::is_Valid,
+        "getAllAnimations", & SpineAnimator::getAllAnimations,
+        "getAllSkins", & SpineAnimator::getAllSkins,
+        "setAnimation", sol::overload(
+            [](SpineAnimator& obj, int index, bool loop) { return obj.setAnimation(index, loop); },
+            [](SpineAnimator& obj, const std::string& name, bool loop) { return obj.setAnimation(name, loop); }
+        ),
+        "addListener", & SpineAnimator::addListener
         );
 
     /*
