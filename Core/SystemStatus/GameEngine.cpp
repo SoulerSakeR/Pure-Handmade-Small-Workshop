@@ -41,8 +41,8 @@ bool GameEngine::initialize(MainWindow* window)
 	Debug::logLevel = Debug::LogLevel::INFO;
 	Debug::logInfo()<< "Engine initializing\n";
 	auto media = new Media();
-	media->loadAudio("E:\\Musics\\minecraft-villager-sound-effect.mp3");
-	media->playAudio(true);
+	media->loadAudio("F:\\BrowserDownload\\minecraft-villager-sound-effect.mp3");
+	media->playAudio();
 	srand((unsigned)time(NULL));
 	gameProject = nullptr;
 	this->window = window;

@@ -17,7 +17,7 @@ std::vector<std::string> IO::getFilesInDirectory(const std::string& directoryPat
     if(includeSubDir)
     for (const auto& subDir : directory.entryList(QDir::Dirs | QDir::NoDotAndDotDot))
     {
-        for (auto& s : getFilesInDirectory(PHPath(directoryPath).combinePath(subDir.toStdString()).getNewPath())) // 递归遍历子目录
+        for (auto& s : getFilesInDirectory(PHPath(directoryPath).combinePath(subDir.toStdString()).getNewPath(), includeSubDir)) // 递归遍历子目录
         {
             result.push_back(s);
         }

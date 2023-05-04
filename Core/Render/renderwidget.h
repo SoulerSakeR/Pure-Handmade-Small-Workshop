@@ -20,6 +20,7 @@
 #include <Core/UI/GameWindow.h>
 #include "Core/Core/SpineAnimator.h"
 #include "Core/Render/LightSource.h"
+#include "Core/Render/PointLight.h"
 
 
 class GameLoop;
@@ -75,7 +76,8 @@ public:
     void resetResolution();
     void resetFBO();
 
-    void setLight(GameObject* target);
+    void setLight(LightSource* light, GameObject* target);
+    PointLight addPointLight();
 
     GameObject* getSelectedGameObject();
 
@@ -154,16 +156,13 @@ private:
     GLint shaderOffsetBinding;
     GLint shaderSizeBinding;
 
-    // Texture
-    void createProgram();    
-    // BoxCollider
-    void createBoxProgram();
+    
     // Text
     void createTextProgram();
     // Texture
     void createTextureProgram();
-    // CameraBorder
-    void createCameraBorderProgram();
+
+    void createALLShaderProgram(); // image, boxcollider,cameraBorder
     
     QOpenGLTexture* genTextTexture(int width, int height, const QString& text, int textPixelSize, const QColor& textColor);
     

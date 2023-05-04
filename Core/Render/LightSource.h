@@ -4,10 +4,13 @@
 #include <QPointF>
 #include <QColor>
 
+#include "Core/Core/GameObject.h"
+
 enum LightSourceType {
-    PointLight,
+    Point,
     DirectionalLight,
-    SpotLight
+    SpotLight,
+    Ambient
 };
 
 class LightSource
@@ -25,10 +28,16 @@ public:
     LightSourceType getType() const;
     void setType(LightSourceType type);
 
+    virtual QColor calcIntensity(GameObject* target) = 0;
+
 private:
     QPointF m_position;
     QColor m_color;
     LightSourceType m_type;
 };
+
+
+
+
 
 #endif // LIGHTSOURCE_H

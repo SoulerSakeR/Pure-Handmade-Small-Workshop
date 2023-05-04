@@ -220,7 +220,8 @@ void RenderWidget::renderBoxCollider(BoxCollider* box, Camera* boxColliderCamera
 	boxColliderShaderProgram->setUniformValue("MVPMatrix", matrix);
 	const auto color = box->get_color();
 	boxColliderShaderProgram->setUniformValue("color",color.red(), color.green(), color.blue(),color.alpha());
-
+	boxColliderShaderProgram->setUniformValue("isTexture", false);
+	boxColliderShaderProgram->setUniformValue("isLighting", false);
 	//set line mode
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glLineWidth(3.0f);
@@ -293,7 +294,7 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 		imageShaderProgram->bind();
 		
 		GLint posLocation = imageShaderProgram->attributeLocation("aPos");
-		GLint textureLocation = imageShaderProgram->attributeLocation("aTexCord");
+		GLint textureLocation = imageShaderProgram->attributeLocation("aTexCoord");
 		
 		GLsizei stride = sizeof(Vertex);		
 		//-----------------position--------------------//
@@ -341,6 +342,9 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 	const auto& color = img->get_color();
 	imageShaderProgram->setUniformValue("color", color.red(), color.green(), color.blue(), color.alpha());
 
+	imageShaderProgram->setUniformValue("isTexture", true);
+	imageShaderProgram->setUniformValue("isLighting", true);
+
 	//bind texture
 	/*if(img->texture!=nullptr)
 		img->texture->bind();*/
@@ -380,9 +384,16 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 		}
 		img->borderIbo->bind();
 
+		/*
 		boxColliderShaderProgram->bind();
 		boxColliderShaderProgram->setUniformValue("MVPMatrix", matrix);
 		boxColliderShaderProgram->setUniformValue("color", 1.0f, 1.0f, 1.0f, 1.0f);
+		*/
+
+		
+		imageShaderProgram->setUniformValue("isTexture", false);
+		imageShaderProgram->setUniformValue("color", 1.0f, 1.0f, 1.0f, 1.0f);
+		imageShaderProgram->setUniformValue("isLighting", false);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth(3.0f);
@@ -687,7 +698,8 @@ void RenderWidget::renderCameraBorder(Camera* target, Camera* renderCamera, bool
 	cameraBorderShaderProgram->bind();
 	cameraBorderShaderProgram->setUniformValue("MVPMatrix", matrix);
 	cameraBorderShaderProgram->setUniformValue("color", color.red(),color.green(), color.blue(), color.alpha());
-	
+	cameraBorderShaderProgram->setUniformValue("isTexture", false);
+	cameraBorderShaderProgram->setUniformValue("isLighting", false);
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glLineWidth(3.0f);
@@ -714,7 +726,7 @@ void RenderWidget::drawMesh(IRenderable* target, Camera* camera, bool visBorder)
 	imageShaderProgram->bind();
 	
 	GLint posLocation = imageShaderProgram->attributeLocation("aPos");
-	GLint texCoordLocation = imageShaderProgram->attributeLocation("aTexCord");
+	GLint texCoordLocation = imageShaderProgram->attributeLocation("aTexCoord");
 
 	GLsizei stride = sizeof(Vertex);
 	//-----------------position--------------------//
@@ -746,6 +758,8 @@ void RenderWidget::drawMesh(IRenderable* target, Camera* camera, bool visBorder)
 	const auto& color = target->get_color();
 	imageShaderProgram->setUniformValue("MVPMatrix", matrix);
 	imageShaderProgram->setUniformValue("color", color.red(), color.green(), color.blue(), color.alpha());
+	imageShaderProgram->setUniformValue("isTexture", true);
+	imageShaderProgram->setUniformValue("isLighting", true);
 
 	//texture
 	if (target->isTextureValid())
@@ -754,6 +768,7 @@ void RenderWidget::drawMesh(IRenderable* target, Camera* camera, bool visBorder)
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(target->indices.size()), GL_UNSIGNED_INT, 0);
 
+	/*
 	//release
 	vbo->release();
 	ibo->release();
@@ -761,6 +776,9 @@ void RenderWidget::drawMesh(IRenderable* target, Camera* camera, bool visBorder)
 	ibo->destroy();
 	if (target->isTextureValid())
 		target->get_texture()->release();
+
+	// imageShaderProgram->release();
+	*/
 
 	//draw border
 	if (visBorder)
@@ -784,16 +802,18 @@ void RenderWidget::drawMesh(IRenderable* target, Camera* camera, bool visBorder)
 			box->borderIbo->allocate(box->borderIndices.data(), static_cast<int>(box->borderIndices.size() * sizeof(unsigned int)));
 		}
 		box->borderIbo->bind();
-		boxColliderShaderProgram->bind();
-
-		GLint posLocation = boxColliderShaderProgram->attributeLocation("aPos");
+		
+		GLint posLocation = imageShaderProgram->attributeLocation("aPos");
 
 		GLuint stride = sizeof(Vertex);
 		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
 		glEnableVertexAttribArray(posLocation);
 
-		boxColliderShaderProgram->setUniformValue("MVPMatrix", matrix);
-		boxColliderShaderProgram->setUniformValue("color", 1.0f, 1.0f, 1.0f, 1.0f);
+		imageShaderProgram->setUniformValue("isTexture", false);
+		imageShaderProgram->setUniformValue("isLighting", false);
+		imageShaderProgram->setUniformValue("color", 1.0f, 1.0f, 1.0f, 1.0f);
+		
+
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth(1.0f);
@@ -860,11 +880,16 @@ void RenderWidget::initializeGL()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	/*
 	createProgram();
 	createBoxProgram();	
+	createCameraBorderProgram();
+	*/
+	createALLShaderProgram();
+
 	createTextProgram();
 	createTextureProgram();
-	createCameraBorderProgram();
+	
 	
 	textBuffer = std::make_unique<QOpenGLBuffer>(QOpenGLBuffer::VertexBuffer);
 	timer.setInterval(10);
@@ -1133,35 +1158,49 @@ void RenderWidget::mixTexture()
 	return;
 }
 
-
-void RenderWidget::createProgram()
+void RenderWidget::createALLShaderProgram()
 {
+	// image
 	bool success;
 	imageShaderProgram = std::make_unique<QOpenGLShaderProgram>();
 	imageShaderProgram->create();
-	imageShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, QString::fromStdString(source_path + "\\shaders\\shaders.vert"));
-	imageShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\shaders.frag"));
-	success = imageShaderProgram->link(); 
+	imageShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, QString::fromStdString(source_path + "\\shaders\\commonShaders.vert"));
+	imageShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\commonShaders.frag"));
+	success = imageShaderProgram->link();
 	if (!success)
 		qDebug() << "ERR:" << imageShaderProgram->log();
+	
+	
 	shaderOffsetBinding = imageShaderProgram->uniformLocation("offset");
 	shaderSizeBinding = imageShaderProgram->uniformLocation("size");
 	imageTextureBinding = 0;
-}
+	
 
 
-void RenderWidget::createBoxProgram() {
-	bool success;
+	// box collider
+	bool successBox;
 	boxColliderShaderProgram = std::make_unique<QOpenGLShaderProgram>();
 	boxColliderShaderProgram->create();
-	boxColliderShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, QString::fromStdString(source_path + "\\shaders\\boxShader.vert"));	
-	boxColliderShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\boxShader.frag"));
-	success = boxColliderShaderProgram->link();
-	if (!success)
+	boxColliderShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, QString::fromStdString(source_path + "\\shaders\\commonShaders.vert"));
+	boxColliderShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\commonShaders.frag"));
+	successBox = boxColliderShaderProgram->link();
+	if (!successBox)
 		qDebug() << "ERR:" << boxColliderShaderProgram->log();
 	
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	// camera border
+	bool successCamera;
+	cameraBorderShaderProgram = std::make_unique<QOpenGLShaderProgram>();
+	cameraBorderShaderProgram->create();
+	cameraBorderShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, QString::fromStdString(source_path + "\\shaders\\commonShaders.vert"));
+	cameraBorderShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\commonShaders.frag"));
+	successCamera = cameraBorderShaderProgram->link();
+	if (!successCamera)
+		qDebug() << "ERR:" << cameraBorderShaderProgram->log();
+	
 }
+
+
 
 void RenderWidget::createTextProgram() 
 {
@@ -1190,18 +1229,6 @@ void RenderWidget::createTextureProgram()
 
 }
 
-// camera border shader create
-void RenderWidget::createCameraBorderProgram()
-{
-	bool success;
-	cameraBorderShaderProgram = std::make_unique<QOpenGLShaderProgram>();
-	cameraBorderShaderProgram->create();
-	cameraBorderShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, QString::fromStdString(source_path + "\\shaders\\cameraBorderShaders.vert"));
-	cameraBorderShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, QString::fromStdString(source_path + "\\shaders\\cameraBorderShaders.frag"));
-	success = cameraBorderShaderProgram->link();
-	if (!success)
-		qDebug() << "ERR:" << cameraBorderShaderProgram->log();
-}
 
 void RenderWidget::messageLogHandler(const QOpenGLDebugMessage& debugMessage)
 {
@@ -1555,76 +1582,22 @@ void RenderWidget::setFullScreen(bool fullScreen)
 }
 
 
-void RenderWidget::setLight(GameObject* target)
+void RenderWidget::setLight(LightSource* light, GameObject* target)
+{	
+	QColor finalColor = light->calcIntensity(target);
+}
+
+
+PointLight RenderWidget::addPointLight()
 {
-	// 创建一个光源对象
-	LightSource light(QPointF(0, 0), QColor(255, 255, 255), PointLight);
-
+	// 创建一个点光源
+	QPointF lightPos(100, 100);
+	QColor lightColor(Qt::white);
+	qreal lightRadius = 50;
+	qreal lightIntensity = 1.0;
+	PointLight light(lightPos, lightColor, lightRadius, lightIntensity);
 	
-	QGraphicsEllipseItem* lightItem = new QGraphicsEllipseItem(-5, -5, 10, 10);
-	lightItem->setPos(light.getPosition());
-	lightItem->setBrush(QBrush(light.getColor()));
-	
-	//=========================================================//
-	//  TODO: 将光源添加到场景中
-	
-
-	//=========================================================//
-
-
-	// 计算物体的光照效果
-	QPointF lightPos = light.getPosition();
-	QColor lightColor = light.getColor();
-	qreal ambient = 0.1;
-	qreal diffuse = 0.8;
-	qreal specular = 0.4;
-	qreal shininess = 50;
-
-	qreal dx = target->transform->getWorldPositionX() - lightPos.x();
-	qreal dy = target->transform->getWorldPositionY() - lightPos.y();
-	
-	Vector2D gameObjectPos = target->transform->getWorldPosition();
-	QPointF targetPos = QPointF(gameObjectPos.x, gameObjectPos.y);
-
-	// 计算物体和光源之间的距离和光源衰减因子
-	QVector2D lightDir = QVector2D(lightPos - targetPos).normalized();
-	qreal distance = QVector2D(lightPos - targetPos).length();
-	qreal attenuation = 1.0 / (1.0 + 0.1 * distance + 0.01 * distance * distance);
-
-
-	// 计算物体的漫反射系数
-	QVector2D normal(0, -1);
-	QVector2D lightDirNormalized = QVector2D(lightDir).normalized();
-	qreal diffuseFactor = qMax(normal.x() * lightDirNormalized.x() + normal.y() * lightDirNormalized.y(), 0.0);
-
-
-	// 计算物体的光照强度
-	QColor ambientColor(50, 50, 50);
-	QColor diffuseColor(255, 0, 0);
-	
-	// 计算环境光照强度
-	QColor ambientIntensity = lightColor.lighter(150).darker(150);
-	ambientIntensity.setRed(ambientIntensity.red() * ambientColor.red() / 255);
-	ambientIntensity.setGreen(ambientIntensity.green() * ambientColor.green() / 255);
-	ambientIntensity.setBlue(ambientIntensity.blue() * ambientColor.blue() / 255);
-
-	// 计算漫反射光照强度
-	QColor diffuseIntensity = lightColor.lighter(150).darker(150);
-	diffuseIntensity.setRed(diffuseIntensity.red() * diffuseColor.red() / 255 * diffuseFactor);
-	diffuseIntensity.setGreen(diffuseIntensity.green() * diffuseColor.green() / 255 * diffuseFactor);
-	diffuseIntensity.setBlue(diffuseIntensity.blue() * diffuseColor.blue() / 255 * diffuseFactor);
-
-	// 计算物体的光照强度
-	qreal intensity = ambientIntensity.value() + diffuseIntensity.value() * attenuation;
-	QColor finalColor(intensity, intensity, intensity);
-
-
-
-
-	// 将光照效果应用到物体上
-	// TODO: target->setBrush(QBrush(lightColor.toRgb() * intensity));
-	// target->setBrush(QBrush(finalColor));
-
+	return light;
 }
 
 
