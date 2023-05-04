@@ -16,7 +16,8 @@ class Media : public QObject
 {
     Q_OBJECT
 
-public:
+public:   
+
     static Media* get_Instance()
     {
 		static Media *instance = new Media();

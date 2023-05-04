@@ -3,6 +3,7 @@
 #include "Core/FileIO/IO.h"
 #include "SceneMgr.h"
 #include "Audio.h"
+#include "Core/Utils/Utils.h"
 
 ResourceMgr* ResourceMgr::instance = nullptr;
 
@@ -72,6 +73,15 @@ void ResourceMgr::loadAllAssets()
 			{
 				scriptData->registerAssetToMgr();
 				Debug::logInfo() << "ScriptData loaded: " << scriptData->get_name() << "\n";
+			}
+		}
+		else if (contains(SUPPORT_EXTENSIONS, 4, type))
+		{
+			auto audio = loadFromPath<Audio>(filePath,false);
+			if (audio != nullptr)
+			{
+				audio->registerAssetToMgr();
+				Debug::logInfo() << "Audio loaded: " << audio->get_name() << "\n";
 			}
 		}
 	}

@@ -13,6 +13,7 @@ using std::string;
 class ResourceMgr
 {
 public:
+	const std::string SUPPORT_EXTENSIONS[4] = { ".wav",".mp3",".ogg",".flac"};
 	static ResourceMgr& get_instance();
 
 	Result<void*> initialize();
@@ -86,5 +87,6 @@ private:
 	friend class ScriptNameLineEdit;
 	friend class PHAsset;
 	friend class AssetSelectorDialog;
+	friend class AssetWidget;
 };
 
