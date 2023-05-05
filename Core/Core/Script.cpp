@@ -7,7 +7,7 @@
 
 using namespace std;
 
-Script::Script(GameObject* gameObj, const std::string& name, const std::string& path):Component(gameObj),name(name),path(path)
+Script::Script(GameObject* gameObj, const std::string& name, const std::string& path):Component(gameObj),IScriptBehaviour(gameObj), name(name), path(path)
 {
 	componentType = SCRIPT;
 	auto name_property = new Property("Name", &this->name, Property::SCRIPT_LINEEDIT, this);
@@ -94,7 +94,7 @@ void Script::awake()
 {
 	if (lua == nullptr)
 	{
-		Debug::logError() <<"GameObjetc : " << gameObject->get_name() << ", Script : " << name << " at path : "<< path.getNewPath()<<" lua state is not initialized !\n";
+		Debug::logError() <<"GameObject : " << gameObject->get_name() << ", Script : " << name << " at path : "<< path.getNewPath()<<" lua state is not initialized !\n";
 		return;
 	}
 	if (gameObject->is_active() && get_enabled() && awake_func != nullptr && awake_func->valid())
@@ -103,7 +103,7 @@ void Script::awake()
 		if (!result.valid())
 		{
 			sol::error err = result;
-			Debug::logError() << "GameObjetc : " << gameObject->get_name() << ", Script : " << name << " at path : " << path.getNewPath() << " lua runtime error : awake() \n";
+			Debug::logError() << "GameObject : " << gameObject->get_name() << ", Script : " << name <<  " lua runtime error : awake() \n";
 			Debug::logError() << err.what() << "\n";
 		}
 	}
@@ -113,7 +113,7 @@ void Script::start()
 {
 	if (lua == nullptr)
 	{
-		Debug::logError() << "GameObjetc : " << gameObject->get_name() << ", Script : " << name << " at path : " << path.getNewPath() << " lua state is not initialized !\n";
+		Debug::logError() << "GameObject : " << gameObject->get_name() << ", Script : " << name << " at path : " << path.getNewPath() << " lua state is not initialized !\n";
 		return;
 	}
 	if (gameObject->is_active() && get_enabled() && start_func && (*start_func).valid())
@@ -122,7 +122,7 @@ void Script::start()
 		if (!result.valid())
 		{
 			sol::error err = result;
-			Debug::logError() << "GameObjetc : " << gameObject->get_name() << ", Script : " << name << " at path : " << path.getNewPath() << " lua runtime error : start() \n";
+			Debug::logError() << "GameObject : " << gameObject->get_name() << ", Script : " << name <<  " lua runtime error : start() \n";
 			Debug::logError() << err.what() << "\n";
 		}
 	}
@@ -132,7 +132,7 @@ void Script::onCollide(const std::vector<CollisonInfo>& collisionInfo)
 {
 	if (lua == nullptr)
 	{
-		Debug::logError() << "GameObjetc : " << gameObject->get_name() << ", Script : " << name << " at path : " << path.getNewPath() << " lua state is not initialized !\n";
+		Debug::logError() << "GameObject : " << gameObject->get_name() << ", Script : " << name << " at path : " << path.getNewPath() << " lua state is not initialized !\n";
 		return;
 	}
 	if (gameObject->is_active() && get_enabled() && onCollide_func && (*onCollide_func).valid())
@@ -141,7 +141,7 @@ void Script::onCollide(const std::vector<CollisonInfo>& collisionInfo)
 		if (!result.valid())
 		{
 			sol::error err = result;
-			Debug::logError() << "GameObjetc : " << gameObject->get_name() << ", Script : " << name << " at path : " << path.getNewPath() << " lua runtime error : onCollide() \n";
+			Debug::logError() << "GameObject : " << gameObject->get_name() << ", Script : " << name << " lua runtime error : onCollide() \n";
 			Debug::logError() << err.what() << "\n";
 		}
 	}
@@ -151,7 +151,7 @@ void Script::beforeUpdate()
 {
 	if (lua == nullptr)
 	{
-		Debug::logError() << "GameObjetc : " << gameObject->get_name() << ", Script : " << name << " at path : " << path.getNewPath() << " lua state is not initialized !\n";
+		Debug::logError() << "GameObject : " << gameObject->get_name() << ", Script : " << name << " at path : " << path.getNewPath() << " lua state is not initialized !\n";
 		return;
 	}
 	if (gameObject->is_active() && get_enabled() && beforeUpdate_func&& (*beforeUpdate_func).valid())
@@ -160,7 +160,7 @@ void Script::beforeUpdate()
 		if (!result.valid())
 		{
 			sol::error err = result;
-			Debug::logError() << "GameObjetc : " << gameObject->get_name() << ", Script : " << name << " at path : " << path.getNewPath() << " lua runtime error : beforeUpdate() \n";
+			Debug::logError() << "GameObject : " << gameObject->get_name() << ", Script : " << name  << " lua runtime error : beforeUpdate() \n";
 			Debug::logError() << err.what() << "\n";
 		}
 	}
@@ -170,7 +170,7 @@ void Script::update()
 {
 	if (lua == nullptr)
 	{
-		Debug::logError() << "GameObjetc : " << gameObject->get_name() << ", Script : " << name << " at path : " << path.getNewPath() << " lua state is not initialized !\n";
+		Debug::logError() << "GameObject : " << gameObject->get_name() << ", Script : " << name << " at path : " << path.getNewPath() << " lua state is not initialized !\n";
 		return;
 	}
 	if (gameObject->is_active() && get_enabled() && update_func&& (*update_func).valid())
@@ -179,7 +179,7 @@ void Script::update()
 		if (!result.valid())
 		{
 			sol::error err = result;
-			Debug::logError() << "GameObjetc : " << gameObject->get_name() << ", Script : " << name << " at path : " << path.getNewPath() << " lua runtime error : update() \n";
+			Debug::logError() << "GameObject : " << gameObject->get_name() << ", Script : " << name <<  " lua runtime error : update() \n";
 			Debug::logError() << err.what() << "\n";
 		}
 	}
@@ -189,7 +189,7 @@ void Script::afterUpdate()
 {
 	if (lua == nullptr)
 	{
-		Debug::logError() << "GameObjetc : " << gameObject->get_name() << ", Script : " << name << " at path : " << path.getNewPath() << " lua state is not initialized !\n";
+		Debug::logError() << "GameObject : " << gameObject->get_name() << ", Script : " << name << " at path : " << path.getNewPath() << " lua state is not initialized !\n";
 		return;
 	}
 	if (gameObject->is_active() && get_enabled() && afterUpdate_func&& (*afterUpdate_func).valid())
@@ -198,7 +198,7 @@ void Script::afterUpdate()
 		if (!result.valid())
 		{
 			sol::error err = result;
-			Debug::logError() << "GameObjetc : " << gameObject->get_name() << ", Script : " << name << " at path : " << path.getNewPath() << " lua runtime error : afterUpdate() \n";
+			Debug::logError() << "GameObject : " << gameObject->get_name() << ", Script : " << name  << " lua runtime error : afterUpdate() \n";
 			Debug::logError() << err.what() << "\n";
 		}
 	}

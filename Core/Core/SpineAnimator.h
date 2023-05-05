@@ -23,8 +23,9 @@ class SpineAnimator : public IBoxResizable , public IScriptBehaviour
 public:
 	typedef SpineAnimator customType;
 
-	SpineAnimator(GameObject* gameobj);
 
+	SpineAnimator(GameObject* gameobj);
+	~SpineAnimator();
 	// getters and setters
 	std::string get_spine_animation_name() const;											// 需要绑定
 	bool set_spine_animation_name(const std::string& name);						// 需要绑定
@@ -71,6 +72,11 @@ public:
 	virtual void deserialize(std::stringstream& ss) override;
 
 	PHEvent<void,AnimationEventData> onAnimationEvent;
+
+	static SpineAnimator* type() {
+		static SpineAnimator* instance = new SpineAnimator(nullptr);
+		return instance;
+	}
 
 private:
 	std::string spine_animation_name;

@@ -321,7 +321,8 @@ void GameLoop::beforeUpdate()
 
 void GameLoop::update()
 {
-    for (auto& script : SceneMgr::get_instance().script_behaviours)
+    std::vector<IScriptBehaviour*> scripts = SceneMgr::get_instance().script_behaviours;
+    for (auto& script : scripts)
     {
         script->update();
     }

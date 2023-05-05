@@ -5,6 +5,8 @@ using namespace std;
 
 IBoxResizable::IBoxResizable(GameObject* gameobj):IRenderable(gameobj)
 {	
+	if (gameobj == nullptr)
+		return;
 	borderVbo = nullptr;
 	borderIbo = nullptr;
 	Vector2D size = Vector2D(100, 100);	
@@ -18,6 +20,8 @@ IBoxResizable::IBoxResizable(GameObject* gameobj):IRenderable(gameobj)
 
 IBoxResizable::~IBoxResizable()
 {
+	if (gameObject == nullptr)
+		return;
 	if(borderVbo != nullptr)
 		borderVbo->destroy();
 	delete borderVbo;

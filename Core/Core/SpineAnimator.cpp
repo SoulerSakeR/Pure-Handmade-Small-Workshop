@@ -17,8 +17,12 @@ using namespace spine;
 
 unsigned short quadIndices[] = { 0, 1, 2, 2, 3, 0 };
 
-SpineAnimator::SpineAnimator(GameObject* gameobj): IBoxResizable(gameobj)
+SpineAnimator::SpineAnimator(GameObject* gameobj): IBoxResizable(gameobj), IScriptBehaviour(gameobj)
 {
+    if (gameobj == nullptr)
+    {
+		return;
+	}
 	componentType = ComponentType::SPINE_ANIMATOR;
     spine_animation_name = "None";
     properties["Color"]->is_visible = false;
@@ -46,6 +50,27 @@ SpineAnimator::SpineAnimator(GameObject* gameobj): IBoxResizable(gameobj)
     auto flipY_property = new Property("Flip Y", &flipY, Property::BOOL, this);
     flipY_property->set_property_func<bool>(&SpineAnimator::get_flipY, &SpineAnimator::set_flipY, this);
     properties.emplace(flipY_property);
+}
+
+SpineAnimator::~SpineAnimator()
+{
+    if (gameObject == nullptr)
+        return;
+    if (skeleton != nullptr)
+    {
+		delete skeleton;
+		skeleton = nullptr;
+	}
+    if (animation_state != nullptr)
+    {
+		delete animation_state;
+		animation_state = nullptr;
+	}
+    if (listener != nullptr)
+    {
+		delete listener;
+		listener = nullptr;
+	}
 }
 
 std::string SpineAnimator::get_spine_animation_name() const

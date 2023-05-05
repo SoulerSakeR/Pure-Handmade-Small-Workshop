@@ -4,6 +4,8 @@
 
 IRenderable::IRenderable(GameObject* gameobj) : Component(gameobj)
 {
+	if (gameobj == nullptr)
+		return;
 	vao = nullptr;
 	vbo = nullptr;
 	ibo = nullptr;
@@ -18,6 +20,8 @@ IRenderable::IRenderable(GameObject* gameobj) : Component(gameobj)
 
 IRenderable::~IRenderable()
 {
+	if (gameObject == nullptr)
+		return;
 	if (vao != nullptr)
 	{
 		vao->destroy();

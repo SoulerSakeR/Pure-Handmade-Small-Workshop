@@ -39,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->sceneWidget->isGameWidget = false;
     // 设置 gameWidget 的 isGameWidget 为 true
     ui->gameWidget->isGameWidget = true;
+    ui->gameWidget->hierarchyWidget = ui->hierarchy;
     
 
     // 绑定 RenderWidget 中的 sceneWidget 和 gameWidget 指针

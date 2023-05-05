@@ -11,6 +11,8 @@ void Component::set_enabled(bool value)
 Component::Component(GameObject* gameObj)
 {
 	gameObject = gameObj;
+	if (gameObj == nullptr)
+		return;	
 	enabled = true;
 	componentType = UNKNOWN;
 	auto enabled_property = new Property("Enabled", &this->enabled, Property::BOOL, this);
@@ -20,6 +22,8 @@ Component::Component(GameObject* gameObj)
 
 Component::~Component()
 {
+	if (gameObject == nullptr)
+		return;
 	gameObject = nullptr;
 	for (auto& property : properties)
 	{

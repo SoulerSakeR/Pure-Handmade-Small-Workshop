@@ -5,7 +5,7 @@
 
 using namespace std;
 
-AudioSource::AudioSource(GameObject* gameObj) :Component(gameObj)
+AudioSource::AudioSource(GameObject* gameObj) :Component(gameObj),IScriptBehaviour(gameObj)
 {
 	reset();
 	componentType = ComponentType::AUDIO_SOURCE;

@@ -94,13 +94,16 @@ void bindAllClasses(sol::state& lua) {
         "getComponent", sol::overload(
             [](GameObject& obj, Component::ComponentType type) { return obj.getComponent(type); },
             [](GameObject& obj) { return obj.template getComponent<Transform>(); },
-            [](GameObject& obj) { return obj.template getComponent<Image>(); },
-            [](GameObject& obj) { return obj.template getComponent<Camera>(); },
-            [](GameObject& obj) { return obj.template getComponent<Script>(); },
-            [](GameObject& obj) { return obj.template getComponent<RigidBody>(); },
-            [](GameObject& obj) { return obj.template getComponent<BoxCollider>(); },
-            [](GameObject& obj) { return obj.template getComponent<Text>(); },
-            [](GameObject& obj) { return obj.template getComponent<Renderer>(); }
+            [](GameObject& obj, Image& type) { return obj.template getComponent<Image>(); },
+            [](GameObject& obj, Camera& type) { return obj.template getComponent<Camera>(); },
+            [](GameObject& obj, Script& type) { return obj.template getComponent<Script>(); },
+            [](GameObject& obj, RigidBody& type) { return obj.template getComponent<RigidBody>(); },
+            [](GameObject& obj, BoxCollider& type) { return obj.template getComponent<BoxCollider>(); },
+            [](GameObject& obj, Text& type) { return obj.template getComponent<Text>(); },
+            [](GameObject& obj, Renderer& type) { return obj.template getComponent<Renderer>(); },
+            [](GameObject& obj, SpineAnimator& type) { return obj.getComponent<SpineAnimator>();},
+			[](GameObject& obj, AudioSource& type) { return obj.getComponent<AudioSource>();},
+			[](GameObject& obj, Light& type) { return obj.getComponent<Light>();}
         ),
         "getComponents", sol::overload(
             [](GameObject& obj) { return obj.template getComponents<Transform>(); },
@@ -193,7 +196,8 @@ void bindAllClasses(sol::state& lua) {
             [](SpineAnimator& obj, int index, bool loop) { return obj.setAnimation(index, loop); },
             [](SpineAnimator& obj, const std::string& name, bool loop) { return obj.setAnimation(name, loop); }
         ),
-        "addListener", & SpineAnimator::addListener
+        "addListener", & SpineAnimator::addListener,
+        "instance", &SpineAnimator::type
         );
 
     /*

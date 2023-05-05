@@ -2,11 +2,12 @@
 #include <vector>
 
 struct CollisonInfo;
+class GameObject;
 
 class IScriptBehaviour 
 {
 public:
-	IScriptBehaviour();
+	IScriptBehaviour(GameObject* gameobj);
 	virtual ~IScriptBehaviour();
 	typedef IScriptBehaviour customType;
 	// called when the object is created
@@ -26,5 +27,6 @@ public:
 
 	// called after update
 	virtual void afterUpdate() {};	
+	GameObject* gameobj;
 };
 
