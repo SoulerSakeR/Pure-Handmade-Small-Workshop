@@ -1,0 +1,164 @@
+Version:1.0
+Scene:ExampleScene
+rootGameObject:3
+GameObject:3
+MainCamera
+1
+Untagged
+Components:3
+Component:1
+Property:Enabled
+1
+Property:Local Position
+715.065613,-165.293808
+Property:Local Rotation
+0.000000
+Property:Local Scale
+1.000000,1.000000
+ComponentEnd
+Component:3
+Property:Enabled
+1
+Property:Color
+255,255,255,255
+Property:Size
+950.000000,606.468689
+Property:View Width
+950.000000
+Property:Is Main Camera
+1
+Property:Is Overlay
+0
+ComponentEnd
+Component:8
+Property:Enabled
+1
+Property:Render Layer
+0
+ComponentEnd
+ComponentsEnd
+Children:0
+ChildrenEnd
+GameObjectEnd
+GameObject:4
+Player
+1
+Player
+Components:5
+Component:1
+Property:Enabled
+1
+Property:Local Position
+193.064194,-384.454529
+Property:Local Rotation
+0.000000
+Property:Local Scale
+0.100000,0.100000
+ComponentEnd
+Component:2
+Property:Enabled
+0
+Property:Color
+255,255,255,255
+Property:Size
+2048.000000,1024.000000
+Property:Texture Name
+None
+ComponentEnd
+Component:8
+Property:Enabled
+1
+Property:Render Layer
+3
+ComponentEnd
+Component:4
+Property:Enabled
+1
+Property:Name
+input
+Property:Path
+C:\Users\Aaron Liu\Documents\GitHub\Pure-Handmade-Small-Workshop\demo\Resources\Scripts\input.lua
+ComponentEnd
+Component:9
+Property:Enabled
+1
+Property:Color
+255,255,255,255
+Property:Size
+698.933044,772.631165
+Property:Spine Animation Name
+Knight
+Property:Animation
+2
+Property:Skin
+0
+Property:Loop
+1
+Property:Flip X
+0
+Property:Flip Y
+0
+ComponentEnd
+ComponentsEnd
+Children:0
+ChildrenEnd
+GameObjectEnd
+GameObject:24
+Scene1
+1
+Scene
+Components:3
+Component:1
+Property:Enabled
+1
+Property:Local Position
+729.879883,-187.682907
+Property:Local Rotation
+0.000000
+Property:Local Scale
+1.000000,1.000000
+ComponentEnd
+Component:2
+Property:Enabled
+1
+Property:Color
+255,255,255,255
+Property:Size
+1200.000000,712.000000
+Property:Texture Name
+BossScene
+ComponentEnd
+Component:8
+Property:Enabled
+1
+Property:Render Layer
+0
+ComponentEnd
+ComponentsEnd
+Children:1
+GameObject:25
+Boss
+1
+Boss
+Components:4
+1
+282.705902,-56.875309
+0.000000
+0.150000,0.150000
+2
+1
+255,255,255,255
+1707.000000,1704.000000
+Boss
+8
+0
+4
+Tracking
+C:\Users\Aaron Liu\Documents\GitHub\Pure-Handmade-Small-Workshop\demo\Resources\Scripts\Tracking.lua
+ComponentsEnd
+Children:0
+ChildrenEnd
+GameObjectEnd
+ChildrenEnd
+GameObjectEnd
+SceneEnd

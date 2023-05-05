@@ -1,0 +1,43 @@
+Version:1.0
+Scene:Scene1
+rootGameObject:1
+GameObject:6
+MainCamera
+1
+Untagged
+Components:3
+Component:1
+Property:Enabled
+1
+Property:Local Position
+0.000000,0.000000
+Property:Local Rotation
+0.000000
+Property:Local Scale
+1.000000,1.000000
+ComponentEnd
+Component:3
+Property:Enabled
+1
+Property:Color
+255,255,255,255
+Property:Size
+100.000000,100.000000
+Property:View Width
+1000.000000
+Property:Is Main Camera
+1
+Property:Is Overlay
+0
+ComponentEnd
+Component:8
+Property:Enabled
+1
+Property:Render Layer
+0
+ComponentEnd
+ComponentsEnd
+Children:0
+ChildrenEnd
+GameObjectEnd
+SceneEnd

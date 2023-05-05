@@ -1,0 +1,19 @@
+GameProject:demo
+C:\Users\Aaron Liu\Documents\GitHub\Pure-Handmade-Small-Workshop\demo
+0
+Scene:2
+\Scenes\ExampleScene.scene
+\Scenes\Scene1.scene
+SceneEnd
+RenderSetting:
+RenderLayer:4
+0,Default
+1,BackGround
+2,GameObjects
+3,NPC
+RenderLayerEnd
+RenderResolution:
+0.000000,0.000000
+RenderResolutionEnd
+RenderSettingEnd
+GameProjectEnd
