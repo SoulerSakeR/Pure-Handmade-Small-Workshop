@@ -63,6 +63,7 @@ public:
     
     void mouseMoveEvent(QMouseEvent* event) override;
     void keyPressEvent(QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
     void wheelEvent(QWheelEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
@@ -82,6 +83,8 @@ public:
     GameObject* getSelectedGameObject();
 
     float moveSpeed;
+    int edgeNumber = 0; // 1: left, 2: top, 2: right, 3: bottom
+    int connerNumber = 0; // 1: left-top, 2: right-top, 3: right-bottom, 4: left-bottom
     QPoint lastPos; // mouse location
     QPoint doubleClickPos; // mouse location
     QPoint lastMovePos; // object move last location
@@ -91,6 +94,8 @@ public:
     bool isGameWidget = false;
     bool moveObjectMode = false;
     bool moveCameraMode = false;
+    bool sizeChangeMode = false;
+    bool fixedRatioMode = false;
     bool isFullScreen = false;
     bool isRendering = false;
     static bool widgetChanged;

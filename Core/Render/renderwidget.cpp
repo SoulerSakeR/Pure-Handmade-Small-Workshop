@@ -322,14 +322,6 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 	img->vao->bind();
 	//calculate the MVP matrix
 	QMatrix4x4 matrix;
-	if (GameEngine::get_instance().getInEditor()&& !isGameWidget)
-	{
-		 matrix = mCamera->CalculateProjectionMulViewMatrix();
-	}
-	else
-	{
-		 matrix = SceneMgr::get_instance().get_main_camera()->CalculateProjectionMulViewMatrix();
-	}
 	matrix = imageCamera->CalculateProjectionMulViewMatrix();
 	auto transform = img->gameObject->transform;
 	matrix.translate(transform->getWorldPosition().toQVector3D());
@@ -1302,26 +1294,255 @@ void RenderWidget::mouseMoveEvent(QMouseEvent* event)
 	if (!SceneMgr::get_instance().hasCurrentScene() || isGameWidget || !GameEngine::get_instance().getInEditor())
 		return;
 
+	
 
-	Vector2D Pos = Vector2D(event->localPos().x(),size().height() - event->localPos().y());
+
+	Vector2D screenPos = Vector2D(event->localPos().x(),size().height() - event->localPos().y());
 	//Debug::log("mouse position: " + pos.tostring());
 	//if(SceneMgr::get_instance().get_main_camera()!=nullptr)
 		//Debug::log("camera position: "+SceneMgr::get_instance().get_main_camera()->screenToWorld(pos).tostring());
+	
+	auto selectedGameObject = getSelectedGameObject();
+	QMatrix4x4 matrix;
+	
+	if (sizeChangeMode == false && selectedGameObject != nullptr && selectedGameObject->getComponent<IBoxResizable>() != nullptr)
+	{
+		matrix = mCamera->CalculateProjectionMulViewMatrix();
+		auto transform = selectedGameObject->transform;
+		matrix.translate(transform->getWorldPosition().toQVector3D());
+		matrix.rotate(transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
+		matrix.scale(transform->getWorldScale().toQVector3D(1.0f));
+
+		auto resolution = GameEngine::get_instance().get_resolution();
+
+		Vector2D center = Vector2D(0.f, 0.f);
+
+		auto box = selectedGameObject->getComponent<IBoxResizable>();
+
+		
+		auto leftX = box->borderVertices[2].position[0];
+		auto rightX = box->borderVertices[0].position[0];
+
+		auto topY = box->borderVertices[0].position[1];
+		auto bottomY = box->borderVertices[2].position[1];
+
+		leftX = (matrix * QVector4D(leftX, 0.f, 0.f, 1.f)).toVector2DAffine().x();
+		rightX = (matrix * QVector4D(rightX, 0.f, 0.f, 1.f)).toVector2DAffine().x();
+		topY = (matrix * QVector4D(0.f, topY, 0.f, 1.f)).toVector2DAffine().y();
+		bottomY = (matrix * QVector4D(0.f, bottomY, 0.f, 1.f)).toVector2DAffine().y();
+		
+		// 根据分辨率换算
+		leftX = leftX * resolution.x / 2.f + resolution.x / 2.f;
+		rightX = rightX * resolution.x / 2.f + resolution.x / 2.f;
+		topY = topY * resolution.y / 2.f + resolution.y / 2.f;
+		bottomY = bottomY * resolution.y / 2.f + resolution.y / 2.f;
+	
+
+	
+		int borderSize = 5; // 边框大小
+
+		// 检查鼠标是否在渲染框的边框上
+		if (screenPos.x <= leftX + borderSize && screenPos.x >= leftX - borderSize)
+		{
+			if (screenPos.y <= topY + borderSize && screenPos.y >= topY - borderSize)// 左上角
+			{
+				setCursor(Qt::SizeFDiagCursor);
+				connerNumber = 1;
+				edgeNumber = 0;
+				return;
+			}
+			else if (screenPos.y <= bottomY + borderSize && screenPos.y >= bottomY - borderSize) // 左下角
+			{
+				setCursor(Qt::SizeBDiagCursor);
+				connerNumber = 4;
+				edgeNumber = 0;
+				return;
+			}
+			else // 左边
+			{
+				if (screenPos.y <= topY && screenPos.y >= bottomY)
+				{
+					setCursor(Qt::SizeHorCursor);
+					edgeNumber = 1;
+					connerNumber = 0;
+					return;
+				}	
+			}
+		}
+		else if (screenPos.x <= rightX + borderSize && screenPos.x >= rightX - borderSize) // 右边
+		{
+			if (screenPos.y <= topY + borderSize && screenPos.y >= topY - borderSize) // 右上角
+			{
+				setCursor(Qt::SizeBDiagCursor);
+				connerNumber = 2;
+				
+				edgeNumber = 0;
+				return;
+			}
+			else if (screenPos.y <= bottomY + borderSize && screenPos.y >= bottomY - borderSize) // 右下角
+			{
+				setCursor(Qt::SizeFDiagCursor);
+				connerNumber = 3;
+				
+				edgeNumber = 0;
+				return;
+			}
+			else // 右边
+			{
+				if (screenPos.y <= topY && screenPos.y >= bottomY)
+				{
+					setCursor(Qt::SizeHorCursor);
+					edgeNumber = 3;
+					//Debug::logInfo("right edge");
+					connerNumber = 0;
+					return;
+				}				
+			}
+		}
+		else if (screenPos.y <= topY + borderSize && screenPos.y >= topY - borderSize && screenPos.x <= rightX && screenPos.x >= leftX) // 上边
+		{
+			setCursor(Qt::SizeVerCursor);
+			edgeNumber = 2;
+			connerNumber = 0;
+			return;
+		}
+		else if (screenPos.y <= bottomY + borderSize && screenPos.y >= bottomY - borderSize && screenPos.x <= rightX && screenPos.x >= leftX) // 下边
+		{
+			setCursor(Qt::SizeVerCursor);
+			edgeNumber = 4;
+			connerNumber = 0;
+			return;
+		}
+		else // 不在边框上
+		{
+			connerNumber = 0;
+			edgeNumber = 0;
+			// Debug::logInfo("no \n");
+			setCursor(Qt::ArrowCursor);
+		}
+
+	}
+
+	
+
+
 
 	if (event->buttons() & Qt::LeftButton) 
 	{
-		if (!moveObjectMode)
-			return;
-		
-		QPoint diff = event->pos() - lastMovePos;
-		float ratio = mCamera->get_view_width() / size().width();
-		Vector2D diff2 = Vector2D(diff.x(), -diff.y()) * ratio;
+		if (moveObjectMode)	
+		{
+			QPoint diff = event->pos() - lastMovePos;
+			float ratio = mCamera->get_view_width() / size().width();
+			Vector2D diff2 = Vector2D(diff.x(), -diff.y()) * ratio;
 
-		auto selectedGameObject = getSelectedGameObject();
 
-		selectedGameObject->transform->translate(diff2);
-		lastMovePos = event->pos();
-		update();
+
+			selectedGameObject->transform->translate(diff2);
+			lastMovePos = event->pos();
+			update();
+		}
+
+		else if (sizeChangeMode)
+		{
+			auto box = selectedGameObject->getComponent<IBoxResizable>();
+			auto oldSize = box->get_size();
+			QPoint diff = event->pos() - lastMovePos;
+			float ratio = mCamera->get_view_width() / size().width();
+			Vector2D diff2 = Vector2D(diff.x(), -diff.y()) * ratio;
+
+			auto diffX = diff2.x * 2.0;
+			auto diffY = diff2.y * 2.0;
+			float ratio2 = box->get_size().x / box->get_size().y;
+			auto diffFX = 0;
+			auto diffFY = 0;
+
+			if (fixedRatioMode == true)
+			{
+				if (diffX > diffY)
+				{
+					diffFX = diffX;
+					diffFY = diffX / ratio2;
+				}
+				else
+				{
+					diffFY = diffY;
+					diffFX = diffY * ratio2;
+				}
+
+				if (connerNumber == 1) // 左上角
+				{
+					box->set_size(Vector2D(oldSize.x + diffFX, oldSize.y + diffFY));
+				}
+
+				else if (connerNumber == 2) // 右上角
+				{
+					box->set_size(Vector2D(oldSize.x + diffFX, oldSize.y + diffFY));
+				}
+				else if (connerNumber == 4) // 左下角
+				{
+					box->set_size(Vector2D(oldSize.x - diffFX, oldSize.y - diffFY));
+				}
+				else if (connerNumber == 3) // 右下角
+				{
+					box->set_size(Vector2D(oldSize.x + diffFX, oldSize.y - diffFY));
+				}
+				else if (edgeNumber == 1) // 左边
+				{
+					box->set_size(Vector2D(oldSize.x - diffFX, oldSize.y));
+				}
+				else if (edgeNumber == 3) // 右边
+				{
+					box->set_size(Vector2D(oldSize.x + diffFX, oldSize.y));
+				}
+				else if (edgeNumber == 2) // 上边
+				{
+					box->set_size(Vector2D(oldSize.x, oldSize.y + diffFY));
+				}
+				else if (edgeNumber == 4) // 下边
+				{
+					box->set_size(Vector2D(oldSize.x, oldSize.y - diffFY));
+				}
+			}
+			
+			else
+			{
+				if (connerNumber == 1) //左上角
+				{
+					box->set_size(Vector2D(oldSize.x - diffX, oldSize.y + diffY));
+				}
+				else if (connerNumber == 2) // 右上角
+				{
+					box->set_size(Vector2D(oldSize.x + diffX, oldSize.y + diffY));
+				}
+				else if (connerNumber == 4) // 左下角
+				{
+					box->set_size(Vector2D(oldSize.x - diffX, oldSize.y - diffY));
+				}
+				else if (connerNumber == 3) // 右下角
+				{
+					box->set_size(Vector2D(oldSize.x + diffX, oldSize.y - diffY));
+				}
+				else if (edgeNumber == 1) // 左边
+				{
+					box->set_size(Vector2D(oldSize.x - diffX, oldSize.y));
+				}
+				else if (edgeNumber == 3) // 右边
+				{
+					box->set_size(Vector2D(oldSize.x + diffX, oldSize.y));
+				}
+				else if (edgeNumber == 2) // 上边
+				{
+					box->set_size(Vector2D(oldSize.x, oldSize.y + diffY));
+				}
+				else if (edgeNumber == 4) // 下边
+				{
+					box->set_size(Vector2D(oldSize.x, oldSize.y - diffY));
+				}
+			}
+			
+			lastMovePos = event->pos();
+			update();
+		}
 
 	}
 	else if (event->buttons() & Qt::RightButton)
@@ -1373,6 +1594,17 @@ void RenderWidget::mousePressEvent(QMouseEvent* event)
 			selectedGameObjects.erase(it);
 			moveObjectMode = true;
 		}
+
+		// size change
+		if (edgeNumber != 0 || connerNumber != 0)
+		{
+			sizeChangeMode = true;
+			moveObjectMode = false;
+		}
+		else
+		{
+			sizeChangeMode = false;
+		}
 			
 
 	}
@@ -1386,6 +1618,8 @@ void RenderWidget::mouseReleaseEvent(QMouseEvent* event)
 	if (event->button() == Qt::LeftButton)
 	{
 		moveObjectMode = false;
+		sizeChangeMode = false;
+		setCursor(Qt::ArrowCursor);
 	}
 	
 	if (event->button() == Qt::RightButton)
@@ -1442,7 +1676,11 @@ void RenderWidget::mouseDoubleClickEvent(QMouseEvent* event)
 			}
 		}
 		if (gameObject != nullptr)
+		{
 			hierarchyWidget->setCurrentItem(hierarchyWidget->gameobj_item_map[gameObject]);
+
+		}
+			
 		else
 			hierarchyWidget->setCurrentItem(nullptr);
 	}
@@ -1478,10 +1716,22 @@ void RenderWidget::keyPressEvent(QKeyEvent* event)
     case Qt::Key_S: mCameraObject->transform->translate(Vector2D(0.f,-1.f)); break;
     case Qt::Key_D: mCameraObject->transform->translate(Vector2D(1.f, 0.f)); break;
     case Qt::Key_A: mCameraObject->transform->translate(Vector2D(-1.f, 0.f)); break;
+	case Qt::Key_Shift: fixedRatioMode = true; break;
 
     default:
         break;
     }
+}
+
+void RenderWidget::keyReleaseEvent(QKeyEvent* event)
+{
+	if (!SceneMgr::get_instance().hasCurrentScene() || isGameWidget || !GameEngine::get_instance().getInEditor())
+		return;
+	switch (event->key()) {
+	case Qt::Key_Shift: fixedRatioMode = false; break;
+	default:
+		break;
+	}
 }
 
 void RenderWidget::wheelEvent(QWheelEvent* event)

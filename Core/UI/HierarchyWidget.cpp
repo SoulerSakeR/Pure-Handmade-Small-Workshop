@@ -241,6 +241,7 @@ HierarchyWidget::HierarchyWidget(QWidget* parent):QTreeWidget(parent)
 	gameobj_item_map = std::unordered_map<GameObject*, HierarchyItem*>();
 	dragMode = false;
 	connect(this, SIGNAL(itemSelectionChanged()),this, SLOT(onSelectionChanged()));	
+	selectedGameObject = nullptr;
 }
 
 void HierarchyWidget::refresh()
