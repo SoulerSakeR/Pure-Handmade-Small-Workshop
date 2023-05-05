@@ -43,7 +43,7 @@ public:
 			{
 				absolutePath = path;
 			}
-			T* resource = T().loadFromPath(absolutePath,copy);
+			T* resource = T().loadFromPath(absolutePath,false);
 			if(resource == nullptr)
 				Debug::logWarning() << "ResourceMgr::load: Resourece load failed! : " << absolutePath << "\n";
 			return resource;

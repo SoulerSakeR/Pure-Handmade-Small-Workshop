@@ -123,8 +123,9 @@ Scene* SceneMgr::loadScene(const std::string& path)
 {
 	exitScene();
 	PHPath p(path);
-	auto scene = Scene::loadFromPath(p.getNewPath());
-	current_scene = scene;
+	auto sceneNew = new Scene();
+	current_scene = sceneNew;
+	auto scene = Scene::loadFromPath(p.getNewPath(), sceneNew);
 	return scene;
 }
 

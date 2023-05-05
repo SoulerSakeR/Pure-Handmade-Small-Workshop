@@ -10,6 +10,7 @@
 #include "Renderer.h"
 #include "SpineAnimator.h"
 #include "AudioSource.h"
+#include "Core/Core/SpineAnimator.h"
 
 using namespace std;
 
@@ -331,6 +332,11 @@ Component* GameObject::getComponent(Component::ComponentType type)
             return component;
     }
     return nullptr;
+}
+
+SpineAnimator* GameObject::getAnimator()
+{
+    return getComponent<SpineAnimator>();
 }
 
 void GameObject::removeComponent(Component* component)

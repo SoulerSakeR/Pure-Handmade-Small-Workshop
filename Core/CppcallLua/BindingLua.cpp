@@ -111,6 +111,8 @@ void bindAllClasses(sol::state& lua) {
             [](GameObject& obj) { return obj.template getComponents<Text>(); },
             [](GameObject& obj) { return obj.template getComponents<Renderer>(); }
         ),
+        "getAnimator",&GameObject::getAnimator,
+
         "removeComponent", &GameObject::removeComponent,
         "isRootGameObject", &GameObject::isRootGameObject,
         "destroy", &GameObject::destroy,
@@ -122,6 +124,7 @@ void bindAllClasses(sol::state& lua) {
 
 
 
+    //  Transform
     //  Transform
     lua.new_usertype<Transform>("Transform",
         // 构造函数

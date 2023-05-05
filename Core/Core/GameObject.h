@@ -6,6 +6,7 @@
 #include "Core/Utils/Utils.h"
 #include "Core/Utils/Result.h"
 #include "Core/Core/Debug.h"
+class SpineAnimator;
 
 class GameObject :
     public ISerializable
@@ -40,6 +41,7 @@ public:
     template <typename T>
     std::vector<T*> getComponents(); //需要绑定
     Component* getComponent(Component::ComponentType type);
+    SpineAnimator* getAnimator();//需要绑定
 
     void removeComponent(Component* component); //需要绑定
     bool isRootGameObject() const; //需要绑定
