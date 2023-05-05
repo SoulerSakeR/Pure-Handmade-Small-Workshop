@@ -20,6 +20,7 @@
 #include "RenderSettingDialog.h"
 #include "Core/ResourceManagement/ResourceMgr.h"
 #include "TextureEditorDialog.h"
+#include <Core/ResourceManagement/Audio.h>
 
 MainWindow* MainWindow::mainwindow = nullptr;
 
@@ -222,6 +223,7 @@ MainWindow::MainWindow(QWidget *parent)
         ui->tabWidget->setCurrentIndex(1);
         ui->pushButton->setEnabled(false);
         ui->pushButton_2->setEnabled(true);       
+        ui->consoleTextEdit->clear();
         auto gameLoop = std::bind(&GameLoop::startGameLoop, GameEngine::get_instance().gameLoop);
         GameEngine::get_instance().pool.enqueue(gameLoop);
         ui->dockWidget_components->timer->start();
@@ -389,6 +391,9 @@ void MainWindow::setupFileSystemTreeView(const QString& parentDir)
 // 场景的点击事件
 void MainWindow::onTreeviewRightClick(const QPoint& pos) {
     QModelIndex index = ui->treeView->indexAt(pos);
+    // 获取当前项的路径
+    QString currentPath = fileModel->filePath(index);
+    PHPath path(currentPath.toStdString());
     if (index.isValid()) {
         // 弹出一个弹框
         QMenu menu(this);
@@ -407,10 +412,39 @@ void MainWindow::onTreeviewRightClick(const QPoint& pos) {
             }
             else
             {
-                ResourceMgr::get_instance().loadFromPath<SpineAnimationData>(FileAdress.toStdString(),false,true);
+                auto phpath = path;
+                if (!phpath.getIsFile())
+                {
+                    ResourceMgr::get_instance().importFromPath<SpineAnimationData>(FileAdress.toStdString(), true, phpath.getNewPath());
+                }
+                else
+                {
+                    ResourceMgr::get_instance().importFromPath<SpineAnimationData>(FileAdress.toStdString(), true, "");
+                }              
                 return;
             }
         });
+        auto importAudioAction = importMenu->addAction("Import Audio");
+        connect(importAudioAction, &QAction::triggered, [=]() {
+			QString FileAdress = QFileDialog::getOpenFileName(this, "Import Audio", GameEngine::get_instance().getGamePath().c_str(), QString("Audio File (*.mp3;*.wav;*.ogg;*.flac)"));// 可以重载第四个参数，意义是筛选文件类型  "(*.txt)"
+            if (FileAdress.isEmpty())
+            {
+				return;
+			}
+            else
+            {
+				auto phpath = path;
+                if (!phpath.getIsFile())
+                {
+					ResourceMgr::get_instance().importFromPath<Audio>(FileAdress.toStdString(), true, phpath.getNewPath());
+				}
+                else
+                {
+					ResourceMgr::get_instance().importFromPath<Audio>(FileAdress.toStdString(), true, "");
+				}
+				return;
+			}
+		});
         auto deleteSceneAction = menu.addAction("Delete Scene");
         auto reloadAssetAction = menu.addAction("Reload Asset");
         // 将QAction与槽函数绑定

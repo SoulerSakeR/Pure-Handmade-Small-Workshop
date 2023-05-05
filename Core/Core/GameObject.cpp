@@ -10,6 +10,7 @@
 #include "Renderer.h"
 #include "SpineAnimator.h"
 #include "AudioSource.h"
+#include "Light.h"
 #include "Core/Core/SpineAnimator.h"
 
 using namespace std;
@@ -312,6 +313,9 @@ Component* GameObject::addComponent(Component::ComponentType type)
     case Component::AUDIO_SOURCE:
         result = new AudioSource(this);
         break;
+    case Component::LIGHT:
+        result = new Light(this);
+		break;
     default:
         break;
     }

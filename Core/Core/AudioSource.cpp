@@ -24,6 +24,12 @@ AudioSource::AudioSource(GameObject* gameObj) :Component(gameObj)
 	properties.emplace(auto_play_property);
 }
 
+AudioSource::~AudioSource()
+{
+	if (media != nullptr)
+		Media::release_Instance(media);
+}
+
 bool AudioSource::setAudio(const std::string& name)
 {
 	if (ResourceMgr::get_instance().isExist<Audio>(name))
@@ -59,6 +65,7 @@ bool AudioSource::setAudio(const std::string& path, bool isRelativePath)
 		return false;
 	}
 }
+
 
 void AudioSource::play(int loop)
 {

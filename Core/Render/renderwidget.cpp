@@ -867,11 +867,12 @@ void RenderWidget::initializeGL()
 	 // Enable debug context
 	initializeOpenGLFunctions();
 	// debug info
+	/*
 	logger = std::make_unique<QOpenGLDebugLogger>(this);
 	logger->initialize();
 	connect(logger.get(), &QOpenGLDebugLogger::messageLogged, this, &RenderWidget::messageLogHandler);
 	logger->startLogging();
-	
+	*/
 
 	source_path = GameEngine::get_instance().getRootPath();
 

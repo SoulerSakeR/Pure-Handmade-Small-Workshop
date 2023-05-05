@@ -10,14 +10,30 @@
 
 class GameObject;
 
+const std::string componentTypeNames[12] = { "Unknown","Transform","Image","Camera","Script","Rigid Body","Box Collider","Text","Renderer","Spine Animator","Audio Source","Light" };
+
 class Component : public ISerializable
 {
 	friend class GameObject;
 	friend class ComponentsDockWidget;
 public:
-	enum ComponentType { UNKNOWN, TRANSFORM, IMAGE, CAMERA, SCRIPT, RIGID_BODY,BOX_COLLIDER,TEXT,RENDERER,SPINE_ANIMATOR,AUDIO_SOURCE};
+	enum ComponentType { 
+		UNKNOWN = 0, 
+		TRANSFORM =1,
+		IMAGE =2,
+		CAMERA = 3,
+		SCRIPT =4,
+		RIGID_BODY = 5,
+		BOX_COLLIDER = 6,
+		TEXT = 7,
+		RENDERER =8,
+		SPINE_ANIMATOR = 9,
+		AUDIO_SOURCE =10,
+		LIGHT =11
+	};
+	
 	typedef ComponentType customType;
-	static const int componentTypeCount = 10;
+	static const int componentTypeCount = 11;
 	PHEvent<void,Property*> onPropertyChanged;
 	Component(GameObject* gameObj);
 	virtual ~Component();

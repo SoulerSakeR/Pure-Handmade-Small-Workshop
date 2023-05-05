@@ -4,6 +4,7 @@
 #include "SceneMgr.h"
 #include "Audio.h"
 #include "Core/Utils/Utils.h"
+#include "Core/FileIO/Media.h"
 
 ResourceMgr* ResourceMgr::instance = nullptr;
 
@@ -17,6 +18,7 @@ ResourceMgr& ResourceMgr::get_instance()
 
 Result<void*> ResourceMgr::initialize()
 {
+	Media::init(8);
 	assetTypes.emplace(PHAsset::TEXTURE2D, new Texture2D());
 	assetTypes.emplace(PHAsset::SPINE_ANIMATION, new SpineAnimationData());
 	assetTypes.emplace(PHAsset::SCRIPT, new ScriptData());

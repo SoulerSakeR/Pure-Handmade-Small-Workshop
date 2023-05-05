@@ -31,21 +31,23 @@ public:
     bool is_active() const;																			 //需要绑定
     void set_active(bool value);																 //需要绑定
 
-    //methods
-    Component* addComponent(Component::ComponentType type);   
-    template <typename T>
-    T* addComponent(); //需要绑定
-
-    template <typename T>
-    T* getComponent(); //需要绑定
-    template <typename T>
-    std::vector<T*> getComponents(); //需要绑定
+    // api for lua //需要绑定
+    Component* addComponent(Component::ComponentType type); 
     Component* getComponent(Component::ComponentType type);
     SpineAnimator* getAnimator();//需要绑定
 
-    void removeComponent(Component* component); //需要绑定
-    bool isRootGameObject() const; //需要绑定
-    void destroy(); //需要绑定
+    template <typename T>
+    T* addComponent(); 
+
+    template <typename T>
+    T* getComponent(); 
+    template <typename T>
+    std::vector<T*> getComponents(); 
+    
+
+    void removeComponent(Component* component); 
+    bool isRootGameObject() const; 
+    void destroy(); 
     GameObject* clone(const std::string newName,GameObject* parent=nullptr); //需要绑定
 
     void onComponentPropertyChangedHandler(Property* property); //需要绑定
@@ -72,6 +74,7 @@ protected:
     PropertiesQueue<std::string,Property*> properties;
     PHEvent<void, Property*> onPropertyChanged;
 };
+
 
 /// <summary>
 /// 需要绑定，添加指定类型的组件

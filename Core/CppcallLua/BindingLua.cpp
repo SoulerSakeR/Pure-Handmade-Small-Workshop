@@ -13,6 +13,8 @@
 #include "Core/Core/RigidBody.h"
 #include "Core/Core/Script.h"
 #include "Core/Core/SpineAnimator.h"
+#include "Core/Core/AudioSource.h"
+#include "Core/Core/Light.h"
 
 #include "Core/Utils/Vector2D.h"
 
@@ -76,7 +78,6 @@ void bindAllClasses(sol::state& lua) {
         "name", sol::property(&GameObject::get_name, &GameObject::set_name),
         "tag", sol::property(&GameObject::get_tag, &GameObject::set_tag),
         "transform", &GameObject::transform,
-
         // 方法
         "getID", &GameObject::get_id,
         "addComponent", sol::overload(
@@ -121,7 +122,10 @@ void bindAllClasses(sol::state& lua) {
         "find", & GameObject::find,
         "findTag", & GameObject::findTag);
 
-
+    lua.new_usertype<Component>("Component",
+        "gameObject", &Component::gameObject,
+        "enabled", sol::property(&Component::get_enabled, &Component::set_enabled)
+        );
 
 
     //  Transform
@@ -172,7 +176,7 @@ void bindAllClasses(sol::state& lua) {
     //SpineAnimator
     lua.new_usertype<SpineAnimator>("SpineAnimator",
         sol::constructors<SpineAnimator(GameObject*)>(),
-
+        sol::base_classes, sol::bases<Component>(),
         // 属性
         "spine_animation_name", sol::property(&SpineAnimator::get_spine_animation_name, &SpineAnimator::set_spine_animation_name),
         "animation_index", sol::property(&SpineAnimator::get_animation_index, &SpineAnimator::set_animation_index),

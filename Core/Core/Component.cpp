@@ -30,39 +30,7 @@ Component::~Component()
 
 std::string Component::getTypeName(ComponentType type)
 {
-	switch (type)
-	{
-	case UNKNOWN:
-		return "Unknown";
-		break;
-	case TRANSFORM:
-		return "Transform";
-		break;
-	case IMAGE:
-		return "Image";
-		break;
-	case CAMERA:
-		return "Camera";
-		break;
-	case SCRIPT:
-		return "Script";
-		break;
-	case RIGID_BODY:
-		return "Rigid Body";
-	case BOX_COLLIDER:
-		return "Box Collider";
-	case TEXT:
-			return "Text";
-	case RENDERER:
-		return "Renderer";
-	case SPINE_ANIMATOR:
-		return "Spine Animator";
-	case AUDIO_SOURCE:
-		return "Audio Source";
-	default:
-		return "Unknown";
-		break;
-	}
+	return componentTypeNames[type];
 }
 
 void Component::serialize(PHString& str)

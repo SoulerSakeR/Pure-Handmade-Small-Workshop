@@ -17,11 +17,21 @@ class Media : public QObject
     Q_OBJECT
 
 public:   
-
+    static void init(int size);
     static Media* get_Instance()
     {
-		static Media *instance = new Media();
-		return instance;
+        if (instances.size() > 0)
+        {
+            auto instance = instances[instances.size()-1];
+            instances.pop_back();
+            return instance;
+        }          
+		else
+			return nullptr;
+	}
+    static void release_Instance(Media* instance)
+    {
+		instances.push_back(instance);
 	}
     Media(QObject* parent = nullptr);
     ~Media();
@@ -35,14 +45,15 @@ public:
     void setAudioPosition(qint64 position);
 
 private:
+    static std::vector<Media*> instances;
     QString codecForFileExtension(const QString& extension) const;
 
-    QMediaPlayer* audioPlayer;//Ö¸Ïò´¦Àí¼ÓÔØÒôÆµÎÄ¼ş²¥·ÅµÄ QMediaPlayer ¶ÔÏóµÄÖ¸Õë
+    QMediaPlayer* audioPlayer;//æŒ‡å‘å¤„ç†åŠ è½½éŸ³é¢‘æ–‡ä»¶æ’­æ”¾çš„ QMediaPlayer å¯¹è±¡çš„æŒ‡é’ˆ
 
-    QMediaRecorder* mediaRecorder;//Ö¸Ïò¼ÇÂ¼ÒôÆµÊı¾İµÄ QMediaRecorder ¶ÔÏóµÄÖ¸Õë
+    QMediaRecorder* mediaRecorder;//æŒ‡å‘è®°å½•éŸ³é¢‘æ•°æ®çš„ QMediaRecorder å¯¹è±¡çš„æŒ‡é’ˆ
 
-    QAudioOutput* audioOutput;//Ö¸Ïò´¦ÀíÒôÆµÊä³öµÄ QAudioOutput ¶ÔÏóµÄÖ¸Õë
-   // QAudioProbe* audioProbe;//Ö¸ÏòÔÊĞí¼àÊÓÒôÆµÊı¾İµÄ QAudioProbe ¶ÔÏóµÄÖ¸Õë
+    QAudioOutput* audioOutput;//æŒ‡å‘å¤„ç†éŸ³é¢‘è¾“å‡ºçš„ QAudioOutput å¯¹è±¡çš„æŒ‡é’ˆ
+   // QAudioProbe* audioProbe;//æŒ‡å‘å…è®¸ç›‘è§†éŸ³é¢‘æ•°æ®çš„ QAudioProbe å¯¹è±¡çš„æŒ‡é’ˆ
 
     friend class GameEngine;
 };

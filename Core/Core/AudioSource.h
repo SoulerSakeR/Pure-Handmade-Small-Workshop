@@ -8,7 +8,7 @@ class AudioSource : public Component , public IScriptBehaviour
 {
 public :
 	AudioSource(GameObject* gameObj);
-
+	virtual ~AudioSource();
 	// api for lua script 需要绑定
 	bool setAudio(const std::string& name);
 	bool setAudio(const std::string& path, bool isRelativePath);

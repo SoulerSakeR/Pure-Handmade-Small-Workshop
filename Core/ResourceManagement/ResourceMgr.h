@@ -29,7 +29,7 @@ public:
 	bool isExist(PHAsset::AssetType assetType,const std::string& name) const;
 
 	template <typename T>
-	T* loadFromPath(const string& path,bool isRelativePath = true,bool copy = false,const std::string& desPath = "")
+	T* loadFromPath(const string& path,bool isRelativePath = true)
 	{
 		if (has_type_member<T>::value)
 		{
@@ -49,6 +49,20 @@ public:
 			return resource;
 		}
 		Debug::logWarning() << "ResourceMgr::load: Resource type not supported! : " << typeid(T).name()<<"\n";
+	}
+
+	template <typename T>
+	bool importFromPath(const std::string& absolutePath, bool copyToAssetDir, const std::string& desPath)
+	{
+		if (has_type_member<T>::value)
+		{
+			if (T().importFromPath(absolutePath, copyToAssetDir, desPath))
+			{
+				return true;
+			}			
+			Debug::logError() << " [ResourceMgr::importFromPath] : Resourece import failed! : " << absolutePath << "\n";
+			return false;
+		}
 	}
 
 	template <typename T>

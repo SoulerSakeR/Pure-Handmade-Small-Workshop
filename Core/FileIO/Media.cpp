@@ -1,6 +1,17 @@
 #include "Media.h"
 #include <qaudiooutput.h>
 
+std::vector<Media*> Media::instances;
+
+void Media::init(int size)
+{
+    instances.resize(size);
+    for (int i = 0; i < size; i++)
+    {
+		instances[i] = new Media();
+	}
+}
+
 Media::Media(QObject* parent) : QObject(parent), audioPlayer(nullptr), mediaRecorder(nullptr)//, audioProbe(nullptr)
 {
     audioPlayer = new QMediaPlayer(this);
@@ -21,7 +32,6 @@ bool Media::loadAudio(const QString& inputPath)
 {
     QString extension = QFileInfo(inputPath).suffix().toLower();
     QString codec = codecForFileExtension(extension);
-
     if (!codec.isEmpty())
     {
         QMetaObject::invokeMethod(audioPlayer, "setSource", Qt::QueuedConnection, Q_ARG(QUrl, QUrl::fromLocalFile(inputPath)));
@@ -29,7 +39,6 @@ bool Media::loadAudio(const QString& inputPath)
     }
     return false;
 }
-
 
 bool Media::playAudio(int loop)
 {
