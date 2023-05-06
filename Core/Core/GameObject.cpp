@@ -406,9 +406,14 @@ GameObject* GameObject::clone(const std::string newName, GameObject* parent)
 
 void GameObject::onComponentPropertyChangedHandler(Property* property)
 {
-    if(SceneMgr::get_instance().hasCurrentScene())
+    if (SceneMgr::get_instance().hasCurrentScene())
+    {
+        auto& map = SceneMgr::get_instance().get_current_scene()->allGameObjsByID;
+        if (map.find(id) == map.end())
+            return;
         SceneMgr::get_instance().get_current_scene()->is_changed = true;
-    onPropertyChanged(property);
+        onPropertyChanged(property);
+    }        
 }
 
 GameObject* GameObject::find(const std::string& name)
