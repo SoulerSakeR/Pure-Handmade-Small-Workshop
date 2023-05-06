@@ -1,6 +1,6 @@
 Version:1.0
 Scene:ExampleScene
-rootGameObject:3
+rootGameObject:4
 GameObject:3
 MainCamera
 1
@@ -22,7 +22,7 @@ Property:Enabled
 Property:Color
 255,255,255,255
 Property:Size
-950.000000,606.468689
+950.000000,485.210663
 Property:View Width
 950.000000
 Property:Is Main Camera
@@ -77,7 +77,7 @@ Property:Enabled
 Property:Name
 input
 Property:Path
-C:\Users\Aaron Liu\Documents\GitHub\Pure-Handmade-Small-Workshop\demo\Resources\Scripts\input.lua
+Scripts\input.lua
 ComponentEnd
 Component:9
 Property:Enabled
@@ -141,24 +141,75 @@ Boss
 1
 Boss
 Components:4
+Component:1
+Property:Enabled
 1
-282.705902,-56.875309
+Property:Local Position
+262.571533,-42.780678
+Property:Local Rotation
 0.000000
+Property:Local Scale
 0.150000,0.150000
-2
+ComponentEnd
+Component:2
+Property:Enabled
 1
+Property:Color
 255,255,255,255
+Property:Size
 1707.000000,1704.000000
+Property:Texture Name
 Boss
-8
+ComponentEnd
+Component:8
+Property:Enabled
+1
+Property:Render Layer
 0
-4
+ComponentEnd
+Component:4
+Property:Enabled
+1
+Property:Name
 Tracking
-C:\Users\Aaron Liu\Documents\GitHub\Pure-Handmade-Small-Workshop\demo\Resources\Scripts\Tracking.lua
+Property:Path
+Scripts\Tracking.lua
+ComponentEnd
 ComponentsEnd
 Children:0
 ChildrenEnd
 GameObjectEnd
+ChildrenEnd
+GameObjectEnd
+GameObject:7
+AudioMgr
+1
+Manager
+Components:2
+Component:1
+Property:Enabled
+1
+Property:Local Position
+0.000000,0.000000
+Property:Local Rotation
+0.000000
+Property:Local Scale
+1.000000,1.000000
+ComponentEnd
+Component:10
+Property:Enabled
+1
+Property:Name
+02 DARK SOULSⅢ
+Property:Path
+Audio\02 DARK SOULSⅢ.flac
+Property:Loop
+1
+Property:AutoPlay
+1
+ComponentEnd
+ComponentsEnd
+Children:0
 ChildrenEnd
 GameObjectEnd
 SceneEnd
