@@ -86,6 +86,8 @@ std::string Script::get_path()
 
 void Script::set_path(const std::string& path)
 {
+	if(!properties["Path"]->is_editable)
+		return;
 	this->path = PHPath(path);
 	onPropertyChanged(properties["Path"]);
 }

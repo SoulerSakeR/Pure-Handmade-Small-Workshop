@@ -165,7 +165,7 @@ void GameObject::serialize_1_0(PHString& result)
     for (int i = 0;i < transform->children.size();i++)
     {
         GameObject& child = *(transform->children[i]->gameObject);
-        child.serialize(result);
+        child.serialize_1_0(result);
     }
     result.appendLine("ChildrenEnd");
     result.appendLine("GameObjectEnd");
@@ -219,7 +219,7 @@ void GameObject::deserialize_1_0(std::stringstream& ss)
                     for (int i = 0;i < childrenSize;i++)
                     {
                         GameObject* child = new GameObject("", false);
-                        child->deserialize(ss);
+                        child->deserialize_1_0(ss);
                         child->transform->parent = transform;
                         transform->children.push_back(child->transform);
                     }

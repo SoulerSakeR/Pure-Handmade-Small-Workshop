@@ -37,7 +37,7 @@ bool AudioSource::setAudio(const std::string& name)
 		auto audio = ResourceMgr::get_instance().loadFromName<Audio>(name);
 		if(media==nullptr)
 			media = Media::get_Instance();
-		media->loadAudio(audio->get_path().c_str());
+		media->loadAudio(audio->getAbsolutePath().c_str());
 		this->name = name;
 		this->path = audio->get_path();
 		onPropertyChanged(properties["Name"]);
@@ -123,7 +123,7 @@ std::string AudioSource::get_path()
 
 void AudioSource::set_path(std::string path)
 {
-	if (this->path == path)
+	if (this->path == path || !properties["Path"]->is_editable)
 		return;
 	this->path = path;
 	// if path is relative path

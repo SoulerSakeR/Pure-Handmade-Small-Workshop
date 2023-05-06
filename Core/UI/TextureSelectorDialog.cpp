@@ -65,7 +65,8 @@ void TextureSelectorDialog::initListWidget()
 	for (auto& texture : ResourceMgr::get_instance().assets[PHAsset::TEXTURE2D])
 	{
 		auto texture2D = static_cast<Texture2D*>(texture.second);
-		listWidget->addItem(new QListWidgetItem(QIcon(QString::fromStdString(texture2D->get_img_path())), QString::fromStdString(texture.second->get_name())));
+		auto imgPath = PHPath(ResourceMgr::get_instance().getAssetDir()).combinePath(texture2D->get_img_path());
+		listWidget->addItem(new QListWidgetItem(QIcon(imgPath.getNewPath().c_str()), QString::fromStdString(texture.second->get_name())));
 	}
 	layout()->addWidget(listWidget);
 }

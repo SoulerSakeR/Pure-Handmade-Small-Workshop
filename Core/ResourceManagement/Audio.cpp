@@ -26,7 +26,8 @@ Audio* Audio::loadFromPath(const std::string& path, bool isRelativePath)
 
     // Create new audio
     auto audio = new Audio();
-    audio->path = audioPath.getNewPath();
+    auto relativePath = audioPath.getRelativePath(ResourceMgr::get_instance().getAssetDir());
+    audio->path = relativePath.getNewPath();
     audio->name = audioPath.getFileName(false);
 
     // Check if audio with the same name already exists

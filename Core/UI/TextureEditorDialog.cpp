@@ -8,6 +8,7 @@
 #include <QComboBox>
 #include "Core/Core/Debug.h"
 #include "Core/SystemStatus/GameEngine.h"
+#include "Core/ResourceManagement/ResourceMgr.h"
 
 TextureEditorDialog::TextureEditorDialog(Texture2D* texture, QWidget* parent): QDialog(parent), texture(texture)
 {
@@ -75,16 +76,30 @@ TextureEditorDialog::TextureEditorDialog(Texture2D* texture, QWidget* parent): Q
 	layout->addWidget(saveButton, 6, 1);
 	connect(saveButton, &QPushButton::clicked, this, [this, textureName, texturePath, autoMipMap, minFilter, magFilter, wrapMode]()
 	{
+		auto path = PHPath(texturePath->text().toStdString());
+		PHPath absolutePath("");
+		PHPath relativePath("");
+		if (path.getNewPath().find(":\\") !=std::string::npos) // if path absolute
+		{
+			absolutePath = PHPath(path);
+			relativePath = PHPath("Sprites").combinePath(absolutePath.getFileName());
+		}
+		else
+		{
+			relativePath = PHPath(path);
+			absolutePath = PHPath(ResourceMgr::get_instance().getAssetDir()).combinePath(path.getNewPath());
+		}
+		Texture2D::copyTargetImg(absolutePath.getNewPath(), relativePath.getFileDir());
 		if(!this->texture->set_name(textureName->text().toStdString()))
 		{
 			Debug::warningBox(this, "Texture2D with name " + textureName->text().toStdString() + " already exist");
 			return;
-		}
-		this->texture->set_img_path(texturePath->text().toStdString());
+		}		
 		this->texture->set_mipmap(autoMipMap->checkState() == Qt::Checked);
 		this->texture->set_minification_filter(minFilter->currentIndex());
 		this->texture->set_magnification_filter(magFilter->currentIndex());
 		this->texture->set_wrap_mode(wrapMode->currentIndex());
+		this->texture->set_img_path(relativePath.getNewPath());
 		this->texture->save();
 		this->accept();
 	});

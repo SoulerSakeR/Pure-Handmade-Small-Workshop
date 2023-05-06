@@ -378,7 +378,7 @@ void MainWindow::setupFileSystemTreeView(const QString& parentDir)
     fileModel = new QFileSystemModel(ui->treeView);
     fileModel->setRootPath(parentDir);
     QStringList filters;
-    filters << "*.scene" << "*.png"<<"*.texture"<<"*.gameProject" << "*.lua";
+    filters << "*.*";
     fileModel->setNameFilters(filters);
     fileModel->setNameFilterDisables(false);
 

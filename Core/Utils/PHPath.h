@@ -28,12 +28,14 @@ public:
 	[[nodiscard]] PHPath combinePath(const std::string& path);
 	std::string getFileType();
 	std::string getFileName(bool withExtension = true);
-	std::string getNewPath();
+	std::string getNewPath() const;
 	std::string getOldPath();
 	std::string getFileDir(); //获取文件目录，如果文件在根目录下则返回根目录
+	PHPath getRelativePath(const PHPath& parentDir);
 	bool getIsFile();
 	static void copyDir(const QString& srcPath, const QString& dstPath);
-
+	bool isExist();
+	bool isAbsolute();
 private:
 
 	std::string newPath;

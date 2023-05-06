@@ -30,6 +30,11 @@ std::string PHAsset::get_path() const
 	return path;
 }
 
+std::string PHAsset::getAbsolutePath() const
+{
+	return PHPath(ResourceMgr::get_instance().getAssetDir()).combinePath(path).getNewPath();
+}
+
 PHAsset* PHAsset::loadFromName(const std::string& name)
 {
 	auto& assets = ResourceMgr::get_instance().assets[assetType];

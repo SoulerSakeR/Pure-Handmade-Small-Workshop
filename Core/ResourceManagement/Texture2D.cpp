@@ -44,7 +44,15 @@ Texture2D* Texture2D::CreateTexture2D(const std::string& name, const std::string
 
 Texture2D* Texture2D::loadFromImgPath(const std::string& absolutePath)
 {
-	return CreateTexture2D(PHPath(absolutePath).getFileName(false), absolutePath);
+	if (!QFile::exists(absolutePath.c_str()))
+	{
+		Debug::logWarning()<< " [Texture2D::loadFromImgPath] : " << absolutePath << " doesn't exist\n";
+		return nullptr;
+	}
+	auto imgNewPath = "Sprites\\" + PHPath(absolutePath).getFileName(true);
+	if(!QFile::exists(PHPath(ResourceMgr::get_instance().getAssetDir()).combinePath(imgNewPath).getNewPath().c_str()))
+		copyTargetImg(absolutePath,"Sprites");
+	return CreateTexture2D(PHPath(absolutePath).getFileName(false), imgNewPath);
 }
 
 
@@ -92,10 +100,10 @@ std::string Texture2D::get_img_path() const
 	return img_path;
 }
 
-bool Texture2D::set_img_path(const std::string& path)
+bool Texture2D::set_img_path(const std::string& relativePath)
 {
-	this->img_path = path;
-	return set_texture(path);
+	this->img_path = relativePath;
+	return set_texture(relativePath);
 }
 
 QOpenGLTexture* Texture2D::get_texture() const
@@ -103,15 +111,16 @@ QOpenGLTexture* Texture2D::get_texture() const
 	return texture;
 }
 
-bool Texture2D::set_texture(const std::string& absolutePath,bool horizontallyMirrored,bool verticallyMirrored)
+bool Texture2D::set_texture(const std::string& relativePath,bool horizontallyMirrored,bool verticallyMirrored)
 {
+	auto absolutePath = PHPath(ResourceMgr::get_instance().getAssetDir()).combinePath(relativePath).getNewPath();
 	QImage image(QString::fromStdString(absolutePath));
 	if (image.isNull())
 	{
 		Debug::logWarning()<< "Texture2D with name " << name << " load image failed, image path: \""<<absolutePath<<"\"\n";
 		return false;
 	}		
-	img_path = absolutePath;
+	img_path = relativePath;
 	reset_texture();
 	RenderWidget::getCurrentWidget().makeCurrent();
 	texture = new QOpenGLTexture(image.mirrored(horizontallyMirrored, verticallyMirrored).convertToFormat(QImage::Format_RGBA8888));
@@ -192,8 +201,9 @@ void Texture2D::save()
 {	
 	PHString str;
 	serialize(str);
-	auto path = PHPath(GameEngine::get_instance().getGamePath()).combinePath(get_path());
-	IO::write(str.str(),path.getNewPath(),1);
+	auto dir = PHPath(getDefaultDir());
+	IO::createPathIfNotExists(dir.getNewPath());
+	IO::write(str.str(),dir.combinePath(name+EXTENSION).getNewPath(), 1);
 }
 
 bool Texture2D::isNull() const
@@ -224,6 +234,7 @@ Texture2D* Texture2D::loadFromPath(const std::string& path, bool isRelativePath)
 		auto result = new Texture2D();
 		stringstream ss(res.toStdString());
 		result->deserialize(ss);
+		result->path = texturePath.getNewPath();
 		if (isExist(result->name))
 		{
 			Debug::logWarning() << " [Texture2D::loadFromPath] Texture2D with name " << result->get_name() << " already exist\n";
@@ -275,5 +286,21 @@ void Texture2D::serialize_1_0(PHString& str)
 void Texture2D::deserialize_1_0(std::stringstream& ss)
 {
 	deserialize(ss);
+}
+
+bool Texture2D::copyTargetImg(const std::string& absolutePath, const std::string& desRelativeDir)
+{
+	auto targetDir = PHPath(ResourceMgr::get_instance().getAssetDir()).combinePath(desRelativeDir);
+	if (!IO::createPathIfNotExists(targetDir.getNewPath()))
+	{
+		Debug::logError() << " [Texture2D::copyTargetImg] create path " << targetDir.getNewPath() << " failed\n";
+		return false;
+	}
+	if (!IO::copy(absolutePath.c_str(), targetDir.getNewPath().c_str()))
+	{
+		Debug::logError() << " [Texture2D::copyTargetImg] copy file " << absolutePath << " to " << targetDir.getNewPath() << " failed\n";
+		return false;
+	}	
+	return true;
 }
 

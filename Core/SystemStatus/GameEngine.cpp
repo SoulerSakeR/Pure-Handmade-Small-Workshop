@@ -302,6 +302,7 @@ bool GameEngine::openGameProject(const string& path)
 	stringstream ss(gameProject);
 	GameProject* gp = new GameProject("","",false);
 	gp->deserialize(ss);
+	gp->path = PHPath(path).getFileDir();
 	this->gameProject = gp;
 	SceneMgr::get_instance().render_setting = this->gameProject->render_setting;
 	gameLoop = new GameLoop();

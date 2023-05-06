@@ -69,7 +69,8 @@ void AnimationSelectorDialog::initListWidget()
 	for (auto& spine : ResourceMgr::get_instance().assets[PHAsset::SPINE_ANIMATION])
 	{
 		auto spineAnimation = dynamic_cast<SpineAnimationData*>(spine.second);
-		listWidget->addItem(new QListWidgetItem(QIcon(QString::fromStdString(spineAnimation->getTexturePath())), QString::fromStdString(spine.second->get_name())));
+		auto imgPath = PHPath(ResourceMgr::get_instance().getAssetDir()).combinePath(spineAnimation->getTexturePath());
+		listWidget->addItem(new QListWidgetItem(QIcon(imgPath.getNewPath().c_str()), QString::fromStdString(spine.second->get_name())));
 	}
 	layout()->addWidget(listWidget);
 }

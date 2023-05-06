@@ -21,6 +21,7 @@ public:
 	// getters
 	std::string get_name() const;
 	std::string get_path() const;
+	std::string getAbsolutePath() const;
 
 	// Interface of Asset
 	virtual PHAsset* loadFromName(const std::string& name);

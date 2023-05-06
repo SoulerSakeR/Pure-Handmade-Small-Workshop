@@ -20,6 +20,7 @@ public:
 	std::string getAssetDir() const;
 	std::string getSpineDir() const;
 	std::string getScriptDir() const;
+	std::string getSpriteDir() const;
 	void loadAllAssets();
 	void clear();
 
@@ -89,6 +90,7 @@ private:
 	const string assetPath ="\\Resources";
 	const string spinePath = "\\Spine";
 	const string scriptPath = "\\Scripts";
+	const string spritePath = "\\Sprites";
 	static ResourceMgr* instance;
 	std::unordered_map<PHAsset::AssetType, std::unordered_map<std::string,PHAsset*>> assets;
 	std::unordered_map<PHAsset::AssetType,PHAsset*> assetTypes;

@@ -41,6 +41,11 @@ std::string ResourceMgr::getScriptDir() const
 	return PHPath(GameEngine::get_instance().getGamePath()).combinePath(assetPath).combinePath(scriptPath).getNewPath();
 }
 
+std::string ResourceMgr::getSpriteDir() const
+{
+	return PHPath(GameEngine::get_instance().getGamePath()).combinePath(assetPath).combinePath(spritePath).getNewPath();
+}
+
 void ResourceMgr::loadAllAssets()
 {
 	clear();

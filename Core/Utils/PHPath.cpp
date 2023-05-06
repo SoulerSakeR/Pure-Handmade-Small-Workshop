@@ -1,7 +1,7 @@
 ﻿#include "PHPath.h"
 
 
-std::string PHPath::getNewPath() {
+std::string PHPath::getNewPath() const{
 	return newPath;
 }
 
@@ -68,6 +68,20 @@ std::string PHPath::getFileDir(){
 	}
 }
 
+PHPath PHPath::getRelativePath(const PHPath& parentDir)
+{
+	auto parentDirStr = parentDir.getNewPath();
+	if (auto index = newPath.find(parentDirStr); index != std::string::npos)
+	{
+		return PHPath(newPath.substr(parentDirStr.size()+1));
+	}
+	else
+	{
+		return PHPath("");
+	}
+	
+}
+
 void PHPath::copyDir(const QString& srcPath, const QString& dstPath)
 {
 	QDir dstDir(dstPath);
@@ -88,4 +102,14 @@ void PHPath::copyDir(const QString& srcPath, const QString& dstPath)
 			QFile::copy(srcDir.absoluteFilePath(entry), dstFilePath);
 		}
 	}
+}
+
+bool PHPath::isExist()
+{
+	return QFile::exists(QString::fromStdString(newPath));
+}
+
+bool PHPath::isAbsolute()
+{
+	return newPath.find(":\\") != std::string::npos;
 }

@@ -63,6 +63,7 @@ public:
    virtual ~Texture2D();
    static Texture2D* CreateTexture2D(const std::string& name, const std::string& absolutePath, bool mipmap=true, int minification_filter=0, int magnification_filter=0, int wrap_mode = 0);
    static Texture2D* loadFromImgPath(const std::string& absolutePath);
+   static bool copyTargetImg(const std::string& absolutePath, const std::string& desRelativeDir);
 
    //getter and setter
    std::string get_name() const;
@@ -72,7 +73,7 @@ public:
    bool set_path(const std::string& path);
 
    std::string get_img_path() const;
-   bool set_img_path(const std::string& path);
+   bool set_img_path(const std::string& relativePath);
 
    QOpenGLTexture* get_texture() const;
    bool set_texture(const std::string& absolutePath, bool horizontallyMirrored = false, bool vertically = true);
@@ -111,6 +112,7 @@ public:
 private:
     Texture2D(const Texture2D& other) = delete;
     Texture2D& operator=(const Texture2D& other) = delete;
+
     QOpenGLTexture* texture;
     std::string img_path;       
     bool mipmap;

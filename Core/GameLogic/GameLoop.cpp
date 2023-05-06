@@ -75,13 +75,14 @@ void GameLoop::preloadScriptFiles(sol::state& lua) {
     for (auto& script : scripts) {
         if (auto s = dynamic_cast<Script*>(script))
         {
-            if (!QFile::exists(s->get_path().c_str()))
+            PHPath absolutePath = PHPath(ResourceMgr::get_instance().getAssetDir()).combinePath(s->get_path());
+            if (!QFile::exists(absolutePath.getNewPath().c_str()))
             {
-                Debug::logWarning() << "GameObject : " << s->gameObject->get_name() << " preloading script file : " << s->get_path() << " failed , file not exist . \n";
+                Debug::logWarning() << "GameObject : " << s->gameObject->get_name() << " preloading script file : " << absolutePath.getNewPath() << " failed , file not exist . \n";
 				continue;
             }
             s->lua = &lua;
-            s->lua->script_file(s->get_path());
+            s->lua->script_file(absolutePath.getNewPath());
             auto classProxy = lua[s->get_name()];
             if (classProxy.valid())
             {

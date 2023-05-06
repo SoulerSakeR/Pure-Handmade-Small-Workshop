@@ -64,7 +64,7 @@ ScriptData* ScriptData::loadFromPath(const std::string& path, bool isRelativePat
 		auto scriptData = new ScriptData();
 		PHPath path(absolutePath);
 		scriptData->name = path.getFileName(false);
-		scriptData->path = absolutePath;
+		scriptData->path = PHPath(absolutePath).getRelativePath(ResourceMgr::get_instance().getAssetDir()).getNewPath();
 		if (isExist(scriptData->get_name()))
 		{
 			Debug::logWarning() << " [ScriptData::loadFromPath] script file with name " << scriptData->get_name() << " already exist\n";
