@@ -6,7 +6,7 @@ class Light :  public Component
 {
 public:
 	Light(GameObject* gameobj);
-
+	~Light();
 	// getters and setters
 
 	Color32 get_light_color() const;

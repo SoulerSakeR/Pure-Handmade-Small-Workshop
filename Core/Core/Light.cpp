@@ -1,4 +1,5 @@
 #include "Light.h"
+#include "Core/ResourceManagement/SceneMgr.h"
 
 Light::Light(GameObject* gameobj): Component(gameobj)
 {
@@ -15,6 +16,22 @@ Light::Light(GameObject* gameobj): Component(gameobj)
 	auto radius_property = new Property("Radius", &this->radius, Property::FLOAT, this);
 	radius_property->set_property_func<float>(&Light::get_radius, &Light::set_radius, this);
 	properties.emplace(radius_property);
+
+	if (SceneMgr::get_instance().hasCurrentScene())
+	{
+		SceneMgr::get_instance().lights.push_back(this);
+	}
+
+}
+
+Light::~Light()
+{
+	if (SceneMgr::get_instance().hasCurrentScene())
+	{
+		auto& lights = SceneMgr::get_instance().lights;
+		if(auto it = std::find(lights.begin(), lights.end(), this); it != lights.end())
+			lights.erase(it);
+	}
 }
 
 Color32 Light::get_light_color() const

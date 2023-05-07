@@ -6,6 +6,15 @@
 
 #include "Core/Core/GameObject.h"
 
+
+struct LightSourceData {
+    QVector2D position; // 光源位置
+    QVector3D color;    // 光源颜色
+    int type;           // 光源类型
+    float intensity;    // 光源强度（0-1）
+    float radius;       // 光源半径
+};
+
 enum LightSourceType {
     Point,
     DirectionalLight,

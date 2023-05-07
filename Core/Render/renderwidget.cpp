@@ -337,6 +337,81 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 	imageShaderProgram->setUniformValue("isTexture", true);
 	imageShaderProgram->setUniformValue("isLighting", true);
 
+	
+	//============================================LIGHTING=========================================//
+	// 获取场景里的所有光源
+	auto& lightSources = SceneMgr::get_instance().lights;
+
+	// 将所有的光源信息存储到 lightSources 中
+
+	// 计算需要传递给着色器的光源数量
+	int numLights = lightSources.size();
+
+	// 创建一个固定大小的数组来存储所有的光源
+	QVector<LightSourceData> lightData(numLights);
+
+	QVector3D lightsColor[32];
+	QVector2D lightsPos[32];
+	QVector2D lightsIntensityAndRadius[32];
+
+	for (int i = 0; i < numLights; i++)
+	{
+		auto worldPos = lightSources[i]->gameObject->transform->getWorldPosition();
+		auto color = lightSources[i]->get_light_color();
+		
+		lightsColor[i].setX(color.red());
+		lightsColor[i].setY(color.green());
+		lightsColor[i].setZ(color.blue());
+
+		lightsPos[i].setX(worldPos.x);
+		lightsPos[i].setY(worldPos.y);
+
+		lightsIntensityAndRadius[i].setX(lightSources[i]->get_intensity());
+		lightsIntensityAndRadius[i].setY(lightSources[i]->get_radius());
+
+	}
+
+
+
+	// 将每个光源转换为一个 LightSourceData 结构体，并存储到 lightData 中
+	for (int i = 0; i < numLights; i++) {
+
+		auto worldPos = lightSources[i]->gameObject->transform->getWorldPosition();
+		auto color = lightSources[i]->get_light_color();
+
+		lightData[i].position = QVector2D(worldPos.x, worldPos.y);
+		lightData[i].color = {color.red(), color.green(), color.blue()};
+		lightData[i].type = 1;
+		lightData[i].intensity = lightSources[i]->get_intensity();
+	}
+
+
+	// 转换自定义结构体数组为一维的 GLfloat 数组
+	QVector<GLfloat> flattenedArray;
+	flattenedArray.reserve(lightData.size() * 7); // 假设结构体中有两个 QVector3D 成员，每个成员占用 3 个 GLfloat
+	for (const auto& item : lightData) {
+		flattenedArray.append(item.position.x());
+		flattenedArray.append(item.position.y());
+		flattenedArray.append(item.color.x());
+		flattenedArray.append(item.color.y());
+		flattenedArray.append(item.color.z());
+		flattenedArray.append(item.type);
+		flattenedArray.append(item.intensity);
+	}
+
+	
+
+	// 将光源数量和光源数组传递到着色器中
+	imageShaderProgram->setUniformValue("numLights", numLights);
+	
+	imageShaderProgram->setUniformValueArray("lightsColor", lightsColor,32);
+	imageShaderProgram->setUniformValueArray("lightsPosition", lightsPos, 32);
+	imageShaderProgram->setUniformValueArray("lightsIntensityAndRadius", lightsIntensityAndRadius, 32);
+
+	//=================================================================================================//
+
+
+
 	//bind texture
 	/*if(img->texture!=nullptr)
 		img->texture->bind();*/

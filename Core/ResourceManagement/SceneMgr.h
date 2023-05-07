@@ -3,6 +3,7 @@
 #include <Core/Core/Scene.h>
 #include <Core/Render/renderwidget.h>
 #include "Core/Render/RenderSetting.h"
+#include <Core/Core/Light.h>
 
 class IScriptBehaviour;
 
@@ -43,6 +44,9 @@ public:
 	void nameToGameObjects_remove(const std::string& name, GameObject* gameObject);
 
 	std::vector<Camera*> cameras;
+
+	std::vector<Light*> lights;
+
 private:
 	SceneMgr();
 	SceneMgr(const SceneMgr&) = delete;
