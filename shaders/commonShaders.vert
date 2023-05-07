@@ -6,6 +6,9 @@ out vec4 ourColor;
 out vec2 TexCoord;
 
 uniform mat4 MVPMatrix;
+uniform mat4 projMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 modelMatrix;
 uniform vec4 color;
 
 void main(){

@@ -22,7 +22,7 @@ Property:Enabled
 Property:Color
 255,255,255,255
 Property:Size
-950.000000,485.210663
+950.000000,699.151611
 Property:View Width
 950.000000
 Property:Is Main Camera
@@ -49,7 +49,7 @@ Component:1
 Property:Enabled
 1
 Property:Local Position
-193.064194,-384.454529
+311.059235,-378.133362
 Property:Local Rotation
 0.000000
 Property:Local Scale
@@ -100,7 +100,36 @@ Property:Flip Y
 0
 ComponentEnd
 ComponentsEnd
+Children:1
+GameObject:18
+light
+1
+Untagged
+Components:2
+Component:1
+Property:Enabled
+1
+Property:Local Position
+0.000000,18.000000
+Property:Local Rotation
+0.000000
+Property:Local Scale
+1.000000,1.000000
+ComponentEnd
+Component:11
+Property:Enabled
+1
+Property:Light Color
+255,255,255,255
+Property:Intensity
+1.000000
+Property:Radius
+80.000000
+ComponentEnd
+ComponentsEnd
 Children:0
+ChildrenEnd
+GameObjectEnd
 ChildrenEnd
 GameObjectEnd
 GameObject:24
@@ -140,7 +169,7 @@ GameObject:25
 Boss
 1
 Boss
-Components:4
+Components:5
 Component:1
 Property:Enabled
 1
@@ -174,6 +203,16 @@ Property:Name
 Tracking
 Property:Path
 Scripts\Tracking.lua
+ComponentEnd
+Component:11
+Property:Enabled
+1
+Property:Light Color
+132,170,43,255
+Property:Intensity
+1.000000
+Property:Radius
+100.000000
 ComponentEnd
 ComponentsEnd
 Children:0

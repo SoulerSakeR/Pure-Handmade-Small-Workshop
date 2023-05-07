@@ -151,10 +151,7 @@ void RenderWidget::renderGameobject(GameObject* gameobj, Camera* camera)
 		}
 
 	}
-
 	
-
-	// renderText();
 }
 
 void RenderWidget::renderBoxCollider(BoxCollider* box, Camera* boxColliderCamera, bool visBorder)
@@ -176,14 +173,9 @@ void RenderWidget::renderBoxCollider(BoxCollider* box, Camera* boxColliderCamera
 		box->borderIbo->allocate(box->borderIndices.data(), static_cast<int>(box->borderIndices.size() * sizeof(unsigned int)));
 
 		boxColliderShaderProgram->bind();
-
 		GLint posLocation = boxColliderShaderProgram->attributeLocation("aPos");
-
-		GLuint stride = sizeof(Vertex);
-		//-----------------position--------------------//
-		//告知显卡如何解析缓冲里的属性值
-		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
-		//开启VAO管理的第一个属性值
+		GLuint stride = sizeof(Vertex);				
+		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);		
 		glEnableVertexAttribArray(posLocation);
 
 		box->vao->release();
@@ -191,10 +183,6 @@ void RenderWidget::renderBoxCollider(BoxCollider* box, Camera* boxColliderCamera
 		box->vbo->destroy();
 		delete box->vbo;
 		box->vbo = nullptr;
-		/*img->ibo->release();
-		img->ibo->destroy();
-		img->ibo = nullptr;
-		delete img->ibo;*/
 	}
 	box->vao->bind();
 	
@@ -278,34 +266,16 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 		img->ibo->create();
 		img->ibo->bind();
 		img->ibo->allocate(img->indices.data(), static_cast<int>(img->indices.size() * sizeof(unsigned int)));
-		/*
-		if (img->get_img() != nullptr)
-		{
-			if (img->texture == nullptr)
-			{
-				img->texture = new QOpenGLTexture((*(img->get_img())).mirrored());
-				img->texture->create();
-				bool flag = img->texture->isCreated();
-				if(!flag)
-					Debug::logError()<< "texture create failed\n" ;
-			}		
-		}
-		*/
 		imageShaderProgram->bind();
 		
 		GLint posLocation = imageShaderProgram->attributeLocation("aPos");
-		GLint textureLocation = imageShaderProgram->attributeLocation("aTexCoord");
-		
-		GLsizei stride = sizeof(Vertex);		
-		//-----------------position--------------------//
-		//告知显卡如何解析缓冲里的属性值
-		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
-		//开启VAO管理的第一个属性值
+		GLint textureLocation = imageShaderProgram->attributeLocation("aTexCoord");		
+		GLsizei stride = sizeof(Vertex);				
+		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);		
 		glEnableVertexAttribArray(posLocation);
 
 		if (textureLocation)
-		{
-			//------------------Texture-----------------------//		
+		{		
 			glVertexAttribPointer(textureLocation, 2, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));			
 			glEnableVertexAttribArray(textureLocation);
 		}
@@ -314,23 +284,48 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 		img->vbo->destroy();
 		delete img->vbo;
 		img->vbo = nullptr;
-		/*img->ibo->release();
-		img->ibo->destroy();
-		img->ibo = nullptr;
-		delete img->ibo;*/
 	}
 	img->vao->bind();
-	//calculate the MVP matrix
+	
+	auto view_width = imageCamera->get_view_width();
+	imageShaderProgram->bind();
+
+	QMatrix4x4 projMatrix;
+	auto resolution = GameEngine::get_instance().get_resolution();
+	float ratio = resolution.y / resolution.x;
+	projMatrix.ortho(-view_width / 2, view_width / 2, -view_width / 2 * ratio, view_width / 2 * ratio, -10.f, 10.f);
+	imageShaderProgram->setUniformValue("projMatrix", projMatrix);
+
+	QMatrix4x4 Matrix = QMatrix4x4();
+	auto cameraWorldPos = imageCamera->gameObject->transform->getWorldPosition();
+	Matrix.rotate(imageCamera->gameObject->transform->getWorldRotation(), 0.f, 0.f, 1.f);
+	QMatrix4x4 viewMatrix = QMatrix4x4();
+	viewMatrix.lookAt(cameraWorldPos.toQVector3D(1.f), cameraWorldPos.toQVector3D(-1.f), Matrix* QVector4D(0.f, 1.f, 0.f, 1.f).toVector3D());
+	imageShaderProgram->setUniformValue("viewMatrix", viewMatrix);
+
+	// calculate the model matrix
+	QMatrix4x4 modelMatrix;
+	// matrix = imageCamera->CalculateProjectionMulViewMatrix();
+	auto transform = img->gameObject->transform;
+	modelMatrix.translate(transform->getWorldPosition().toQVector3D());
+	modelMatrix.rotate(transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
+	modelMatrix.scale(transform->getWorldScale().toQVector3D(1.0f));
+	imageShaderProgram->setUniformValue("modelMatrix", modelMatrix);
+
+	QVector2D SCREEN_SIZE = QVector2D(GameEngine::get_instance().get_resolution().x, GameEngine::get_instance().get_resolution().y);
+	imageShaderProgram->setUniformValue("SCREEN_SIZE", SCREEN_SIZE);
+
 	QMatrix4x4 matrix;
 	matrix = imageCamera->CalculateProjectionMulViewMatrix();
-	auto transform = img->gameObject->transform;
+
+	//auto transform = img->gameObject->transform;
 	matrix.translate(transform->getWorldPosition().toQVector3D());
 	matrix.rotate(transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
 	matrix.scale(transform->getWorldScale().toQVector3D(1.0f));
 
 	//transfer the MVP matrix to the shader
-	imageShaderProgram->bind();
 	imageShaderProgram->setUniformValue("MVPMatrix", matrix);
+
 	const auto& color = img->get_color();
 	imageShaderProgram->setUniformValue("color", color.red(), color.green(), color.blue(), color.alpha());
 
@@ -371,9 +366,12 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 
 	}
 
-
-
 	// 将每个光源转换为一个 LightSourceData 结构体，并存储到 lightData 中
+	
+	// 判断光源是否影响此物体
+	//     TODO:
+	
+	// 如果光源影响此物体，则将光源信息存储到 lightData 中
 	for (int i = 0; i < numLights; i++) {
 
 		auto worldPos = lightSources[i]->gameObject->transform->getWorldPosition();
@@ -385,32 +383,13 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 		lightData[i].intensity = lightSources[i]->get_intensity();
 	}
 
-
-	// 转换自定义结构体数组为一维的 GLfloat 数组
-	QVector<GLfloat> flattenedArray;
-	flattenedArray.reserve(lightData.size() * 7); // 假设结构体中有两个 QVector3D 成员，每个成员占用 3 个 GLfloat
-	for (const auto& item : lightData) {
-		flattenedArray.append(item.position.x());
-		flattenedArray.append(item.position.y());
-		flattenedArray.append(item.color.x());
-		flattenedArray.append(item.color.y());
-		flattenedArray.append(item.color.z());
-		flattenedArray.append(item.type);
-		flattenedArray.append(item.intensity);
-	}
-
-	
-
 	// 将光源数量和光源数组传递到着色器中
 	imageShaderProgram->setUniformValue("numLights", numLights);
 	
 	imageShaderProgram->setUniformValueArray("lightsColor", lightsColor,32);
 	imageShaderProgram->setUniformValueArray("lightsPosition", lightsPos, 32);
 	imageShaderProgram->setUniformValueArray("lightsIntensityAndRadius", lightsIntensityAndRadius, 32);
-
 	//=================================================================================================//
-
-
 
 	//bind texture
 	/*if(img->texture!=nullptr)
@@ -450,14 +429,7 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 			img->borderIbo->allocate(img->borderIndices.data(), static_cast<int>(img->borderIndices.size() * sizeof(unsigned int)));
 		}
 		img->borderIbo->bind();
-
-		/*
-		boxColliderShaderProgram->bind();
-		boxColliderShaderProgram->setUniformValue("MVPMatrix", matrix);
-		boxColliderShaderProgram->setUniformValue("color", 1.0f, 1.0f, 1.0f, 1.0f);
-		*/
-
-		
+	
 		imageShaderProgram->setUniformValue("isTexture", false);
 		imageShaderProgram->setUniformValue("color", 1.0f, 1.0f, 1.0f, 1.0f);
 		imageShaderProgram->setUniformValue("isLighting", false);
@@ -477,8 +449,7 @@ void RenderWidget::renderText(Text* text, Camera* textCamera, bool visBorder)
 {
 
 	// 获取纹理
-	QString data = QString::fromStdString(text->get_text());
-	
+	QString data = QString::fromStdString(text->get_text());	
 	data.replace("\\n", "\n");
 	// 将data根据\n拆分成若干个字符串
 	QStringList list = data.split("\n");
@@ -492,9 +463,6 @@ void RenderWidget::renderText(Text* text, Camera* textCamera, bool visBorder)
 			maxLen = list[i].length();
 		}
 	}
-	// 输出最大长度和字符串的个数
-	// qDebug() << "maxLen:" << maxLen << "count:" << count;
-
 	// 宽度设置为最大字符串长度 * 字符宽度，字符宽度设置为35
 	int width = maxLen * 35;
 	// 高度设置为字符串个数 * 字符高度，字符高度设置为75
@@ -569,13 +537,8 @@ void RenderWidget::renderText(Text* text, Camera* textCamera, bool visBorder)
 		GLint textureLocation = textShaderProgram->attributeLocation("aTexCord");
 
 		GLsizei stride = sizeof(Vertex);
-
-		//-----------------position--------------------//
-		//告知显卡如何解析缓冲里的属性值
-		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
-		//开启VAO管理的第一个属性值
-		glEnableVertexAttribArray(posLocation);
-		
+		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);		
+		glEnableVertexAttribArray(posLocation);		
 		if (textureLocation)
 		{
 			//------------------Texture-----------------------//
@@ -587,10 +550,6 @@ void RenderWidget::renderText(Text* text, Camera* textCamera, bool visBorder)
 		text->vbo->destroy();
 		delete text->vbo;
 		text->vbo = nullptr;
-		/*text->ibo->release();
-		text->ibo->destroy();
-		text->ibo = nullptr;
-		delete text->ibo;*/
 	}
 	text->vao->bind();
 
@@ -615,11 +574,9 @@ void RenderWidget::renderText(Text* text, Camera* textCamera, bool visBorder)
 	textShaderProgram->bind();
 	textShaderProgram->setUniformValue("MVPMatrix", matrix);
 
-
 	//bind texture
 	mTexture->bind();
-	//text->texture = mTexture;
-	
+	//text->texture = mTexture;	
 	text->ibo->bind();
 	
 	//enable alpha blending
@@ -658,10 +615,7 @@ void RenderWidget::renderText(Text* text, Camera* textCamera, bool visBorder)
 		glDrawElements(GL_LINES, static_cast<GLsizei>(text->borderIndices.size()), GL_UNSIGNED_INT, 0);
 		text->borderIbo->release();
 
-	}
-	
-	
-	
+	}	
 	//release
 	text->vao->release();
 }
@@ -683,7 +637,6 @@ void RenderWidget::renderCameraBorder(Camera* target, Camera* renderCamera, bool
 	float cameraWidth = target->get_view_width();
 	Vector2D ratio = GameEngine::get_instance().get_resolution();
 	// 换算opengl宽高比
-	//float aspect = static_cast<float>(width()) / static_cast<float>(height());
 	float aspect = static_cast<float>(ratio.x) / static_cast<float>(ratio.y);
 	// 计算camera的高
 	float cameraHeight = cameraWidth / aspect;
@@ -738,11 +691,8 @@ void RenderWidget::renderCameraBorder(Camera* target, Camera* renderCamera, bool
 		cameraBorderShaderProgram->bind();
 		GLint posLocation = cameraBorderShaderProgram->attributeLocation("aPos");
 		
-		GLsizei stride = sizeof(Vertex);
-		//-----------------position--------------------//
-		//告知显卡如何解析缓冲里的属性值
+		GLsizei stride = sizeof(Vertex);				
 		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
-		//开启VAO管理的第一个属性值
 		glEnableVertexAttribArray(posLocation);
 
 		
@@ -797,20 +747,14 @@ void RenderWidget::drawMesh(IRenderable* target, Camera* camera, bool visBorder)
 	GLint texCoordLocation = imageShaderProgram->attributeLocation("aTexCoord");
 
 	GLsizei stride = sizeof(Vertex);
-	//-----------------position--------------------//
-	//告知显卡如何解析缓冲里的属性值
 	if (posLocation != -1)
 	{
 		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
-		//开启VAO管理的第一个属性值
 		glEnableVertexAttribArray(posLocation);
 	}
-	//-----------------texcoord--------------------//
-	//告知显卡如何解析缓冲里的属性值
 	if (texCoordLocation != -1)
 	{
 		glVertexAttribPointer(texCoordLocation, 2, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
-		//开启VAO管理的第二个属性值
 		glEnableVertexAttribArray(texCoordLocation);
 	}
 
@@ -840,13 +784,8 @@ void RenderWidget::drawMesh(IRenderable* target, Camera* camera, bool visBorder)
 	//release
 	vbo->release();
 	ibo->release();
-	//vbo->destroy();
-	//ibo->destroy();
 	if (target->isTextureValid())
 		target->get_texture()->release();
-
-	// imageShaderProgram->release();
-	
 
 	//draw border
 	if (visBorder)
@@ -906,34 +845,16 @@ void RenderWidget::renderScene(Camera* camera)
 				renderGameobject(obj, camera);
 		}
 	}
-	/*
-	for (auto& pair : scene->getAllGameObjsByDepth())
-	{
-		if (pair.second->isActive)
-			renderGameobject(pair.second, camera);
-	}
-	*/
 }
 
 
 void RenderWidget::initializeGL()
 {
-	
-	/*QSurfaceFormat format;
-	format.setDepthBufferSize(24);
-	format.setStencilBufferSize(8);
-	format.setVersion(3, 3);
-	format.setProfile(QSurfaceFormat::CoreProfile);
-	format.setOption(QSurfaceFormat::DebugContext);
-	QOpenGLContext* context1 = new QOpenGLContext;
-	context1->setFormat(format);	
-	context1->setShareContext(QOpenGLContext::currentContext());
-	context1->create();
-	context1->makeCurrent(context()->surface());*/
 
 	 // Enable debug context
 	initializeOpenGLFunctions();
 	// debug info
+	
 	/*
 	logger = std::make_unique<QOpenGLDebugLogger>(this);
 	logger->initialize();
@@ -949,11 +870,7 @@ void RenderWidget::initializeGL()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	/*
-	createProgram();
-	createBoxProgram();	
-	createCameraBorderProgram();
-	*/
+	
 	createALLShaderProgram();
 
 	createTextProgram();
@@ -1164,10 +1081,7 @@ void RenderWidget::mixTexture()
 		GLint textureLocation = textureShaderProgram->attributeLocation("aTexCoord");
 
 		auto stride = 5 * sizeof(float);
-		//-----------------position--------------------//
-		//告知显卡如何解析缓冲里的属性值
 		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
-		//开启VAO管理的第一个属性值
 		glEnableVertexAttribArray(posLocation);
 
 		if (textureLocation)
@@ -1368,10 +1282,6 @@ void RenderWidget::mouseMoveEvent(QMouseEvent* event)
 	
 	if (!SceneMgr::get_instance().hasCurrentScene() || isGameWidget || !GameEngine::get_instance().getInEditor())
 		return;
-
-	
-
-
 	Vector2D screenPos = Vector2D(event->localPos().x(),size().height() - event->localPos().y());
 	//Debug::log("mouse position: " + pos.tostring());
 	//if(SceneMgr::get_instance().get_main_camera()!=nullptr)
@@ -1411,8 +1321,6 @@ void RenderWidget::mouseMoveEvent(QMouseEvent* event)
 		rightX = rightX * resolution.x / 2.f + resolution.x / 2.f;
 		topY = topY * resolution.y / 2.f + resolution.y / 2.f;
 		bottomY = bottomY * resolution.y / 2.f + resolution.y / 2.f;
-	
-
 	
 		int borderSize = 5; // 边框大小
 
@@ -1786,11 +1694,7 @@ void RenderWidget::keyPressEvent(QKeyEvent* event)
 	if (!SceneMgr::get_instance().hasCurrentScene() || isGameWidget || !GameEngine::get_instance().getInEditor())
 		return;
 	switch (event->key()) {
-    
-    case Qt::Key_W: mCameraObject->transform->translate(Vector2D(0.f,1.f));break;
-    case Qt::Key_S: mCameraObject->transform->translate(Vector2D(0.f,-1.f)); break;
-    case Qt::Key_D: mCameraObject->transform->translate(Vector2D(1.f, 0.f)); break;
-    case Qt::Key_A: mCameraObject->transform->translate(Vector2D(-1.f, 0.f)); break;
+       
 	case Qt::Key_Shift: fixedRatioMode = true; break;
 
     default:
