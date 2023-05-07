@@ -1813,24 +1813,6 @@ void RenderWidget::setFullScreen(bool fullScreen)
 }
 
 
-void RenderWidget::setLight(LightSource* light, GameObject* target)
-{	
-	QColor finalColor = light->calcIntensity(target);
-}
-
-
-PointLight RenderWidget::addPointLight()
-{
-	// 创建一个点光源
-	QPointF lightPos(100, 100);
-	QColor lightColor(Qt::white);
-	qreal lightRadius = 50;
-	qreal lightIntensity = 1.0;
-	PointLight light(lightPos, lightColor, lightRadius, lightIntensity);
-	
-	return light;
-}
-
 
 
 

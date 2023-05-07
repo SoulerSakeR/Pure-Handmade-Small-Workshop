@@ -77,9 +77,6 @@ public:
     void resetResolution();
     void resetFBO();
 
-    void setLight(LightSource* light, GameObject* target);
-    PointLight addPointLight();
-
     GameObject* getSelectedGameObject();
 
     float moveSpeed;
