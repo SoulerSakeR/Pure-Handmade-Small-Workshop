@@ -406,7 +406,6 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 	if (img->isTextureValid())
 	{
 		img->get_texture()->create();
-		bool flag = img->get_texture()->isCreated();
 		img->get_texture()->bind();
 	}
 		
@@ -632,8 +631,85 @@ void RenderWidget::renderText(Text* text, Camera* textCamera, bool visBorder)
 void RenderWidget::renderSpineAnimator(SpineAnimator* target, Camera* camera, bool visBorder)
 {
 	target->updateVertices();
-	if(target->is_Valid())
-		drawMesh(target, camera,visBorder);
+	/*auto size = target->get_size();
+	static auto spineFbo = new QOpenGLFramebufferObject(size.x, size.y);
+	spineFbo->bind();
+	glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, size.x, size.y);
+	drawMesh(target, camera, visBorder);
+	spineFbo->release();
+	target->vertices = target->borderVertices;
+	target->createIndices();*/
+	if (target->is_Valid())
+	{
+		if (target->get_receiving_lighting())
+		{
+			auto transform = target->gameObject->transform;
+			imageShaderProgram->bind();
+			//============================================LIGHTING=========================================//
+			// 获取场景里的所有光源
+			auto& lightSources = SceneMgr::get_instance().lights;
+			// 将所有的光源信息存储到 lightSources 中
+			// 计算需要传递给着色器的光源数量
+			int numLights = lightSources.size();
+
+			// 创建一个固定大小的数组来存储所有的光源
+			QVector<LightSourceData> lightData(numLights);
+
+			QVector3D lightsColor[32];
+			QVector2D lightsPos[32];
+			QVector2D lightsIntensityAndRadius[32];
+
+			int validLight = 0;
+
+			for (int i = 0, j = 0; j < numLights; j++)
+			{
+				auto worldPos = lightSources[j]->gameObject->transform->getWorldPosition();
+				auto color = lightSources[j]->get_light_color();
+
+				auto distance = (worldPos - transform->getWorldPosition()).toQVector2D().length();
+				auto radius = lightSources[j]->get_radius();
+
+
+				if ((worldPos - transform->getWorldPosition()).toQVector2D().length() >= lightSources[j]->get_radius())
+					continue;
+
+				lightsColor[i].setX(color.red());
+				lightsColor[i].setY(color.green());
+				lightsColor[i].setZ(color.blue());
+
+				lightsPos[i].setX(worldPos.x);
+				lightsPos[i].setY(worldPos.y);
+
+				lightsIntensityAndRadius[i].setX(lightSources[j]->get_intensity());
+				lightsIntensityAndRadius[i].setY(lightSources[j]->get_radius());
+
+				i++;
+				validLight++;
+
+
+			}
+			// 将光源数量和光源数组传递到着色器中
+			imageShaderProgram->setUniformValue("numLights", validLight);
+			imageShaderProgram->setUniformValueArray("lightsColor", lightsColor, 32);
+			imageShaderProgram->setUniformValueArray("lightsPosition", lightsPos, 32);
+			imageShaderProgram->setUniformValueArray("lightsIntensityAndRadius", lightsIntensityAndRadius, 32);
+
+			if (target->get_generating_shadow())
+			{
+				for (int i = 0;i < validLight; i++)
+				{
+					shadowTest(target, camera, visBorder, lightsPos[i]);
+				}				
+			}
+			imageShaderProgram->setUniformValue("isLighting", true);
+		}
+		//glBindTexture(GL_TEXTURE_2D, spineFbo->texture());
+		//drawMesh(target->borderVertices, target->indices, target->gameObject->transform, camera);
+		drawMesh(target, camera, visBorder);
+	}
+		
 }
 
 // render camera border
@@ -838,6 +914,57 @@ void RenderWidget::drawMesh(IRenderable* target, Camera* camera, bool visBorder)
 		box->borderIbo->release();
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
+}
+
+void RenderWidget::drawMesh(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, Transform* transform, Camera* camera)
+{
+	static auto vbo = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+	vbo->create();
+	vbo->bind();
+	vbo->allocate(vertices.data(), static_cast<int>(vertices.size() * sizeof(Vertex)));
+	vbo->setUsagePattern(QOpenGLBuffer::DynamicDraw);
+	static auto ibo = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+	ibo->create();
+	ibo->bind();
+	ibo->allocate(indices.data(), static_cast<int>(indices.size() * sizeof(unsigned int)));
+	ibo->setUsagePattern(QOpenGLBuffer::DynamicDraw);
+	imageShaderProgram->bind();
+
+	GLint posLocation = imageShaderProgram->attributeLocation("aPos");
+	GLint texCoordLocation = imageShaderProgram->attributeLocation("aTexCoord");
+
+	GLsizei stride = sizeof(Vertex);
+	if (posLocation != -1)
+	{
+		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+		glEnableVertexAttribArray(posLocation);
+	}
+	if (texCoordLocation != -1)
+	{
+		glVertexAttribPointer(texCoordLocation, 2, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(texCoordLocation);
+	}
+
+	// mvp matrix
+	if (camera == nullptr)
+		camera = mCamera;
+	auto matrix = camera->CalculateProjectionMulViewMatrix();
+	matrix.translate(transform->getWorldPosition().toQVector3D());
+	matrix.rotate(transform->getWorldRotation(), QVector3D(0.f, 0.f, 1.f));
+	matrix.scale(transform->getWorldScale().toQVector3D(1.0f));
+
+	const auto& color = Color32{ 255,255,255,255 };
+	imageShaderProgram->setUniformValue("MVPMatrix", matrix);
+	imageShaderProgram->setUniformValue("color", color.red(), color.green(), color.blue(), color.alpha());
+	imageShaderProgram->setUniformValue("isTexture", true);
+	imageShaderProgram->setUniformValue("isLighting", true);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
+
+	//release
+	vbo->release();
+	ibo->release();
 }
 
 void RenderWidget::renderScene(Camera* camera)

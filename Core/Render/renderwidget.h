@@ -48,7 +48,7 @@ public:
     HierarchyWidget* hierarchyWidget;
 
     void drawMesh(IRenderable* target, Camera* camera,bool visBorder);
-  
+    void drawMesh(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices,Transform* transform, Camera* camera);
     void renderScene(Camera* camera);
     void renderGameobject(GameObject* gameobj, Camera* camera);
     void renderBoxCollider(BoxCollider* boxCollider, Camera* boxColliderCamera, bool visBorder);

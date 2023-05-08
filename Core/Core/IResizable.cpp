@@ -13,6 +13,14 @@ IBoxResizable::IBoxResizable(GameObject* gameobj):IRenderable(gameobj)
 	size_property->set_property_func<Vector2D>(&IBoxResizable::get_size, &IBoxResizable::set_size, this);
 	properties.emplace(size_property);
 	set_size(Vector2D(100, 100));
+	receiving_lighting = true;
+	auto receiving_lighting_property = new Property("Receiving Lighting", &receiving_lighting, Property::BOOL, this);
+	receiving_lighting_property->set_property_func<bool>(&IBoxResizable::get_receiving_lighting, &IBoxResizable::set_receiving_lighting, this);
+	properties.emplace(receiving_lighting_property);
+	generating_shadow = false;
+	auto generating_shadow_property = new Property("Generating Shadow", &generating_shadow, Property::BOOL, this);
+	generating_shadow_property->set_property_func<bool>(&IBoxResizable::get_generating_shadow, &IBoxResizable::set_generating_shadow, this);
+	properties.emplace(generating_shadow_property);
 	createIndices();
 	createBorderIndices();
 }
@@ -65,6 +73,28 @@ void IBoxResizable::set_size(Vector2D newSize)
 	updateVertices();
 	updateBorderVertices();
 	onPropertyChanged(properties["Size"]);
+}
+
+bool IBoxResizable::get_receiving_lighting()
+{
+	return receiving_lighting;
+}
+
+void IBoxResizable::set_receiving_lighting(bool receiving_lighting)
+{
+	this->receiving_lighting = receiving_lighting;
+	onPropertyChanged(properties["Receiving Lighting"]);
+}
+
+bool IBoxResizable::get_generating_shadow()
+{
+	return generating_shadow;
+}
+
+void IBoxResizable::set_generating_shadow(bool generating_shadow)
+{
+	this->generating_shadow = generating_shadow;
+	onPropertyChanged(properties["Generating Shadow"]);
 }
 
 void IBoxResizable::updateBorderVertices()

@@ -16,6 +16,10 @@ public:
 	// getters and setters
 	virtual Vector2D get_size();
 	virtual void set_size(Vector2D newSize);
+	virtual bool get_receiving_lighting();
+	virtual void set_receiving_lighting(bool receiving_lighting);
+	virtual bool get_generating_shadow();
+	virtual void set_generating_shadow(bool generating_shadow);
 
 	virtual void updateBorderVertices();
 	virtual void createBorderIndices();
@@ -31,7 +35,8 @@ protected:
 	// inherited from Component
 	virtual void serialize(PHString&) override;
 	virtual void deserialize(std::stringstream& ss) override;
-
+	bool receiving_lighting;
+	bool generating_shadow;
 	Vector2D size;
 };
 

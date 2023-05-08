@@ -23,6 +23,10 @@ Property:Color
 255,255,255,255
 Property:Size
 950.000000,699.151611
+Property:Receiving Lighting
+205
+Property:Generating Shadow
+205
 Property:View Width
 950.000000
 Property:Is Main Camera
@@ -49,7 +53,7 @@ Component:1
 Property:Enabled
 1
 Property:Local Position
-333.146362,-370.487946
+357.291901,-470.399963
 Property:Local Rotation
 0.000000
 Property:Local Scale
@@ -62,6 +66,10 @@ Property:Color
 255,255,255,255
 Property:Size
 2048.000000,2048.000000
+Property:Receiving Lighting
+205
+Property:Generating Shadow
+205
 Property:Texture Name
 None
 Property:Keep Aspect Ratio
@@ -88,6 +96,10 @@ Property:Color
 255,255,255,255
 Property:Size
 698.933044,772.631165
+Property:Receiving Lighting
+205
+Property:Generating Shadow
+205
 Property:Spine Animation Name
 Knight
 Property:Animation
@@ -155,7 +167,11 @@ Property:Enabled
 Property:Color
 255,255,255,255
 Property:Size
-1131.705688,671.479614
+1200.000000,712.000000
+Property:Receiving Lighting
+205
+Property:Generating Shadow
+205
 Property:Texture Name
 BossScene
 Property:Keep Aspect Ratio
@@ -190,7 +206,11 @@ Property:Enabled
 Property:Color
 255,255,255,255
 Property:Size
-1704.000000,1704.000000
+1707.000000,1704.000000
+Property:Receiving Lighting
+205
+Property:Generating Shadow
+205
 Property:Texture Name
 Boss
 Property:Keep Aspect Ratio
