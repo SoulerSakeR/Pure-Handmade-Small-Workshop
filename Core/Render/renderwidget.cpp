@@ -270,7 +270,7 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 	}
 
 	// 将光源数量和光源数组传递到着色器中
-	imageShaderProgram->setUniformValue("numLights", numLights);
+	imageShaderProgram->setUniformValue("numLights", validLight);
 
 	imageShaderProgram->setUniformValueArray("lightsColor", lightsColor, 32);
 	imageShaderProgram->setUniformValueArray("lightsPosition", lightsPos, 32);
@@ -1839,6 +1839,10 @@ void RenderWidget::shadowTest(IBoxResizable* target, Camera* camera, bool visBor
 	matrix.scale(transform->getWorldScale().toQVector3D(1.0f));
 
 	targetPos = target->gameObject->transform->getWorldPosition().toQVector2D();
+	
+	// 物体高度
+	auto height = target->borderVertices[0].position[1] - target->borderVertices[1].position[1];
+
 	targetLeftBottom = QVector2D(target->vertices[2].position[0], target->vertices[2].position[1]);
 	targetRightBottom = QVector2D(target->vertices[1].position[0], target->vertices[1].position[1]);
 
@@ -1861,8 +1865,29 @@ void RenderWidget::shadowTest(IBoxResizable* target, Camera* camera, bool visBor
 	float distance = lightDir.length();
 	// 计算光源到目标的角度
 	float angle = acosf(lightDir.x() / distance);
+
+	
+
 	// 通过光源到目标的距离来计算阴影的高度
 	float shadowHeight = distance * tanf(angle);
+
+	
+	if (qAbs(shadowHeight) > 2 * height)
+	{
+		if(shadowHeight < 0)
+		{ 
+			shadowHeight = -2 * height;
+			distance = shadowHeight / tanf(angle);
+		}
+		else
+		{
+			shadowHeight = 2 * height;
+			distance = shadowHeight / tanf(angle);
+		}
+		distance = qAbs(distance);
+	}
+
+	
 	
 	QVector2D shadowLeftTop;
 	QVector2D shadowRightTop;
@@ -1878,6 +1903,9 @@ void RenderWidget::shadowTest(IBoxResizable* target, Camera* camera, bool visBor
 		shadowLeftTop = targetLeftBottom + QVector2D(-distance, isUp ? -shadowHeight : shadowHeight);
 		shadowRightTop = targetRightBottom + QVector2D(-distance, isUp ? -shadowHeight : shadowHeight);
 	}
+
+	
+
 	QVector2D shadowLeftBottom = targetLeftBottom;
 	QVector2D shadowRightBottom = targetRightBottom;
 
