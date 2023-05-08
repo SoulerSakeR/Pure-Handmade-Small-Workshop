@@ -9,7 +9,6 @@ IBoxResizable::IBoxResizable(GameObject* gameobj):IRenderable(gameobj)
 		return;
 	borderVbo = nullptr;
 	borderIbo = nullptr;
-	Vector2D size = Vector2D(100, 100);	
 	auto size_property = new Property("Size", &size, Property::VECTOR2D, this);
 	size_property->set_property_func<Vector2D>(&IBoxResizable::get_size, &IBoxResizable::set_size, this);
 	properties.emplace(size_property);

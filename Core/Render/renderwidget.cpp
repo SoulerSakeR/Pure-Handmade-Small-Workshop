@@ -1135,7 +1135,7 @@ void RenderWidget::mixTexture()
 	}
 
 	//draw
-	glDrawElements(GL_TRIANGLES, sizeof(unsigned int) * 6, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 	vaoTexture->release();
 	return;

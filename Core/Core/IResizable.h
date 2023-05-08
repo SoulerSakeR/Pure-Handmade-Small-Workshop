@@ -12,6 +12,7 @@ public:
 	virtual void updateVertices() override;
 	virtual void createIndices() override;
 
+
 	// getters and setters
 	virtual Vector2D get_size();
 	virtual void set_size(Vector2D newSize);

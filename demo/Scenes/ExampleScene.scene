@@ -49,7 +49,7 @@ Component:1
 Property:Enabled
 1
 Property:Local Position
-311.059235,-378.133362
+333.146362,-370.487946
 Property:Local Rotation
 0.000000
 Property:Local Scale
@@ -61,9 +61,11 @@ Property:Enabled
 Property:Color
 255,255,255,255
 Property:Size
-2048.000000,1024.000000
+2048.000000,2048.000000
 Property:Texture Name
 None
+Property:Keep Aspect Ratio
+1
 ComponentEnd
 Component:8
 Property:Enabled
@@ -124,7 +126,7 @@ Property:Light Color
 Property:Intensity
 1.000000
 Property:Radius
-80.000000
+200.000000
 ComponentEnd
 ComponentsEnd
 Children:0
@@ -153,9 +155,11 @@ Property:Enabled
 Property:Color
 255,255,255,255
 Property:Size
-1200.000000,712.000000
+1131.705688,671.479614
 Property:Texture Name
 BossScene
+Property:Keep Aspect Ratio
+1
 ComponentEnd
 Component:8
 Property:Enabled
@@ -186,9 +190,11 @@ Property:Enabled
 Property:Color
 255,255,255,255
 Property:Size
-1707.000000,1704.000000
+1704.000000,1704.000000
 Property:Texture Name
 Boss
+Property:Keep Aspect Ratio
+1
 ComponentEnd
 Component:8
 Property:Enabled

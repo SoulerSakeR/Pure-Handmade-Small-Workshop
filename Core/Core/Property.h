@@ -90,7 +90,7 @@ private:
 	friend class ISerializable;
 };
 
-template<typename key,typename value>
+template<typename Key,typename Value>
 class PropertiesQueue
 {
 public:
@@ -98,30 +98,39 @@ public:
 	{
 		return properties.size();
 	}
-	value& operator[](const key& key)
+	Value& operator[](const Key& key)
 	{
 		if (auto it = properties.find(key);it != properties.end())
 			return it->second;
 		//TODO: throw exception
 	}
-	bool find(const key& key)
+	bool find(const Key& key)
 	{
 		if (auto it = properties.find(key);it != properties.end())
 			return true;
 		return false;
 	}
-	void emplace(const key& key, const value& value)
+	void emplace(const Key& key, const Value& value)
 	{
 		properties.emplace(key, value);
 		values.push_back(value);
 	}
 
-	void emplace(const value& value)
+	void emplace(const Value& value)
 	{
-		const key& key = value->get_name();
+		const Key& key = value->get_name();
 		properties.emplace(key, value);
 		values.push_back(value);
 	}
+
+	void insert(const Value& value, const Value& where_)
+	{
+		const Key& key = value->get_name();
+		properties.emplace(key, value);
+		auto it = std::find(values.begin(), values.end(), where_);
+		values.insert(it, value);
+	}
+
 	auto begin()
 	{
 		return properties.begin();
@@ -140,6 +149,6 @@ public:
 	}
 
 private:
-	std::unordered_map<key, value> properties;
-	std::vector<value> values;
+	std::unordered_map<Key, Value> properties;
+	std::vector<Value> values;
 };

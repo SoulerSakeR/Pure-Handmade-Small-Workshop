@@ -47,8 +47,8 @@ void main(){
         float distance = length(lightDir);
         //float attenuation = 1.0 / (1.0 + 0.1 * distance + 0.01 * distance * distance);
 		//float attenuation = 1.0 / (1.0 + 0.1 * distance + 0.01 * distance * distance / (lightsIntensityAndRadius[i].y));
-
-		float attenuation = 1.0 - distance / lightsIntensityAndRadius[i].y;
+		float distanceRatio = clamp(distance / lightsIntensityAndRadius[i].y , 0.0,1.0);
+		float attenuation = pow(1.0 - distanceRatio,2);
 		if(attenuation < 0.0)attenuation=0.0;
         float diffuseFactor = max(0.0, dot(vec2(0.0, -1.0), lightDir));
 		vec3 diffColor = vec3(lightsColor[i].x,lightsColor[i].y,lightsColor[i].z);
