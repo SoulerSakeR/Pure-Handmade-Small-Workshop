@@ -5,6 +5,7 @@ in vec2 TexCoord;
 uniform sampler2D texture0;
 uniform bool isTexture;
 uniform bool isLighting;
+uniform bool isShadow;
 
 
 
@@ -25,6 +26,7 @@ void main(){
 	vec4 texColor = vec4(1.0,1.0,1.0,1.0);
 
 	vec4 lightColor = vec4(1.0,1.0,1.0,1.0); // 环境光
+
 
 	// 将窗口坐标转换为裁剪空间坐标
 	vec4 clipCoords = vec4((2.0 * gl_FragCoord.xy) / SCREEN_SIZE - 1.0, 0.0, 1.0);
@@ -53,20 +55,33 @@ void main(){
         float diffuseFactor = max(0.0, dot(vec2(0.0, -1.0), lightDir));
 		vec3 diffColor = vec3(lightsColor[i].x,lightsColor[i].y,lightsColor[i].z);
         light += (diffColor  * attenuation * lightsIntensityAndRadius[i].x);
+
+
     }
+
+	
 
 
 	if(isTexture)
 	{
-		texColor = texture(texture0, TexCoord);   
+		texColor = texture(texture0, TexCoord); 
+		if (isShadow) {
+			if (texColor.a < 0.1) {
+				discard;
+			}
+			texColor = vec4(0.1, 0.1, 0.1, 1.0);
+		}
 	}
 	
 	if(isLighting)
 	{
 		texColor = texColor * vec4(light,1.0);
 	}
+
+	
     
-	FragColor = texColor*ourColor ;
+
+	FragColor = texColor*ourColor;
    
 }
 
