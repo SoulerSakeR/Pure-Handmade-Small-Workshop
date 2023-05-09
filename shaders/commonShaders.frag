@@ -75,7 +75,8 @@ void main(){
 	
 	if(isLighting)
 	{
-		texColor = texColor * vec4(light,1.0);
+		
+			texColor = texColor * vec4(light,1.0);
 	}
 
 	

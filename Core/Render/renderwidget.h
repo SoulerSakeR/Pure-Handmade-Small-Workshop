@@ -59,7 +59,7 @@ public:
     void renderFbo();
     void renderFboOverlay();
     void mixTexture();
-    void shadowTest(IBoxResizable* target, Camera* camera, bool visBorder, QVector2D lightPos);
+    void setShadow(IBoxResizable* target, Camera* camera, bool visBorder, QVector2D lightPos);
     
     
     void mouseMoveEvent(QMouseEvent* event) override;

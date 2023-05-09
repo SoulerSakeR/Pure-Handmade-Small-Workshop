@@ -278,7 +278,8 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 
 	for (int i = 0; i < validLight; i++)
 	{
-		shadowTest(img, imageCamera, visBorder, lightsPos[i]);
+		if( img->get_generating_shadow())
+			setShadow(img, imageCamera, visBorder, lightsPos[i]);
 	}
 	
 	//=====================================================================================//
@@ -393,8 +394,8 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 	const auto& color = img->get_color();
 	imageShaderProgram->setUniformValue("color", color.red(), color.green(), color.blue(), color.alpha());
 
-	imageShaderProgram->setUniformValue("isTexture", true);
-	imageShaderProgram->setUniformValue("isLighting", true);
+	imageShaderProgram->setUniformValue("isTexture", img->get_texture() != nullptr);
+	imageShaderProgram->setUniformValue("isLighting", img->get_receiving_lighting());
 
 
 	
@@ -449,8 +450,7 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 	}	
 	//release
 	img->vao->release();
-	/*if(img->texture!=nullptr)
-		img->texture->release();*/
+	
 }
 
 void RenderWidget::renderText(Text* text, Camera* textCamera, bool visBorder)
@@ -700,7 +700,7 @@ void RenderWidget::renderSpineAnimator(SpineAnimator* target, Camera* camera, bo
 			{
 				for (int i = 0;i < validLight; i++)
 				{
-					shadowTest(target, camera, visBorder, lightsPos[i]);
+					setShadow(target, camera, visBorder, lightsPos[i]);
 				}				
 			}
 			imageShaderProgram->setUniformValue("isLighting", true);
@@ -1771,7 +1771,7 @@ void RenderWidget::mouseDoubleClickEvent(QMouseEvent* event)
 			return;
 		}
 		GameObject* gameObject = nullptr;
-		int layer = 0;
+		int layer = -INT32_MAX;
 		int index = 0;
 		for (auto obj : selectedGameObjects)
 		{
@@ -1948,7 +1948,7 @@ void RenderWidget::setFullScreen(bool fullScreen)
 	}
 }
 
-void RenderWidget::shadowTest(IBoxResizable* target, Camera* camera, bool visBorder, QVector2D lightPos)
+void RenderWidget::setShadow(IBoxResizable* target, Camera* camera, bool visBorder, QVector2D lightPos)
 {
 	
 	QVector2D targetPos; // 目标位置
