@@ -8,7 +8,7 @@ Renderer::Renderer(GameObject* gameObject):Component(gameObject)
 	componentType = RENDERER;
 	render_layer = 0;
 	auto renderLayer = new Property("Render Layer", &(this->render_layer), Property::COMBO_BOX, this);
-	renderLayer->set_property_func<int>(&Renderer::get_render_layer, &Renderer::set_render_layer_index,this);
+	renderLayer->set_property_func<int>(&Renderer::get_render_layer, &Renderer::set_render_layer,this);
 	properties.emplace(renderLayer);
 	if (auto& sceneMgr = SceneMgr::get_instance();sceneMgr.hasCurrentScene())
 	{

@@ -132,7 +132,16 @@ ComponentGroupBox::ComponentGroupBox(QWidget* parent, Component* component) :QGr
 			widget->property_Object_map[property] = comboBox;
 			comboBox->setDisabled( !property->is_editable);
 			connect(comboBox, &QComboBox::currentIndexChanged, [=](int index) {
-				property->set_data<int>(index);
+				int i = 0;
+				for (auto& pair : SceneMgr::get_instance().get_render_setting()->get_render_layers())
+				{
+					if (i == index)
+					{
+						property->set_data<int>(pair.first);
+						return;
+					}
+					i++;
+				}
 			});
 			break;
 		}
