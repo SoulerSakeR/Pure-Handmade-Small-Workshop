@@ -151,6 +151,8 @@ void bindAllClasses(sol::state& lua) {
         "getWorldPositionY", & Transform::getWorldPositionY,
         "getWorldRotation", &Transform::getWorldRotation,
         "getWorldScale", &Transform::getWorldScale,
+        "get_localScale",&Transform::get_localScale,
+        "set_localScale",&Transform::set_localScale,
         "translate", &Transform::translate,
         "translate1", &Transform::translate1);
 
@@ -192,6 +194,7 @@ void bindAllClasses(sol::state& lua) {
         "is_Valid", & SpineAnimator::is_Valid,
         "getAllAnimations", & SpineAnimator::getAllAnimations,
         "getAllSkins", & SpineAnimator::getAllSkins,
+        "set_skin_index", & SpineAnimator::set_skin_index,
         "setAnimation", sol::overload(
             [](SpineAnimator& obj, int index, bool loop) { return obj.setAnimation(index, loop); },
             [](SpineAnimator& obj, const std::string& name, bool loop) { return obj.setAnimation(name, loop); }
