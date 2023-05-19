@@ -1373,43 +1373,27 @@ void RenderWidget::on_widgetChanged(int index)
 // text render 
 QOpenGLTexture *RenderWidget::genTextTexture(int width, int height, const QString& text, int textPixelSize, const QColor& textColor)
 {
-	// 创建一个 2D 纹理对象
-	QOpenGLTexture* texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
-	// 创建一张空的 QImage，格式为 ARGB32_Premultiplied
 	QImage img(width, height, QImage::Format_ARGB32_Premultiplied);
-	// 将图片填充为完全透明的黑色
 	img.fill(QColor(0, 0, 0, 0));
-	// 创建一个 QPainter，用于在 QImage 上绘制文字
-	QPainter painter;
-	// 开始在 QImage 上绘制
-	painter.begin(&img);
-	// 设置字体大小
+
+	QPainter painter(&img);
 	QFont font;
 	font.setPixelSize(textPixelSize);
-	// 设置 QPainter 使用的字体
 	painter.setFont(font);
-	// 创建一个画笔，用于绘制文字颜色
-	QPen pen;
-	pen.setColor(textColor);
-	painter.setPen(pen);
-	// 设置文字的对齐方式为左上对齐
+	painter.setPen(textColor);
+
 	QTextOption option(Qt::AlignLeft | Qt::AlignTop);
-	// 设置文字的换行模式为不换行
 	option.setWrapMode(QTextOption::NoWrap);
-	// 设置绘制文字的矩形区域
 	QRectF rect(0, 0, width, height);
-	// 在 QImage 上绘制文字
 	painter.drawText(rect, text, option);
-	// 停止在 QImage 上绘制
 	painter.end();
-	// 将 QImage 的数据绑定到纹理上
-	texture->setData(img);
-	// 设置纹理的放大和缩小过滤器为线性过滤
+
+	QImage textureImage = img.convertToFormat(QImage::Format_RGBA8888);
+	QOpenGLTexture* texture = new QOpenGLTexture(textureImage);
 	texture->setMinificationFilter(QOpenGLTexture::Linear);
 	texture->setMagnificationFilter(QOpenGLTexture::Linear);
-	// 设置纹理的重复模式为 Repeat
 	texture->setWrapMode(QOpenGLTexture::Repeat);
-	// 返回生成的纹理对象指针
+
 	return texture;
 }
 
