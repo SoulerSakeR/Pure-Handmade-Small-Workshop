@@ -1,16 +1,16 @@
 Version:1.0
 Scene:ExampleScene
-rootGameObject:4
+rootGameObject:3
 GameObject:3
 MainCamera
 1
 Untagged
-Components:3
+Components:4
 Component:1
 Property:Enabled
 1
 Property:Local Position
-715.065613,-165.293808
+207.597656,-199.779495
 Property:Local Rotation
 0.000000
 Property:Local Scale
@@ -22,13 +22,13 @@ Property:Enabled
 Property:Color
 255,255,255,255
 Property:Size
-950.000000,699.151611
+2100.000000,1081.599243
 Property:Receiving Lighting
-205
+1
 Property:Generating Shadow
-205
+0
 Property:View Width
-950.000000
+2100.000000
 Property:Is Main Camera
 1
 Property:Is Overlay
@@ -39,6 +39,14 @@ Property:Enabled
 1
 Property:Render Layer
 0
+ComponentEnd
+Component:4
+Property:Enabled
+1
+Property:Name
+TrackingPlayer
+Property:Path
+Scripts\TrackingPlayer.lua
 ComponentEnd
 ComponentsEnd
 Children:0
@@ -53,11 +61,11 @@ Component:1
 Property:Enabled
 1
 Property:Local Position
-357.291901,-470.399963
+2.584605,-229.067093
 Property:Local Rotation
 0.000000
 Property:Local Scale
-0.100000,0.100000
+0.200000,0.200000
 ComponentEnd
 Component:2
 Property:Enabled
@@ -65,13 +73,13 @@ Property:Enabled
 Property:Color
 255,255,255,255
 Property:Size
-2048.000000,2048.000000
+2048.000000,1024.000000
 Property:Receiving Lighting
-205
+1
 Property:Generating Shadow
-205
+0
 Property:Texture Name
-None
+Knight
 Property:Keep Aspect Ratio
 1
 ComponentEnd
@@ -97,13 +105,13 @@ Property:Color
 Property:Size
 698.933044,772.631165
 Property:Receiving Lighting
-205
+1
 Property:Generating Shadow
-205
+0
 Property:Spine Animation Name
 Knight
 Property:Animation
-2
+14
 Property:Skin
 0
 Property:Loop
@@ -114,7 +122,7 @@ Property:Flip Y
 0
 ComponentEnd
 ComponentsEnd
-Children:1
+Children:2
 GameObject:18
 light
 1
@@ -138,7 +146,46 @@ Property:Light Color
 Property:Intensity
 1.000000
 Property:Radius
-200.000000
+600.000000
+ComponentEnd
+ComponentsEnd
+Children:0
+ChildrenEnd
+GameObjectEnd
+GameObject:166
+playerCollider
+1
+playerCollider
+Components:3
+Component:1
+Property:Enabled
+1
+Property:Local Position
+4.880106,65.741478
+Property:Local Rotation
+0.000000
+Property:Local Scale
+1.000000,1.000000
+ComponentEnd
+Component:6
+Property:Enabled
+1
+Property:Color
+255,255,255,255
+Property:Size
+444.297424,800.000000
+Property:Receiving Lighting
+1
+Property:Generating Shadow
+0
+Property:Is Trigger
+1
+ComponentEnd
+Component:8
+Property:Enabled
+1
+Property:Render Layer
+3
 ComponentEnd
 ComponentsEnd
 Children:0
@@ -155,11 +202,11 @@ Component:1
 Property:Enabled
 1
 Property:Local Position
-729.879883,-187.682907
+548.210815,-80.271072
 Property:Local Rotation
 0.000000
 Property:Local Scale
-1.000000,1.000000
+1.500000,1.500000
 ComponentEnd
 Component:2
 Property:Enabled
@@ -169,9 +216,9 @@ Property:Color
 Property:Size
 1200.000000,712.000000
 Property:Receiving Lighting
-205
+1
 Property:Generating Shadow
-205
+0
 Property:Texture Name
 BossScene
 Property:Keep Aspect Ratio
@@ -181,10 +228,10 @@ Component:8
 Property:Enabled
 1
 Property:Render Layer
-0
+1
 ComponentEnd
 ComponentsEnd
-Children:1
+Children:2
 GameObject:25
 Boss
 1
@@ -194,33 +241,17 @@ Component:1
 Property:Enabled
 1
 Property:Local Position
-262.571533,-42.780678
+659.709290,-244.023529
 Property:Local Rotation
 0.000000
 Property:Local Scale
-0.150000,0.150000
-ComponentEnd
-Component:2
-Property:Enabled
-1
-Property:Color
-255,255,255,255
-Property:Size
-1707.000000,1704.000000
-Property:Receiving Lighting
-205
-Property:Generating Shadow
-205
-Property:Texture Name
-Boss
-Property:Keep Aspect Ratio
-1
+1.000000,1.000000
 ComponentEnd
 Component:8
 Property:Enabled
 1
 Property:Render Layer
-0
+1
 ComponentEnd
 Component:4
 Property:Enabled
@@ -236,45 +267,126 @@ Property:Enabled
 Property:Light Color
 132,170,43,255
 Property:Intensity
-1.000000
+0.000000
 Property:Radius
-100.000000
+148.000000
+ComponentEnd
+Component:9
+Property:Enabled
+1
+Property:Color
+255,255,255,255
+Property:Size
+160.219299,221.350983
+Property:Receiving Lighting
+1
+Property:Generating Shadow
+0
+Property:Spine Animation Name
+turner
+Property:Animation
+1
+Property:Skin
+7
+Property:Loop
+1
+Property:Flip X
+1
+Property:Flip Y
+0
 ComponentEnd
 ComponentsEnd
-Children:0
-ChildrenEnd
-GameObjectEnd
-ChildrenEnd
-GameObjectEnd
-GameObject:7
-AudioMgr
+Children:1
+GameObject:167
+bossCollider
 1
-Manager
-Components:2
+bossCollider
+Components:4
 Component:1
 Property:Enabled
 1
 Property:Local Position
-0.000000,0.000000
+-25.567583,250.990936
 Property:Local Rotation
 0.000000
 Property:Local Scale
 1.000000,1.000000
 ComponentEnd
-Component:10
+Component:8
 Property:Enabled
 1
-Property:Name
-02 DARK SOULSⅢ
-Property:Path
-Audio\02 DARK SOULSⅢ.flac
-Property:Loop
+Property:Render Layer
+3
+ComponentEnd
+Component:6
+Property:Enabled
 1
-Property:AutoPlay
+Property:Color
+255,255,255,255
+Property:Size
+208.574585,248.823059
+Property:Receiving Lighting
 1
+Property:Generating Shadow
+0
+Property:Is Trigger
+1
+ComponentEnd
+Component:11
+Property:Enabled
+1
+Property:Light Color
+255,255,255,255
+Property:Intensity
+1.000000
+Property:Radius
+1000.000000
 ComponentEnd
 ComponentsEnd
 Children:0
+ChildrenEnd
+GameObjectEnd
+ChildrenEnd
+GameObjectEnd
+GameObject:416
+bossHIT
+1
+bossHIT
+Components:3
+Component:1
+Property:Enabled
+1
+Property:Local Position
+653.645142,29.024162
+Property:Local Rotation
+0.000000
+Property:Local Scale
+1.000000,1.000000
+ComponentEnd
+Component:7
+Property:Enabled
+1
+Property:Color
+255,255,255,255
+Property:Size
+245.000000,75.000000
+Property:Receiving Lighting
+1
+Property:Generating Shadow
+0
+Property:Text
+bossHIT
+ComponentEnd
+Component:8
+Property:Enabled
+1
+Property:Render Layer
+3
+ComponentEnd
+ComponentsEnd
+Children:0
+ChildrenEnd
+GameObjectEnd
 ChildrenEnd
 GameObjectEnd
 SceneEnd
