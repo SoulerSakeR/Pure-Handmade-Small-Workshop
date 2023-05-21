@@ -249,8 +249,9 @@ void RenderWidget::renderImage(Image* img, Camera* imageCamera, bool visBorder)
 		auto distance = (worldPos - transform->getWorldPosition()).toQVector2D().length();
 		auto radius = lightSources[j]->get_radius();
 		
-
-		if ((worldPos - transform->getWorldPosition()).toQVector2D().length() >= lightSources[j]->get_radius())
+		float imgRadius = sqrtf(pow(img->get_size().x,2) + pow(img->get_size().y, 2))/2;
+		bool isInRange = distance < radius+imgRadius;
+		if (!isInRange || !lightSources[j]->get_enabled())
 			continue;
 
 		lightsColor[i].setX(color.red());
