@@ -1038,16 +1038,17 @@ void RenderWidget::paintGL()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	frameCount++;
-	renderFbo();	
-	renderFboOverlay();
-	mixTexture();
-	glCheckError();
 	//update scene render order
 	if (auto renderSetting = SceneMgr::get_instance().get_render_setting();renderSetting != nullptr && renderSetting->refresh_later)
 	{
 		renderSetting->refreshAll();
 		renderSetting->refresh_later = false;
 	}
+	renderFbo();	
+	renderFboOverlay();
+	mixTexture();
+	glCheckError();
+	
 
 	if(widgetChanged)
 		widgetChanged = false;
